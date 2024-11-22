@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechHive</title>
+    <link rel="stylesheet" href="tailwind/output.css">
+    <script>
+        function toggleMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        }
+    </script>
+</head>
+<body>
+    <header class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0">
+                    <div class="text-xl font-bold">TechHive</div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" class="text-black font-semibold">Home</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-900">Contact</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-900">About</a>
+                    <a href="#" class="text-gray-600 hover:text-gray-900">Login</a>
+                </nav>
+
+                <!-- Desktop Search and Icons -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" 
+                               placeholder="What are you looking for?" 
+                               class="border rounded-md px-4 py-2 w-64"
+                        />
+                    </div>
+                    <div class="flex space-x-4">
+                        <button type="button" class="text-gray-600 hover:text-gray-900" aria-label="Wishlist">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>
+                        </button>
+                        <button type="button" class="text-gray-600 hover:text-gray-900 relative" aria-label="Shopping cart">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                            </svg>
+                            <!-- Optional: Add cart item count -->
+                            <span class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center">0</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button type="button" 
+                            onclick="toggleMenu()"
+                            class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+                    >
+                        <svg class="h-6 w-6" 
+                             stroke="currentColor" 
+                             fill="none" 
+                             viewBox="0 0 24 24"
+                        >
+                            <path stroke-linecap="round" 
+                                  stroke-linejoin="round" 
+                                  stroke-width="2" 
+                                  d="M4 6h16M4 12h16M4 18h16"
+                            />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div class="hidden md:hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-black">Home</a>
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600">Contact</a>
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600">About</a>
+                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600">Login</a>
+                <div class="px-3 py-2">
+                    <input type="text" 
+                           placeholder="What are you looking for?" 
+                           class="w-full border rounded-md px-4 py-2"
+                    />
+                </div>
+                <div class="flex justify-start space-x-4 px-3 py-2">
+                    <button type="button" class="text-gray-600 hover:text-gray-900" aria-label="Wishlist">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        </svg>
+                    </button>
+                    <button type="button" class="text-gray-600 hover:text-gray-900 relative" aria-label="Shopping cart">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                        </svg>
+                        <span class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-4 h-4 flex items-center justify-center">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
