@@ -24,7 +24,8 @@
     "mercedlogger": "^1.0.1",
     "mongoose": "^8.8.2",
     "morgan": "^1.10.0",
-    "nocache": "^4.0.0"
+    "nocache": "^4.0.0",
+    "sweetalert": "^2.1.2"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",

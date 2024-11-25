@@ -8,5 +8,6 @@ const router = Router()
 router.use(express.static('static'))
 
 
+router.get('/login', adminAuth.isLogin, adminController.loadLogin)
 
 export default router

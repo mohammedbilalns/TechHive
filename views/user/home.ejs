@@ -1,0 +1,152 @@
+<%- include('../partials/header') %>
+<main class="mx-auto my-5 md:my-10 container px-4 md:px-0">
+  <!-- Hero Section -->
+  <section class="mb-6 md:mb-10">
+    <img alt="Hands typing on a colorful keyboard" 
+         src="https://placehold.co/1300x400" 
+         class="w-full h-[200px] md:h-[250px] lg:h-[300px] rounded-lg object-cover"/>
+  </section>
+
+  <!-- Flash Sales Section -->
+  <section class="mb-6 md:mb-10">
+    <p class="text-xl md:text-2xl mb-2">Flash Sales</p>
+    <div class="flex flex-col sm:flex-row justify-between items-center mb-5 space-y-4 sm:space-y-0">
+      <!-- Category Buttons -->
+      <div class="flex space-x-3">
+        <button type="submit" class="px-3 py-1 bg-red-600 text-white text-xs rounded-lg">All</button>
+        <button type="submit" class="px-3 py-1 bg-gray-500 text-white text-xs rounded-lg">Tech</button>
+      </div>
+      <!-- Timer -->
+      <div class="flex space-x-3">
+        <div class="bg-gray-200 text-black rounded-lg p-2 md:p-3">
+          <span class="font-bold text-base md:text-lg">03</span>
+          hrs
+        </div>
+        <div class="bg-gray-200 text-black rounded-lg p-2 md:p-3">
+          <span class="font-bold text-base md:text-lg">23</span>
+          min
+        </div>
+        <div class="bg-gray-200 text-black rounded-lg p-2 md:p-3">
+          <span class="font-bold text-base md:text-lg">19</span>
+          sec
+        </div>
+      </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-5">
+      <div class="col-span-1">
+        <img alt="Wireless Controller for PS4" 
+             src="https://placehold.co/150x150" 
+             class="w-full h-[100px] md:h-[120px] object-cover rounded-lg"/>
+        <p class="text-white text-sm mt-2">Wireless Controller for PS4</p>
+        <p class="text-red-600">$39.00</p>
+      </div>
+      <div class="col-span-1 sm:col-span-1 lg:col-span-2">
+        <img alt="Active Sport Wireless Earbuds" 
+             src="https://placehold.co/150x150" 
+             class="w-full h-[100px] md:h-[120px] object-cover rounded-lg"/>
+        <p class="text-white text-sm mt-2">Active Sport Wireless Earbuds</p>
+        <p class="text-red-600">$29.00</p>
+      </div>
+      <div class="col-span-2 sm:col-span-1 lg:col-span-2">
+        <img alt="HD Ready Ultra Slim TV LED55BL" 
+             src="https://placehold.co/150x150" 
+             class="w-full h-[100px] md:h-[120px] object-cover rounded-lg"/>
+        <p class="text-white text-sm mt-2">HD Ready Ultra Slim TV LED55BL</p>
+        <p class="text-red-600">$520.00</p>
+      </div>
+      <div class="col-span-2 sm:col-span-3 lg:col-span-1">
+        <img alt="Armchair Leisure Sitting Chair" 
+             src="https://placehold.co/150x150" 
+             class="w-full h-[100px] md:h-[120px] object-cover rounded-lg"/>
+        <p class="text-white text-sm mt-2">Armchair Leisure Sitting Chair</p>
+        <p class="text-red-600">$180.00</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Browse By Category -->
+  <section class="mb-6 md:mb-10">
+    <p class="text-xl md:text-2xl mb-3 md:mb-5">Browse By Category</p>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-5">
+      <div class="bg-gray-200 text-black rounded-lg text-center p-3 md:p-5">
+        <img alt="phone icon" 
+             src="https://placehold.co/80x80" 
+             class="mx-auto mb-2 w-12 h-12 md:w-16 md:h-16"/>
+        <p class="text-sm md:text-base">Mobiles</p>
+      </div>
+      <div class="bg-gray-200 text-black rounded-lg text-center p-3 md:p-5">
+        <img alt="computer icon" 
+             src="https://placehold.co/80x80" 
+             class="mx-auto mb-2 w-12 h-12 md:w-16 md:h-16"/>
+        <p class="text-sm md:text-base">Computers</p>
+      </div>
+      <div class="bg-gray-200 text-black rounded-lg text-center p-3 md:p-5">
+        <img alt="camera icon" 
+             src="https://placehold.co/80x80" 
+             class="mx-auto mb-2 w-12 h-12 md:w-16 md:h-16"/>
+        <p class="text-sm md:text-base">Cameras</p>
+      </div>
+      <div class="bg-red-600 text-white rounded-lg text-center p-3 md:p-5">
+        <img alt="headphones icon" 
+             src="https://placehold.co/80x80" 
+             class="mx-auto mb-2 w-12 h-12 md:w-16 md:h-16"/>
+        <p class="text-sm md:text-base">Headphones</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- New Arrival -->
+  <section class="mb-6 md:mb-10">
+    <p class="text-xl md:text-2xl mb-3 md:mb-5">New Arrival</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5">
+      <div class="bg-black rounded-lg text-center p-4 md:p-5">
+        <img alt="PlayStation 5 Dual Sense" 
+             src="https://placehold.co/200x200" 
+             class="mx-auto mb-2 w-full h-[150px] md:h-[180px] object-cover"/>
+        <p class="text-white text-sm md:text-base">PlayStation 5 Dual Sense</p>
+        <p class="text-red-600">$499.00</p>
+      </div>
+      <div class="bg-black rounded-lg text-center p-4 md:p-5">
+        <img alt="WD Green SSD" 
+             src="https://placehold.co/200x200" 
+             class="mx-auto mb-2 w-full h-[150px] md:h-[180px] object-cover"/>
+        <p class="text-white text-sm md:text-base">WD Green SSD</p>
+        <p class="text-red-600">$64.00</p>
+      </div>
+      <div class="bg-black rounded-lg text-center p-4 md:p-5">
+        <img alt="Bluetooth Speakers" 
+             src="https://placehold.co/200x200" 
+             class="mx-auto mb-2 w-full h-[150px] md:h-[180px] object-cover"/>
+        <p class="text-white text-sm md:text-base">Bluetooth Speakers</p>
+        <p class="text-red-600">$29.00</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-black py-6 md:py-10 mt-6 md:mt-10">
+    <div class="mx-auto container px-4 md:px-0">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+        <div>
+          <p class="text-base md:text-lg font-bold mb-3">TechHive</p>
+          <p class="text-gray-600 text-sm md:text-base">Guidelines</p>
+        </div>
+        <div>
+          <p class="text-base md:text-lg font-bold mb-3">Support</p>
+          <p class="text-gray-600 text-sm md:text-base">24/7 Customer Service</p>
+        </div>
+        <div>
+          <p class="text-base md:text-lg font-bold mb-3">Company</p>
+          <p class="text-gray-600 text-sm md:text-base">About Us</p>
+        </div>
+        <div>
+          <p class="text-base md:text-lg font-bold mb-3">Follow Us</p>
+          <p class="text-gray-600 text-sm md:text-base">Social Media Links</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+</main>
+<%- include('../partials/footer') %>

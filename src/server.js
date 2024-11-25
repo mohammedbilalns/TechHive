@@ -32,8 +32,8 @@ app.use((req, res) => {
 });
   
 
-
 connnectDb()
+
 app.listen(PORT, ()=>{  
     log.green('SERVER STATUS', `server running on port: ${PORT}`)
 })
