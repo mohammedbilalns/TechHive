@@ -28,7 +28,7 @@ app.use('/admin', adminRoutes) // admin route
 
 
 app.use((req, res) => {
-    res.status(404).send('Invalid URL');  
+    res.status(404).render('notfound')
 });
   
 
