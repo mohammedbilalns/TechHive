@@ -1,0 +1,27 @@
+<%- include('../partials/header') %>
+<main class="py-12 flex justify-center items-center">
+  <div class="bg-primary-white rounded-lg shadow-lg flex flex-col lg:flex-row overflow-hidden max-w-4xl w-full">
+    <!-- Image Section -->
+    <div class="bg-blue-100 p-8 flex justify-center items-center">
+      <img alt="Illustration of a laptop with a clock display and office supplies" src="./images/login.png"
+           class="object-cover max-w-full h-auto"/>
+    </div>
+    <!-- Form Section -->
+    <div class="bg-gray-50 p-6 md:p-12 flex-1">
+      <button type="submit" class="flex border items-center justify-center rounded-md py-2 mb-6 bg-white text-black w-full">
+        <img alt="Google logo" src="images/google.svg" class="mr-3"/>
+        Sign Up  with Google
+      </button>
+	  
+      <p class="text-2xl font-semibold text-gray-800 mb-2">Create an Account</p>
+      <p class="text-gray-600 mb-6">Enter your details below</p>
+      <input type="text" placeholder="username" class="border w-full mb-4 px-3 py-2 rounded-md"/>
+      <input type="tel" placeholder="Phone Number" class="border w-full mb-4 px-3 py-2 rounded-md"/>
+      <input type="email" placeholder="Email" class="border w-full mb-4 px-3 py-2 rounded-md"/>
+      <input type="password" placeholder="Password" class="border w-full mb-6 px-3 py-2 rounded-md"/>
+      <button type="submit" class="w-full py-2 mb-2 text-white bg-primary-accent rounded-md">Log In</button>
+      <a href="#" class="text-right text-sm text-primary-accent mb-4 block"> Already have account? login</a>
+    </div>
+  </div>
+</main>
+<%- include('../partials/footer') %>
