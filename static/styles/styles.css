@@ -1,3 +1,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    --color-primary-dark: #384B70; /* Navbar background */
+    --color-primary-light: #507687; /* Links, focus borders */
+
+    --color-primary-white: #EDEDED;
+    --color-primary-accent: #DA0037;
+    --color-primary-black: #171717;
+
+
+    --color-background: #F4F6FF; /* Page background */
+    --color-button: #10375C; /* Button background */
+  }
+
+  .bg-primary-white{
+    background-color: var(--color-background);
+  }
+  .bg-primary-accent{
+    background-color: var(--color-primary-accent);
+  }
+  .text-primary-accent{
+    color: var(--color-primary-accent);
+  }
+  .bg-primary-dark{
+    background-color: var(--color-primary-black);
+  }

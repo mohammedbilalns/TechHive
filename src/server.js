@@ -12,14 +12,8 @@ app.set("view engine", "ejs")
 app.use(express.static('static'))
 
 app.get('/', (req,res)=>{
-    res.render("./user/home.ejs")
+    res.render("./user/login.ejs")
 })
-
-
-
-
-
-
 
 
 
