@@ -14,7 +14,6 @@ const loadSignup = (req, res)=>{
 const registerUser = async (req, res)=>{
 
     try{
-
         const {username , phonenumber, email, password} = req.body
         console.log(req.body)
         const user = await userSchema.findOne({email})
@@ -36,6 +35,8 @@ const registerUser = async (req, res)=>{
         res.render('/user/signup', {message:"Something went wrong ", alertType:"error"})
     }
 }
+
+
 
 const loadForgotpassword = (req,res)=>{
     res.render('user/forgotpassword')
