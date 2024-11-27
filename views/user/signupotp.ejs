@@ -1,23 +1,17 @@
 <%- include('../partials/header') %>
-<main class="py-12 flex justify-center items-center">
-  <div class="bg-primary-white rounded-lg shadow-lg flex flex-col lg:flex-row overflow-hidden max-w-4xl w-full">
-    <!-- Image Section -->
-    <div class="bg-blue-100 p-8 flex justify-center items-center">
-      <img alt="Illustration of OTP verification" src="./images/otp.png" class="object-cover max-w-full h-auto"/>
-    </div>
+<main class="py-12 flex flex-1 justify-center items-center">
+  <div class="bg-primary-white rounded-lg shadow-lg max-w-md w-full p-6">
     <!-- Form Section -->
-    <div class="bg-gray-50 p-6 md:p-12 flex-1">
-      <p class="text-2xl font-semibold text-gray-800 mb-2">Verify Your Email</p>
-      <p class="text-gray-600 mb-6">Enter the 6-digit code sent to your email</p>
+    <div class="bg-gray-50 flex flex-col items-center text-center">
+      <p class="text-2xl font-semibold text-gray-800 mb-4">OTP Verification</p>
+      <p class="text-gray-600 mb-6">Enter the 4-digit verification code sent to your email</p>
       <div class="flex gap-2 mb-6">
-        <input type="text" maxlength="1" class="w-12 h-12 border text-center text-xl rounded-md" />
-        <input type="text" maxlength="1" class="w-12 h-12 border text-center text-xl rounded-md" />
-        <input type="text" maxlength="1" class="w-12 h-12 border text-center text-xl rounded-md" />
-        <input type="text" maxlength="1" class="w-12 h-12 border text-center text-xl rounded-md" />
-        <input type="text" maxlength="1" class="w-12 h-12 border text-center text-xl rounded-md" />
-        <input type="text" maxlength="1" class="w-12 h-12 border text-center text-xl rounded-md" />
+        <input type="text" maxlength="1" class="otp-input w-12 h-12 border text-center text-xl rounded-md" />
+        <input type="text" maxlength="1" class="otp-input w-12 h-12 border text-center text-xl rounded-md" />
+        <input type="text" maxlength="1" class="otp-input w-12 h-12 border text-center text-xl rounded-md" />
+        <input type="text" maxlength="1" class="otp-input w-12 h-12 border text-center text-xl rounded-md" />
       </div>
-      <button type="submit" class="w-full py-2 mb-4 text-white bg-primary-accent rounded-md">Verify</button>
+      <button type="submit" class="w-full py-2 mb-4 text-white bg-primary-accent rounded-md">Verify Code</button>
       <div class="text-center">
         <span class="text-gray-600">Didn't receive code?</span>
         <button class="text-primary-accent ml-2">Resend</button>
@@ -25,4 +19,46 @@
     </div>
   </div>
 </main>
+
+<script>
+  // JavaScript to handle moving to the next input and limit OTP to 4 digits
+  const otpInputs = document.querySelectorAll('.otp-input');
+
+  otpInputs.forEach((input, index) => {
+    input.addEventListener('input', (event) => {
+      const current = event.target;
+      const next = otpInputs[index + 1];
+      const prev = otpInputs[index - 1];
+
+      // Move to the next input if the current input is filled
+      if (current.value.length === 1 && next) {
+        next.focus();
+      }
+
+      // Allow backspace to move to the previous input
+      current.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && current.value === '' && prev) {
+          prev.focus();
+        }
+      });
+    });
+  });
+
+  // Prevent entering more than one digit
+  otpInputs.forEach((input) => {
+    input.addEventListener('keydown', (event) => {
+      if (event.key >= '0' && event.key <= '9') {
+        // Allow digit input
+        return true;
+      } else if (event.key === 'Backspace') {
+        // Allow backspace
+        return true;
+      } else {
+        // Prevent other inputs
+        event.preventDefault();
+      }
+    });
+  });
+</script>
+
 <%- include('../partials/footer') %>

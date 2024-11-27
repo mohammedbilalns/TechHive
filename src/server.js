@@ -22,7 +22,7 @@ app.use(express.static('static')) // static Middlewares
 app.use(express.json()) // parse json 
 app.use(express.urlencoded({ extended: false })) // parse req body
 
-app.use('/user', userRoutes) // user route 
+app.use('/', userRoutes) // user route 
 app.use('/admin', adminRoutes) // admin route 
 
 
