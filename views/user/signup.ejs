@@ -7,23 +7,123 @@
            class="object-cover max-w-full h-auto"/>
     </div>
     <!-- Form Section -->
-     
     <div class="bg-gray-50 p-6 md:p-12 flex-1">
       <button type="submit" class="flex border items-center justify-center rounded-md py-2 mb-6 bg-white text-black w-full">
         <img alt="Google logo" src="images/google.svg" class="mr-3"/>
-        Sign Up  with Google
+        Sign Up with Google
       </button>
-      <form method="post" action="/user/signup"  class="space-y-4">
-      <p class="text-2xl font-semibold text-gray-800 mb-2">Create an Account</p>
-      <p class="text-gray-600 mb-6">Enter your details below</p>
-      <input type="text" placeholder="username" name="username" class="border w-full mb-4 px-3 py-2 rounded-md"/>
-      <input type="tel" placeholder="Phone Number" name="phonenumber" class="border w-full mb-4 px-3 py-2 rounded-md"/>
-      <input type="email" placeholder="Email" name="email" class="border w-full mb-4 px-3 py-2 rounded-md"/>
-      <input type="password" placeholder="Password" name="password" class="border w-full mb-6 px-3 py-2 rounded-md"/>
-      <button type="submit" class="w-full py-2 mb-2 text-white bg-primary-accent rounded-md">Log In</button>
-      <a href="/login" class="text-right text-sm text-primary-accent mb-4 block"> Already have account? login</a>
-        </form>
+      <form id="signupForm" method="post" action="/signup" class="space-y-4" novalidate>
+        <p class="text-2xl font-semibold text-gray-800 mb-2">Create an Account</p>
+        <p class="text-gray-600 mb-6">Enter your details below</p>
+        <input 
+          type="text" 
+          id="username" 
+          placeholder="Username" 
+          name="username" 
+          class="border w-full mb-4 px-3 py-2 rounded-md" 
+        />
+        <input 
+          type="tel" 
+          id="phonenumber" 
+          placeholder="Phone Number" 
+          name="phonenumber" 
+          class="border w-full mb-4 px-3 py-2 rounded-md" 
+        />
+        <input 
+          type="email" 
+          id="email" 
+          placeholder="Email" 
+          name="email" 
+          class="border w-full mb-4 px-3 py-2 rounded-md" 
+        />
+        <div class="relative w-full mb-6">
+          <input 
+            type="password" 
+            id="password" 
+            placeholder="Password" 
+            name="password" 
+            class="border w-full px-3 py-2 rounded-md pr-10" 
+          />
+          <span 
+            class="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-600"
+            id="togglePassword"
+          >
+            👁
+          </span>
+        </div>
+        <p class="text-xs text-gray-500 mb-4">
+          Password must contain at least 8 characters, including uppercase, lowercase letters, numbers, and special characters.
+        </p>
+        <div id="errorMessage" class="text-red-500 text-sm mb-4 hidden"></div>
+        <button type="submit" class="w-full py-2 mb-2 text-white bg-primary-accent rounded-md">Sign Up</button>
+      </form>
+      <a href="/login" class="text-right text-sm text-primary-accent mb-4 block">Already have an account? Login</a>
     </div>
   </div>
 </main>
 <%- include('../partials/footer') %>
+
+<script>
+  // Toggle password visibility
+  function togglePasswordVisibility(inputId, toggleId) {
+    const input = document.getElementById(inputId);
+    const toggle = document.getElementById(toggleId);
+
+    toggle.addEventListener('click', () => {
+      if (input.type === 'password') {
+        input.type = 'text';
+        toggle.textContent = '✖'; // Change icon to "hide"
+      } else {
+        input.type = 'password';
+        toggle.textContent = '👁'; // Change icon to "show"
+      }
+    });
+  }
+
+  // Initialize toggle for the password field
+  togglePasswordVisibility('password', 'togglePassword');
+
+  // Form validation
+  document.getElementById('signupForm').addEventListener('submit', function(event) {
+    const username = document.getElementById('username').value.trim();
+    const phonenumber = document.getElementById('phonenumber').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const errorMessage = document.getElementById('errorMessage');
+
+    // Reset error message
+    errorMessage.textContent = '';
+    errorMessage.classList.add('hidden');
+
+    // Regular expression for password validation
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    if (!username) {
+      errorMessage.textContent = 'Username is required.';
+      errorMessage.classList.remove('hidden');
+      event.preventDefault();
+      return;
+    }
+
+    if (!/^\d{10}$/.test(phonenumber)) {
+      errorMessage.textContent = 'Phone number must be 10 digits.';
+      errorMessage.classList.remove('hidden');
+      event.preventDefault();
+      return;
+    }
+
+    if (!email.includes('@') || !email.includes('.')) {
+      errorMessage.textContent = 'Please enter a valid email address.';
+      errorMessage.classList.remove('hidden');
+      event.preventDefault();
+      return;
+    }
+
+    if (!passwordRegex.test(password)) {
+      errorMessage.textContent = 'Password must be at least 8 characters long, with uppercase, lowercase, a number, and a special character.';
+      errorMessage.classList.remove('hidden');
+      event.preventDefault();
+      return;
+    }
+  });
+</script>

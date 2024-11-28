@@ -12,15 +12,62 @@
         <img alt="Google logo" src="images/google.svg" class="mr-3"/>
         Continue with Google
       </button>
-	 
+      <form action="/login" id="userlogin" method="post">
       <p class="text-2xl font-semibold text-gray-800 mb-2">Log in to TechHive</p>
       <p class="text-gray-600 mb-6">Enter your details below</p>
-      <input type="text" placeholder="Email or Phone Number" class="border w-full mb-4 px-3 py-2 rounded-md"/>
-      <input type="password" placeholder="Password" class="border w-full mb-6 px-3 py-2 rounded-md"/>
+      <input type="text" name="email" placeholder="Email" class="border w-full mb-4 px-3 py-2 rounded-md"/>
+      <input type="password" name="password" placeholder="Password" class="border w-full mb-6 px-3 py-2 rounded-md"/>
       <button type="submit" class="w-full py-2 mb-2 text-white bg-primary-accent rounded-md">Log In</button>
+      </form>
       <a href="#" class="text-right text-sm text-primary-accent mb-4 block">Forget Password?</a>
       <a href="/signup" class="text-center text-blue-600 block">Sign Up</a>
     </div>
   </div>
 </main>
 <%- include('../partials/footer') %>
+
+
+<script>
+  document.getElementById('userlogin').addEventListener('submit', function (event) {
+    const email = document.querySelector('input[name="email"]');
+    const password = document.querySelector('input[name="password"]');
+    let isValid = true;
+
+    // Clear any previous error messages
+    document.querySelectorAll('.error').forEach(el => el.remove());
+
+    // Email validation
+    if (!email.value.trim()) {
+      const error = document.createElement('p');
+      error.textContent = 'Email is required.';
+      error.className = 'text-red-500 text-sm error';
+      email.parentNode.appendChild(error);
+      isValid = false;
+    } else if (!/^\S+@\S+\.\S+$/.test(email.value)) {
+      const error = document.createElement('p');
+      error.textContent = 'Enter a valid email address.';
+      error.className = 'text-red-500 text-sm error';
+      email.parentNode.appendChild(error);
+      isValid = false;
+    }
+
+    // Password validation
+    if (!password.value.trim()) {
+      const error = document.createElement('p');
+      error.textContent = 'Password is required.';
+      error.className = 'text-red-500 text-sm error';
+      password.parentNode.appendChild(error);
+      isValid = false;
+    } else if (password.value.length < 6) {
+      const error = document.createElement('p');
+      error.textContent = 'Password must be at least 6 characters.';
+      error.className = 'text-red-500 text-sm error';
+      password.parentNode.appendChild(error);
+      isValid = false;
+    }
+
+    // Prevent form submission if validation fails
+    if (!isValid) event.preventDefault();
+  });
+</script>
+

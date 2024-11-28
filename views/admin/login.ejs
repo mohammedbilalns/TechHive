@@ -4,19 +4,78 @@
     <!-- Image Section -->
     <div class="bg-blue-100 p-8 flex justify-center items-center">
       <img alt="Illustration of a laptop with a clock display and office supplies" src="./images/login.png"
-           class="object-cover max-w-full h-auto"/>
+           class="object-cover max-w-full h-auto" />
     </div>
     <!-- Form Section -->
-    <div class="bg-gray-50 p-6 md:p-12 flex-1">
-  
-	  
-      <p class="text-2xl font-semibold text-gray-800 mb-2">Admin Login</p>
+    <form id="adminLoginForm" action="/admin/login" method="post" novalidate>
+      <div class="bg-gray-50 p-6 md:p-12 flex-1">
+        <p class="text-2xl font-semibold text-gray-800 mb-2">Admin Login</p>
 
-      <input type="text" placeholder="Email or Phone Number" class="border w-full mb-4 px-3 py-2 rounded-md"/>
-      <input type="password" placeholder="Password" class="border w-full mb-6 px-3 py-2 rounded-md"/>
-      <button type="submit" class="w-full py-2 mb-2 text-white bg-primary-accent rounded-md">Log In</button>
-    
-    </div>
+        <input
+          type="text"
+          id="email"
+          name="email"
+          placeholder="Email"
+          class="border w-full mb-4 px-3 py-2 rounded-md"
+          required
+        />
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Password"
+          class="border w-full mb-6 px-3 py-2 rounded-md"
+          required
+        />
+
+        <!-- Error message container -->
+        <div id="errorMessages" class="text-red-500 text-sm mb-4 hidden">
+          <p id="emailError">Please enter a valid email.</p>
+          <p id="passwordError">Password is required.</p>
+        </div>
+
+        <button type="submit" class="w-full py-2 mb-2 text-white bg-primary-accent rounded-md">
+          Log In
+        </button>
+      </div>
+    </form>
   </div>
 </main>
 <%- include('../partials/footer') %>
+
+<script>
+  document.getElementById('adminLoginForm').addEventListener('submit', function (event) {
+    let isValid = true;
+
+    // Clear previous error messages
+    const errorMessages = document.getElementById('errorMessages');
+    errorMessages.classList.add('hidden');
+    document.getElementById('emailError').classList.add('hidden');
+    document.getElementById('passwordError').classList.add('hidden');
+
+    // Validate email
+    const email = document.getElementById('email');
+    const emailError = document.getElementById('emailError');
+    const emailPattern = /^[^@]+@[^@]+\.[a-zA-Z]{2,}$/;
+
+    if (!email.value.trim() || !emailPattern.test(email.value)) {
+      emailError.classList.remove('hidden');
+      isValid = false;
+    }
+
+    // Validate password
+    const password = document.getElementById('password');
+    const passwordError = document.getElementById('passwordError');
+
+    if (!password.value.trim()) {
+      passwordError.classList.remove('hidden');
+      isValid = false;
+    }
+
+    // Show error messages if validation fails
+    if (!isValid) {
+      errorMessages.classList.remove('hidden');
+      event.preventDefault();
+    }
+  });
+</script>
