@@ -14,7 +14,7 @@ router.get('/login',auth.isLogin, userController.loadLogin)
 router.get('/signup', auth.isLogin, userController.loadSignup)
 router.post('/signup', userController.registerUser)
 
-router.get('/verify-otp',auth.isLogin, userController.loadVerifyOtp )
+//router.get('/verify-otp',auth.isLogin, userController.loadVerifyOtp )
 //router.post('/verify-otp', auth.isLogin, userController.verifyOTP) // todo 
 //router.post('/resend-otp',  userController.resendOTP)// todo 
 

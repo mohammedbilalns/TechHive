@@ -20,18 +20,10 @@ const userSchema = new mongoose.Schema({
     },
     status:{
         type: String , 
-        enum: ["active", "blocked"]
+        enum: ["pending","active", "blocked"]
     },
-    isVerified: {
-        type: Boolean,
-        default: false,
-    },
-    otp: String,
-      otpExpiry: {
-        type: Date,
-        index: { expires: '1m' }, 
-    }
+
 })
 
-
 export default mongoose.model("users", userSchema)
+
