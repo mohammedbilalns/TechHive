@@ -4,61 +4,129 @@
     <!-- Form Section -->
     <div class="bg-gray-50 flex flex-col items-center text-center">
       <p class="text-2xl font-semibold text-gray-800 mb-4">OTP Verification</p>
-      <p class="text-gray-600 mb-6">Enter the 4-digit verification code sent to your email</p>
-      <div class="flex gap-2 mb-6">
-        <input type="text" maxlength="1" class="otp-input w-12 h-12 border text-center text-xl rounded-md" />
-        <input type="text" maxlength="1" class="otp-input w-12 h-12 border text-center text-xl rounded-md" />
-        <input type="text" maxlength="1" class="otp-input w-12 h-12 border text-center text-xl rounded-md" />
-        <input type="text" maxlength="1" class="otp-input w-12 h-12 border text-center text-xl rounded-md" />
+      <p class="text-gray-600 mb-2">Enter the 4-digit verification code sent to your email</p>
+      <div id="timer" class="text-sm text-gray-600 mb-6">
+        Time remaining: <span id="timeLeft">01:00</span>
       </div>
-      <button type="submit" class="w-full py-2 mb-4 text-white bg-primary-accent rounded-md">Verify Code</button>
+      <form id="otpForm" action="/verify-otp" method="POST">
+        <div class="flex gap-2 mb-6">
+          <input type="text" maxlength="1" class="otp-input w-12 h-12 border text-center text-xl rounded-md" name="otp1" />
+          <input type="text" maxlength="1" class="otp-input w-12 h-12 border text-center text-xl rounded-md" name="otp2" />
+          <input type="text" maxlength="1" class="otp-input w-12 h-12 border text-center text-xl rounded-md" name="otp3" />
+          <input type="text" maxlength="1" class="otp-input w-12 h-12 border text-center text-xl rounded-md" name="otp4" />
+        </div>
+        <button type="submit" class="w-full py-2 mb-4 text-white bg-primary-accent rounded-md">Verify Code</button>
+      </form>
       <div class="text-center">
         <span class="text-gray-600">Didn't receive code?</span>
-        <button class="text-primary-accent ml-2">Resend</button>
+        <button id="resendButton" class="text-primary-accent ml-2" disabled>
+          Resend (<span id="resendTime">60</span>s)
+        </button>
       </div>
     </div>
   </div>
 </main>
 
 <script>
-  // JavaScript to handle moving to the next input and limit OTP to 4 digits
-  const otpInputs = document.querySelectorAll('.otp-input');
+// Handle OTP input
+const otpInputs = document.querySelectorAll('.otp-input');
+const otpForm = document.getElementById('otpForm');
+const resendButton = document.getElementById('resendButton');
+const resendTimeSpan = document.getElementById('resendTime');
+const timeLeftSpan = document.getElementById('timeLeft');
 
-  otpInputs.forEach((input, index) => {
-    input.addEventListener('input', (event) => {
-      const current = event.target;
-      const next = otpInputs[index + 1];
-      const prev = otpInputs[index - 1];
+// Timer functionality
+let timeLeft = 60; // 60 seconds = 1 minute
 
-      // Move to the next input if the current input is filled
-      if (current.value.length === 1 && next) {
-        next.focus();
+function updateTimer() {
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+  timeLeftSpan.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  resendTimeSpan.textContent = timeLeft;
+  
+  if (timeLeft === 0) {
+    // Redirect to signup page when OTP expires
+    window.location.href = '/signup?message=OTP expired. Please try again.';
+    return;
+  }
+  
+  timeLeft--;
+}
+
+// Start the timer
+const timerInterval = setInterval(updateTimer, 1000);
+
+// Enable resend button after timeout
+setTimeout(() => {
+  resendButton.disabled = false;
+  resendButton.textContent = 'Resend';
+}, 60000);
+
+// Handle OTP input
+otpInputs.forEach((input, index) => {
+  input.addEventListener('input', (event) => {
+    const current = event.target;
+    const next = otpInputs[index + 1];
+    const prev = otpInputs[index - 1];
+
+    // Clear non-digit input
+    current.value = current.value.replace(/[^0-9]/g, '');
+
+    // Move to next input if current is filled
+    if (current.value.length === 1 && next) {
+      next.focus();
+    }
+
+    // Submit form if all inputs are filled
+    if (index === otpInputs.length - 1 && current.value.length === 1) {
+      const allFilled = Array.from(otpInputs).every(input => input.value.length === 1);
+      if (allFilled) {
+        otpForm.submit();
       }
+    }
+  });
 
-      // Allow backspace to move to the previous input
-      current.addEventListener('keydown', (e) => {
-        if (e.key === 'Backspace' && current.value === '' && prev) {
-          prev.focus();
+  // Handle backspace
+  input.addEventListener('keydown', (e) => {
+    const current = e.target;
+    const prev = otpInputs[index - 1];
+
+    if (e.key === 'Backspace') {
+      if (current.value === '' && prev) {
+        e.preventDefault();
+        prev.value = '';
+        prev.focus();
+      } else {
+        current.value = '';
+      }
+    }
+  });
+});
+
+// Handle resend
+resendButton.addEventListener('click', async () => {
+  if (!resendButton.disabled) {
+    try {
+      const response = await fetch('/resend-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
         }
       });
-    });
-  });
-
-  // Prevent entering more than one digit
-  otpInputs.forEach((input) => {
-    input.addEventListener('keydown', (event) => {
-      if (event.key >= '0' && event.key <= '9') {
-        // Allow digit input
-        return true;
-      } else if (event.key === 'Backspace') {
-        // Allow backspace
-        return true;
+      
+      if (response.ok) {
+        // Reset timer and disable resend button
+        timeLeft = 60;
+        resendButton.disabled = true;
+        resendButton.innerHTML = `Resend (<span id="resendTime">60</span>s)`;
       } else {
-        // Prevent other inputs
-        event.preventDefault();
+        alert('Failed to resend OTP. Please try again.');
       }
-    });
-  });
+    } catch (error) {
+      console.error('Error resending OTP:', error);
+      alert('Failed to resend OTP. Please try again.');
+    }
+  }
+});
 </script>
-
 <%- include('../partials/footer') %>

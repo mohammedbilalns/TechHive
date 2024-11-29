@@ -10,6 +10,8 @@ import session from "express-session"
 
 configDotenv()
 
+
+console.log(process.env.PORT)
 const app = express()
 const PORT = process.env.PORT
 

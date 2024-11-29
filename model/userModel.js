@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
     },
     phonenumber:{
         type:Number,
-        required: true
+   
     },
     email:{
         type:String, 
@@ -17,6 +17,19 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String, 
         required: true
+    },
+    status:{
+        type: String , 
+        enum: ["active", "blocked"]
+    },
+    isVerified: {
+        type: Boolean,
+        default: false,
+    },
+    otp: String,
+      otpExpiry: {
+        type: Date,
+        index: { expires: '1m' }, 
     }
 })
 

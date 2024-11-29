@@ -95,9 +95,6 @@
     errorMessage.textContent = '';
     errorMessage.classList.add('hidden');
 
-    // Regular expression for password validation
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
     if (!username) {
       errorMessage.textContent = 'Username is required.';
       errorMessage.classList.remove('hidden');
@@ -119,8 +116,15 @@
       return;
     }
 
-    if (!passwordRegex.test(password)) {
-      errorMessage.textContent = 'Password must be at least 8 characters long, with uppercase, lowercase, a number, and a special character.';
+    // Fixed password validation
+    const hasMinLength = password.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};:'",.<>/?\\|]/.test(password);
+
+    if (!hasMinLength || !hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecialChar) {
+      errorMessage.textContent = 'Password must be at least 8 characters long and include uppercase, lowercase, numbers, and special characters.';
       errorMessage.classList.remove('hidden');
       event.preventDefault();
       return;
