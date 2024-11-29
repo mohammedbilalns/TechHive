@@ -15,7 +15,8 @@ router.get('/signup', auth.isLogin, userController.loadSignup)
 router.post('/signup', userController.registerUser)
 
 //router.get('/verify-otp',auth.isLogin, userController.loadVerifyOtp )
-//router.post('/verify-otp', auth.isLogin, userController.verifyOTP) // todo 
+
+router.post('/verify-otp', auth.isLogin, userController.verifyOTP) 
 //router.post('/resend-otp',  userController.resendOTP)// todo 
 
 
@@ -30,6 +31,7 @@ router.post('/signup', userController.registerUser)
 //router.get('/resetpassword', auth.isLogin, userController.loadResetpassword)
 //router.get('/forgotpasswordotp', auth.isLogin, userController.loadResetpasswordotp)
 //router.get('/signupotp', auth.isLogin , userController.loadSignupotp)
-//router.get('/home', userController.loadHome)
+router.get('/home',auth.checkSession,  userController.loadHome)
+
 
 export default router

@@ -15,6 +15,7 @@ const verifyLogin = (req, res)=>{
 
 }   //todo 
 
+
 // ----User Signup---- 
 const loadSignup = (req, res)=>{
     res.render('user/signup')
@@ -58,6 +59,7 @@ const registerUser = async (req, res) => {
         // Store OTP and its expiry in session
         req.session.userOTP = {
             otp,
+            username,
             email,
             expiryTime: Date.now() + 60000, // 1 minute from now
             userId: newUser._id
@@ -72,7 +74,28 @@ const registerUser = async (req, res) => {
     }
 }
 
+const verifyOTP = (req,res)=>{
 
+    let userOTP = Object.values(req.body).join('')
+   
+    console.log("session otp" +req.session.userOTP.otp)
+   console.log("userOTP:"+userOTP )
+
+    console.log("isvalid"+req.session.userOTP.otp== userOTP)
+    if(userOTP == req.session.userOTP.otp){
+
+        const username = req.session.userOTP.username 
+        req.session.user = {
+            username
+        }
+        req.session.userOTP = undefined
+        res.render("user/home")
+
+    }else{
+        res.render('user/signupotp',{ message: "Invalid OTP , try again ", alertType: "error" })
+    }
+
+}
 
 
 // ---- forgot password ---- todo 
@@ -90,4 +113,4 @@ const loadHome = (req, res)=>{
     res.render('user/home')
 }
 
-export default {loadLogin, loadSignup, loadForgotpassword, loadResetpassword, loadResetpasswordotp, loadHome, registerUser,}
+export default {loadLogin, loadSignup,verifyOTP ,  loadForgotpassword, loadResetpassword, loadResetpasswordotp, loadHome, registerUser,}
