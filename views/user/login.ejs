@@ -27,6 +27,7 @@
             type="text" 
             name="email" 
             placeholder="Email" 
+            value="<%= locals.email ? email : '' %>"
             class="border w-full pl-10 pr-3 py-2 rounded-md"
           />
         </div>
@@ -48,7 +49,13 @@
             <i class="fas fa-eye"></i>
           </span>
         </div>
-
+        <% if (locals.message && locals.alertType) { %>
+          <div id="alertMessage" 
+               class="mb-4 p-3 rounded-md 
+               <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
+            <%= message %>
+          </div>
+        <% } %>
         <button type="submit" class="w-full py-2 mb-2 text-white bg-primary-accent rounded-md">Log In</button>
       </form>
       <a href="#" class="text-right text-sm text-primary-accent mb-4 block">Forget Password?</a>
@@ -59,59 +66,33 @@
 <%- include('../partials/footer') %>
 
 <script>
-  // Toggle password visibility
-  const togglePassword = document.getElementById('togglePassword');
-  const passwordInput = document.querySelector('input[name="password"]');
-  
-  togglePassword.addEventListener('click', () => {
-    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-    passwordInput.setAttribute('type', type);
-    
-    const icon = togglePassword.querySelector('i');
-    icon.classList.toggle('fa-eye');
-    icon.classList.toggle('fa-eye-slash');
-  });
+ document.getElementById('userlogin').addEventListener('submit', function (event) {
+  const email = document.querySelector('input[name="email"]');
+  const password = document.querySelector('input[name="password"]');
+  const form = document.getElementById('userlogin');
+  const loginButton = form.querySelector('button[type="submit"]');
+  let isValid = true;
 
-  // Form validation
-  document.getElementById('userlogin').addEventListener('submit', function (event) {
-    const email = document.querySelector('input[name="email"]');
-    const password = document.querySelector('input[name="password"]');
-    let isValid = true;
-    
-    // Clear any previous error messages
-    document.querySelectorAll('.error').forEach(el => el.remove());
-    
-    // Email validation
-    if (!email.value.trim()) {
-      const error = document.createElement('p');
-      error.textContent = 'Email is required.';
-      error.className = 'text-red-500 text-sm error';
-      email.parentNode.appendChild(error);
-      isValid = false;
-    } else if (!/^\S+@\S+\.\S+$/.test(email.value)) {
-      const error = document.createElement('p');
-      error.textContent = 'Enter a valid email address.';
-      error.className = 'text-red-500 text-sm error';
-      email.parentNode.appendChild(error);
-      isValid = false;
-    }
+  // Clear any previous error messages
+  document.querySelectorAll('.error').forEach(el => el.remove());
 
-    // Password validation
-    if (!password.value.trim()) {
-      const error = document.createElement('p');
-      error.textContent = 'Password is required.';
-      error.className = 'text-red-500 text-sm error';
-      password.parentNode.appendChild(error);
-      isValid = false;
-    } else if (password.value.length < 6) {
-      const error = document.createElement('p');
-      error.textContent = 'Password must be at least 6 characters.';
-      error.className = 'text-red-500 text-sm error';
-      password.parentNode.appendChild(error);
-      isValid = false;
-    }
+  // Email validation
+  if (!email.value.trim()) {
+    const error = document.createElement('p');
+    error.textContent = 'Email is required.';
+    error.className = 'text-red-500 text-sm error text-center mb-4';
+    loginButton.parentNode.insertBefore(error, loginButton);
+    isValid = false;
+  } else if (!/^\S+@\S+\.\S+$/.test(email.value)) {
+    const error = document.createElement('p');
+    error.textContent = 'Enter a valid email address.';
+    error.className = 'text-red-500 text-sm error text-center mb-4';
+    loginButton.parentNode.insertBefore(error, loginButton);
+    isValid = false;
+  }
 
-    // Prevent form submission if validation fails
-    if (!isValid) event.preventDefault();
-  });
+  // Prevent form submission if validation fails
+  if (!isValid) event.preventDefault();
+});
+
 </script>

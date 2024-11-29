@@ -15,10 +15,10 @@ const verifyLogin = async (req, res)=>{
     try{
         const {email, password} = req.body
         const user = await userSchema.findOne({email})
-        if(!user) return res.render('/user/login', {message:"User does not exists", alertType:"error"})
+        if(!user) return res.render('user/login', {message:"User does not exists", alertType:"error"})
         
         const isMatch = await bcrypt.compare(password, user.password)
-        if(!isMatch) return res.render("/user/login",  {message:"Incorrect Password", alertType:"error"})
+        if(!isMatch) return res.render("user/login",  {message:"Incorrect Password", alertType:"error",email:email})
             req.session.user = {
                 id: user._id,
                 username: user.username,
@@ -35,7 +35,7 @@ const verifyLogin = async (req, res)=>{
 
 
 
-}   //todo 
+}   //verify the login form 
 
 
 // ----User Signup---- 
