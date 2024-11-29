@@ -9,7 +9,7 @@ router.use(express.static('static'))
 
 // user login 
 router.get('/login',auth.isLogin, userController.loadLogin)
-//router.post('/login', userController.verifyLogin )
+router.post('/login', userController.verifyLogin )
 // user signup 
 router.get('/signup', auth.isLogin, userController.loadSignup)
 router.post('/signup', userController.registerUser)

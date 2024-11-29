@@ -11,7 +11,29 @@ config()
 const loadLogin = (req, res)=>{
     res.render('user/login')
 }   // load user login page 
-const verifyLogin = (req, res)=>{
+const verifyLogin = async (req, res)=>{
+    try{
+        const {email, password} = req.body
+        const user = await userSchema.findOne({email})
+        if(!user) return res.render('/user/login', {message:"User does not exists", alertType:"error"})
+        
+        const isMatch = await bcrypt.compare(password, user.password)
+        if(!isMatch) return res.render("/user/login",  {message:"Incorrect Password", alertType:"error"})
+            req.session.user = {
+                id: user._id,
+                username: user.username,
+                email: user.email
+            };
+
+        res.render('user/home')
+
+    }catch(error){
+
+        log.red("ERROR",error)
+        res.render('user/login', {message:"Something went wrong", alertType:"error"})
+    }
+
+
 
 }   //todo 
 
@@ -72,7 +94,7 @@ const registerUser = async (req, res) => {
         log.red('ERROR', error)
         res.render('user/signup', { message: "Something went wrong ", alertType: "error" })
     }
-}
+} //register user with the form details 
 
 const verifyOTP = (req,res)=>{
 
@@ -95,7 +117,7 @@ const verifyOTP = (req,res)=>{
         res.render('user/signupotp',{ message: "Invalid OTP , try again ", alertType: "error" })
     }
 
-}
+} // verify otp to redirect to the home 
 
 
 // ---- forgot password ---- todo 
@@ -113,4 +135,4 @@ const loadHome = (req, res)=>{
     res.render('user/home')
 }
 
-export default {loadLogin, loadSignup,verifyOTP ,  loadForgotpassword, loadResetpassword, loadResetpasswordotp, loadHome, registerUser,}
+export default {loadLogin, verifyLogin, loadSignup,verifyOTP ,  loadForgotpassword, loadResetpassword, loadResetpasswordotp, loadHome, registerUser,}
