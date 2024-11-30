@@ -55,7 +55,7 @@ const registerUser = async (req, res) => {
                 { email },
                 { phonenumber }
             ]
-        })
+        }) 
 
         if (existingUser) {
             const message = existingUser.email === email 
@@ -102,25 +102,34 @@ const registerUser = async (req, res) => {
     }
 } //register user with the form details 
 
-const verifyOTP = (req,res)=>{
+const verifyOTP = async (req,res)=>{
+    let {otp1,otp2, otp3, otp4, timeRem} = req.body 
 
-    let userOTP = Object.values(req.body).join('')
+    let userOTP = otp1 + otp2 + otp3+ otp4 
    
+    console.log(typeof userOTP)
     console.log("session otp" +req.session.userOTP.otp)
    console.log("userOTP:"+userOTP )
 
     console.log("isvalid"+req.session.userOTP.otp== userOTP)
     if(userOTP == req.session.userOTP.otp){
 
-        const username = req.session.userOTP.username 
+        
+        const {username,email , userId} = req.session.userOTP 
+        await userSchema.findByIdAndUpdate(userId, {
+            status: "active"
+        }); // update status of the user after otp verification 
+
         req.session.user = {
-            username
+            username,email 
         }
         req.session.userOTP = undefined
         res.render("user/home")
 
     }else{
-        res.render('user/signupotp',{ message: "Invalid OTP , try again ", alertType: "error" })
+       
+
+        res.render('user/signupotp',{ message: "Invalid OTP , try again ", alertType: "error",timeRem:parseInt(timeRem) })
     }
 
 } // verify otp to redirect to the home 
