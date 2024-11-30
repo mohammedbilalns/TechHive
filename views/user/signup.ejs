@@ -20,6 +20,7 @@
           type="text" 
           id="username" 
           placeholder="Username" 
+          value="<%= locals.username ? username : '' %>"
           name="username" 
           class="border w-full mb-3 px-3 py-2 rounded-md" 
         />
@@ -27,6 +28,7 @@
           type="tel" 
           id="phonenumber" 
           placeholder="Phone Number" 
+          value="<%= locals.phonenumber ? phonenumber : '' %>"
           name="phonenumber" 
           class="border w-full mb-3 px-3 py-2 rounded-md" 
         />
@@ -34,6 +36,7 @@
           type="email" 
           id="email" 
           placeholder="Email" 
+          value="<%= locals.email ? email : '' %>"
           name="email" 
           class="border w-full mb-3 px-3 py-2 rounded-md" 
         />

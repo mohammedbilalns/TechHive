@@ -61,7 +61,13 @@ const registerUser = async (req, res) => {
             const message = existingUser.email === email 
                 ? "Email already registered" 
                 : "Phone number already registered"
-            return res.render('user/signup', { message, alertType: "error" })
+                return res.render('user/signup', {
+                    message, 
+                    alertType: "error", 
+                    username, 
+                    email:  email,
+                    phonenumber:  phonenumber
+                });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10)
