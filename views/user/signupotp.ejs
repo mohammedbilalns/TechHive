@@ -33,72 +33,52 @@
     </div>
   </div>
 </main>
-
 <%- include('../partials/footer') %>
 
-
-
 <script>
-  // Handle OTP input
   const otpInputs = document.querySelectorAll('.otp-input');
   const otpForm = document.getElementById('otpForm');
   const resendButton = document.getElementById('resendButton');
   const resendTimeSpan = document.getElementById('resendTime');
   const timeLeftSpan = document.getElementById('timeLeft');
-  
-  // Timer functionality
-  let timeLeft = 60; // 60 seconds = 1 minute
-  let timerInterval;
-  
-  function updateTimer() {
-    const minutes = Math.floor(timeLeft / 60);
-    const seconds = timeLeft % 60;
-    timeLeftSpan.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    resendTimeSpan.textContent = timeLeft;
-    
-    if (timeLeft === 0) {
-      // Stop the timer
+
+  let timeLeft = parseInt(localStorage.getItem('otpTimer')) || 60;
+
+  const updateTimer = () => {
+    if (timeLeft > 0) {
+      timeLeft--;
+      const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+      const seconds = String(timeLeft % 60).padStart(2, '0');
+      timeLeftSpan.textContent = `${minutes}:${seconds}`;
+      resendTimeSpan.textContent = timeLeft;
+      localStorage.setItem('otpTimer', timeLeft);
+    } else {
       clearInterval(timerInterval);
-      
-      // Disable OTP inputs
-      otpInputs.forEach(input => input.disabled = true);
-      
-      // Show OTP expired message
-      timeLeftSpan.textContent = 'OTP Expired';
-      timeLeftSpan.classList.add('text-red-500');
-      
-      // Enable resend button
       resendButton.disabled = false;
-      resendButton.textContent = 'Resend';
-      
-      return;
+      localStorage.removeItem('otpTimer');
     }
-    
-    timeLeft--;
-  }
-  
-  // Start the timer
-  timerInterval = setInterval(updateTimer, 1000);
-  
-  // Initially disable resend button
-  resendButton.disabled = true;
-  
-  // Handle OTP input
+  };
+
+  let timerInterval = setInterval(updateTimer, 1000);
+
+  const initialMinutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+  const initialSeconds = String(timeLeft % 60).padStart(2, '0');
+  timeLeftSpan.textContent = `${initialMinutes}:${initialSeconds}`;
+  resendTimeSpan.textContent = timeLeft;
+
+  // OTP Input Navigation
   otpInputs.forEach((input, index) => {
     input.addEventListener('input', (event) => {
       const current = event.target;
       const next = otpInputs[index + 1];
       const prev = otpInputs[index - 1];
-  
-      // Clear non-digit input
+
       current.value = current.value.replace(/[^0-9]/g, '');
-  
-      // Move to next input if current is filled
+
       if (current.value.length === 1 && next) {
         next.focus();
       }
-  
-      // Submit form if all inputs are filled
+
       if (index === otpInputs.length - 1 && current.value.length === 1) {
         const allFilled = Array.from(otpInputs).every(input => input.value.length === 1);
         if (allFilled) {
@@ -106,12 +86,11 @@
         }
       }
     });
-  
-    // Handle backspace
+
     input.addEventListener('keydown', (e) => {
       const current = e.target;
       const prev = otpInputs[index - 1];
-  
+
       if (e.key === 'Backspace') {
         if (current.value === '' && prev) {
           e.preventDefault();
@@ -123,42 +102,23 @@
       }
     });
   });
-  
-  // Handle resend
+
+  // Resend Button Handler
   resendButton.addEventListener('click', async () => {
     if (!resendButton.disabled) {
       try {
         const response = await fetch('/resend-otp', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          }
+          headers: { 'Content-Type': 'application/json' },
         });
-        
+
         if (response.ok) {
-          // Reset timer
           timeLeft = 60;
-          
-          // Restart timer interval
+          localStorage.setItem('otpTimer', timeLeft);
+          resendButton.disabled = true;
+
           clearInterval(timerInterval);
           timerInterval = setInterval(updateTimer, 1000);
-          
-          // Reset display
-          timeLeftSpan.classList.remove('text-red-500');
-          timeLeftSpan.textContent = '01:00';
-          
-          // Disable resend button and reset its text
-          resendButton.disabled = true;
-          resendButton.innerHTML = `Resend (<span id="resendTime">60</span>s)`;
-          
-          // Re-enable OTP inputs
-          otpInputs.forEach(input => {
-            input.disabled = false;
-            input.value = ''; // Clear previous inputs
-          });
-          
-          // Focus on first input
-          otpInputs[0].focus();
         } else {
           alert('Failed to resend OTP. Please try again.');
         }
@@ -168,4 +128,8 @@
       }
     }
   });
-  </script>
+
+  window.addEventListener('beforeunload', () => {
+    clearInterval(timerInterval);
+  });
+</script>
