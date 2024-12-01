@@ -7,7 +7,8 @@ import userRoutes from "../routes/user.js"
 import adminRoutes from "../routes/admin.js"
 import connnectDb from "../db/connect.js"
 import session from "express-session"
-
+import passport from "passport"
+import '../utils/googleAuth.js'
 configDotenv()
 
 
@@ -23,6 +24,10 @@ app.use(session({secret:process.env.SESSIONSECRET, resave:false, saveUninitializ
 app.use(express.static('static')) // static Middlewares
 app.use(express.json()) // parse json 
 app.use(express.urlencoded({ extended: false })) // parse req body
+// initialize passport and session
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 app.use('/', userRoutes) // user route 
 app.use('/admin', adminRoutes) // admin route 
@@ -34,6 +39,7 @@ app.use((req, res) => {
 });
   
 
+  
 connnectDb()
 
 app.listen(PORT, ()=>{  

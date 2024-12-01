@@ -9,19 +9,21 @@
     </div>
     <!-- Form Section -->
     <div class="bg-gray-50 p-4 md:p-8 flex-1">
-      <button type="submit" class="flex border items-center justify-center rounded-md py-2 mb-4 bg-white text-black w-full">
+      <form action="/auth/google">
+      <button type="submit"  class="flex border items-center justify-center rounded-md py-2 mb-4 bg-white text-black w-full">
         <img alt="Google logo" src="images/google.svg" class="mr-3"/>
         Sign Up with Google
       </button>
+    </form>
       <form id="signupForm" method="post" action="/signup" class="space-y-3" novalidate>
         <p class="text-2xl font-semibold text-gray-800 mb-1">Create an Account</p>
         <p class="text-gray-600 mb-4">Enter your details below</p>
         <input 
           type="text" 
-          id="username" 
-          placeholder="Username" 
-          value="<%= locals.username ? username : '' %>"
-          name="username" 
+          id="fullname" 
+          placeholder="Full Name" 
+          value="<%= locals.fullname ? fullname : '' %>"
+          name="fullname" 
           class="border w-full mb-3 px-3 py-2 rounded-md" 
         />
         <input 
@@ -115,7 +117,7 @@
 
   // Form validation
   document.getElementById('signupForm').addEventListener('submit', function(event) {
-    const username = document.getElementById('username').value.trim();
+    const fullname = document.getElementById('fullname').value.trim();
     const phonenumber = document.getElementById('phonenumber').value.trim();
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
@@ -126,8 +128,8 @@
     errorMessage.textContent = '';
     errorMessage.classList.add('hidden');
 
-    if (!username) {
-      errorMessage.textContent = 'Username is required.';
+    if (!fullname) {
+      errorMessage.textContent = 'Full Name is required.';
       errorMessage.classList.remove('hidden');
       event.preventDefault();
       return;

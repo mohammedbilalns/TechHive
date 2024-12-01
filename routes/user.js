@@ -2,6 +2,7 @@ import express from "express"
 import { Router } from "express"
 import userController from "../controller/userController.js"
 import auth from "../middlewares/auth.js"
+import passport from "passport"
 
 const router = Router()
 
@@ -14,7 +15,6 @@ router.post('/login', userController.verifyLogin )
 router.get('/signup', auth.isLogin, userController.loadSignup)
 router.post('/signup', userController.registerUser)
 
-//router.get('/verify-otp',auth.isLogin, userController.loadVerifyOtp )
 
 router.post('/verify-otp', auth.isLogin, userController.verifyOTP) 
 //router.post('/resend-otp',  userController.resendOTP)// todo 
@@ -33,5 +33,12 @@ router.post('/verify-otp', auth.isLogin, userController.verifyOTP)
 //router.get('/signupotp', auth.isLogin , userController.loadSignupotp)
 router.get('/home',auth.checkSession,  userController.loadHome)
 
+router.get("/auth/google",
+    passport.authenticate("google", {
+      scope: ["email", "profile"],
+    })
+  );
+  
+router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => res.redirect('/home'));
 
 export default router

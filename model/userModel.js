@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
 
-    username:{
+    fullname:{
         type: String , 
         required:true 
     },
@@ -14,16 +14,18 @@ const userSchema = new mongoose.Schema({
         type:String, 
         required:true 
     }, 
+    googleId:{
+        type: String 
+    },
     password: {
         type: String, 
-        required: true
     },
     status:{
         type: String , 
         enum: ["pending","active", "blocked"]
     },
 
-})
+}, {timestamps: true})
 
 export default mongoose.model("users", userSchema)
 

@@ -11,31 +11,30 @@ config()
 const loadLogin = (req, res)=>{
     res.render('user/login')
 }   // load user login page 
-const verifyLogin = async (req, res)=>{
-    try{
-        const {email, password} = req.body
-        const user = await userSchema.findOne({email})
-        if(!user) return res.render('user/login', {message:"User does not exists", alertType:"error"})
-        
-        const isMatch = await bcrypt.compare(password, user.password)
-        if(!isMatch) return res.render("user/login",  {message:"Incorrect Password", alertType:"error",email:email})
-            req.session.user = {
-                id: user._id,
-                username: user.username,
-                email: user.email
-            };
+const verifyLogin = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        const user = await userSchema.findOne({ email });
+        if (!user) return res.render('user/login', { message: "User does not exist", alertType: "error" });
 
-        res.render('user/home')
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.render("user/login", { message: "Incorrect Password", alertType: "error", email: email });
 
-    }catch(error){
+        // Store user information in session after successful login
+        req.session.user = {
+            id: user._id,
+            fullname: user.fullname,
+            email: user.email
+        };
 
-        log.red("ERROR",error)
-        res.render('user/login', {message:"Something went wrong", alertType:"error"})
+        res.render('user/home');
+
+    } catch (error) {
+        log.red("ERROR", error);
+        res.render('user/login', { message: "Something went wrong", alertType: "error" });
     }
+};
 
-
-
-}   //verify the login form 
 
 
 // ----User Signup---- 
@@ -46,7 +45,7 @@ const loadSignup = (req, res)=>{
 
 const registerUser = async (req, res) => {
     try {
-        const { username, phonenumber, email, password } = req.body
+        const { fullname, phonenumber, email, password } = req.body
         const otp = authUtils.generateOTP()
 
         // Check if user exists with either email or phone number
@@ -64,7 +63,7 @@ const registerUser = async (req, res) => {
                 return res.render('user/signup', {
                     message, 
                     alertType: "error", 
-                    username, 
+                    fullname, 
                     email:  email,
                     phonenumber:  phonenumber
                 });
@@ -74,7 +73,7 @@ const registerUser = async (req, res) => {
         
         // set the user schema
         const newUser = new userSchema({
-            username,
+            fullname,
             phonenumber,
             email,
             password: hashedPassword,
@@ -87,7 +86,7 @@ const registerUser = async (req, res) => {
         // Store OTP and its expiry in session
         req.session.userOTP = {
             otp,
-            username,
+            fullname,
             email,
             expiryTime: Date.now() + 60000, // 1 minute from now
             userId: newUser._id
@@ -115,13 +114,13 @@ const verifyOTP = async (req,res)=>{
     if(userOTP == req.session.userOTP.otp){
 
         
-        const {username,email , userId} = req.session.userOTP 
+        const {fullname,email , userId} = req.session.userOTP 
         await userSchema.findByIdAndUpdate(userId, {
             status: "active"
         }); // update status of the user after otp verification 
 
         req.session.user = {
-            username,email 
+            fullname,email 
         }
         req.session.userOTP = undefined
         res.render("user/home")
@@ -134,6 +133,9 @@ const verifyOTP = async (req,res)=>{
 
 } // verify otp to redirect to the home 
 
+const resendOTP = async (req,res)=>{
+    
+}
 
 // ---- forgot password ---- todo 
 const loadForgotpassword = (req,res)=>{
