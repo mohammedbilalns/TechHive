@@ -9,14 +9,14 @@ const router = Router()
 router.use(express.static('static'))
 
 // user login 
-router.get('/login',auth.isLogin, userController.loadLogin)
-router.post('/login', userController.verifyLogin )
+router.get('/login', auth.isLogin, userController.loadLogin)
+router.post('/login', userController.verifyLogin)
 // user signup 
 router.get('/signup', auth.isLogin, userController.loadSignup)
 router.post('/signup', userController.registerUser)
 
 
-router.post('/verify-otp', auth.isLogin, userController.verifyOTP) 
+router.post('/verify-otp', auth.isLogin, userController.verifyOTP)
 //router.post('/resend-otp',  userController.resendOTP)// todo 
 
 
@@ -31,14 +31,23 @@ router.post('/verify-otp', auth.isLogin, userController.verifyOTP)
 //router.get('/resetpassword', auth.isLogin, userController.loadResetpassword)
 //router.get('/forgotpasswordotp', auth.isLogin, userController.loadResetpasswordotp)
 //router.get('/signupotp', auth.isLogin , userController.loadSignupotp)
-router.get('/home',auth.checkSession,  userController.loadHome)
+router.get('/home', auth.checkSession, userController.loadHome)
 
 router.get("/auth/google",
-    passport.authenticate("google", {
-      scope: ["email", "profile"],
-    })
-  );
-  
-router.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => res.redirect('/home'));
+  passport.authenticate("google", {
+    scope: ["email", "profile"],
+  })
+);
+
+router.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login' }),
+   (req, res) =>{
+    req.session.user = {
+      id: req.user._id,
+      fullname: req.user.fullname,
+      email: req.user.email,
+  };
+  res.redirect('/home');
+   }  );
 
 export default router
