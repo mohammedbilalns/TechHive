@@ -58,10 +58,15 @@ const registerUser = async (req, res) => {
             ]
         }) 
 
+        
         if (existingUser) {
-            const message = existingUser.email === email 
+            console.log(existingUser.password)
+            let message = existingUser.email === email 
                 ? "Email already registered" 
                 : "Phone number already registered"
+            if(existingUser.password == undefined){
+                message = "This email is already associated with an account created through Google login. Please log in with Google instead."
+            }
                 return res.render('user/signup', {
                     message, 
                     alertType: "error", 
