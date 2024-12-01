@@ -3,6 +3,7 @@ import { log } from "mercedlogger";
 import bcrypt from "bcryptjs"
 import authUtils from "../utils/authUtils.js";
 import { config } from "dotenv";
+import passport from "passport"
 
 config()
 
@@ -16,7 +17,8 @@ const verifyLogin = async (req, res) => {
         const { email, password } = req.body;
         const user = await userSchema.findOne({ email });
         if (!user) return res.render('user/login', { message: "User does not exist", alertType: "error" });
-
+        
+        if(!user.password) return res.render('user/login', {message: "It looks like your account was created using Google login. Please use the Google login option to sign in", alertType:"error"})
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.render("user/login", { message: "Incorrect Password", alertType: "error", email: email });
 
@@ -122,6 +124,7 @@ const verifyOTP = async (req,res)=>{
         req.session.user = {
             fullname,email 
         }
+
         req.session.userOTP = undefined
         res.render("user/home")
 
@@ -135,7 +138,8 @@ const verifyOTP = async (req,res)=>{
 
 const resendOTP = async (req,res)=>{
     
-}
+} // todo 
+
 
 // ---- forgot password ---- todo 
 const loadForgotpassword = (req,res)=>{
@@ -151,5 +155,7 @@ const loadResetpasswordotp = (req, res)=>{
 const loadHome = (req, res)=>{
     res.render('user/home')
 }
+
+
 
 export default {loadLogin, verifyLogin, loadSignup,verifyOTP ,  loadForgotpassword, loadResetpassword, loadResetpasswordotp, loadHome, registerUser,}
