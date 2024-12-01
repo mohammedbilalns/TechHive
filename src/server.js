@@ -1,47 +1,47 @@
 import express from "express"
 import { configDotenv } from "dotenv"
-import {log} from "mercedlogger"
+import { log } from "mercedlogger"
 import nocache from "nocache"
-
+import session from "express-session"
+import passport from "passport"
 import userRoutes from "../routes/user.js"
 import adminRoutes from "../routes/admin.js"
 import connnectDb from "../db/connect.js"
-import session from "express-session"
-import passport from "passport"
 import '../utils/googleAuth.js'
+
 configDotenv()
 
-
-console.log(process.env.PORT)
 const app = express()
 const PORT = process.env.PORT
 
 app.set("view engine", "ejs")
 
-// global middlewares 
-app.use(nocache())
-app.use(session({secret:process.env.SESSIONSECRET, resave:false, saveUninitialized:true, cookie:{maxAge:1000*60*60*24}}))
-app.use(express.static('static')) // static Middlewares
-app.use(express.json()) // parse json 
-app.use(express.urlencoded({ extended: false })) // parse req body
-// initialize passport and session
-app.use(passport.initialize());
-app.use(passport.session());
+// Middlewares
+app.use(nocache())  // Prevent caching
+app.use(session({
+    secret: process.env.SESSIONSECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { maxAge: 1000 * 60 * 60 * 24 }
+}))
+app.use(express.static('static'))
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+app.use(passport.initialize())
+app.use(passport.session())
 
+// Routes
+app.use('/', userRoutes)  
+app.use('/admin', adminRoutes)
 
-app.use('/', userRoutes) // user route 
-app.use('/admin', adminRoutes) // admin route 
-
-
-
+// 404 handler
 app.use((req, res) => {
     res.status(404).render('notfound')
-});
-  
+})
 
-  
 connnectDb()
 
-app.listen(PORT, ()=>{  
+// Start server
+app.listen(PORT, () => {
     log.green('SERVER STATUS', `server running on port: ${PORT}`)
 })

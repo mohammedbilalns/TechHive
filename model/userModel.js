@@ -8,11 +8,12 @@ const userSchema = new mongoose.Schema({
     },
     phonenumber:{
         type:Number,
-   
+        unique:true
     },
     email:{
         type:String, 
-        required:true 
+        required:true ,
+        unique:true
     }, 
     googleId:{
         type: String 
@@ -23,9 +24,13 @@ const userSchema = new mongoose.Schema({
     status:{
         type: String , 
         enum: ["pending","active", "blocked"]
+        
     },
 
 }, {timestamps: true})
+
+userSchema.index({ email: 1 });
+userSchema.index({ phonenumber: 1 });
 
 export default mongoose.model("users", userSchema)
 
