@@ -11,7 +11,7 @@ config()
 //---- User Login----  
 const loadLogin = (req, res)=>{
     res.render('user/login')
-}   // load user login page 
+}   // constload user login page 
 const verifyLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -161,6 +161,28 @@ const loadHome = (req, res)=>{
     res.render('user/home')
 }
 
+const authGoogle = (req, res) => {
+    passport.authenticate("google", {
+        scope: ["email", "profile"],
+    })(req, res);  
+}
 
 
-export default {loadLogin, verifyLogin, loadSignup,verifyOTP ,  loadForgotpassword, loadResetpassword, loadResetpasswordotp, loadHome, registerUser,}
+const authGoogleCallback = (req, res) => {
+    passport.authenticate("google", { failureRedirect: "/login" }, (err, user, info) => {
+        if (err || !user) {
+            return res.redirect("/login"); // In case of failure, redirect to login page
+        }
+        
+        req.session.user = {
+            id: user._id,
+            fullname: user.fullname,
+            email: user.email,
+        };
+        return res.redirect("/home"); // Redirect to home on successful login
+    })(req, res);  
+};
+
+
+
+export default {loadLogin, verifyLogin, loadSignup,verifyOTP ,  loadForgotpassword, loadResetpassword, loadResetpasswordotp, loadHome, registerUser,authGoogle, authGoogleCallback}

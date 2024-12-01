@@ -33,21 +33,8 @@ router.post('/verify-otp', auth.isLogin, userController.verifyOTP)
 //router.get('/signupotp', auth.isLogin , userController.loadSignupotp)
 router.get('/home', auth.checkSession, userController.loadHome)
 
-router.get("/auth/google",
-  passport.authenticate("google", {
-    scope: ["email", "profile"],
-  })
-);
+router.get("/auth/google",userController.authGoogle);
 
-router.get('/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
-   (req, res) =>{
-    req.session.user = {
-      id: req.user._id,
-      fullname: req.user.fullname,
-      email: req.user.email,
-  };
-  res.redirect('/home');
-   }  );
+router.get('/auth/google/callback',userController.authGoogleCallback );
 
 export default router
