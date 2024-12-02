@@ -16,10 +16,10 @@ router.post('/login', userController.verifyLogin)
 router.get('/signup', auth.isLogin, userController.loadSignup)
 router.post('/signup', userController.registerUser)
 router.post('/verify-otp', auth.isLogin, userController.verifyOTP)
-
+router.get('/resend-otp')
 // Google OAuth
-router.get("/auth/google", userController.authGoogle)
-router.get('/auth/google/callback', userController.authGoogleCallback)
+router.get("/auth/google",auth.isLogin,  userController.authGoogle)
+router.get('/auth/google/callback',auth.isLogin, userController.authGoogleCallback)
 
 // User Home
 router.get('/home', auth.checkSession, userController.loadHome)

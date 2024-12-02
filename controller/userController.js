@@ -118,7 +118,15 @@ const verifyOTP = async (req, res) => {
     let { otp1, otp2, otp3, otp4, timeRem } = req.body;
 
     // Combine OTP digits into a single string
-    let userOTP = otp1 + otp2 + otp3 + otp4;
+    let userOTP = otp1 + otp2 + otp3 + otp4; 
+
+    const currentTime = Date.now();
+    if (currentTime > req.session.userOTP.expiryTime) {
+        // OTP expired
+        req.session.userOTP.otp = undefined;  // Clear expired OTP session
+        req.session.userOTP.expiryTime = 0 
+        return res.render('user/signupotp', { message: "OTP has expired.", alertType: "error", timeRem: parseInt(timeRem) });
+    }
 
     // Check if the OTP matches the session OTP and if the OTP is still valid
     if (userOTP === req.session.userOTP.otp) {
@@ -141,9 +149,9 @@ const verifyOTP = async (req, res) => {
     }
 };
 
-// Resend OTP functionality (to be implemented)
+// Resend OTP functionality 
 const resendOTP = async (req, res) => {
-    // To be implemented: logic to resend OTP
+    
 };
 
 // ---- Google OAuth ----
@@ -195,4 +203,4 @@ const loadHome = (req, res)=>{
 
 
 
-export default {loadLogin, verifyLogin, loadSignup,verifyOTP ,  loadForgotpassword, loadResetpassword, loadResetpasswordotp, loadHome, registerUser,authGoogle, authGoogleCallback}
+export default {loadLogin, verifyLogin, loadSignup,verifyOTP , resendOTP,  loadForgotpassword, loadResetpassword, loadResetpasswordotp, loadHome, registerUser,authGoogle, authGoogleCallback}
