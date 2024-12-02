@@ -89,24 +89,22 @@ const registerUser = async (req, res) => {
             phonenumber,
             email,
             password: hashedPassword,
-            status: "pending",  // Set initial status as "pending"
+            status: "pending", // Set initial status as "pending"
+            otp: {
+                otpValue: otp,
+                otpExpiresAt: Date.now() + 60000, // OTP expiry set to 1 minute
+                otpAttempts: 0,
+            },
         });
+
 
         // Save the new user to the database
         await newUser.save();
 
-        // Store OTP and its expiry in the session
-        req.session.userOTP = {
-            otp,
-            fullname,
-            email,
-            expiryTime: Date.now() + 60000, // OTP expiry time set to 1 minute from now
-            userId: newUser._id
-        };
 
         // Send OTP email to the user
         await authUtils.sendOTPEmail(email, otp);
-        res.render('user/signupotp');  // Render OTP verification page
+        res.render('user/signupotp', {email});  // Render OTP verification page
     } catch (error) {
         log.red('ERROR', error);
         res.render('user/signup', { message: "Something went wrong", alertType: "error" });
@@ -115,44 +113,113 @@ const registerUser = async (req, res) => {
 
 // Verify OTP entered by the user during signup
 const verifyOTP = async (req, res) => {
-    let { otp1, otp2, otp3, otp4, timeRem } = req.body;
-
+    const { otp1, otp2, otp3, otp4, email, timeRem } = req.body;
     // Combine OTP digits into a single string
-    let userOTP = otp1 + otp2 + otp3 + otp4; 
+    const userOTP = otp1 + otp2 + otp3 + otp4;
 
-    const currentTime = Date.now();
-    if (currentTime > req.session.userOTP.expiryTime) {
-        // OTP expired
-        req.session.userOTP.otp = undefined;  // Clear expired OTP session
-        req.session.userOTP.expiryTime = 0 
-        return res.render('user/signupotp', { message: "OTP has expired.", alertType: "error", timeRem: parseInt(timeRem) });
-    }
+    try {
+        // Find the user by email
+        const user = await userSchema.findOne({ email });
 
-    // Check if the OTP matches the session OTP and if the OTP is still valid
-    if (userOTP === req.session.userOTP.otp) {
-        const { fullname, email, userId } = req.session.userOTP;
+      if (user.otp.otpAttempts >= 3) {
+            await userSchema.findOneAndDelete({ email });
+            return res.render("user/signup", {
+                message: "You have exceeded the maximum OTP attempts. Please try again later.",
+                alertType: "error",
+            });
+        }
+        const currentTime = Date.now();
 
-        // Update user status to "active" after successful OTP verification
-        await userSchema.findByIdAndUpdate(userId, { status: "active" });
+        // Check if OTP has expired
+        if (currentTime > user.otp.otpExpiresAt) {
+            return res.render("user/signupotp", {
+                email,
+                message: "OTP has expired.",
+                alertType: "error",
+                timeRem: parseInt(timeRem),
+            });
+        }
 
-        // Store user information in session
-        req.session.user = { fullname, email };
+        // Check if the OTP matches
+        if (user.otp.otpValue === userOTP) {
+            // Update user status to "active" and clear OTP data
+            user.status = "active";
+            user.otp = undefined; // Clear OTP data
+            await user.save();
 
-        // Clear OTP data from session after use
-        req.session.userOTP = undefined;
+            // Store user information in session
+            req.session.user = { fullname: user.fullname, email: user.email };
 
-        // Redirect to home page after successful verification
-        res.render("user/home");
-    } else {
-        // If OTP is incorrect, show an error message and allow retry
-        res.render('user/signupotp', { message: "Invalid OTP, try again", alertType: "error", timeRem: parseInt(timeRem) });
+            res.render("user/home"); // Redirect to home page after successful verification
+        } else {
+            // Increment OTP attempts
+            user.otp.otpAttempts += 1;
+            await user.save();
+
+            res.render("user/signupotp", {
+                email,
+                message: "Invalid OTP, try again",
+                alertType: "error",
+                timeRem: parseInt(timeRem),
+            });
+        }
+    } catch (error) {
+        log.red("ERROR", error);
+        res.render("user/signupotp", {
+            email,
+            message: "Something went wrong",
+            alertType: "error",
+            timeRem: parseInt(timeRem),
+        });
     }
 };
 
-// Resend OTP functionality 
+
+// Resend OTP functionality
 const resendOTP = async (req, res) => {
-    
-};
+    console.log(req.body)
+    const { email } = req.body;  // Retrieve email from the request body
+    console.log("email: ", email)
+    try {
+        // Find the user by email
+        const user = await userSchema.findOne({ email });
+        console.log("user: ", user)
+      
+        // Check if the OTP attempts limit has been reached
+        if (user.otp.otpAttempts >= 3) {
+            await userSchema.findOneAndDelete({ email });
+            return res.render("user/signup", {
+                message: "You have exceeded the maximum OTP attempts. Please try again later.",
+                alertType: "error",
+            });
+        }
+
+        // Generate a new OTP and update the user's document
+        const otp = authUtils.generateOTP();
+        user.otp.otpValue = otp;
+        user.otp.otpExpiresAt = Date.now() + 60000;  // OTP expiry set to 1 minute
+        user.otp.otpAttempts += 1;  // Increment OTP attempts count
+        await user.save();
+
+        // Send the new OTP email to the user
+        await authUtils.sendOTPEmail(email, otp);
+
+        res.render("user/signupotp", {
+            email,
+            message: "OTP sent to your email.",
+            alertType: "success",
+        });
+
+    } catch (error) {
+        log.red("ERROR", error);
+        res.render("user/signupotp", {
+            email,
+            message: "Something went wrong while resending OTP. Please try again.",
+            alertType: "error",
+        });
+    }
+}; 
+
 
 // ---- Google OAuth ----
 // Redirect the user to Google for authentication

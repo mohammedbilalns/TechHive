@@ -16,7 +16,7 @@ router.post('/login', userController.verifyLogin)
 router.get('/signup', auth.isLogin, userController.loadSignup)
 router.post('/signup', userController.registerUser)
 router.post('/verify-otp', auth.isLogin, userController.verifyOTP)
-router.get('/resend-otp')
+router.post('/resend-otp', auth.isLogin, userController.resendOTP)
 // Google OAuth
 router.get("/auth/google",auth.isLogin,  userController.authGoogle)
 router.get('/auth/google/callback',auth.isLogin, userController.authGoogleCallback)
