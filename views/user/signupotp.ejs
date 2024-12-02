@@ -22,6 +22,9 @@
             <%= message %>
           </div>
         <% } %>
+        <div id="warningMessage" class="mb-4 p-3 rounded-md bg-red-100 text-red-700" style="display: none;">
+          OTP expired
+        </div>
         <button type="submit" class="w-full py-2 mb-4 text-white bg-primary-accent rounded-md">Verify Code</button>
       </form>
 
@@ -41,70 +44,82 @@
 <%- include('../partials/footer') %>
 
 <script>
-  const otpInputs = document.querySelectorAll('.otp-input');
-  const otpForm = document.getElementById('otpForm');
-  const resendButton = document.getElementById('resendButton');
-  const timerDisplay = document.getElementById('timer');
+const otpInputs = document.querySelectorAll('.otp-input');
+const otpForm = document.getElementById('otpForm');
+const resendButton = document.getElementById('resendButton');
+const timerDisplay = document.getElementById('timer');
+const warningMessage = document.getElementById('warningMessage'); // Add an element for the warning message
 
-  let countdownTimer;
-  let timeLeft = 60;  // 1 minute timer
+let countdownTimer;
+let timeLeft = 60; // 1 minute timer
 
-  // OTP Input Navigation
-  otpInputs.forEach((input, index) => {
-    input.addEventListener('input', (event) => {
-      const current = event.target;
-      const next = otpInputs[index + 1];
-      const prev = otpInputs[index - 1];
+// OTP Input Navigation
+otpInputs.forEach((input, index) => {
+  input.addEventListener('input', (event) => {
+    const current = event.target;
+    const next = otpInputs[index + 1];
+    const prev = otpInputs[index - 1];
 
-      current.value = current.value.replace(/[^0-9]/g, '');
+    current.value = current.value.replace(/[^0-9]/g, '');
 
-      if (current.value.length === 1 && next) {
-        next.focus();
+    if (current.value.length === 1 && next) {
+      next.focus();
+    }
+
+    if (index === otpInputs.length - 1 && current.value.length === 1) {
+      const allFilled = Array.from(otpInputs).every(input => input.value.length === 1);
+      if (allFilled) {
+        otpForm.submit();
       }
-
-      if (index === otpInputs.length - 1 && current.value.length === 1) {
-        const allFilled = Array.from(otpInputs).every(input => input.value.length === 1);
-        if (allFilled) {
-          otpForm.submit();
-        }
-      }
-    });
-
-    input.addEventListener('keydown', (e) => {
-      const current = e.target;
-      const prev = otpInputs[index - 1];
-
-      if (e.key === 'Backspace') {
-        if (current.value === '' && prev) {
-          e.preventDefault();
-          prev.value = '';
-          prev.focus();
-        } else {
-          current.value = '';
-        }
-      }
-    });
+    }
   });
 
-  // Function to start the timer
-  function startTimer() {
-    resendButton.disabled = true;  // Disable resend button
-    countdownTimer = setInterval(function() {
-      timeLeft--;
-      let minutes = Math.floor(timeLeft / 60);
-      let seconds = timeLeft % 60;
-      timerDisplay.textContent = `You can resend OTP in: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-      
-      if (timeLeft <= 0) {
-        clearInterval(countdownTimer);  // Stop the timer when it reaches 0
-        resendButton.disabled = false;  // Enable the resend button
+  input.addEventListener('keydown', (e) => {
+    const current = e.target;
+    const prev = otpInputs[index - 1];
+
+    if (e.key === 'Backspace') {
+      if (current.value === '' && prev) {
+        e.preventDefault();
+        prev.value = '';
+        prev.focus();
+      } else {
+        current.value = '';
       }
-    }, 1000);  // Update every second
-  }
+    }
+  });
+});
+
+// Function to start the timer
+function startTimer() {
+  resendButton.disabled = true; // Disable resend button
+  countdownTimer = setInterval(function () {
+    timeLeft--;
+    let minutes = Math.floor(timeLeft / 60);
+    let seconds = timeLeft % 60;
+    timerDisplay.textContent = `You can resend OTP in: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+    if (timeLeft <= 0) {
+      clearInterval(countdownTimer); // Stop the timer when it reaches 0
+      resendButton.disabled = false; // Enable the resend button
+
+      // Disable all OTP input fields
+      otpInputs.forEach(input => {
+        input.disabled = true;
+      });
+
+      // Show the warning message
+      warningMessage.style.display = 'block';
+    }
+  }, 1000); // Update every second
+}
+
+// Start the timer when the page loads
+window.onload = startTimer;
+
+// Attach the resend function to the "Resend OTP" button
+resendButton.addEventListener('click', resendOTP);
 
 
-  window.onload = startTimer;
 
-  // Attach the resend function to the "Resend OTP" button
-  resendButton.addEventListener('click', resendOTP);
 </script>
