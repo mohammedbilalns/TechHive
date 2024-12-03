@@ -16,4 +16,6 @@ router.post('/login', adminAuth.isLogin, adminController.verifyLogin )
 //-- customers routes----
 router.get('/customers',  adminController.getCustomers) // add middleware to check session in this 
 
+router.post('/customers/block/:customerid', adminController.blockCustomer)
+router.post('/customers/unblock/:customerid', adminController.unblockCustomer)
 export default router

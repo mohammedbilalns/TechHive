@@ -29,8 +29,6 @@ const verifyLogin = async (req,res)=>{
 const getCustomers = async (req,res)=>{
     try{
         const customers = await userSchema.find()
-        console.log(customers)
-
         res.render('admin/userdashboard', {customers})
 
     }catch(error){
@@ -39,4 +37,17 @@ const getCustomers = async (req,res)=>{
     }
 }
 
-export default { loadLogin, verifyLogin , getCustomers}
+
+const blockCustomer = async (req,res)=>{
+   
+    await userSchema.findByIdAndUpdate(req.params.customerid, {status:"Blocked"})
+    res.redirect('/admin/customers')
+
+}
+
+const unblockCustomer = async (req, res)=>{
+    await userSchema.findByIdAndUpdate(req.params.customerid , {status:"Active"})
+    res.redirect('/admin/customers')
+}
+
+export default { loadLogin, verifyLogin , getCustomers, blockCustomer, unblockCustomer}
