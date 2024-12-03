@@ -69,7 +69,7 @@
 <%- include('../partials/footer') %>
 
 <script>
- document.getElementById('userlogin').addEventListener('submit', function (event) {
+document.getElementById('userlogin').addEventListener('submit', function (event) {
   const email = document.querySelector('input[name="email"]');
   const password = document.querySelector('input[name="password"]');
   const form = document.getElementById('userlogin');
@@ -79,18 +79,26 @@
   // Clear any previous error messages
   document.querySelectorAll('.error').forEach(el => el.remove());
 
+  // Helper function to create styled error messages
+  function showError(message) {
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'mb-4 p-3 rounded-md bg-red-100 text-red-700 text-center error';
+    errorDiv.textContent = message;
+    loginButton.parentNode.insertBefore(errorDiv, loginButton);
+  }
+
   // Email validation
   if (!email.value.trim()) {
-    const error = document.createElement('p');
-    error.textContent = 'Email is required.';
-    error.className = 'text-red-500 text-sm error text-center mb-4';
-    loginButton.parentNode.insertBefore(error, loginButton);
+    showError('Email is required.');
     isValid = false;
   } else if (!/^\S+@\S+\.\S+$/.test(email.value)) {
-    const error = document.createElement('p');
-    error.textContent = 'Enter a valid email address.';
-    error.className = 'text-red-500 text-sm error text-center mb-4';
-    loginButton.parentNode.insertBefore(error, loginButton);
+    showError('Enter a valid email address.');
+    isValid = false;
+  }
+
+  // Password validation
+  if (!password.value.trim()) {
+    showError('Password is required.');
     isValid = false;
   }
 

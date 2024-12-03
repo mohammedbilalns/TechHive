@@ -23,11 +23,11 @@ const verifyLogin = async (req, res) => {
         const user = await userSchema.findOne({ email });
 
         // If no user is found, show an error message
-        if (!user) return res.render('user/login', { message: "Invalid credentials", alertType: "error" });
+        if (!user) return res.render('user/login', { message: "Invalid credentials", alertType: "error", email:email });
         //check the user is active 
-        if(user.status!= "Active") return res.render('user/login', {message:'Your account is currently blocked,Please contact admin'})
+        if(user.status!= "Active") return res.render('user/login', {message:'Your account is currently blocked,Please contact admin', alertType:"error", email:email})
         // Check if the user used Google login
-        if (!user.password) return res.render('user/login', { message: "Please use Google login", alertType: "error" });
+        if (!user.password) return res.render('user/login', { message: "Please use Google login", alertType: "error" , email:email});
 
         // Compare the provided password with the stored hashed password
         const isMatch = await bcrypt.compare(password, user.password);
