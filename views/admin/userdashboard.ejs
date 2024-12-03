@@ -190,14 +190,19 @@
       </div>
       
       <!-- Pagination -->
-      <div class="flex flex-col md:flex-row justify-between items-center px-4 md:px-6 py-4 bg-gray-50 border-t text-sm text-gray-600 space-y-4 md:space-y-0">
+      <!-- <div class="flex flex-col md:flex-row justify-between items-center px-4 md:px-6 py-4 bg-gray-50 border-t text-sm text-gray-600 space-y-4 md:space-y-0">
         <span class="text-center md:text-left">Showing 1 to 10 of 100 entries</span>
         <div class="flex gap-2">
           <button class="px-3 py-1 border rounded-md">1</button>
           <button class="px-3 py-1 border rounded-md">2</button>
           <button class="px-3 py-1 border rounded-md">3</button>
         </div>
-      </div>
+      </div> -->
+
+      <div id="pagination" class="flex gap-2"></div>
+
+
+
     </div>
   </main>
 </div>
@@ -241,6 +246,49 @@ function confirmAction(event, action) {
 
   document.getElementById('customerCount').textContent = visibleCount;
 }
+
+
+
+let currentPage = 1;
+const rowsPerPage = 10;
+
+function paginateCustomers() {
+  const customerRows = document.querySelectorAll('tbody tr');
+  const totalRows = customerRows.length;
+  const totalPages = Math.ceil(totalRows / rowsPerPage);
+  const pagination = document.getElementById('pagination');
+
+  pagination.innerHTML = ''; // Clear existing buttons
+
+  // Create pagination buttons
+  for (let i = 1; i <= totalPages; i++) {
+    const button = document.createElement('button');
+    button.textContent = i;
+    button.className = 'px-3 py-1 border rounded-md';
+    button.addEventListener('click', () => showPage(i));
+    if (i === currentPage) button.classList.add('bg-primary-accent', 'text-white');
+    pagination.appendChild(button);
+  }
+
+  showPage(currentPage);
+}
+
+function showPage(page) {
+  currentPage = page;
+  const customerRows = document.querySelectorAll('tbody tr');
+  const start = (page - 1) * rowsPerPage;
+  const end = page * rowsPerPage;
+
+  customerRows.forEach((row, index) => {
+    row.style.display = index >= start && index < end ? '' : 'none';
+  });
+
+  paginateCustomers(); // Refresh pagination buttons
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  paginateCustomers();
+});
 </script>
 
 <%- include('../partials/adminfooter') %>
