@@ -16,7 +16,7 @@ const loadLogin = (req, res) => {
 // Verify user login credentials
 const verifyLogin = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        let { email, password } = req.body;
         email = email.trim()
         password = password.trim()
         // Check if user exists with the given email
@@ -56,7 +56,7 @@ const loadSignup = (req, res) => {
 // Register a new user
 const registerUser = async (req, res) => {
     try {
-        const { fullname, phonenumber, email, password } = req.body;
+        let { fullname, phonenumber, email, password } = req.body;
         fullname = fullname.trim() 
         phonenumber = phonenumber.trim()
         email= email.trim()
@@ -184,7 +184,7 @@ const verifyOTP = async (req, res) => {
 // Resend OTP functionality
 const resendOTP = async (req, res) => {
     console.log(req.body)
-    const { email } = req.body;  // Retrieve email from the request body
+    let { email } = req.body;  // Retrieve email from the request body
     email = email.trim()
     console.log("email: ", email)
     try {

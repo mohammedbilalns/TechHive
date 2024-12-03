@@ -10,8 +10,8 @@ const loadLogin =  (req, res) => {
 
 const verifyLogin = async (req,res)=>{
     try{
-        const {email, password} = req.body
-        email = email.trim() 
+        let {email, password} = req.body
+        email = email.trim()
         password = password.trim()
         console.log(email, password)
         if(email != process.env.ADMIN_EMAIL || password != process.env.ADMIN_PASSWORD){
@@ -19,7 +19,7 @@ const verifyLogin = async (req,res)=>{
         }
 
         req.session.admin = true 
-        res.send("admin loginned")
+        res.redirect('/admin/customers')
     }catch(error){
         log.red("LOGIN ERROR", error)
         res.render('admin/login', {message:"Something went wrong", alertType:"error"})
