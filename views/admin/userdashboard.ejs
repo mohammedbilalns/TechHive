@@ -123,9 +123,11 @@
         <div class="text-gray-600 w-full md:w-auto text-center md:text-left">Showing Active Members</div>
         <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto">
           <input
+            id="searchInput"
             type="text"
             placeholder="Search customers"
             class="border rounded-md px-4 py-2 w-full md:w-60"
+            oninput="filterCustomers()"
           />
           <select class="border rounded-md px-4 py-2 w-full md:w-auto">
             <option value="newest">Sort by: Newest</option>
@@ -218,6 +220,27 @@ function confirmAction(event, action) {
       event.preventDefault(); // Prevent form submission if not confirmed
     }
   }
+
+  function filterCustomers() {
+  const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+  const customerRows = document.querySelectorAll('tbody tr');
+  let visibleCount = 0;
+
+  customerRows.forEach(row => {
+    const name = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+    const phone = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+    const email = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+    
+    if (name.includes(searchQuery) || phone.includes(searchQuery) || email.includes(searchQuery)) {
+      row.style.display = '';
+      visibleCount++;
+    } else {
+      row.style.display = 'none';
+    }
+  });
+
+  document.getElementById('customerCount').textContent = visibleCount;
+}
 </script>
 
 <%- include('../partials/adminfooter') %>
