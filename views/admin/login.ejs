@@ -1,4 +1,4 @@
-<%- include('../partials/header') %>
+<%- include('../partials/adminheader') %>
 <main class="py-12 flex flex-1 justify-center items-center">
   <div class="bg-primary-white rounded-lg shadow-lg flex flex-col lg:flex-row overflow-hidden max-w-4xl w-full">
     <!-- Image Section -->
@@ -17,7 +17,6 @@
           name="email"
           placeholder="Email"
           class="border w-full mb-4 px-3 py-2 rounded-md"
-          required
         />
         <input
           type="password"
@@ -25,13 +24,16 @@
           name="password"
           placeholder="Password"
           class="border w-full mb-6 px-3 py-2 rounded-md"
-          required
         />
 
         <!-- Error message container -->
-        <div id="errorMessages" class="text-red-500 text-sm mb-4 hidden">
-          <p id="emailError">Please enter a valid email.</p>
-          <p id="passwordError">Password is required.</p>
+        <div id="errorMessages" class="text-sm mb-4 hidden">
+          <div id="emailError" class="mb-4 p-3 rounded-md bg-red-100 text-red-700">
+            Please enter a valid email.
+          </div>
+          <div id="passwordError" class="mb-4 p-3 rounded-md bg-red-100 text-red-700">
+            Password is required.
+          </div>
         </div>
 
         <button type="submit" class="w-full py-2 mb-2 text-white bg-primary-accent rounded-md">
@@ -41,7 +43,7 @@
     </form>
   </div>
 </main>
-<%- include('../partials/footer') %>
+<%- include('../partials/adminfooter') %>
 
 <script>
   document.getElementById('adminLoginForm').addEventListener('submit', function (event) {

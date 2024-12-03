@@ -8,9 +8,10 @@
 
     --color-primary-white: #EDEDED;
     --color-primary-accent: #DA0037;
+    --color-primary-hover: #E63456;
     --color-primary-black: #171717;
-
-
+    --color-primary-green: #008767;
+    --color-background-green: #00B087;
     --color-background: #F4F6FF; /* Page background */
     --color-button: #10375C; /* Button background */
   }
@@ -21,8 +22,17 @@
   .bg-primary-accent{
     background-color: var(--color-primary-accent);
   }
+  .bg-primary-hover{
+    background-color: var(--color-primary-hover);
+  }
+  .bg-primary-green{
+    background-color: var(--color-background-green);
+  }
   .text-primary-accent{
     color: var(--color-primary-accent);
+  }
+  .text-primary-green{
+    background-color: var(--color-background-green);
   }
   .bg-primary-dark{
     background-color: var(--color-primary-black);
