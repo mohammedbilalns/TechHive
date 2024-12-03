@@ -17,13 +17,15 @@ const loadLogin = (req, res) => {
 const verifyLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
-
+        email = email.trim()
+        password = password.trim()
         // Check if user exists with the given email
         const user = await userSchema.findOne({ email });
 
         // If no user is found, show an error message
         if (!user) return res.render('user/login', { message: "Invalid credentials", alertType: "error" });
-
+        //check the user is active 
+        if(user.status!= "Active") return res.render('user/login', {message:'Your account is currently blocked,Please contact admin'})
         // Check if the user used Google login
         if (!user.password) return res.render('user/login', { message: "Please use Google login", alertType: "error" });
 
@@ -55,6 +57,10 @@ const loadSignup = (req, res) => {
 const registerUser = async (req, res) => {
     try {
         const { fullname, phonenumber, email, password } = req.body;
+        fullname = fullname.trim() 
+        phonenumber = phonenumber.trim()
+        email= email.trim()
+        password = password.trim()
         const otp = authUtils.generateOTP();  // Generate OTP for email verification
 
         // Check if a user already exists with the given email or phone number
@@ -89,7 +95,7 @@ const registerUser = async (req, res) => {
             phonenumber,
             email,
             password: hashedPassword,
-            status: "pending", // Set initial status as "pending"
+            status: "Pending", // Set initial status as "pending"
             otp: {
                 otpValue: otp,
                 otpExpiresAt: Date.now() + 60000, // OTP expiry set to 1 minute
@@ -143,7 +149,7 @@ const verifyOTP = async (req, res) => {
         // Check if the OTP matches
         if (user.otp.otpValue === userOTP) {
             // Update user status to "active" and clear OTP data
-            user.status = "active";
+            user.status = "Active";
             user.otp = undefined; // Clear OTP data
             await user.save();
 
@@ -179,6 +185,7 @@ const verifyOTP = async (req, res) => {
 const resendOTP = async (req, res) => {
     console.log(req.body)
     const { email } = req.body;  // Retrieve email from the request body
+    email = email.trim()
     console.log("email: ", email)
     try {
         // Find the user by email

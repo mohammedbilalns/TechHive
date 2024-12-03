@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            enum: ["pending", "active", "blocked"],
+            enum: ["Pending", "Active", "Blocked"],
         },
         otp: otpSchema, // Embedding the OTP subdocument
     },
