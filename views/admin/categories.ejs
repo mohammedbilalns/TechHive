@@ -186,11 +186,12 @@
                     </form>
                   <% } %>
                   <button
-                    class="bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600"
-                    onclick="editCategory('<%= category._id %>')"
-                  >
-                    Edit
-                  </button>
+                  class="bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600"
+                  onclick="editCategory('<%= category._id %>', '<%= category.name %>', '<%= category.description %>')"
+                >
+                  Edit
+                </button>
+                
                   <form
                     action="/admin/categories/delete/<%= category._id %>"
                     method="POST"
@@ -254,44 +255,43 @@
 
 
 
-
 <!-- Edit Category Modal -->
 <div id="editCategoryModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
   <div class="bg-white p-6 rounded-lg w-96">
     <h2 class="text-xl font-semibold mb-4">Edit Category</h2>
     <form id="editCategoryForm" action="/admin/categories/edit" method="POST" onsubmit="return validateEditCategoryForm()">
+      <!-- Hidden Input for Category ID -->
+      <input type="hidden" id="editCategoryId" name="id" />
+    
       <div class="mb-4">
-        <label for="name" class="block text-sm font-medium text-gray-700">Category Name</label>
+        <label for="editCategoryName" class="block text-sm font-medium text-gray-700">Category Name</label>
         <input
           type="text"
-          id="name"
+          id="editCategoryName"
           name="name"
           class="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
           placeholder="Enter category name"
-          required
         />
       </div>
       <div class="mb-4">
-        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+        <label for="editCategoryDescription" class="block text-sm font-medium text-gray-700">Description</label>
         <textarea
-          id="description"
+          id="editCategoryDescription"
           name="description"
           class="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
           placeholder="Enter category description"
-          required
         ></textarea>
       </div>
-
-      <!-- Error Message Display -->
-      <div id="alertMessageEdit" class="hidden mb-4 bg-red-100 text-red-700 p-3 rounded-md"></div>
-
+    
+      <div id="alertMessageEdit" class="hidden mb-4 p-3 rounded-md bg-red-100 text-red-700"></div>
       <div class="flex justify-end">
         <button type="button" onclick="closeModal('editCategoryModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md">Cancel</button>
         <button type="submit" class="px-4 py-2 bg-primary-accent text-white rounded-md ml-2">Save Changes</button>
       </div>
-    </form>
+    </form>    
   </div>
 </div>
+
 
 
 
@@ -321,9 +321,21 @@
   }
 
   // Function to show the Edit Category modal with data
-  function editCategory(categoryId) {
-    openModal('editCategoryModal');
-  }
+  function editCategory(categoryId, categoryName, categoryDescription) {
+  // Set the form action URL with the category ID
+  const form = document.getElementById('editCategoryForm');
+  form.action = `/admin/categories/edit/${categoryId}`;
+
+  // Populate the hidden input field with the category ID
+  document.getElementById('editCategoryId').value = categoryId;
+
+  // Populate the input fields with the category details
+  document.getElementById('editCategoryName').value = categoryName;
+  document.getElementById('editCategoryDescription').value = categoryDescription;
+
+  // Open the Edit Category modal
+  openModal('editCategoryModal');
+}
 
 
   // Function to open the modal
@@ -344,14 +356,14 @@ function validateAddCategoryForm() {
   let errorMessage = '';
 
   // Validate name
-  if (!name || name.length < 3 || name.length > 100 || /[^a-zA-Z\s]/.test(name)) {
-    errorMessage += 'Category Name must be between 3 to 100 characters and only contain letters and spaces. <br>';
+  if (!name || name.length < 3 || name.length > 100 || /[^a-zA-Z\s.,]/.test(name)) {
+    errorMessage += 'Category Name must be between 3 to 100 characters and only contain letters, spaces, periods (.), or commas (,). <br>';
     isValid = false;
   }
 
   // Validate description
-  if (!description || description.length < 10 || description.length > 1000 || /[^a-zA-Z\s]/.test(description)) {
-    errorMessage += 'Description must be between 10 to 1000 characters and only contain letters and spaces.  <br>';
+  if (!description || description.length < 10 || description.length > 1000 || /[^a-zA-Z\s.,]/.test(description)) {
+    errorMessage += 'Description must be between 10 to 1000 characters and only contain letters, spaces, periods (.), or commas (,). <br>';
     isValid = false;
   }
 
@@ -365,30 +377,30 @@ function validateAddCategoryForm() {
   return isValid;
 }
 
-// Validation for Edit Category Form
 function validateEditCategoryForm() {
-  const name = document.getElementById('name').value;
-  const description = document.getElementById('description').value;
+  const name = document.getElementById('editCategoryName').value;
+  const description = document.getElementById('editCategoryDescription').value;
   let isValid = true;
   let errorMessage = '';
 
-  // Validate name
-  if (!name || name.length < 3 || name.length > 100 || /[^a-zA-Z\s]/.test(name)) {
-    errorMessage += 'Category Name must be between 3 to 100 characters and only contain letters and spaces. <br>';
+  if (!name || name.length < 3 || name.length > 100 || /[^a-zA-Z\s.,]/.test(name)) {
+    errorMessage += 'Category Name must be between 3 to 100 characters and only contain letters, spaces, periods (.), or commas (,). <br>';
     isValid = false;
   }
 
-  // Validate description
-  if (!description || description.length < 10 || description.length > 1000 ||/[^a-zA-Z\s]/.test(description)) {
-    errorMessage += 'Description must be between 10 to 1000 characters and only contain letters and spaces. <br>';
+ 
+  if (!description || description.length < 10 || description.length > 1000 || /[^a-zA-Z\s.,]/.test(description)) {
+    errorMessage += 'Description must be between 10 to 1000 characters and only contain letters, spaces, periods (.), or commas (,). <br>';
     isValid = false;
   }
 
+  // Display error message
+  const alertMessageEdit = document.getElementById('alertMessageEdit');
   if (!isValid) {
-    document.getElementById('alertMessageEdit').innerHTML = errorMessage;
-    document.getElementById('alertMessageEdit').classList.remove('hidden');
+    alertMessageEdit.innerHTML = errorMessage;
+    alertMessageEdit.classList.remove('hidden');
   } else {
-    document.getElementById('alertMessageEdit').classList.add('hidden');
+    alertMessageEdit.classList.add('hidden');
   }
 
   return isValid;

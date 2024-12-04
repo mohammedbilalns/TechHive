@@ -108,10 +108,12 @@ const unhideCategory = async (req,res)=>{
 const addCategory = async (req,res)=>{
     try{
         let {name , description} = req.body 
-      
+        name = name.trim()
+        description = description.trim()
+
         let newCategory = new categorySchema({
-            name: name.trim(),
-            description: description.trim(),
+            name,
+            description,
             status:"Active"
         })
 
@@ -121,4 +123,18 @@ const addCategory = async (req,res)=>{
         log.red('ADD_CATEGORY_ERROR', error)
     }
 }
-export default { loadLogin, verifyLogin , getCustomers, blockCustomer, unblockCustomer, getCategories, deleteCategory, hideCategory, unhideCategory, addCategory}
+
+
+const editCategory = async (req,res)=>{
+    try{ 
+        await categorySchema.findByIdAndUpdate(req.params.categoryid, {name:req.body.name.trim(), description: req.body.description.trim()})
+        res.redirect('/admin/categories')
+
+    }catch(error){
+        log.red("EDIT_CATEGORY_ERROR", error)
+    }
+}
+export default { loadLogin, verifyLogin ,
+     getCustomers, blockCustomer, unblockCustomer,
+     getCategories, deleteCategory, hideCategory, unhideCategory, addCategory,editCategory
+    }

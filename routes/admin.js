@@ -26,4 +26,6 @@ router.post('/categories/delete/:categoryid', adminController.deleteCategory)
 router.post('/categories/hide/:categoryid', adminController.hideCategory)
 router.post('/categories/unhide/:categoryid', adminController.unhideCategory)
 router.post('/categories/new', adminController.addCategory)
+router.post('/categories/edit/:categoryid', adminController.editCategory)
+
 export default router
