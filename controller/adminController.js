@@ -112,7 +112,7 @@ const unhideCategory = async (req,res)=>{
 const addCategory = async (req,res)=>{
     try{
         let {name , description} = req.body 
-        name = name.trim()
+        name = name.trim()[0].toUpperCase()+name.trim().slice(1)
         description = description.trim()
 
         const existingCategory = await categorySchema.findOne({name})
@@ -132,18 +132,32 @@ const addCategory = async (req,res)=>{
 }
 
 
-const editCategory = async (req,res)=>{
-    try{ 
-        let {name , description} = req.body
-        name = name.trim()
-        description = description.trim()
-        await categorySchema.findByIdAndUpdate(req.params.categoryid, {name, description})
-        res.redirect('/admin/categories?message=Category+updated+successfully&alertType=success')
+const editCategory = async (req, res) => {
+    try {
+        let { name, description } = req.body;
 
-    }catch(error){
-        log.red("EDIT_CATEGORY_ERROR", error)
+        name = name.trim()[0].toUpperCase() + name.trim().slice(1);
+        description = description.trim();
+        
+        // find if there is any collection with the same name already exists in the db 
+        const existingCategory = await categorySchema.findOne({
+            name: name,
+            _id: { $ne: req.params.categoryid } // Exclude the current category by ID
+        });
+
+        if (existingCategory) {
+            return res.redirect('/admin/categories?message=Category+name+already+exists&alertType=error');
+        }
+
+        await categorySchema.findByIdAndUpdate(req.params.categoryid, { name, description });
+
+        res.redirect('/admin/categories?message=Category+updated+successfully&alertType=success');
+    } catch (error) {
+        log.red("EDIT_CATEGORY_ERROR", error);
+        res.redirect('/admin/categories?message=An+unexpected+error+occurred&alertType=error');
     }
-}
+};
+
 export default {
      loadLogin, verifyLogin ,
      getCustomers, blockCustomer, unblockCustomer,

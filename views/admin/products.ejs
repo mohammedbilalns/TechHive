@@ -1,0 +1,154 @@
+<%- include('../partials/adminheader') %>
+<div class="flex min-h-screen">
+  <!-- Sidebar -->
+  <aside id="sidebar" class="bg-gray-100 w-full md:w-64 h-screen">
+    <nav class="py-4">
+      <div class="px-4 md:px-6">
+        <h2 class="text-sm font-semibold text-gray-600 uppercase">Menu</h2>
+        <ul class="mt-4 space-y-2">
+          <li>
+            <a href="/dashboard" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-th-large mr-3"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="/products" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-box mr-3"></i>
+              <span>Products</span>
+            </a>
+          </li>
+          <li>
+            <a href="/customers" class="flex items-center px-4 py-2 bg-primary-accent text-gray-200 hover:bg-primary-hover rounded-lg">
+              <i class="fas fa-layer-group mr-3"></i> 
+              <span>Category</span>
+            </a>
+          
+          <li>
+            <a href="/orders" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-shopping-cart mr-3"></i> 
+              <span>Orders</span>
+            </a>
+          </li>
+          <li>
+            <a href="/coupons" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-ticket-alt mr-3"></i> 
+              <span>Coupon</span>
+            </a>
+          </li>
+          <li>
+            <a href="/banners" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-images mr-3"></i> 
+              <span>Banner</span>
+            </a>
+          </li>
+          <li>
+            <a href="/transactions" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-receipt mr-3"></i> 
+              <span>Transaction</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      
+      <div class="px-4 md:px-6 mt-8">
+        <h2 class="text-sm font-semibold text-gray-600 uppercase">User Management</h2>
+        <ul class="mt-4 space-y-2">
+          <li>
+            <a href="/admins" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-user-shield mr-3"></i> 
+              <span>Manage Admins</span>
+            </a>
+          </li>
+          <li>
+            <a href="/customers" class="flex items-center px-4 py-2  text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-users mr-3"></i> 
+              <span>Customers</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="px-4 md:px-6 mt-8">
+        <h2 class="text-sm font-semibold text-gray-600 uppercase">Others</h2>
+        <ul class="mt-4 space-y-2">
+          <li>
+            <a href="/settings" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-cogs mr-3"></i> 
+              <span>Settings</span>
+            </a>
+          </li>
+          <li>
+            <a href="/help" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-question-circle mr-3"></i> 
+              <span>Help</span>
+            </a>
+          </li>
+          <li>
+            <a href="/logout" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-sign-out-alt mr-3"></i> 
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-grow p-4 md:py-6">
+    <div class="bg-white shadow-md rounded-md p-6">
+      <!-- Header -->
+      <div class="flex justify-between items-center pb-4 border-b">
+        <h1 class="text-lg font-semibold">Products Dashboard</h1>
+        <button
+          class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+          onclick="addProduct()"
+        >
+          Add Product
+        </button>
+      </div>
+
+      <!-- Products Table -->
+      <div class="overflow-x-auto mt-6">
+        <table class="min-w-full bg-gray-50 text-sm">
+          <thead>
+            <tr class="text-left text-gray-600">
+              <th class="px-6 py-3">Image</th>
+              <th class="px-6 py-3">Name</th>
+              <th class="px-6 py-3">Category</th>
+              <th class="px-6 py-3">Price</th>
+              <th class="px-6 py-3">Stock</th>
+              <th class="px-6 py-3">Added Date</th>
+              <th class="px-6 py-3 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="productsTable" class="text-gray-700">
+            <% products.forEach((product) => { %>
+            <tr class="border-b hover:bg-gray-100">
+              <td class="px-6 py-3">
+                <img src="<%= product.image %>" alt="Product" class="w-12 h-12 rounded-md">
+              </td>
+              <td class="px-6 py-3"><%= product.name %></td>
+              <td class="px-6 py-3"><%= product.category %></td>
+              <td class="px-6 py-3">$<%= product.price %></td>
+              <td class="px-6 py-3"><%= product.stock %></td>
+              <td class="px-6 py-3"><%= product.addedDate %></td>
+              <td class="px-6 py-3 text-center">
+                <div class="flex justify-center gap-2">
+                  <button class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600" onclick="editProduct('<%= product._id %>')">Edit</button>
+                  <button class="bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-600" onclick="softDeleteProduct('<%= product._id %>')">Hide</button>
+                  <form action="/admin/products/delete/<%= product._id %>" method="POST" onsubmit="return confirm('Are you sure?')">
+                    <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600">Delete</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+<%- include('../partials/adminfooter') %>
