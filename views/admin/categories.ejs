@@ -116,12 +116,14 @@
             />
             <i class="fas fa-search absolute top-3 right-4 text-gray-400"></i>
           </div>
+          
           <button
             class="flex items-center bg-blue-500 text-white px-4 py-2 rounded-md shadow w-full md:w-auto justify-center"
             onclick="addCategory()"
           >
             <i class="fas fa-plus mr-2"></i> Add Category
           </button>
+          
           <button
             class="flex items-center bg-primary-accent text-white px-4 py-2 rounded-md shadow w-full md:w-auto justify-center"
             onclick="exportCategories()"
@@ -211,14 +213,79 @@
   </main>
 </div>
 
-<script>
-  function addCategory() {
-    window.location.href = '/admin/categories/new';
-  }
 
-  function editCategory(categoryId) {
-    window.location.href = `/admin/categories/edit/${categoryId}`;
-  }
+<!-- Add Category Modal -->
+<div id="addCategoryModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white p-6 rounded-lg w-96">
+    <h2 class="text-xl font-semibold mb-4">Add Category</h2>
+    <form action="/admin/categories/new" method="POST">
+      <div class="mb-4">
+        <label for="name" class="block text-sm font-medium text-gray-700">Category Name</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          class="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Enter category name"
+          required
+        />
+      </div>
+      <div class="mb-4">
+        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+        <textarea
+          id="description"
+          name="description"
+          class="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Enter category description"
+          required
+        ></textarea>
+      </div>
+      <div class="flex justify-end">
+        <button type="button" onclick="closeModal('addCategoryModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md">Cancel</button>
+        <button type="submit" class="px-4 py-2 bg-primary-accent text-white rounded-md ml-2">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
+<!-- Edit Category Modal -->
+<div id="editCategoryModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white p-6 rounded-lg w-96">
+    <h2 class="text-xl font-semibold mb-4">Edit Category</h2>
+    <form action="/admin/categories/edit" method="POST">
+      <div class="mb-4">
+        <label for="name" class="block text-sm font-medium text-gray-700">Category Name</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          class="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Enter category name"
+          required
+        />
+      </div>
+      <div class="mb-4">
+        <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+        <textarea
+          id="description"
+          name="description"
+          class="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+          placeholder="Enter category description"
+          required
+        ></textarea>
+      </div>
+      <div class="flex justify-end">
+        <button type="button" onclick="closeModal('editCategoryModal')" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md">Cancel</button>
+        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-md ml-2">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<script>
 
   function exportCategories() {
     alert('Exporting categories...');
@@ -235,6 +302,26 @@
         row.style.display = 'none';
       }
     });
+  }
+
+    // Function to open the modal
+    function openModal(modalId) {
+    document.getElementById(modalId).classList.remove('hidden');
+  }
+
+  // Function to close the modal
+  function closeModal(modalId) {
+    document.getElementById(modalId).classList.add('hidden');
+  }
+
+  // Function to show the Add Category modal
+  function addCategory() {
+    openModal('addCategoryModal');
+  }
+
+  // Function to show the Edit Category modal with data
+  function editCategory(categoryId) {
+    openModal('editCategoryModal');
   }
 </script>
 

@@ -104,4 +104,21 @@ const unhideCategory = async (req,res)=>{
     }
 }
 
-export default { loadLogin, verifyLogin , getCustomers, blockCustomer, unblockCustomer, getCategories, deleteCategory, hideCategory, unhideCategory}
+
+const addCategory = async (req,res)=>{
+    try{
+        let {name , description} = req.body 
+      
+        let newCategory = new categorySchema({
+            name: name.trim(),
+            description: description.trim(),
+            status:"Active"
+        })
+
+        await newCategory.save()
+        res.redirect('/admin/categories')
+    }catch(error){
+        log.red('ADD_CATEGORY_ERROR', error)
+    }
+}
+export default { loadLogin, verifyLogin , getCustomers, blockCustomer, unblockCustomer, getCategories, deleteCategory, hideCategory, unhideCategory, addCategory}
