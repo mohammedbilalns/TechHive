@@ -87,4 +87,21 @@ const deleteCategory = async (req,res)=>{
 
 }
 
-export default { loadLogin, verifyLogin , getCustomers, blockCustomer, unblockCustomer, getCategories, deleteCategory}
+const hideCategory = async (req,res)=>{
+    try{
+        await categorySchema.findByIdAndUpdate(req.params.categoryid, {status:"Inactive"})
+        res.redirect('/admin/categories')
+    }catch(error){
+        log.red('HIDE_CATEGORY_ERROR', error)
+    }
+}
+const unhideCategory = async (req,res)=>{
+    try{
+        await categorySchema.findByIdAndUpdate(req.params.categoryid, {status:"Active"})
+        res.redirect('/admin/categories')
+    }catch(error){
+        log.red('HIDE_CATEGORY_ERROR', error)
+    }
+}
+
+export default { loadLogin, verifyLogin , getCustomers, blockCustomer, unblockCustomer, getCategories, deleteCategory, hideCategory, unhideCategory}

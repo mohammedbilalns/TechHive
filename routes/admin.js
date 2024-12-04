@@ -23,4 +23,7 @@ router.post('/customers/unblock/:customerid',adminAuth.checkSession ,adminContro
 //---- categories routes ----
 router.get('/categories', adminController.getCategories)
 router.post('/categories/delete/:categoryid', adminController.deleteCategory)
+router.post('/categories/hide/:categoryid', adminController.hideCategory)
+router.post('/categories/unhide/:categoryid', adminController.unhideCategory)
+
 export default router

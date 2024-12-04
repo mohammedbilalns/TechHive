@@ -156,12 +156,33 @@
                   </span>
                 </td>
                 <td class="px-4 md:px-6 py-4 flex gap-2 justify-end">
-                  <button
-                    class="bg-gray-400 text-white px-4 py-2 rounded-md shadow hover:bg-gray-500"
-                    onclick="hideCategory('<%= category._id %>')"
-                  >
-                    Hide
-                  </button>
+                  <% if (category.status === 'Active') { %>
+                    <form 
+                      action="/admin/categories/hide/<%= category._id %>" 
+                      method="POST" 
+                      onsubmit="return confirm('Are you sure you want to hide this category?')"
+                    >
+                      <button
+                        type="submit"
+                        class="bg-primary-accent text-white px-4 py-2 rounded-md shadow hover:bg-red-600"
+                      >
+                        Hide
+                      </button>
+                    </form>
+                  <% } else { %>
+                    <form 
+                      action="/admin/categories/unhide/<%= category._id %>" 
+                      method="POST" 
+                      onsubmit="return confirm('Are you sure you want to unhide this category?')"
+                    >
+                      <button
+                        type="submit"
+                        class="bg-green-500 text-white px-4 py-2 rounded-md shadow hover:bg-green-600"
+                      >
+                        Unhide
+                      </button>
+                    </form>
+                  <% } %>
                   <button
                     class="bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600"
                     onclick="editCategory('<%= category._id %>')"
@@ -197,14 +218,6 @@
 
   function editCategory(categoryId) {
     window.location.href = `/admin/categories/edit/${categoryId}`;
-  }
-
-  function hideCategory(categoryId) {
-    if (confirm('Are you sure you want to hide this category?')) {
-      fetch(`/admin/categories/hide/${categoryId}`, { method: 'POST' })
-        .then(() => location.reload())
-        .catch((err) => console.error(err));
-    }
   }
 
   function exportCategories() {
