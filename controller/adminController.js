@@ -73,8 +73,18 @@ const getCategories = async (req, res)=>{
         const categories = await categorySchema.find()
         res.render('admin/categories', {categories})
     }catch(error){
-        log.red('FETCH_CATEGORIES_ERROR')
+        log.red('FETCH_CATEGORIES_ERROR',error)
     }
 }
 
-export default { loadLogin, verifyLogin , getCustomers, blockCustomer, unblockCustomer, getCategories}
+const deleteCategory = async (req,res)=>{
+    try{
+        await categorySchema.findByIdAndDelete(req.params.categoryid)
+        res.redirect('/admin/categories')
+    }catch(error){
+        log.red('DELETE_CATEGORY_ERROR', error)
+    }
+
+}
+
+export default { loadLogin, verifyLogin , getCustomers, blockCustomer, unblockCustomer, getCategories, deleteCategory}
