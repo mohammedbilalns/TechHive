@@ -18,4 +18,17 @@ router.get('/customers',adminAuth.checkSession,  adminController.getCustomers) /
 
 router.post('/customers/block/:customerid',adminAuth.checkSession ,adminController.blockCustomer)
 router.post('/customers/unblock/:customerid',adminAuth.checkSession ,adminController.unblockCustomer)
+
+
+const categories = [
+    { id: 1, name: 'Electronics', status: 'Active' },
+    { id: 2, name: 'Fashion', status: 'Inactive' },
+    { id: 3, name: 'Groceries', status: 'Active' },
+    { id: 4, name: 'Furniture', status: 'Inactive' },
+  ];
+
+router.get('/categories', (req, res) => {
+    res.render('admin/categories', { categories });
+  });
+  
 export default router

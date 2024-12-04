@@ -24,4 +24,6 @@ router.get('/auth/google/callback',auth.isLogin, userController.authGoogleCallba
 // User Home
 router.get('/home', auth.checkSession, userController.loadHome)
 
+
+
 export default router

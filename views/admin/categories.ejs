@@ -1,0 +1,228 @@
+<%- include('../partials/adminheader') %>
+
+<div class="flex flex-col md:flex-row">
+  <!-- Sidebar -->
+  <aside id="sidebar" class="bg-gray-100 w-full md:w-64 min-h-screen hidden md:block transform transition-transform duration-300 ease-in-out">
+    
+    <aside id="sidebar" class="bg-gray-100 w-full md:w-64 min-h-screen hidden md:block transform transition-transform duration-300 ease-in-out">
+      <nav class="py-4">
+        <div class="px-4 md:px-6">
+          <h2 class="text-sm font-semibold text-gray-600 uppercase">Menu</h2>
+          <ul class="mt-4 space-y-2">
+            <li>
+              <a href="/dashboard" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-th-large mr-3"></i> 
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li>
+              <a href="/products" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-box mr-3"></i> 
+                <span>Products</span>
+              </a>
+            </li>
+            <li>
+              <a href="/customers" class="flex items-center px-4 py-2 bg-primary-accent text-gray-200 hover:bg-primary-hover rounded-lg">
+                <i class="fas fa-layer-group mr-3"></i> 
+                <span>Category</span>
+              </a>
+            
+            <li>
+              <a href="/orders" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-shopping-cart mr-3"></i> 
+                <span>Orders</span>
+              </a>
+            </li>
+            <li>
+              <a href="/coupons" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-ticket-alt mr-3"></i> 
+                <span>Coupon</span>
+              </a>
+            </li>
+            <li>
+              <a href="/banners" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-images mr-3"></i> 
+                <span>Banner</span>
+              </a>
+            </li>
+            <li>
+              <a href="/transactions" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-receipt mr-3"></i> 
+                <span>Transaction</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        
+        <div class="px-4 md:px-6 mt-8">
+          <h2 class="text-sm font-semibold text-gray-600 uppercase">User Management</h2>
+          <ul class="mt-4 space-y-2">
+            <li>
+              <a href="/admins" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-user-shield mr-3"></i> 
+                <span>Manage Admins</span>
+              </a>
+            </li>
+            <li>
+              <a href="/customers" class="flex items-center px-4 py-2  text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-users mr-3"></i> 
+                <span>Customers</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+  
+        <div class="px-4 md:px-6 mt-8">
+          <h2 class="text-sm font-semibold text-gray-600 uppercase">Others</h2>
+          <ul class="mt-4 space-y-2">
+            <li>
+              <a href="/settings" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-cogs mr-3"></i> 
+                <span>Settings</span>
+              </a>
+            </li>
+            <li>
+              <a href="/help" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-question-circle mr-3"></i> 
+                <span>Help</span>
+              </a>
+            </li>
+            <li>
+              <a href="/logout" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-sign-out-alt mr-3"></i> 
+                <span>Logout</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-grow p-4 md:py-12">
+    <div class="bg-primary-white rounded-lg shadow-lg w-full overflow-hidden">
+      <!-- Page Header -->
+      <div class="flex flex-col md:flex-row justify-between items-center bg-gray-50 px-4 md:px-6 py-4 border-b space-y-4 md:space-y-0">
+        <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Categories</h1>
+        <div class="flex gap-4">
+          <div class="relative">
+            <input
+              type="text"
+              id="search"
+              class="w-full md:w-64 border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Search categories..."
+              oninput="filterCategories()"
+            />
+            <i class="fas fa-search absolute top-3 right-4 text-gray-400"></i>
+          </div>
+          <button
+            class="flex items-center bg-blue-500 text-white px-4 py-2 rounded-md shadow w-full md:w-auto justify-center"
+            onclick="addCategory()"
+          >
+            <i class="fas fa-plus mr-2"></i> Add Category
+          </button>
+          <button
+            class="flex items-center bg-primary-accent text-white px-4 py-2 rounded-md shadow w-full md:w-auto justify-center"
+            onclick="exportCategories()"
+          >
+            <i class="fas fa-download mr-2"></i> Export
+          </button>
+        </div>
+      </div>
+
+      <!-- Categories Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full table-auto bg-white">
+          <thead class="text-left bg-gray-50 text-gray-600 font-semibold text-sm">
+            <tr>
+              <th class="px-4 md:px-6 py-4">#</th>
+              <th class="px-4 md:px-6 py-4">Name</th>
+              <th class="px-4 md:px-6 py-4">Status</th>
+              <th class="px-4 md:px-6 py-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="categoryTableBody" class="text-gray-800 text-sm">
+            <% categories.forEach((category, index) => { %>
+              <tr class="border-b hover:bg-gray-50">
+                <td class="px-4 md:px-6 py-4"><%= index + 1 %></td>
+                <td class="px-4 md:px-6 py-4"><%= category.name %></td>
+                <td class="px-4 md:px-6 py-4">
+                  <span
+                    class="px-4 py-2 rounded-md shadow 
+                    <%= category.status === 'Active' ? 'text-green-600' : 'text-primary-accent' %>"
+                  >
+                    <%= category.status %>
+                  </span>
+                </td>
+                <td class="px-4 md:px-6 py-4 flex gap-2 justify-end">
+                  <button
+                    class="bg-gray-400 text-white px-4 py-2 rounded-md shadow hover:bg-gray-500"
+                    onclick="hideCategory('<%= category._id %>')"
+                  >
+                    Hide
+                  </button>
+                  <button
+                    class="bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600"
+                    onclick="editCategory('<%= category._id %>')"
+                  >
+                    Edit
+                  </button>
+                  <form
+                    action="/admin/categories/delete/<%= category._id %>"
+                    method="POST"
+                    onsubmit="return confirm('Are you sure you want to delete this category?')"
+                  >
+                    <button
+                      type="submit"
+                      class="bg-primary-accent text-white px-4 py-2 rounded-md shadow hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  function addCategory() {
+    window.location.href = '/admin/categories/new';
+  }
+
+  function editCategory(categoryId) {
+    window.location.href = `/admin/categories/edit/${categoryId}`;
+  }
+
+  function hideCategory(categoryId) {
+    if (confirm('Are you sure you want to hide this category?')) {
+      fetch(`/admin/categories/hide/${categoryId}`, { method: 'POST' })
+        .then(() => location.reload())
+        .catch((err) => console.error(err));
+    }
+  }
+
+  function exportCategories() {
+    alert('Exporting categories...');
+  }
+
+  function filterCategories() {
+    const searchValue = document.getElementById('search').value.toLowerCase();
+    const rows = document.querySelectorAll('#categoryTableBody tr');
+    rows.forEach(row => {
+      const categoryName = row.children[1].textContent.toLowerCase();
+      if (categoryName.includes(searchValue)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  }
+</script>
+
+<%- include('../partials/adminfooter') %>
