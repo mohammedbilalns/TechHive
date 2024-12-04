@@ -134,7 +134,8 @@ const editCategory = async (req,res)=>{
         log.red("EDIT_CATEGORY_ERROR", error)
     }
 }
-export default { loadLogin, verifyLogin ,
+export default {
+     loadLogin, verifyLogin ,
      getCustomers, blockCustomer, unblockCustomer,
      getCategories, deleteCategory, hideCategory, unhideCategory, addCategory,editCategory
     }
