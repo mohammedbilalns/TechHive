@@ -99,12 +99,24 @@
     </aside>
   </aside>
 
+
   <!-- Main Content -->
   <main class="flex-grow p-4 md:py-12">
+
+    <% if (locals.message && locals.alertType) { %>
+      <div id="alertMessage" 
+           class="mb-4 p-3 rounded-md 
+           <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
+        <%= message %>
+      </div>
+    <% } %>
+
     <div class="bg-primary-white rounded-lg shadow-lg w-full overflow-hidden">
       <!-- Page Header -->
       <div class="flex flex-col md:flex-row justify-between items-center bg-gray-50 px-4 md:px-6 py-4 border-b space-y-4 md:space-y-0">
+        
         <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Categories</h1>
+        
         <div class="flex gap-4">
           <div class="relative">
             <input
