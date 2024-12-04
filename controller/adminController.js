@@ -1,8 +1,12 @@
 import { log } from "mercedlogger";
 import { configDotenv } from "dotenv";
 import userSchema from "../model/userModel.js";
+import categorySchema from "../model/categoryModel.js"
+
 configDotenv()
 
+
+//---- Admin Login----
 const loadLogin =  (req, res) => {
 
     res.render("admin/login")
@@ -26,6 +30,7 @@ const verifyLogin = async (req,res)=>{
     }
 }
 
+//--- Admin Users Dashboard ----
 const getCustomers = async (req,res)=>{
     try{
         const customers = await userSchema.find()
@@ -39,15 +44,37 @@ const getCustomers = async (req,res)=>{
 
 
 const blockCustomer = async (req,res)=>{
-   
+   try{
     await userSchema.findByIdAndUpdate(req.params.customerid, {status:"Blocked"})
     res.redirect('/admin/customers')
+   }catch(error){
+    log.red('BLOCK_CUSTOMER_ERROR', error)
+   }
+    
 
 }
 
 const unblockCustomer = async (req, res)=>{
-    await userSchema.findByIdAndUpdate(req.params.customerid , {status:"Active"})
-    res.redirect('/admin/customers')
+    try{
+        await userSchema.findByIdAndUpdate(req.params.customerid , {status:"Active"})
+        res.redirect('/admin/customers')
+    }catch(error){
+        log.red('UNBLOCK_CUSTOMER_ERROR', error)
+
+    }
+    
 }
 
-export default { loadLogin, verifyLogin , getCustomers, blockCustomer, unblockCustomer}
+
+//---- Admin Categories ----
+
+const getCategories = async (req, res)=>{
+    try{
+        const categories = await categorySchema.find()
+        res.render('admin/categories', {categories})
+    }catch(error){
+        log.red('FETCH_CATEGORIES_ERROR')
+    }
+}
+
+export default { loadLogin, verifyLogin , getCustomers, blockCustomer, unblockCustomer, getCategories}
