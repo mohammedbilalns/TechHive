@@ -217,6 +217,7 @@
           </div>
     </main>
   </div>
+  
 
   <!-- Add Product Modal -->
   <div id="addProductModal"
@@ -284,105 +285,137 @@
                     </div>
                 </div>
 
-                <!-- Main Image -->
+                <!-- Main Image - Update to remove crop and remove buttons -->
                 <div class="mt-6">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Main Image</label>
-                    <div class="flex items-center gap-6">
-                        <div class="flex-1">
-                            <label class="flex flex-col items-center justify-center px-6 pt-5 pb-6 border-2 border-gray-300 
+                    <div class="flex flex-col items-center gap-6">
+                        <div class="w-full max-w-[200px]">
+                            <label id="mainImageUploadLabel" class="flex flex-col items-center justify-center px-4 py-4 border-2 border-gray-300 
                                 border-dashed rounded-lg cursor-pointer hover:border-blue-400 transition-colors duration-200">
                                 <div class="space-y-2 text-center">
-                                    <i class="fas fa-cloud-upload-alt text-gray-400 text-3xl"></i>
+                                    <i class="fas fa-cloud-upload-alt text-gray-400 text-2xl"></i>
                                     <div class="text-sm text-gray-600">
                                         <span class="font-medium text-blue-600 hover:text-blue-500">Click to upload</span>
-                                        or drag and drop
                                     </div>
                                     <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
                                 </div>
                                 <input type="file" name="mainImage" accept="image/*" class="hidden" 
-                                    onchange="previewImage(this, 'mainImagePreview')">
+                                    onchange="handleImageUpload(this, 'mainImagePreview', 'mainImageUploadLabel', 'mainImageCropper')">
                             </label>
                         </div>
-                        <div id="mainImagePreview" class="hidden w-32 h-32 rounded-lg border-2 border-gray-200 overflow-hidden">
-                            <img src="#" alt="Preview" class="w-full h-full object-cover">
+                        <div id="mainImagePreview" class="hidden w-full max-w-[200px] cursor-pointer" onclick="triggerFileUpload('mainImageUploadLabel')">
+                            <div class="relative aspect-square rounded-lg border-2 border-gray-200 overflow-hidden">
+                                <img src="#" alt="Preview" class="w-full h-full object-cover">
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Variants Section -->
-                <div id="variantsContainer"></div>
-                <div class="variant-item space-y-6 p-8 border rounded-lg bg-gray-50">
-                    <h4 class="text-lg font-medium text-gray-900">Variant Details</h4>
-                    <div class="grid grid-cols-3 gap-6">
-                        <!-- Price -->
-                        <div class="form-group">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Price</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <span class="text-gray-500">₹</span>
-                                </div>
-                                <input type="text" name="price[]" required pattern="^\d*\.?\d*$"
-                                    class="w-full h-12 pl-8 pr-4 py-2.5 text-base rounded-lg border border-gray-300 
-                                    focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-                                    transition duration-200 ease-in-out
-                                    placeholder-gray-400 shadow-sm
-                                    hover:border-gray-400"
-                                    placeholder="0.00">
-                            </div>
+                <!-- Cropper Modal -->
+                <div id="cropperModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+                    <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold">Crop Image</h3>
+                            <button onclick="closeCropper()" class="text-gray-500 hover:text-gray-700">
+                                <i class="fas fa-times"></i>
+                            </button>
                         </div>
+                        <div class="relative aspect-square mb-4">
+                            <img id="cropperImage" src="#" class="max-w-full">
+                        </div>
+                        <div class="flex justify-end gap-3">
+                            <button onclick="closeCropper()" 
+                                class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
+                                Cancel
+                            </button>
+                            <button onclick="applyCrop()" 
+                                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                                Apply
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
-                        <!-- Discount -->
-                        <div class="form-group">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Discount</label>
-                            <div class="relative">
-                                <input type="number" name="discount[]" min="0" max="100"
+                <!-- Variants Section - Add Variant Name Field -->
+                <div id="variantsContainer">
+                    <div class="variant-item space-y-6 p-8 border rounded-lg bg-gray-50">
+                        <h4 class="text-lg font-medium text-gray-900">Variant Details</h4>
+                        <div class="grid grid-cols-3 gap-6">
+                            <!-- Variant Name -->
+                            <div class="form-group col-span-3">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Variant Name</label>
+                                <input type="text" name="variantName[]" required
+                                    class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300 
+                                    focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                                    transition duration-200 ease-in-out placeholder-gray-400 shadow-sm
+                                    hover:border-gray-400"
+                                    placeholder="Enter variant name">
+                            </div>
+
+                            <!-- Price -->
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Price</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <span class="text-gray-500">₹</span>
+                                    </div>
+                                    <input type="text" name="price[]" required pattern="^\d*\.?\d*$"
+                                        class="w-full h-12 pl-8 pr-4 py-2.5 text-base rounded-lg border border-gray-300 
+                                        focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                                        transition duration-200 ease-in-out
+                                        placeholder-gray-400 shadow-sm
+                                        hover:border-gray-400"
+                                        placeholder="0.00">
+                                </div>
+                            </div>
+
+                            <!-- Discount -->
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Discount</label>
+                                <div class="relative">
+                                    <input type="number" name="discount[]" min="0" max="100"
+                                        class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300 
+                                        focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                                        transition duration-200 ease-in-out
+                                        placeholder-gray-400 shadow-sm
+                                        hover:border-gray-400"
+                                        placeholder="Enter discount">
+                                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                        <span class="text-gray-500">%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Stock -->
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
+                                <input type="number" name="stock[]" required min="0"
                                     class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300 
                                     focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
                                     transition duration-200 ease-in-out
                                     placeholder-gray-400 shadow-sm
                                     hover:border-gray-400"
-                                    placeholder="Enter discount">
-                                <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                    <span class="text-gray-500">%</span>
-                                </div>
+                                    placeholder="Enter stock quantity">
                             </div>
                         </div>
 
-                        <!-- Stock -->
-                        <div class="form-group">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
-                            <input type="number" name="stock[]" required min="0"
-                                class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300 
-                                focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-                                transition duration-200 ease-in-out
-                                placeholder-gray-400 shadow-sm
-                                hover:border-gray-400"
-                                placeholder="Enter stock quantity">
-                        </div>
-                    </div>
-
-                    <!-- Variant Images Grid -->
-                    <div class="mt-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-3">Variant Images</label>
-                        <div class="grid grid-cols-4 gap-4">
+                        <!-- Variant Images Section -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                             <% [1,2,3,4].forEach(num => { %>
-                                <div>
-                                    <div class="flex flex-col gap-2">
-                                        <div class="relative">
-                                            <label class="flex flex-col items-center justify-center p-4 border-2 border-gray-300 
-                                                border-dashed rounded-lg cursor-pointer hover:border-blue-400 transition-colors 
-                                                duration-200">
-                                                <div class="text-center">
-                                                    <i class="fas fa-cloud-upload-alt text-gray-400 text-xl mb-2"></i>
-                                                    <p class="text-xs text-gray-500">Image <%= num %></p>
-                                                </div>
-                                                <input type="file" name="variantImages<%= num %>[]" required accept="image/*" 
-                                                    class="hidden" onchange="previewImage(this, 'variantPreview<%= num %>')">
-                                            </label>
-                                            <div id="variantPreview<%= num %>" 
-                                                class="hidden absolute inset-0 rounded-lg overflow-hidden">
-                                                <img src="#" alt="Preview" class="w-full h-full object-cover">
-                                            </div>
+                                <div class="relative w-full max-w-[150px]">
+                                    <label id="variantUploadLabel<%= num %>" class="flex flex-col items-center justify-center p-3 border-2 border-gray-300 
+                                        border-dashed rounded-lg cursor-pointer hover:border-blue-400 transition-colors duration-200">
+                                        <div class="text-center">
+                                            <i class="fas fa-cloud-upload-alt text-gray-400 text-lg mb-1"></i>
+                                            <p class="text-xs text-gray-500">Image <%= num %></p>
+                                        </div>
+                                        <input type="file" name="variantImages<%= num %>[]" required accept="image/*" 
+                                            class="hidden" onchange="handleImageUpload(this, 'variantPreview<%= num %>', 'variantUploadLabel<%= num %>', 'variantCropper<%= num %>')">
+                                    </label>
+
+                                    <div id="variantPreview<%= num %>" class="hidden cursor-pointer" onclick="triggerFileUpload('variantUploadLabel<%= num %>')">
+                                        <div class="relative aspect-square rounded-lg border-2 border-gray-200 overflow-hidden">
+                                            <img src="#" alt="Variant Preview <%= num %>" class="w-full h-full object-cover">
                                         </div>
                                     </div>
                                 </div>
@@ -501,23 +534,49 @@ function addProduct() {
       }
     });
 
-    function previewImage(input, previewId) {
-      const preview = document.getElementById(previewId);
-      const previewImg = preview.querySelector('img');
-      
-      if (input.files && input.files[0]) {
-        const reader = new FileReader();
+    function previewImage(input, previewId, uploadLabelId) {
+        const preview = document.getElementById(previewId);
+        const previewImg = preview.querySelector('img');
+        const uploadLabel = document.getElementById(uploadLabelId);
         
-        reader.onload = function(e) {
-          previewImg.src = e.target.result;
-          preview.classList.remove('hidden');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                preview.classList.remove('hidden');
+                uploadLabel.classList.add('hidden');
+            }
+            
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // Function to trigger file input click
+    function triggerFileUpload(labelId) {
+        const label = document.getElementById(labelId);
+        const input = label.querySelector('input[type="file"]');
+        input.click();
+    }
+
+    // Update removeImage function to reset the input field
+    function removeImage(previewId, uploadLabelId) {
+        const preview = document.getElementById(previewId);
+        const uploadLabel = document.getElementById(uploadLabelId);
+        const input = uploadLabel.querySelector('input[type="file"]');
+        const previewImg = preview.querySelector('img');
+        
+        // Clean up object URL if it exists
+        if (previewImg.dataset.previousUrl) {
+            URL.revokeObjectURL(previewImg.dataset.previousUrl);
+            delete previewImg.dataset.previousUrl;
         }
         
-        reader.readAsDataURL(input.files[0]);
-      } else {
-        previewImg.src = '#';
-        preview.classList.add('hidden');
-      }
+        input.value = ''; // Reset the file input
+        preview.classList.add('hidden'); // Hide the preview
+        uploadLabel.classList.remove('hidden'); // Show the upload label
+        previewImg.src = '#'; // Reset the preview image
+        delete previewImg.dataset.blob; // Clear the blob data
     }
 
     // Update the modal styles to ensure proper scrolling
@@ -530,4 +589,132 @@ function addProduct() {
             e.stopPropagation();
         });
     });
+
+let cropper = null;
+let currentImage = null;
+let currentPreviewId = null;
+
+function handleImageUpload(input, previewId, uploadLabelId, cropperId) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const preview = document.getElementById(previewId);
+            const previewImg = preview.querySelector('img');
+            const uploadLabel = document.getElementById(uploadLabelId);
+            
+            // Create a temporary image to get dimensions
+            const tempImg = new Image();
+            tempImg.onload = function() {
+                // Calculate aspect ratio
+                const aspectRatio = this.width / this.height;
+                
+                // Set the preview image source
+                previewImg.src = e.target.result;
+                preview.classList.remove('hidden');
+                uploadLabel.classList.add('hidden');
+                
+                // Open cropper with calculated aspect ratio
+                openCropper(previewId, cropperId);
+            };
+            tempImg.src = e.target.result;
+        }
+        
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function openCropper(previewId, cropperId) {
+    const preview = document.getElementById(previewId);
+    const previewImg = preview.querySelector('img');
+    const cropperModal = document.getElementById('cropperModal');
+    const cropperImage = document.getElementById('cropperImage');
+    
+    currentPreviewId = previewId;
+    currentImage = previewImg;
+    
+    cropperImage.src = previewImg.src;
+    cropperModal.classList.remove('hidden');
+    cropperModal.classList.add('flex');
+    
+    if (cropper) {
+        cropper.destroy();
+    }
+    
+    cropper = new Cropper(cropperImage, {
+        aspectRatio: 1,
+        viewMode: 1,
+        autoCropArea: 1,
+        cropBoxResizable: true,
+        cropBoxMovable: true,
+        dragMode: 'move',
+        background: true,
+        responsive: true,
+        guides: true,
+        center: true,
+        highlight: false,
+        ready() {
+            // Set initial crop box to be square and centered
+            const canvasData = this.cropper.getCanvasData();
+            const minSize = Math.min(canvasData.width, canvasData.height);
+            const cropBoxData = {
+                width: minSize,
+                height: minSize,
+                left: (canvasData.width - minSize) / 2,
+                top: (canvasData.height - minSize) / 2
+            };
+            this.cropper.setCropBoxData(cropBoxData);
+        }
+    });
+}
+
+function closeCropper() {
+    const cropperModal = document.getElementById('cropperModal');
+    cropperModal.classList.add('hidden');
+    cropperModal.classList.remove('flex');
+    
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
+    }
+}
+
+function applyCrop() {
+    if (cropper && currentImage) {
+        // Get the cropped canvas with specific dimensions
+        const croppedCanvas = cropper.getCroppedCanvas({
+            width: 200,    // Match this with the preview container width
+            height: 200,   // Keep it square
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high',
+        });
+        
+        // Convert canvas to blob to get actual file size
+        croppedCanvas.toBlob((blob) => {
+            // Create object URL for the blob
+            const croppedImageUrl = URL.createObjectURL(blob);
+            
+            // Update the preview image
+            currentImage.src = croppedImageUrl;
+            
+            // Store the blob in a data attribute for form submission
+            currentImage.dataset.blob = croppedImageUrl;
+            
+            // Clean up previous object URL if it exists
+            if (currentImage.dataset.previousUrl) {
+                URL.revokeObjectURL(currentImage.dataset.previousUrl);
+            }
+            currentImage.dataset.previousUrl = croppedImageUrl;
+            
+            closeCropper();
+        }, 'image/jpeg', 0.9);
+    }
+}
+
+// Close cropper modal when clicking outside
+document.getElementById('cropperModal').addEventListener('click', function(event) {
+    if (event.target === this) {
+        closeCropper();
+    }
+});
   </script>
