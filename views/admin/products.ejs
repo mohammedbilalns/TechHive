@@ -210,8 +210,7 @@
   </div>
 
   <!-- Add Product Modal -->
-  <div id="addProductModal"
-    class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 overflow-y-auto pt-10">
+  <div id="addProductModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-start justify-center z-50 overflow-y-auto pt-10">
     <div class="bg-white rounded-lg w-full max-w-2xl mx-4 mb-10">
       <div class="flex justify-between items-center border-b px-6 py-4">
         <h3 class="text-xl font-semibold text-gray-900">Add New Product</h3>
@@ -237,68 +236,102 @@
 
 
         <div>
-          <label class="block text-sm font-medium text-gray-700">Category</label>
-          <select name="category" required
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-            <option value="">Select Category</option>
-            <% categories.forEach(category=> { %>
-              <option value="<%= category._id %>">
-                <%= category.name %>
-              </option>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+          <div class="relative">
+            <select name="category" required 
+                    class="appearance-none block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-700 
+                           leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer">
+              <option value="" disabled selected>Select a category</option>
+              <% categories.forEach(category => { %>
+                <option value="<%= category._id %>" class="py-2"><%= category.name %></option>
               <% }); %>
-          </select>
-        </div>
-
-
-
-
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Main Image</label>
-          <input type="file" name="mainImage" accept="image/*" class="mt-1 block w-full">
-        </div>
-
-        <div id="variantsContainer"></div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">Variants</label>
-        <div class="variant-item space-y-3 p-4 border rounded-md">
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Price</label>
-              <input type="text" name="price[]" required pattern="^\d*\.?\d*$"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Discount Percentage</label>
-              <input type="number" name="discount[]" min="0" max="100"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Stock</label>
-              <input type="number" name="stock[]" required min="0"
-                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
+              <i class="fas fa-chevron-down text-sm"></i>
             </div>
           </div>
+        </div>
 
-          <!-- Variant Images Section -->
-          <div class="mt-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Variant Images (Upload 4 images)</label>
+
+
+
+
+        <!-- Main Image Input -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">Main Image</label>
+          <div class="relative">
+            <input type="file" name="mainImage" accept="image/*" required
+                   class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0
+                          file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100
+                          focus:outline-none cursor-pointer border rounded-lg">
+          </div>
+        </div>
+
+        <div id="variantsContainer">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Variants</label>
+          <div class="variant-item space-y-3 p-4 border rounded-md">
             <div class="grid grid-cols-2 gap-4">
+              <div class="col-span-2">
+                <label class="block text-sm font-medium text-gray-700">Variant Name</label>
+                <input type="text" name="variantName[]" required 
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
+                              focus:border-blue-500 focus:ring-blue-500"
+                       placeholder="e.g., Small, Red, 256GB, etc.">
+              </div>
+              
               <div>
-                <label class="block text-xs text-gray-500">Image 1</label>
-                <input type="file" name="variantImages1[]" required accept="image/*" class="mt-1 block w-full">
+                <label class="block text-sm font-medium text-gray-700">Price</label>
+                <input type="text" name="price[]" required pattern="^\d*\.?\d*$"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
+                              focus:border-blue-500 focus:ring-blue-500"
+                       oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
               </div>
               <div>
-                <label class="block text-xs text-gray-500">Image 2</label>
-                <input type="file" name="variantImages2[]" required accept="image/*" class="mt-1 block w-full">
+                <label class="block text-sm font-medium text-gray-700">Discount Percentage</label>
+                <input type="number" name="discount[]" min="0" max="100"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
+                              focus:border-blue-500 focus:ring-blue-500">
               </div>
               <div>
-                <label class="block text-xs text-gray-500">Image 3</label>
-                <input type="file" name="variantImages3[]" required accept="image/*" class="mt-1 block w-full">
+                <label class="block text-sm font-medium text-gray-700">Stock</label>
+                <input type="number" name="stock[]" required min="0"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
+                              focus:border-blue-500 focus:ring-blue-500">
               </div>
-              <div>
-                <label class="block text-xs text-gray-500">Image 4</label>
-                <input type="file" name="variantImages4[]" required accept="image/*" class="mt-1 block w-full">
+            </div>
+
+            <!-- Variant Images Section -->
+            <div class="mt-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Variant Images (Upload 4 images)</label>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs text-gray-500 mb-1">Image 1</label>
+                  <input type="file" name="variantImages1[]" required accept="image/*" 
+                         class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0
+                                file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100
+                                focus:outline-none cursor-pointer border rounded-lg">
+                </div>
+                <div>
+                  <label class="block text-xs text-gray-500 mb-1">Image 2</label>
+                  <input type="file" name="variantImages2[]" required accept="image/*"
+                         class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0
+                                file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100
+                                focus:outline-none cursor-pointer border rounded-lg">
+                </div>
+                <div>
+                  <label class="block text-xs text-gray-500 mb-1">Image 3</label>
+                  <input type="file" name="variantImages3[]" required accept="image/*"
+                         class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0
+                                file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100
+                                focus:outline-none cursor-pointer border rounded-lg">
+                </div>
+                <div>
+                  <label class="block text-xs text-gray-500 mb-1">Image 4</label>
+                  <input type="file" name="variantImages4[]" required accept="image/*"
+                         class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0
+                                file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100
+                                focus:outline-none cursor-pointer border rounded-lg">
+                </div>
               </div>
             </div>
           </div>
@@ -330,17 +363,28 @@ function addProduct() {
     const modal = document.getElementById('addProductModal');
     modal.classList.remove('hidden');
     modal.classList.add('flex');
-    // Prevent body scrolling when modal is open
     document.body.style.overflow = 'hidden';
+    
+    // Reset scroll position when opening modal
+    const modalContent = document.querySelector('#addProductModal > div');
+    modalContent.scrollTop = 0;
   }
-
     // Function to close the add product modal
-  function closeAddProductModal() {
+    function closeAddProductModal() {
     const modal = document.getElementById('addProductModal');
     modal.classList.remove('flex');
     modal.classList.add('hidden');
-    // Re-enable body scrolling when modal is closed
     document.body.style.overflow = 'auto';
+    
+    // Optional: Reset the form when closing
+    document.getElementById('addProductForm').reset();
+    
+    // Remove all additional variants except the first one
+    const variantsContainer = document.getElementById('variantsContainer');
+    const variants = variantsContainer.querySelectorAll('.variant-item');
+    for (let i = 1; i < variants.length; i++) {
+      variants[i].remove();
+    }
   }
 
     // Close modal when clicking outside
@@ -350,27 +394,46 @@ function addProduct() {
     }
   });
 
-    function addVariant() {
-      const variantsContainer = document.getElementById('variantsContainer');
-      const variantTemplate = document.querySelector('.variant-item').cloneNode(true);
-
-      // Clear all input values in the clone
-      variantTemplate.querySelectorAll('input').forEach(input => {
-        input.value = '';
+   function addVariant() {
+    const variantsContainer = document.getElementById('variantsContainer');
+    const variantTemplate = document.querySelector('.variant-item').cloneNode(true);
+    
+    // Clear all input values in the clone
+    variantTemplate.querySelectorAll('input').forEach(input => {
+      input.value = '';
+    });
+    
+    // Remove any existing remove buttons from the clone
+    const existingRemoveButtons = variantTemplate.querySelectorAll('.remove-variant-btn');
+    existingRemoveButtons.forEach(button => button.remove());
+    
+    // Add new remove button
+    const removeButton = document.createElement('button');
+    removeButton.type = 'button';
+    removeButton.className = 'remove-variant-btn mt-2 px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600';
+    removeButton.innerHTML = '<i class="fas fa-trash mr-2"></i>Remove Variant';
+    removeButton.onclick = function() {
+      this.parentElement.remove();
+      // Scroll to top of modal after removing variant
+      const modalContent = document.querySelector('#addProductModal > div');
+      modalContent.scrollTo({
+        top: 0,
+        behavior: 'smooth'
       });
+    };
+    
+    variantTemplate.appendChild(removeButton);
+    variantsContainer.appendChild(variantTemplate);
 
-      // Add remove button for additional variants
-      const removeButton = document.createElement('button');
-      removeButton.type = 'button';
-      removeButton.className = 'mt-2 px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600';
-      removeButton.innerHTML = '<i class="fas fa-trash mr-2"></i>Remove Variant';
-      removeButton.onclick = function () {
-        this.parentElement.remove();
-      };
+    // Scroll the new variant into view
+    setTimeout(() => {
+      variantTemplate.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center'
+      });
+    }, 100);
+  }
 
-      variantTemplate.appendChild(removeButton);
-      variantsContainer.appendChild(variantTemplate);
-    }
 
     // Add input validation for price fields
     document.addEventListener('input', function (e) {
