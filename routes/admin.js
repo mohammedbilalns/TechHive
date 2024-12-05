@@ -30,6 +30,7 @@ router.post('/categories/edit/:categoryid',adminAuth.checkSession, adminControll
 
 //---- products routes ---- 
 router.get('/products', adminController.getProducts)
+router.post('/products/add', adminController.addProduct)
 
 const products = [
     {

@@ -161,22 +161,31 @@
                         <%= product.category %>
                       </td>
                       <td class="px-6 py-3">
-                        <div class="space-y-2">
-                          <% product.variants.forEach((variant)=> { %>
-                            <div class="flex items-center gap-3 p-2 bg-gray-50 rounded-md">
-                              <img src="<%= variant.image %>" alt="<%= variant.variantName %>"
-                                class="w-10 h-10 rounded-md">
-                              <div>
-                                <p class="font-medium">
+                        <div class="space-y-3 max-h-48 overflow-y-auto pr-2">
+                          <% product.variants.forEach((variant) => { %>
+                            <div class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
+                              <div class="flex-shrink-0">
+                                <img src="<%= variant.image %>" 
+                                     alt="<%= variant.variantName %>" 
+                                     class="w-12 h-12 rounded-md object-cover border border-gray-200">
+                              </div>
+                              <div class="flex-1 min-w-0">
+                                <p class="font-medium text-gray-900 truncate">
                                   <%= variant.variantName %>
                                 </p>
-                                <div class="text-sm text-gray-600">
-                                  <span class="mr-3">Price: $<%= variant.price %></span>
-                                  <span>Stock: <%= variant.stock %></span>
+                                <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
+                                  <span class="inline-flex items-center">
+                                    <i class="fas fa-tag mr-1 text-gray-400"></i>
+                                    ₹<%= variant.price %>
+                                  </span>
+                                  <span class="inline-flex items-center">
+                                    <i class="fas fa-box mr-1 text-gray-400"></i>
+                                    <%= variant.stock %> in stock
+                                  </span>
                                 </div>
                               </div>
                             </div>
-                            <% }); %>
+                          <% }); %>
                         </div>
                       </td>
                       <td class="px-6 py-3">
@@ -210,173 +219,208 @@
   </div>
 
   <!-- Add Product Modal -->
-  <div id="addProductModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-start justify-center z-50 overflow-y-auto pt-10">
-    <div class="bg-white rounded-lg w-full max-w-2xl mx-4 mb-10">
-      <div class="flex justify-between items-center border-b px-6 py-4">
-        <h3 class="text-xl font-semibold text-gray-900">Add New Product</h3>
-        <button onclick="closeAddProductModal()" class="text-gray-400 hover:text-gray-500">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-
-      <form id="addProductForm" class="p-6">
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Product Name</label>
-          <input type="text" name="name"
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700">Brand</label>
-          <input type="text" name="brand" required
-            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-        </div>
-
-
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-          <div class="relative">
-            <select name="category" required 
-                    class="appearance-none block w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-700 
-                           leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer">
-              <option value="" disabled selected>Select a category</option>
-              <% categories.forEach(category => { %>
-                <option value="<%= category._id %>" class="py-2"><%= category.name %></option>
-              <% }); %>
-            </select>
-            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700">
-              <i class="fas fa-chevron-down text-sm"></i>
-            </div>
-          </div>
-        </div>
-
-
-
-
-
-        <!-- Main Image Input with Preview -->
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Main Image</label>
-          <div>
-            <input type="file" name="mainImage" accept="image/*" required
-                   class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0
-                          file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100
-                          focus:outline-none cursor-pointer border rounded-lg"
-                   onchange="previewImage(this)">
-            <div class="mt-2 h-32 w-full border rounded-lg flex items-center justify-center bg-gray-50 preview-container">
-              <span class="text-gray-400 text-sm">Main image preview</span>
-            </div>
-          </div>
-        </div>
-
-        <div id="variantsContainer">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Variants</label>
-          <div class="variant-item space-y-3 p-4 border rounded-md">
-            <div class="grid grid-cols-2 gap-4">
-              <div class="col-span-2">
-                <label class="block text-sm font-medium text-gray-700">Variant Name</label>
-                <input type="text" name="variantName[]" required 
-                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                              focus:border-blue-500 focus:ring-blue-500"
-                       placeholder="e.g., Small, Red, 256GB, etc.">
-              </div>
-              
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Price</label>
-                <input type="text" name="price[]" required pattern="^\d*\.?\d*$"
-                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                              focus:border-blue-500 focus:ring-blue-500"
-                       oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Discount Percentage</label>
-                <input type="number" name="discount[]" min="0" max="100"
-                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                              focus:border-blue-500 focus:ring-blue-500">
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Stock</label>
-                <input type="number" name="stock[]" required min="0"
-                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm 
-                              focus:border-blue-500 focus:ring-blue-500">
-              </div>
+  <div id="addProductModal"
+    class="fixed inset-0 bg-black bg-opacity-60 hidden items-start justify-center z-50 overflow-y-auto">
+    <div class="min-h-screen px-4 py-12 flex items-start justify-center">
+        <div class="bg-white rounded-xl w-full max-w-5xl my-8 shadow-2xl transform transition-all">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center border-b px-8 py-6">
+                <h3 class="text-2xl font-bold text-gray-900">Add New Product</h3>
+                <button onclick="closeAddProductModal()" 
+                    class="text-gray-400 hover:text-gray-500 transition-colors duration-200">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
             </div>
 
-            <!-- Variant Images Section -->
-            <div class="mt-4">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Variant Images (Upload 4 images)</label>
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-xs text-gray-500 mb-1">Image 1</label>
-                  <input type="file" name="variantImages1[]" required accept="image/*" 
-                         class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0
-                                file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100
-                                focus:outline-none cursor-pointer border rounded-lg"
-                         onchange="previewImage(this)">
-                  <div class="mt-2 h-32 w-full border rounded-lg flex items-center justify-center bg-gray-50 preview-container">
-                    <span class="text-gray-400 text-sm">Image preview</span>
-                  </div>
+            <!-- Modal Form -->
+            <form id="addProductForm" class="p-8 space-y-6">
+                <!-- Form Grid Layout -->
+                <div class="grid grid-cols-2 gap-8">
+                    <!-- Product Name -->
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
+                        <input type="text" name="name" required
+                            class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300 
+                            focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                            transition duration-200 ease-in-out
+                            placeholder-gray-400 shadow-sm
+                            hover:border-gray-400"
+                            placeholder="Enter product name">
+                    </div>
+
+                    <!-- Brand -->
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
+                        <input type="text" name="brand" required
+                            class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300 
+                            focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                            transition duration-200 ease-in-out
+                            placeholder-gray-400 shadow-sm
+                            hover:border-gray-400"
+                            placeholder="Enter brand name">
+                    </div>
+
+                    <!-- Category -->
+                    <div class="form-group">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                        <div class="relative">
+                            <select name="category" required
+                                class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300 
+                                focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                                transition duration-200 ease-in-out bg-white
+                                appearance-none cursor-pointer
+                                hover:border-gray-400">
+                                <option value="">Select Category</option>
+                                <% categories.forEach(category=> { %>
+                                    <option value="<%= category._id %>">
+                                        <%= category.name %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                                <i class="fas fa-chevron-down text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                  <label class="block text-xs text-gray-500 mb-1">Image 2</label>
-                  <input type="file" name="variantImages2[]" required accept="image/*"
-                         class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0
-                                file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100
-                                focus:outline-none cursor-pointer border rounded-lg"
-                         onchange="previewImage(this)">
-                  <div class="mt-2 h-32 w-full border rounded-lg flex items-center justify-center bg-gray-50 preview-container">
-                    <span class="text-gray-400 text-sm">Image preview</span>
-                  </div>
+
+                <!-- Main Image -->
+                <div class="mt-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Main Image</label>
+                    <div class="flex items-center gap-6">
+                        <div class="flex-1">
+                            <label class="flex flex-col items-center justify-center px-6 pt-5 pb-6 border-2 border-gray-300 
+                                border-dashed rounded-lg cursor-pointer hover:border-blue-400 transition-colors duration-200">
+                                <div class="space-y-2 text-center">
+                                    <i class="fas fa-cloud-upload-alt text-gray-400 text-3xl"></i>
+                                    <div class="text-sm text-gray-600">
+                                        <span class="font-medium text-blue-600 hover:text-blue-500">Click to upload</span>
+                                        or drag and drop
+                                    </div>
+                                    <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                                </div>
+                                <input type="file" name="mainImage" accept="image/*" class="hidden" 
+                                    onchange="previewImage(this, 'mainImagePreview')">
+                            </label>
+                        </div>
+                        <div id="mainImagePreview" class="hidden w-32 h-32 rounded-lg border-2 border-gray-200 overflow-hidden">
+                            <img src="#" alt="Preview" class="w-full h-full object-cover">
+                        </div>
+                    </div>
                 </div>
-                <div>
-                  <label class="block text-xs text-gray-500 mb-1">Image 3</label>
-                  <input type="file" name="variantImages3[]" required accept="image/*"
-                         class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0
-                                file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100
-                                focus:outline-none cursor-pointer border rounded-lg"
-                         onchange="previewImage(this)">
-                  <div class="mt-2 h-32 w-full border rounded-lg flex items-center justify-center bg-gray-50 preview-container">
-                    <span class="text-gray-400 text-sm">Image preview</span>
-                  </div>
+
+                <!-- Variants Section -->
+                <div id="variantsContainer"></div>
+                <div class="variant-item space-y-6 p-8 border rounded-lg bg-gray-50">
+                    <h4 class="text-lg font-medium text-gray-900">Variant Details</h4>
+                    <div class="grid grid-cols-3 gap-6">
+                        <!-- Price -->
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Price</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <span class="text-gray-500">₹</span>
+                                </div>
+                                <input type="text" name="price[]" required pattern="^\d*\.?\d*$"
+                                    class="w-full h-12 pl-8 pr-4 py-2.5 text-base rounded-lg border border-gray-300 
+                                    focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                                    transition duration-200 ease-in-out
+                                    placeholder-gray-400 shadow-sm
+                                    hover:border-gray-400"
+                                    placeholder="0.00">
+                            </div>
+                        </div>
+
+                        <!-- Discount -->
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Discount</label>
+                            <div class="relative">
+                                <input type="number" name="discount[]" min="0" max="100"
+                                    class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300 
+                                    focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                                    transition duration-200 ease-in-out
+                                    placeholder-gray-400 shadow-sm
+                                    hover:border-gray-400"
+                                    placeholder="Enter discount">
+                                <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                    <span class="text-gray-500">%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stock -->
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
+                            <input type="number" name="stock[]" required min="0"
+                                class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300 
+                                focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
+                                transition duration-200 ease-in-out
+                                placeholder-gray-400 shadow-sm
+                                hover:border-gray-400"
+                                placeholder="Enter stock quantity">
+                        </div>
+                    </div>
+
+                    <!-- Variant Images Grid -->
+                    <div class="mt-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-3">Variant Images</label>
+                        <div class="grid grid-cols-4 gap-4">
+                            <% [1,2,3,4].forEach(num => { %>
+                                <div>
+                                    <div class="flex flex-col gap-2">
+                                        <div class="relative">
+                                            <label class="flex flex-col items-center justify-center p-4 border-2 border-gray-300 
+                                                border-dashed rounded-lg cursor-pointer hover:border-blue-400 transition-colors 
+                                                duration-200">
+                                                <div class="text-center">
+                                                    <i class="fas fa-cloud-upload-alt text-gray-400 text-xl mb-2"></i>
+                                                    <p class="text-xs text-gray-500">Image <%= num %></p>
+                                                </div>
+                                                <input type="file" name="variantImages<%= num %>[]" required accept="image/*" 
+                                                    class="hidden" onchange="previewImage(this, 'variantPreview<%= num %>')">
+                                            </label>
+                                            <div id="variantPreview<%= num %>" 
+                                                class="hidden absolute inset-0 rounded-lg overflow-hidden">
+                                                <img src="#" alt="Preview" class="w-full h-full object-cover">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                  <label class="block text-xs text-gray-500 mb-1">Image 4</label>
-                  <input type="file" name="variantImages4[]" required accept="image/*"
-                         class="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0
-                                file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100
-                                focus:outline-none cursor-pointer border rounded-lg"
-                         onchange="previewImage(this)">
-                  <div class="mt-2 h-32 w-full border rounded-lg flex items-center justify-center bg-gray-50 preview-container">
-                    <span class="text-gray-400 text-sm">Image preview</span>
-                  </div>
+
+                <!-- Add Variant Button -->
+                <div class="flex justify-end mt-6">
+                    <button type="button" onclick="addVariant()"
+                        class="inline-flex items-center px-6 py-3 bg-green-500 text-white text-sm font-medium rounded-lg
+                        hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500
+                        transition duration-200 ease-in-out">
+                        <i class="fas fa-plus mr-2"></i>
+                        Add Variant
+                    </button>
                 </div>
-              </div>
-            </div>
-          </div>
+
+                <!-- Form Actions -->
+                <div class="flex justify-end gap-4 pt-6 border-t mt-8">
+                    <button type="button" onclick="closeAddProductModal()"
+                        class="px-6 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 
+                        bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 
+                        transition duration-200 ease-in-out">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg
+                        hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+                        transition duration-200 ease-in-out">
+                        Add Product
+                    </button>
+                </div>
+            </form>
         </div>
-
-
-        <button type="button" onclick="addVariant()"
-          class="mt-2 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-          <i class="fas fa-plus mr-2"></i> Add Variant
-        </button>
-
-
-        <div class="mt-6 flex justify-end gap-3">
-          <button type="button" onclick="closeAddProductModal()"
-            class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-            Cancel
-          </button>
-          <button type="submit"
-            class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-            Add Product
-          </button>
-        </div>
-      </form>
     </div>
-  </div>
+</div>
 
   <script>
 function addProduct() {
@@ -385,10 +429,13 @@ function addProduct() {
     modal.classList.add('flex');
     document.body.style.overflow = 'hidden';
     
-    // Reset scroll position when opening modal
-    const modalContent = document.querySelector('#addProductModal > div');
-    modalContent.scrollTop = 0;
-  }
+    // Reset form
+    document.getElementById('addProductForm').reset();
+    
+    // Scroll modal and window to top
+    window.scrollTo(0, 0);
+    modal.scrollTo(0, 0);
+}
     // Function to close the add product modal
     function closeAddProductModal() {
     const modal = document.getElementById('addProductModal');
@@ -396,7 +443,7 @@ function addProduct() {
     modal.classList.add('hidden');
     document.body.style.overflow = 'auto';
     
-    // Optional: Reset the form when closing
+    // Reset the form
     document.getElementById('addProductForm').reset();
     
     // Remove all additional variants except the first one
@@ -421,11 +468,6 @@ function addProduct() {
     // Clear all input values in the clone
     variantTemplate.querySelectorAll('input').forEach(input => {
       input.value = '';
-      // Reset file input preview containers
-      if (input.type === 'file') {
-        const previewContainer = input.nextElementSibling;
-        previewContainer.innerHTML = '<span class="text-gray-400 text-sm">Image preview</span>';
-      }
     });
     
     // Remove any existing remove buttons from the clone
@@ -441,28 +483,16 @@ function addProduct() {
       this.parentElement.remove();
       // Scroll to top of modal after removing variant
       const modalContent = document.querySelector('#addProductModal > div');
-      modalContent.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
+      modalContent.scrollTop = 0;
     };
-    
-    // Add onchange handlers to new file inputs
-    variantTemplate.querySelectorAll('input[type="file"]').forEach(input => {
-      input.onchange = function() { previewImage(this); };
-    });
     
     variantTemplate.appendChild(removeButton);
     variantsContainer.appendChild(variantTemplate);
 
-    // Scroll the new variant into view
-    setTimeout(() => {
-      variantTemplate.scrollIntoView({ 
-        behavior: 'smooth', 
-        block: 'center'
-      });
-    }, 100);
+    // Scroll to the newly added variant
+    variantTemplate.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
+
 
     // Add input validation for price fields
     document.addEventListener('input', function (e) {
@@ -471,24 +501,33 @@ function addProduct() {
       }
     });
 
-    function previewImage(input) {
-      const previewContainer = input.nextElementSibling;
-      
-      // Clear previous preview
-      previewContainer.innerHTML = '<span class="text-gray-400 text-sm">Image preview</span>';
+    function previewImage(input, previewId) {
+      const preview = document.getElementById(previewId);
+      const previewImg = preview.querySelector('img');
       
       if (input.files && input.files[0]) {
         const reader = new FileReader();
         
         reader.onload = function(e) {
-          previewContainer.innerHTML = `
-            <img src="${e.target.result}" 
-                 class="h-full w-full object-contain rounded-lg"
-                 alt="Preview">
-          `;
+          previewImg.src = e.target.result;
+          preview.classList.remove('hidden');
         }
         
         reader.readAsDataURL(input.files[0]);
+      } else {
+        previewImg.src = '#';
+        preview.classList.add('hidden');
       }
     }
+
+    // Update the modal styles to ensure proper scrolling
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('addProductModal');
+        modal.style.cssText = 'max-height: 100vh; overflow-y: auto;';
+        
+        // Prevent body scroll when modal is open
+        modal.addEventListener('scroll', function(e) {
+            e.stopPropagation();
+        });
+    });
   </script>
