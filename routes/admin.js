@@ -21,13 +21,15 @@ router.post('/customers/unblock/:customerid',adminAuth.checkSession ,adminContro
 
 
 //---- categories routes ----
-router.get('/categories', adminController.getCategories)
-router.post('/categories/delete/:categoryid', adminController.deleteCategory)
-router.post('/categories/hide/:categoryid', adminController.hideCategory)
-router.post('/categories/unhide/:categoryid', adminController.unhideCategory)
-router.post('/categories/new', adminController.addCategory)
-router.post('/categories/edit/:categoryid', adminController.editCategory)
+router.get('/categories', adminController.getCategories) // add middleware in this 
+router.post('/categories/delete/:categoryid',adminAuth.checkSession,  adminController.deleteCategory)
+router.post('/categories/hide/:categoryid',adminAuth.checkSession,  adminController.hideCategory)
+router.post('/categories/unhide/:categoryid',adminAuth.checkSession,  adminController.unhideCategory)
+router.post('/categories/new',adminAuth.checkSession,  adminController.addCategory)
+router.post('/categories/edit/:categoryid',adminAuth.checkSession, adminController.editCategory)
 
+//---- products routes ---- 
+router.get('/products', adminController.getProducts)
 
 const products = [
     {

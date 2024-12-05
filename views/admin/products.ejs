@@ -1,237 +1,381 @@
 <%- include('../partials/adminheader') %>
-<div class="flex min-h-screen">
-  <!-- Sidebar -->
-  <aside id="sidebar" class="bg-gray-100 w-full md:w-64 h-screen">
-    <nav class="py-4">
-      <div class="px-4 md:px-6">
-        <h2 class="text-sm font-semibold text-gray-600 uppercase">Menu</h2>
-        <ul class="mt-4 space-y-2">
-          <li>
-            <a href="/dashboard" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-th-large mr-3"></i>
-              <span>Dashboard</span>
-            </a>
-          </li>
-         
-          <li>
-            <a href="/products" class="flex items-center px-4 py-2 bg-primary-accent text-gray-200 hover:bg-primary-hover rounded-lg">
-              <i class="fas fa-box mr-3"></i> 
-              <span>Products</span>
-            </a>
-          
-          <li>
-          <li>
-            <a href="/categories" class="flex items-center px-4 py-2  text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-layer-group mr-3"></i> 
-              <span>Category</span>
-            </a>
-          
-          <li>
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="bg-gray-100 w-full md:w-64 h-screen">
+      <nav class="py-4">
+        <div class="px-4 md:px-6">
+          <h2 class="text-sm font-semibold text-gray-600 uppercase">Menu</h2>
+          <ul class="mt-4 space-y-2">
+            <li>
+              <a href="/dashboard" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-th-large mr-3"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
 
-    
-            <a href="/orders" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-shopping-cart mr-3"></i> 
-              <span>Orders</span>
-            </a>
-          </li>
-          <li>
-            <a href="/coupons" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-ticket-alt mr-3"></i> 
-              <span>Coupon</span>
-            </a>
-          </li>
-          <li>
-            <a href="/banners" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-images mr-3"></i> 
-              <span>Banner</span>
-            </a>
-          </li>
-          <li>
-            <a href="/transactions" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-receipt mr-3"></i> 
-              <span>Transaction</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-      
-      <div class="px-4 md:px-6 mt-8">
-        <h2 class="text-sm font-semibold text-gray-600 uppercase">User Management</h2>
-        <ul class="mt-4 space-y-2">
-          <li>
-            <a href="/admins" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-user-shield mr-3"></i> 
-              <span>Manage Admins</span>
-            </a>
-          </li>
-          <li>
-            <a href="/customers" class="flex items-center px-4 py-2  text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-users mr-3"></i> 
-              <span>Customers</span>
-            </a>
-          </li>
-        </ul>
-      </div>
+            <li>
+              <a href="/products"
+                class="flex items-center px-4 py-2 bg-primary-accent text-gray-200 hover:bg-primary-hover rounded-lg">
+                <i class="fas fa-box mr-3"></i>
+                <span>Products</span>
+              </a>
 
-      <div class="px-4 md:px-6 mt-8">
-        <h2 class="text-sm font-semibold text-gray-600 uppercase">Others</h2>
-        <ul class="mt-4 space-y-2">
-          <li>
-            <a href="/settings" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-cogs mr-3"></i> 
-              <span>Settings</span>
-            </a>
-          </li>
-          <li>
-            <a href="/help" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-question-circle mr-3"></i> 
-              <span>Help</span>
-            </a>
-          </li>
-          <li>
-            <a href="/logout" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-sign-out-alt mr-3"></i> 
-              <span>Logout</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-  </aside>
+            <li>
+            <li>
+              <a href="/categories" class="flex items-center px-4 py-2  text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-layer-group mr-3"></i>
+                <span>Category</span>
+              </a>
 
-  <!-- Main Content -->
-  <main class="flex-grow p-4 md:py-6">
-    <div class="bg-white shadow-md rounded-md p-6">
-      <!-- Header -->
-      <div class="flex justify-between items-center pb-4 border-b">
-        <h1 class="text-lg font-semibold">Products Dashboard</h1>
-        <div class="flex items-center gap-4">
-          <div class="relative">
-            <input
-              type="text"
-              id="searchBox"
-              placeholder="Search..."
-              class="border border-gray-300 rounded-md px-4 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              oninput="filterProducts()"
-            />
-            <i class="fas fa-search absolute top-2.5 right-4 text-gray-500"></i>
+            <li>
+
+
+              <a href="/orders" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-shopping-cart mr-3"></i>
+                <span>Orders</span>
+              </a>
+            </li>
+            <li>
+              <a href="/coupons" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-ticket-alt mr-3"></i>
+                <span>Coupon</span>
+              </a>
+            </li>
+            <li>
+              <a href="/banners" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-images mr-3"></i>
+                <span>Banner</span>
+              </a>
+            </li>
+            <li>
+              <a href="/transactions" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-receipt mr-3"></i>
+                <span>Transaction</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="px-4 md:px-6 mt-8">
+          <h2 class="text-sm font-semibold text-gray-600 uppercase">User Management</h2>
+          <ul class="mt-4 space-y-2">
+            <li>
+              <a href="/admins" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-user-shield mr-3"></i>
+                <span>Manage Admins</span>
+              </a>
+            </li>
+            <li>
+              <a href="/customers" class="flex items-center px-4 py-2  text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-users mr-3"></i>
+                <span>Customers</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="px-4 md:px-6 mt-8">
+          <h2 class="text-sm font-semibold text-gray-600 uppercase">Others</h2>
+          <ul class="mt-4 space-y-2">
+            <li>
+              <a href="/settings" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-cogs mr-3"></i>
+                <span>Settings</span>
+              </a>
+            </li>
+            <li>
+              <a href="/help" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-question-circle mr-3"></i>
+                <span>Help</span>
+              </a>
+            </li>
+            <li>
+              <a href="/logout" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-sign-out-alt mr-3"></i>
+                <span>Logout</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-grow p-4 md:py-6">
+      <% if (locals.message && locals.alertType) { %>
+        <div id="alertMessage" class="mb-4 p-3 rounded-md 
+           <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
+          <%= message %>
+        </div>
+        <% } %>
+          <div class="bg-white shadow-md rounded-md p-6">
+            <!-- Header -->
+            <div class="flex justify-between items-center pb-4 border-b">
+              <h1 class="text-lg font-semibold">Products Dashboard</h1>
+              <div class="flex items-center gap-4">
+                <div class="relative">
+                  <input type="text" id="searchBox" placeholder="Search..."
+                    class="border border-gray-300 rounded-md px-4 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    oninput="filterProducts()" />
+                  <i class="fas fa-search absolute top-2.5 right-4 text-gray-500"></i>
+                </div>
+                <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center gap-2"
+                  onclick="addProduct()">
+                  <i class="fas fa-plus"></i> Add Product
+                </button>
+                <button
+                  class="flex items-center bg-primary-accent text-white px-4 py-2 rounded-md shadow w-full md:w-auto justify-center"
+                  onclick="exportCategories()">
+                  <i class="fas fa-download mr-2"></i> Export
+                </button>
+              </div>
+            </div>
+
+            <!-- Updated Products Table with Index Column -->
+            <div class="overflow-x-auto mt-6">
+              <table class="min-w-full bg-gray-50 text-sm">
+                <thead>
+                  <tr class="text-left text-gray-600">
+                    <th class="px-6 py-3">#</th>
+                    <th class="px-6 py-3">Image</th>
+                    <th class="px-6 py-3">Name</th>
+                    <th class="px-6 py-3">Category</th>
+                    <th class="px-6 py-3">Variants</th>
+                    <th class="px-6 py-3">Status</th>
+                    <th class="px-6 py-3 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="productsTable" class="text-gray-700">
+                  <% products.forEach((product, index)=> { %>
+                    <tr class="border-b hover:bg-gray-100">
+                      <td class="px-6 py-3 font-medium">
+                        <%= index + 1 %>
+                      </td>
+                      <td class="px-6 py-3">
+                        <img src="<%= product.image %>" alt="Product" class="w-12 h-12 rounded-md">
+                      </td>
+                      <td class="px-6 py-3">
+                        <%= product.name %>
+                      </td>
+                      <td class="px-6 py-3">
+                        <%= product.category %>
+                      </td>
+                      <td class="px-6 py-3">
+                        <div class="space-y-2">
+                          <% product.variants.forEach((variant)=> { %>
+                            <div class="flex items-center gap-3 p-2 bg-gray-50 rounded-md">
+                              <img src="<%= variant.image %>" alt="<%= variant.variantName %>"
+                                class="w-10 h-10 rounded-md">
+                              <div>
+                                <p class="font-medium">
+                                  <%= variant.variantName %>
+                                </p>
+                                <div class="text-sm text-gray-600">
+                                  <span class="mr-3">Price: $<%= variant.price %></span>
+                                  <span>Stock: <%= variant.stock %></span>
+                                </div>
+                              </div>
+                            </div>
+                            <% }); %>
+                        </div>
+                      </td>
+                      <td class="px-6 py-3">
+                        <span class="px-3 py-1 rounded-full text-sm font-medium
+                  <%= product.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                          <%= product.status %>
+                        </span>
+                      </td>
+                      <td class="px-6 py-3 text-center">
+                        <div class="flex justify-center gap-2">
+                          <button class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600"
+                            onclick="toggleStatus('<%= product._id %>')">
+                            <%= product.status==='Active' ? 'Deactivate' : 'Activate' %>
+                          </button>
+                          <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                            onclick="editProduct('<%= product._id %>')">Edit</button>
+                          <form action="/admin/products/delete/<%= product._id %>" method="POST"
+                            onsubmit="return confirm('Are you sure?')">
+                            <button type="submit"
+                              class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">Delete</button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+              </table>
+            </div>
           </div>
-          <button
-            class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center gap-2"
-            onclick="addProduct()"
-          >
-            <i class="fas fa-plus"></i> Add Product
+    </main>
+  </div>
+
+  <!-- Add Product Modal -->
+  <div id="addProductModal"
+    class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 overflow-y-auto pt-10">
+    <div class="bg-white rounded-lg w-full max-w-2xl mx-4 mb-10">
+      <div class="flex justify-between items-center border-b px-6 py-4">
+        <h3 class="text-xl font-semibold text-gray-900">Add New Product</h3>
+        <button onclick="closeAddProductModal()" class="text-gray-400 hover:text-gray-500">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <form id="addProductForm" class="p-6">
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Product Name</label>
+          <input type="text" name="name"
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Brand</label>
+          <input type="text" name="brand" required
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+        </div>
+
+
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Category</label>
+          <select name="category" required
+            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            <option value="">Select Category</option>
+            <% categories.forEach(category=> { %>
+              <option value="<%= category._id %>">
+                <%= category.name %>
+              </option>
+              <% }); %>
+          </select>
+        </div>
+
+
+
+
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Main Image</label>
+          <input type="file" name="mainImage" accept="image/*" class="mt-1 block w-full">
+        </div>
+
+        <div id="variantsContainer"></div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">Variants</label>
+        <div class="variant-item space-y-3 p-4 border rounded-md">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Price</label>
+              <input type="text" name="price[]" required pattern="^\d*\.?\d*$"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Discount Percentage</label>
+              <input type="number" name="discount[]" min="0" max="100"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700">Stock</label>
+              <input type="number" name="stock[]" required min="0"
+                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            </div>
+          </div>
+
+          <!-- Variant Images Section -->
+          <div class="mt-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Variant Images (Upload 4 images)</label>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs text-gray-500">Image 1</label>
+                <input type="file" name="variantImages1[]" required accept="image/*" class="mt-1 block w-full">
+              </div>
+              <div>
+                <label class="block text-xs text-gray-500">Image 2</label>
+                <input type="file" name="variantImages2[]" required accept="image/*" class="mt-1 block w-full">
+              </div>
+              <div>
+                <label class="block text-xs text-gray-500">Image 3</label>
+                <input type="file" name="variantImages3[]" required accept="image/*" class="mt-1 block w-full">
+              </div>
+              <div>
+                <label class="block text-xs text-gray-500">Image 4</label>
+                <input type="file" name="variantImages4[]" required accept="image/*" class="mt-1 block w-full">
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <button type="button" onclick="addVariant()"
+          class="mt-2 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          <i class="fas fa-plus mr-2"></i> Add Variant
+        </button>
+
+
+        <div class="mt-6 flex justify-end gap-3">
+          <button type="button" onclick="closeAddProductModal()"
+            class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Cancel
           </button>
-          <button
-            class="flex items-center bg-primary-accent text-white px-4 py-2 rounded-md shadow w-full md:w-auto justify-center"
-            onclick="exportCategories()"
-          >
-            <i class="fas fa-download mr-2"></i> Export
+          <button type="submit"
+            class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Add Product
           </button>
         </div>
-      </div>
-
-      <!-- Updated Products Table -->
-      <div class="overflow-x-auto mt-6">
-        <table class="min-w-full bg-gray-50 text-sm">
-          <thead>
-            <tr class="text-left text-gray-600">
-              <th class="px-6 py-3">Image</th>
-              <th class="px-6 py-3">Name</th>
-              <th class="px-6 py-3">Category</th>
-              <th class="px-6 py-3">Variants</th>
-              <th class="px-6 py-3">Status</th>
-              <th class="px-6 py-3 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="productsTable" class="text-gray-700">
-            <% products.forEach((product) => { %>
-            <tr class="border-b hover:bg-gray-100">
-              <td class="px-6 py-3">
-                <img src="<%= product.image %>" alt="Product" class="w-12 h-12 rounded-md">
-              </td>
-              <td class="px-6 py-3"><%= product.name %></td>
-              <td class="px-6 py-3"><%= product.category %></td>
-              <td class="px-6 py-3">
-                <div class="space-y-2">
-                  <% product.variants.forEach((variant) => { %>
-                    <div class="flex items-center gap-3 p-2 bg-gray-50 rounded-md">
-                      <img src="<%= variant.image %>" alt="<%= variant.variantName %>" class="w-10 h-10 rounded-md">
-                      <div>
-                        <p class="font-medium"><%= variant.variantName %></p>
-                        <div class="text-sm text-gray-600">
-                          <span class="mr-3">Price: $<%= variant.price %></span>
-                          <span>Stock: <%= variant.stock %></span>
-                        </div>
-                      </div>
-                    </div>
-                  <% }); %>
-                </div>
-              </td>
-              <td class="px-6 py-3">
-                <span class="px-3 py-1 rounded-full text-sm font-medium
-                  <%= product.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
-                  <%= product.status %>
-                </span>
-              </td>
-              <td class="px-6 py-3 text-center">
-                <div class="flex justify-center gap-2">
-                  <button class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600" onclick="toggleStatus('<%= product._id %>')">
-                    <%= product.status === 'Active' ? 'Deactivate' : 'Activate' %>
-                  </button>
-                  <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" onclick="editProduct('<%= product._id %>')">Edit</button>
-                  <form action="/admin/products/delete/<%= product._id %>" method="POST" onsubmit="return confirm('Are you sure?')">
-                    <button type="submit" class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">Delete</button>
-                  </form>
-                </div>
-              </td>
-            </tr>
-            <% }); %>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </main>
-</div>
-
-<!-- Variants Modal -->
-<div id="variantsModal" class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
-    <div class="bg-white rounded-md shadow-lg w-full max-w-2xl mx-4">
-      <div class="p-4 border-b flex justify-between items-center">
-        <h3 class="text-lg font-semibold">Product Variants</h3>
-        <button class="text-gray-500 hover:text-gray-800" onclick="closeVariantsModal()">×</button>
-      </div>
-      <div id="variantsContent" class="p-4 grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </form>
     </div>
   </div>
 
-</div>
-<%- include('../partials/adminfooter') %>
+  <script>
+function addProduct() {
+    const modal = document.getElementById('addProductModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    // Prevent body scrolling when modal is open
+    document.body.style.overflow = 'hidden';
+  }
 
+    // Function to close the add product modal
+  function closeAddProductModal() {
+    const modal = document.getElementById('addProductModal');
+    modal.classList.remove('flex');
+    modal.classList.add('hidden');
+    // Re-enable body scrolling when modal is closed
+    document.body.style.overflow = 'auto';
+  }
 
-
-<script>
-    function showVariants(productId, variants) {
-        console.log("dsfjkshd")
-      const modal = document.getElementById("variantsModal");
-      const content = document.getElementById("variantsContent");
-  
-      content.innerHTML = variants
-        .map(
-          (variant) =>
-            `<div class="mb-4">
-              <img src="${variant.image}" alt="Variant" class="w-16 h-16 rounded-md">
-              <p>Price: $${variant.price}</p>
-              <p>Stock: ${variant.stock}</p>
-            </div>`
-        )
-        .join("");
-  
-      modal.classList.remove("hidden");
+    // Close modal when clicking outside
+    document.getElementById('addProductModal').addEventListener('click', function(event) {
+    if (event.target === this) {
+      closeAddProductModal();
     }
-  
-    function closeVariantsModal() {
-      const modal = document.getElementById("variantsModal");
-      modal.classList.add("hidden");
+  });
+
+    function addVariant() {
+      const variantsContainer = document.getElementById('variantsContainer');
+      const variantTemplate = document.querySelector('.variant-item').cloneNode(true);
+
+      // Clear all input values in the clone
+      variantTemplate.querySelectorAll('input').forEach(input => {
+        input.value = '';
+      });
+
+      // Add remove button for additional variants
+      const removeButton = document.createElement('button');
+      removeButton.type = 'button';
+      removeButton.className = 'mt-2 px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600';
+      removeButton.innerHTML = '<i class="fas fa-trash mr-2"></i>Remove Variant';
+      removeButton.onclick = function () {
+        this.parentElement.remove();
+      };
+
+      variantTemplate.appendChild(removeButton);
+      variantsContainer.appendChild(variantTemplate);
     }
+
+    // Add input validation for price fields
+    document.addEventListener('input', function (e) {
+      if (e.target.name === 'price[]') {
+        e.target.value = e.target.value.replace(/[^0-9.]/g, '');
+      }
+    });
   </script>

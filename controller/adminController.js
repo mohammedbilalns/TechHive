@@ -1,7 +1,9 @@
 import { log } from "mercedlogger";
 import { configDotenv } from "dotenv";
+
 import userSchema from "../model/userModel.js";
 import categorySchema from "../model/categoryModel.js"
+import productSchema from "../model/productModel.js"
 
 configDotenv()
 
@@ -158,8 +160,25 @@ const editCategory = async (req, res) => {
     }
 };
 
+//---- Admin Products ---- 
+const getProducts = async (req, res)=>{
+    try{
+        let message = req.query.message 
+        let alertType = req.query.alertType
+
+        const products = await productSchema.find()
+        const categories = await categorySchema.find()
+        res.render("admin/products", {products, categories,  message, alertType})
+
+    }catch(error){
+        log.red("PRODUCT_FETCH_ERROR", error)
+    }
+}
+
+
 export default {
      loadLogin, verifyLogin ,
      getCustomers, blockCustomer, unblockCustomer,
-     getCategories, deleteCategory, hideCategory, unhideCategory, addCategory,editCategory
+     getCategories, deleteCategory, hideCategory, unhideCategory, addCategory,editCategory,
+     getProducts
     }

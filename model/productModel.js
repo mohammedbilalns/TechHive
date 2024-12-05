@@ -9,10 +9,7 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    quantity: {
-        type: Number,
-        required: true,
-    },
+   
     categoryId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "categories", 
@@ -20,10 +17,9 @@ const productSchema = new mongoose.Schema({
     },
     variants: [
         {
-            color: { type: String, required: true }, // Color of the variant
-            platform: { type: String, required: true }, 
             price: { type: Number, required: true }, // Price of the variant
-            rating: { type: Number, default: 0 }, 
+            rating: { type: Number, default: 0 },
+
             images: {
                 type: [String], // Array of image URLs
                 validate: {
@@ -31,8 +27,22 @@ const productSchema = new mongoose.Schema({
                     message: "Variants must have exactly 4 images.",
                 },
             },
+    discount: {
+        type:Number ,
+        min: 0 , 
+        max:100 , 
+        default:0 
+    },
+    discountPrice:{
+        type:Number , 
+        default:0 
+    },stock: {
+        type: Number,
+        required: true,
+    },
         },
-    ],
+     
+    ]
 }, { timestamps: true });
 
 export default mongoose.model("products", productSchema);
