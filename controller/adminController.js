@@ -181,13 +181,42 @@ const addProduct = async (req, res) => {
 }
 
 const deleteProduct = async (req, res) =>{
-    await productSchema.findByIdAndDelete(req.params.productid)
-    res.redirect('/admin/products?message=Product+deleted+successfully&alertType=success')
+    try{
+        await productSchema.findByIdAndDelete(req.params.productid)
+        res.redirect('/admin/products?message=Product+deleted+successfully&alertType=success')
+    }catch(error){
+        log.red('PRODUCT_DELETE_ERROR', error)
+        res.redirect('/admin/products?message=Something+went+wrong&alertType=error')
+    }
+   
+}
+
+const deactivateProduct = async (req,res)=>{
+    try{
+        await productSchema.findByIdAndUpdate(req.params.productid, {status:"Inactive"})
+        res.redirect('/admin/products?message=Product+deactivated+successfully&alertType=success')
+
+    }catch(error){
+        log.red('PRODUCT_DEACTIVATE_ERROR', error)
+        res.redirect('/admin/products?message=Something+went+wrong&alertType=error')
+    }
+
+}
+const activateProduct = async (req,res)=>{
+    try{
+        await productSchema.findByIdAndUpdate(req.params.productid, {status:"Active"})
+        res.redirect('/admin/products?message=Product+activated+successfully&alertType=success')
+
+    }catch(error){
+         log.red('PRODUCT_ACTIVATE_ERROR', error)
+        res.redirect('/admin/products?message=Something+went+wrong&alertType=error')
+    }
+
 }
 
 export default {
      loadLogin, verifyLogin ,
      getCustomers, blockCustomer, unblockCustomer,
      getCategories, deleteCategory, hideCategory, unhideCategory, addCategory,editCategory,
-     getProducts, addProduct, deleteProduct
+     getProducts, addProduct, deleteProduct, deactivateProduct, activateProduct
     }

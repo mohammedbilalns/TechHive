@@ -32,6 +32,8 @@ router.post('/categories/edit/:categoryid',adminAuth.checkSession, adminControll
 router.get('/products', adminController.getProducts)
 router.post('/products/add', adminController.addProduct)
 router.get('/products/delete/:productid', adminController.deleteProduct)
+router.post('/products/activate/:productid', adminController.activateProduct)
+router.post('/products/deactivate/:productid', adminController.deactivateProduct)
 
 const products = [
     {

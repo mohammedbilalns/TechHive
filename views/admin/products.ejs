@@ -196,10 +196,24 @@
                       </td>
                       <td class="px-6 py-3 text-center">
                         <div class="flex justify-center gap-2">
-                          <button class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600"
-                            onclick="toggleStatus('<%= product._id %>')">
-                            <%= product.status==='Active' ? 'Deactivate' : 'Activate' %>
-                          </button>
+                          <% if (product.status === 'Active') { %>
+                            <!-- Form for Deactivate -->
+                            <form action="/admin/products/deactivate/<%= product._id %>" method="POST" 
+                              onsubmit="return confirm('Are you sure you want to deactivate the product?')">
+                              <button type="submit" class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">
+                                Deactivate
+                              </button>
+                            </form>
+                          <% } else { %>
+                            <!-- Form for Activate -->
+                            <form action="/admin/products/activate/<%= product._id %>" method="POST" 
+                              onsubmit="return confirm('Are you sure you want to activate the product?')">
+                              <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                                Activate
+                              </button>
+                            </form>
+                          <% } %>
+
                           <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                             onclick="editProduct('<%= product._id %>')">Edit</button>
                           <form action="/admin/products/delete/<%= product._id %>" 
