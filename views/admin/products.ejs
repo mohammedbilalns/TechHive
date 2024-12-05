@@ -108,6 +108,7 @@
           <%= message %>
         </div>
         <% } %>
+        
           <div class="bg-white shadow-md rounded-md p-6">
             <!-- Header -->
             <div class="flex justify-between items-center pb-4 border-b">
@@ -771,5 +772,33 @@ function validateForm() {
     }
 
     return true; // All validations passed
+}
+
+function filterProducts() {
+    const searchBox = document.getElementById('searchBox');
+    const filter = searchBox.value.toLowerCase();
+    const productsTable = document.getElementById('productsTable');
+    const rows = productsTable.getElementsByTagName('tr');
+
+    for (let i = 0; i < rows.length; i++) {
+        const cells = rows[i].getElementsByTagName('td');
+        let found = false;
+
+        for (let j = 0; j < cells.length; j++) {
+            if (cells[j]) {
+                const cellText = cells[j].textContent || cells[j].innerText;
+                if (cellText.toLowerCase().indexOf(filter) > -1) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (found) {
+            rows[i].style.display = ""; // Show the row
+        } else {
+            rows[i].style.display = "none"; // Hide the row
+        }
+    }
 }
   </script>
