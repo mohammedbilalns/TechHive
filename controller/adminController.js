@@ -177,84 +177,17 @@ const getProducts = async (req, res)=>{
 }
 
 const addProduct = async (req, res) => {
-  try {
-    const { name, brand, category, variantName, price, stock, discount } = req.body;
-
-    console.log("data:" , name , brand , category , variantName, price, stock, discount)
-    // Validate arrays have same length
-    if (!Array.isArray(variantName) || 
-        !Array.isArray(price) || 
-        !Array.isArray(stock) || 
-        !Array.isArray(discount) ||
-        variantName.length !== price.length || 
-        price.length !== stock.length || 
-        stock.length !== discount.length) {
-            console.log("192")
-        return res.redirect('/admin/products?message=An+unexpected+error+occurred&alertType=error');
-    }
-
-    // Process variants
-    const variants = variantName.map((name, index) => {
-        // Validate price
-      const variantPrice = parseFloat(price[index]);
-      if (isNaN(variantPrice) || variantPrice <= 0) {
-        throw new Error(`Invalid price for variant ${name}`);
-      }
-
-      // Validate stock
-      const variantStock = parseInt(stock[index]);
-      if (isNaN(variantStock) || variantStock < 0) {
-        throw new Error(`Invalid stock for variant ${name}`);
-      }
-
-      // Validate discount
-      const variantDiscount = parseInt(discount[index]) || 0;
-      if (isNaN(variantDiscount) || variantDiscount < 0 || variantDiscount > 100) {
-        throw new Error(`Invalid discount for variant ${name}`);
-      }
-
-      // Get variant images
-      const variantImages = req.files[`variantImages${index + 1}[]`]?.map(file => '/uploads/products/' + file.filename) || [];
-
-      return {
-        variantName: name,
-        price: variantPrice,
-        stock: variantStock,
-        discount: variantDiscount,
-        images: variantImages
-      };
-    });
-
-    console.log("Variants", variants)
-
-    // Create new product
-    const product = new productSchema({
-      name,
-      brand,
-      category,
-      mainImage: req.files.mainImage ? '/uploads/products/' + req.files.mainImage[0].filename : '',
-      variants,
-      status: 'Active'
-    });
-
-    console.log("Product: ", product)
-    await product.save();
-
-    return res.redirect('/admin/products?message=Product+added+successfully&alertType=success');
-
-
-
-  } catch (error) {
-    console.error('Error adding product:', error);
-    log.red('PRODUCT_ADD_ERROR', error)
-    return res.redirect('/admin/products?message=Error+adding+product&alertType=error');
-
-  
-  }
+ 
 }
+
+const deleteProduct = async (req, res) =>{
+    await productSchema.findByIdAndDelete(req.params.productid)
+    res.redirect('/admin/products?message=Product+deleted+successfully&alertType=success')
+}
+
 export default {
      loadLogin, verifyLogin ,
      getCustomers, blockCustomer, unblockCustomer,
      getCategories, deleteCategory, hideCategory, unhideCategory, addCategory,editCategory,
-     getProducts, addProduct
+     getProducts, addProduct, deleteProduct
     }

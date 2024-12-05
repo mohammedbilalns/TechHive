@@ -202,8 +202,8 @@
                           </button>
                           <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                             onclick="editProduct('<%= product._id %>')">Edit</button>
-                          <form action="/admin/products/delete/<%= product._id %>" method="POST"
-                            onsubmit="return confirm('Are you sure?')">
+                          <form action="/admin/products/delete/<%= product._id %>" 
+                            onsubmit="return confirm('Are you sure you want delete the product?')">
                             <button type="submit"
                               class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">Delete</button>
                           </form>
@@ -234,29 +234,27 @@
             </div>
 
             <!-- Modal Form -->
-            <form id="addProductForm" class="p-8 space-y-6">
+            <form id="addProductForm" class="p-8 space-y-6" onsubmit="return validateForm()">
                 <!-- Form Grid Layout -->
                 <div class="grid grid-cols-2 gap-8">
                     <!-- Product Name -->
                     <div class="form-group">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
-                        <input type="text" name="name" required
+                        <input type="text" name="name" id="productName" 
                             class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300 
                             focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-                            transition duration-200 ease-in-out
-                            placeholder-gray-400 shadow-sm
+                            transition duration-200 ease-in-out placeholder-gray-400 shadow-sm
                             hover:border-gray-400"
                             placeholder="Enter product name">
                     </div>
 
-                    <!-- Brand -->
+                    <!-- Brand Name -->
                     <div class="form-group">
                         <label class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
-                        <input type="text" name="brand" required
+                        <input type="text" name="brand" id="brandName" 
                             class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300 
                             focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-                            transition duration-200 ease-in-out
-                            placeholder-gray-400 shadow-sm
+                            transition duration-200 ease-in-out placeholder-gray-400 shadow-sm
                             hover:border-gray-400"
                             placeholder="Enter brand name">
                     </div>
@@ -344,7 +342,7 @@
                             <!-- Variant Name -->
                             <div class="form-group col-span-3">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Variant Name</label>
-                                <input type="text" name="variantName[]" required
+                                <input type="text" name="variantName[]" id="variantName" 
                                     class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300 
                                     focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
                                     transition duration-200 ease-in-out placeholder-gray-400 shadow-sm
@@ -359,7 +357,7 @@
                                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                         <span class="text-gray-500">₹</span>
                                     </div>
-                                    <input type="text" name="price[]" required pattern="^\d*\.?\d*$"
+                                    <input type="text" name="price[]" id="price" 
                                         class="w-full h-12 pl-8 pr-4 py-2.5 text-base rounded-lg border border-gray-300 
                                         focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
                                         transition duration-200 ease-in-out
@@ -373,7 +371,7 @@
                             <div class="form-group">
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Discount</label>
                                 <div class="relative">
-                                    <input type="number" name="discount[]" min="0" max="100"
+                                    <input type="number" name="discount[]" id="discount" min="1" max="100"
                                         class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300 
                                         focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
                                         transition duration-200 ease-in-out
@@ -409,7 +407,7 @@
                                             <i class="fas fa-cloud-upload-alt text-gray-400 text-lg mb-1"></i>
                                             <p class="text-xs text-gray-500">Image <%= num %></p>
                                         </div>
-                                        <input type="file" name="variantImages<%= num %>[]" required accept="image/*" 
+                                        <input type="file" name="variantImages<%= num %>[]" accept="image/*" 
                                             class="hidden" onchange="handleImageUpload(this, 'variantPreview<%= num %>', 'variantUploadLabel<%= num %>', 'variantCropper<%= num %>')">
                                     </label>
 
@@ -717,4 +715,47 @@ document.getElementById('cropperModal').addEventListener('click', function(event
         closeCropper();
     }
 });
+
+// Custom validation function
+function validateForm() {
+    const productName = document.getElementById('productName').value;
+    const brandName = document.getElementById('brandName').value;
+    const variantName = document.getElementById('variantName').value;
+    const discount = document.getElementById('discount').value;
+    const mainImage = document.querySelector('input[name="mainImage"]').files.length;
+    const variantImages = [...document.querySelectorAll('input[type="file"]')].filter(input => input.name.startsWith('variantImages')).map(input => input.files.length);
+
+    // Validate product name, brand name, and variant name
+    const namePattern = /^[A-Za-z\s]+$/; // Only letters and spaces
+    if (!namePattern.test(productName)) {
+        alert('Product name can only contain letters and spaces.');
+        return false;
+    }
+    if (!namePattern.test(brandName)) {
+        alert('Brand name can only contain letters and spaces.');
+        return false;
+    }
+    if (!namePattern.test(variantName)) {
+        alert('Variant name can only contain letters and spaces.');
+        return false;
+    }
+
+    // Validate discount
+    if (discount < 1 || discount > 100) {
+        alert('Discount must be between 1 and 100.');
+        return false;
+    }
+
+    // Validate image uploads
+    if (mainImage === 0) {
+        alert('Please upload the main image.');
+        return false;
+    }
+    if (variantImages.some(count => count === 0)) {
+        alert('Please upload all variant images.');
+        return false;
+    }
+
+    return true; // All validations passed
+}
   </script>
