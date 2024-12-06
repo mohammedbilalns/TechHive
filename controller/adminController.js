@@ -11,7 +11,10 @@ configDotenv()
 //---- Admin Login----
 const loadLogin =  (req, res) => {
 
-    res.render("admin/login")
+    const message = req.query.message 
+    const alertType = req.query.alertType
+    const email = req.query.email 
+    res.render("admin/login", {message, alertType, email})
 }
 
 const verifyLogin = async (req,res)=>{
@@ -21,6 +24,7 @@ const verifyLogin = async (req,res)=>{
         password = password.trim()
         console.log(email, password)
         if(email != process.env.ADMIN_EMAIL || password != process.env.ADMIN_PASSWORD){
+            return res.redirect(`/admin/login?message=Invalid+credentials&alertType=error&email=${email}`)
             return res.render('admin/login', { message: "Invalid credentials", alertType: "error" });
         }
 
@@ -161,23 +165,58 @@ const editCategory = async (req, res) => {
 };
 
 //---- Admin Products ---- 
-const getProducts = async (req, res)=>{
-    try{
-        let message = req.query.message 
-        let alertType = req.query.alertType
+const getProducts = async (req, res) => {
+    try {
+        let message = req.query.message;
+        let alertType = req.query.alertType;
 
-        const products = await productSchema.find()
-        const categories = await categorySchema.find()
-        res.render("admin/products", {products, categories,  message, alertType})
-
-    }catch(error){
-        log.red("PRODUCT_FETCH_ERROR", error)
-
+        const products = await productSchema.find();
+        const categories = await categorySchema.find();
+        res.render("admin/products", { products, categories, message, alertType });
+    } catch (error) {
+        log.red("PRODUCT_FETCH_ERROR", error);
     }
 }
 
 const addProduct = async (req, res) => {
- 
+    try {
+        let { name, brand, category, variants } = req.body;
+        const mainImage = req.file ? req.file.path : ''; // Get the path of the uploaded file
+
+        // Validate input
+        name = name.trim();
+        brand = brand.trim();
+        category = category.trim();
+
+        if (!name || !brand || !category || !mainImage || !variants) {
+            return res.redirect('/admin/products?message=All fields are required&alertType=error');
+        }
+
+        // Prepare variants
+        const preparedVariants = variants.map(variant => ({
+            variantName: variant.variantName.trim(),
+            price: parseFloat(variant.price),
+            stock: parseInt(variant.stock),
+            discount: parseInt(variant.discount) || 0,
+            images: variant.images // Assuming images are passed correctly
+        }));
+
+        // Create new product
+        const newProduct = new productSchema({
+            name,
+            brand,
+            category,
+            mainImage,
+            variants: preparedVariants,
+            status: "Active"
+        });
+
+        await newProduct.save();
+        res.redirect('/admin/products?message=Product added successfully&alertType=success');
+    } catch (error) {
+        log.red('ADD_PRODUCT_ERROR', error);
+        res.redirect('/admin/products?message=Something went wrong&alertType=error');
+    }
 }
 
 const deleteProduct = async (req, res) =>{

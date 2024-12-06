@@ -2,8 +2,23 @@ import express from "express"
 import { Router } from "express"
 import adminController from "../controller/adminController.js"
 import adminAuth from "../middlewares/adminAuth.js"
+import multer from "multer"
+import path from "path"
 
 const router = Router()
+
+// Set up storage for Multer
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); // Directory to save uploaded files
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname)); // Append timestamp to the filename
+    }
+})
+
+// Initialize upload variable
+const upload = multer({ storage: storage })
 
 router.use(express.static('static'))
 
@@ -30,7 +45,7 @@ router.post('/categories/edit/:categoryid',adminAuth.checkSession, adminControll
 
 //---- products routes ---- 
 router.get('/products', adminController.getProducts)
-router.post('/products/add', adminController.addProduct)
+router.post('/products/add', adminAuth.checkSession, upload.single('mainImage'), adminController.addProduct)
 router.get('/products/delete/:productid', adminController.deleteProduct)
 router.post('/products/activate/:productid', adminController.activateProduct)
 router.post('/products/deactivate/:productid', adminController.deactivateProduct)
