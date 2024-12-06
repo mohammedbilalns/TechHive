@@ -324,21 +324,48 @@
           const stock = addProductForm.stock.value.trim();
           const discount = addProductForm.discount.value.trim();
 
+          // Check if all four images are selected
+          const imageInputs = addProductForm.querySelectorAll('input[type="file"]');
+          const imageFiles = Array.from(imageInputs).map(input => input.files[0]);
+          const allImagesSelected = imageFiles.every(file => file !== undefined);
+
+          // Define minimum and maximum lengths
+          const nameBrandVariantMinLength = 3;
+          const nameBrandVariantMaxLength = 100;
+          const descriptionMinLength = 10;
+          const descriptionMaxLength = 1000;
+
           // Validate required fields first
           if (!name) {
             alertText.textContent = "Product name is required.";
+            alertMessage.classList.remove('hidden');
+            isValid = false;
+          } else if (name.length < nameBrandVariantMinLength || name.length > nameBrandVariantMaxLength) {
+            alertText.textContent = `Product name must be between ${nameBrandVariantMinLength} and ${nameBrandVariantMaxLength} characters.`;
             alertMessage.classList.remove('hidden');
             isValid = false;
           } else if (!brand) {
             alertText.textContent = "Brand is required.";
             alertMessage.classList.remove('hidden');
             isValid = false;
+          } else if (brand.length < nameBrandVariantMinLength || brand.length > nameBrandVariantMaxLength) {
+            alertText.textContent = `Brand must be between ${nameBrandVariantMinLength} and ${nameBrandVariantMaxLength} characters.`;
+            alertMessage.classList.remove('hidden');
+            isValid = false;
           } else if (!variant) {
             alertText.textContent = "Variant is required.";
             alertMessage.classList.remove('hidden');
             isValid = false;
+          } else if (variant.length < nameBrandVariantMinLength || variant.length > nameBrandVariantMaxLength) {
+            alertText.textContent = `Variant must be between ${nameBrandVariantMinLength} and ${nameBrandVariantMaxLength} characters.`;
+            alertMessage.classList.remove('hidden');
+            isValid = false;
           } else if (!description) {
             alertText.textContent = "Product description is required.";
+            alertMessage.classList.remove('hidden');
+            isValid = false;
+          } else if (description.length < descriptionMinLength || description.length > descriptionMaxLength) {
+            alertText.textContent = `Product description must be between ${descriptionMinLength} and ${descriptionMaxLength} characters.`;
             alertMessage.classList.remove('hidden');
             isValid = false;
           } else if (!price) {
@@ -349,29 +376,33 @@
             alertText.textContent = "Stock is required.";
             alertMessage.classList.remove('hidden');
             isValid = false;
+          } else if (!allImagesSelected) {
+            alertText.textContent = "All four images must be selected.";
+            alertMessage.classList.remove('hidden');
+            isValid = false;
           }
 
           // Validate text fields for allowed characters only if required fields are filled
           if (isValid) {
-            const nameRegex = /^[A-Za-z\s]+$/;
-            const brandRegex = /^[A-Za-z\s]+$/;
-            const variantRegex = /^[A-Za-z\s+]+$/;
-            const descriptionRegex = /^[A-Za-z\s.,]+$/;
+            const nameRegex = /^[A-Za-z0-9\s]+$/;
+            const brandRegex = /^[A-Za-z0-9\s]+$/;
+            const variantRegex = /^[A-Za-z0-9\s+]+$/;
+            const descriptionRegex = /^[A-Za-z0-9\s.,]+$/;
 
             if (!nameRegex.test(name)) {
-              alertText.textContent = "Product name can only contain letters and spaces.";
+              alertText.textContent = "Product name can only contain letters, numbers, and spaces.";
               alertMessage.classList.remove('hidden');
               isValid = false;
             } else if (!brandRegex.test(brand)) {
-              alertText.textContent = "Brand can only contain letters and spaces.";
+              alertText.textContent = "Brand can only contain letters, numbers, and spaces.";
               alertMessage.classList.remove('hidden');
               isValid = false;
             } else if (!variantRegex.test(variant)) {
-              alertText.textContent = "Variant can only contain letters, spaces, and +.";
+              alertText.textContent = "Variant can only contain letters, numbers, spaces, and +.";
               alertMessage.classList.remove('hidden');
               isValid = false;
             } else if (!descriptionRegex.test(description)) {
-              alertText.textContent = "Description can only contain letters, spaces, ., and ,.";
+              alertText.textContent = "Description can only contain letters, numbers, spaces, ., and ,.";
               alertMessage.classList.remove('hidden');
               isValid = false;
             }
