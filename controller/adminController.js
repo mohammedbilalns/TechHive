@@ -64,7 +64,7 @@ const logoutAdmin = (req,res)=>{
       log.red('Error destroying session', err);
       return res.status(500).send('Unable to log out');
     }
-    res.redirect('/admin/login?message=logged+out+successfullt&alertType=error');
+    res.redirect('/admin/login?message=logged+out+successfully&alertType=success');
   });
 
 }
@@ -211,46 +211,46 @@ const getProducts = async (req, res) => {
     }
 }
 
-const addProduct = async (req, res) => {
-    try {
-        let { name, brand, category, variants } = req.body;
-        const mainImage = req.file ? req.file.path : ''; // Get the path of the uploaded file
+// const addProduct = async (req, res) => {
+//     try {
+//         let { name, brand, category, variants } = req.body;
+//         const mainImage = req.file ? req.file.path : ''; // Get the path of the uploaded file
 
-        // Validate input
-        name = name.trim();
-        brand = brand.trim();
-        category = category.trim();
+//         // Validate input
+//         name = name.trim();
+//         brand = brand.trim();
+//         category = category.trim();
 
-        if (!name || !brand || !category || !mainImage || !variants) {
-            return res.redirect('/admin/products?message=All fields are required&alertType=error');
-        }
+//         if (!name || !brand || !category || !mainImage || !variants) {
+//             return res.redirect('/admin/products?message=All fields are required&alertType=error');
+//         }
 
-        // Prepare variants
-        const preparedVariants = variants.map(variant => ({
-            variantName: variant.variantName.trim(),
-            price: parseFloat(variant.price),
-            stock: parseInt(variant.stock),
-            discount: parseInt(variant.discount) || 0,
-            images: variant.images // Assuming images are passed correctly
-        }));
+//         // Prepare variants
+//         const preparedVariants = variants.map(variant => ({
+//             variantName: variant.variantName.trim(),
+//             price: parseFloat(variant.price),
+//             stock: parseInt(variant.stock),
+//             discount: parseInt(variant.discount) || 0,
+//             images: variant.images // Assuming images are passed correctly
+//         }));
 
-        // Create new product
-        const newProduct = new productSchema({
-            name,
-            brand,
-            category,
-            mainImage,
-            variants: preparedVariants,
-            status: "Active"
-        });
+//         // Create new product
+//         const newProduct = new productSchema({
+//             name,
+//             brand,
+//             category,
+//             mainImage,
+//             variants: preparedVariants,
+//             status: "Active"
+//         });
 
-        await newProduct.save();
-        res.redirect('/admin/products?message=Product added successfully&alertType=success');
-    } catch (error) {
-        log.red('ADD_PRODUCT_ERROR', error);
-        res.redirect('/admin/products?message=Something went wrong&alertType=error');
-    }
-}
+//         await newProduct.save();
+//         res.redirect('/admin/products?message=Product added successfully&alertType=success');
+//     } catch (error) {
+//         log.red('ADD_PRODUCT_ERROR', error);
+//         res.redirect('/admin/products?message=Something went wrong&alertType=error');
+//     }
+// }
 
 const deleteProduct = async (req, res) =>{
     try{
@@ -297,6 +297,12 @@ const getAddProduct = async(req,res)=>{
     }
     
 }
+
+const addProduct = async (req, res)=>{
+    console.log(req.body)
+    ``
+}
+
 
 export default {
      loadLogin, verifyLogin , logoutAdmin,

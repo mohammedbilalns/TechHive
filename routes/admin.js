@@ -6,14 +6,14 @@ import multer from "multer"
 import path from "path"
 
 const router = Router()
-
+router.use(express.static('static'));
 
 
 
 //---- login routes ----
 router.get('/login', adminAuth.isLogin, adminController.loadLogin)
 router.post('/login', adminAuth.isLogin, adminController.verifyLogin )
-router.get('/logout',adminController.logoutAdmin)
+router.get('/logout', adminAuth.isLogin ,adminController.logoutAdmin)
 
 //---- customers routes ----
 router.get('/customers',  adminController.getCustomers) // add middleware to check session in this 
@@ -32,11 +32,11 @@ router.post('/categories/edit/:categoryid',adminAuth.checkSession, adminControll
 
 //---- products routes ---- 
 router.get('/products', adminController.getProducts)
-router.post('/products/add', adminAuth.checkSession, adminController.addProduct)
 router.get('/products/delete/:productid', adminController.deleteProduct)
 router.post('/products/activate/:productid', adminController.activateProduct)
 router.post('/products/deactivate/:productid', adminController.deactivateProduct)
-router.get(`/addproduct`,adminController.getAddProduct )
+router.get(`/products/add`,adminController.getAddProduct )
+router.post('/products/add', adminController.addProduct)
 
 
   

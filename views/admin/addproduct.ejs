@@ -10,13 +10,13 @@
         <h2 class="text-sm font-semibold text-gray-600 uppercase">Menu</h2>
         <ul class="mt-4 space-y-2">
           <li>
-            <a href="/admin/dashboard" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+            <a href="/admin/dashboard" onclick="return false" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
               <i class="fas fa-th-large mr-3"></i>
               <span>Dashboard</span>
             </a>
           </li>
           <li>
-            <a href="/admin/products" class="flex items-center px-4 py-2 bg-primary-accent text-gray-200 hover:bg-primary-hover rounded-lg">
+            <a href="/admin/products"  class="flex items-center px-4 py-2 bg-primary-accent text-gray-200 hover:bg-primary-hover rounded-lg">
               <i class="fas fa-box mr-3"></i>
               <span>Products</span>
             </a>
@@ -28,25 +28,25 @@
             </a>
           </li>
           <li>
-            <a href="/admin/orders" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+            <a href="/admin/orders" onclick="return false" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
               <i class="fas fa-shopping-cart mr-3"></i>
               <span>Orders</span>
             </a>
           </li>
           <li>
-            <a href="/admin/coupons" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+            <a href="/admin/coupons" onclick="return false" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
               <i class="fas fa-ticket-alt mr-3"></i>
               <span>Coupon</span>
             </a>
           </li>
           <li>
-            <a href="/admin/banners" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+            <a href="/admin/banners" onclick="return false" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
               <i class="fas fa-images mr-3"></i>
               <span>Banner</span>
             </a>
           </li>
           <li>
-            <a href="/transactions" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+            <a href="/transactions" onclick="return false" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
               <i class="fas fa-receipt mr-3"></i>
               <span>Transaction</span>
             </a>
@@ -57,7 +57,7 @@
         <h2 class="text-sm font-semibold text-gray-600 uppercase">User Management</h2>
         <ul class="mt-4 space-y-2">
           <li>
-            <a href="/admin/admins" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+            <a href="/admin/admins" onclick="return false" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
               <i class="fas fa-user-shield mr-3"></i>
               <span>Manage Admins</span>
             </a>
@@ -74,13 +74,13 @@
         <h2 class="text-sm font-semibold text-gray-600 uppercase">Others</h2>
         <ul class="mt-4 space-y-2">
           <li>
-            <a href="/admin/settings" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+            <a href="/admin/settings" onclick="return false" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
               <i class="fas fa-cogs mr-3"></i>
               <span>Settings</span>
             </a>
           </li>
           <li>
-            <a href="/admin/help" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+            <a href="/admin/help" onclick="return false" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
               <i class="fas fa-question-circle mr-3"></i>
               <span>Help</span>
             </a>
@@ -207,19 +207,21 @@
           </div>
           <small class="text-gray-500">Please upload 4 images.</small>
         </div> 
+   <!-- Error Message -->
+   <div id="alertMessage" class="mb-4 p-3 rounded-md hidden bg-red-100 text-red-700">
+    <span id="alertText"></span>
+  </div>
+
+  <!-- Add Product Button -->
+  <div id="addProductButtonContainer" class="flex justify-end mt-6">
+    <button type="submit" form="addProductForm" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Add Product</button>
+  </div>
+</div>
+
+
       </form>
 
-      <!-- Error Message -->
-      <div id="alertMessage" class="mb-4 p-3 rounded-md hidden bg-red-100 text-red-700">
-        <span id="alertText"></span>
-      </div>
-
-      <!-- Add Product Button -->
-      <div id="addProductButtonContainer" class="flex justify-end mt-6">
-        <button type="submit" form="addProductForm" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Add Product</button>
-      </div>
-    </div>
-
+   
     <!-- Cropper Modal -->
     <div id="cropperModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
       <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4">
