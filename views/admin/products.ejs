@@ -1,804 +1,216 @@
 <%- include('../partials/adminheader') %>
-  <div class="flex min-h-screen">
-    <!-- Sidebar -->
-    <aside id="sidebar" class="bg-gray-100 w-full md:w-64 h-screen">
-      <nav class="py-4">
-        <div class="px-4 md:px-6">
-          <h2 class="text-sm font-semibold text-gray-600 uppercase">Menu</h2>
-          <ul class="mt-4 space-y-2">
-            <li>
-              <a href="/admin/dashboard" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                <i class="fas fa-th-large mr-3"></i>
-                <span>Dashboard</span>
-              </a>
-            </li>
 
-            <li>
-              <a href="/admin/products"
-                class="flex items-center px-4 py-2 bg-primary-accent text-gray-200 hover:bg-primary-hover rounded-lg">
-                <i class="fas fa-box mr-3"></i>
-                <span>Products</span>
-              </a>
+<div class="flex flex-col md:flex-row">
+  <!-- Sidebar -->
+  <aside id="sidebar" class="bg-gray-100 w-full md:w-64 min-h-screen hidden md:block transform transition-transform duration-300 ease-in-out">
+    <nav class="py-4">
+      <div class="px-4 md:px-6">
+        <h2 class="text-sm font-semibold text-gray-600 uppercase">Menu</h2>
+        <ul class="mt-4 space-y-2">
+          <li>
+            <a href="/admin/dashboard" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-th-large mr-3"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/products" class="flex items-center px-4 py-2 bg-primary-accent text-gray-200 hover:bg-primary-hover rounded-lg">
+              <i class="fas fa-box mr-3"></i>
+              <span>Products</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/categories" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-layer-group mr-3"></i>
+              <span>Category</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/orders" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-shopping-cart mr-3"></i>
+              <span>Orders</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/coupons" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-ticket-alt mr-3"></i>
+              <span>Coupon</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/banners" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-images mr-3"></i>
+              <span>Banner</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/transactions" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-receipt mr-3"></i>
+              <span>Transaction</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="px-4 md:px-6 mt-8">
+        <h2 class="text-sm font-semibold text-gray-600 uppercase">User Management</h2>
+        <ul class="mt-4 space-y-2">
+          <li>
+            <a href="/admin/admins" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-user-shield mr-3"></i>
+              <span>Manage Admins</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/customers" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-users mr-3"></i>
+              <span>Customers</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="px-4 md:px-6 mt-8">
+        <h2 class="text-sm font-semibold text-gray-600 uppercase">Others</h2>
+        <ul class="mt-4 space-y-2">
+          <li>
+            <a href="/admin/settings" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-cogs mr-3"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/help" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-question-circle mr-3"></i>
+              <span>Help</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/logout" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-sign-out-alt mr-3"></i>
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </aside>
 
-            <li>
-            <li>
-              <a href="/admin/categories" class="flex items-center px-4 py-2  text-gray-800 hover:bg-gray-200 rounded-lg">
-                <i class="fas fa-layer-group mr-3"></i>
-                <span>Category</span>
-              </a>
-
-            <li>
-
-
-              <a href="/admin/orders" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                <i class="fas fa-shopping-cart mr-3"></i>
-                <span>Orders</span>
-              </a>
-            </li>
-            <li>
-              <a href="/admin/coupons" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                <i class="fas fa-ticket-alt mr-3"></i>
-                <span>Coupon</span>
-              </a>
-            </li>
-            <li>
-              <a href="/admin/banners" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                <i class="fas fa-images mr-3"></i>
-                <span>Banner</span>
-              </a>
-            </li>
-            <li>
-              <a href="/transactions" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                <i class="fas fa-receipt mr-3"></i>
-                <span>Transaction</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-
-        <div class="px-4 md:px-6 mt-8">
-          <h2 class="text-sm font-semibold text-gray-600 uppercase">User Management</h2>
-          <ul class="mt-4 space-y-2">
-            <li>
-              <a href="/admin/admins" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                <i class="fas fa-user-shield mr-3"></i>
-                <span>Manage Admins</span>
-              </a>
-            </li>
-            <li>
-              <a href="/admin/customers" class="flex items-center px-4 py-2  text-gray-800 hover:bg-gray-200 rounded-lg">
-                <i class="fas fa-users mr-3"></i>
-                <span>Customers</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-
-        <div class="px-4 md:px-6 mt-8">
-          <h2 class="text-sm font-semibold text-gray-600 uppercase">Others</h2>
-          <ul class="mt-4 space-y-2">
-            <li>
-              <a href="/admin/settings" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                <i class="fas fa-cogs mr-3"></i>
-                <span>Settings</span>
-              </a>
-            </li>
-            <li>
-              <a href="/admin/help" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                <i class="fas fa-question-circle mr-3"></i>
-                <span>Help</span>
-              </a>
-            </li>
-            <li>
-              <a href="/admin/logout" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                <i class="fas fa-sign-out-alt mr-3"></i>
-                <span>Logout</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="flex-grow p-4 md:py-6">
-      <% if (locals.message && locals.alertType) { %>
-        <div id="alertMessage" class="mb-4 p-3 rounded-md 
+  <!-- Main Content -->
+  <main class="flex-grow p-4 md:py-12">
+    <% if (locals.message && locals.alertType) { %>
+      <div id="alertMessage" class="mb-4 p-3 rounded-md 
            <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
-          <%= message %>
-        </div>
-        <% } %>
-        
-          <div class="bg-white shadow-md rounded-md p-6">
-            <!-- Header -->
-            <div class="flex justify-between items-center pb-4 border-b">
-              <h1 class="text-lg font-semibold">Products Dashboard</h1>
-              <div class="flex items-center gap-4">
-                <div class="relative">
-                  <input type="text" id="searchBox" placeholder="Search..."
-                    class="border border-gray-300 rounded-md px-4 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    oninput="filterProducts()" />
-                  <i class="fas fa-search absolute top-2.5 right-4 text-gray-500"></i>
-                </div>
-                <button class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center gap-2"
-                  onclick="addProduct()">
-                  <i class="fas fa-plus"></i> Add Product
-                </button>
-                <button
-                  class="flex items-center bg-primary-accent text-white px-4 py-2 rounded-md shadow w-full md:w-auto justify-center"
-                  onclick="exportCategories()">
-                  <i class="fas fa-download mr-2"></i> Export
-                </button>
-              </div>
-            </div>
+        <%= message %>
+      </div>
+    <% } %>
 
-            <!-- Updated Products Table with Index Column -->
-            <div class="overflow-x-auto mt-6">
-              <table class="min-w-full bg-gray-50 text-sm">
-                <thead>
-                  <tr class="text-left text-gray-600">
-                    <th class="px-6 py-3">#</th>
-                    <th class="px-6 py-3">Image</th>
-                    <th class="px-6 py-3">Name</th>
-                    <th class="px-6 py-3">Category</th>
-                    <th class="px-6 py-3">Variants</th>
-                    <th class="px-6 py-3">Status</th>
-                    <th class="px-6 py-3 text-center">Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="productsTable" class="text-gray-700">
-                  <% products.forEach((product, index)=> { %>
-                    <tr class="border-b hover:bg-gray-100">
-                      <td class="px-6 py-3 font-medium">
-                        <%= index + 1 %>
-                      </td>
-                      <td class="px-6 py-3">
-                        <img src="<%= product.image %>" alt="Product" class="w-12 h-12 rounded-md">
-                      </td>
-                      <td class="px-6 py-3">
-                        <%= product.name %>
-                      </td>
-                      <td class="px-6 py-3">
-                        <%= product.category %>
-                      </td>
-                      <td class="px-6 py-3">
-                        <div class="space-y-3 max-h-48 overflow-y-auto pr-2">
-                          <% product.variants.forEach((variant) => { %>
-                            <div class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
-                              <div class="flex-shrink-0">
-                                <img src="<%= variant.image %>" 
-                                     alt="<%= variant.variantName %>" 
-                                     class="w-12 h-12 rounded-md object-cover border border-gray-200">
-                              </div>
-                              <div class="flex-1 min-w-0">
-                                <p class="font-medium text-gray-900 truncate">
-                                  <%= variant.variantName %>
-                                </p>
-                                <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
-                                  <span class="inline-flex items-center">
-                                    <i class="fas fa-tag mr-1 text-gray-400"></i>
-                                    ₹<%= variant.price %>
-                                  </span>
-                                  <span class="inline-flex items-center">
-                                    <i class="fas fa-box mr-1 text-gray-400"></i>
-                                    <%= variant.stock %> in stock
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          <% }); %>
-                        </div>
-                      </td>
-                      <td class="px-6 py-3">
-                        <span class="px-3 py-1 rounded-full text-sm font-medium
-                  <%= product.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
-                          <%= product.status %>
-                        </span>
-                      </td>
-                      <td class="px-6 py-3 text-center">
-                        <div class="flex justify-center gap-2">
-                          <% if (product.status === 'Active') { %>
-                            <!-- Form for Deactivate -->
-                            <form action="/admin/products/deactivate/<%= product._id %>" method="POST" 
-                              onsubmit="return confirm('Are you sure you want to deactivate the product?')">
-                              <button type="submit" class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">
-                                Deactivate
-                              </button>
-                            </form>
-                          <% } else { %>
-                            <!-- Form for Activate -->
-                            <form action="/admin/products/activate/<%= product._id %>" method="POST" 
-                              onsubmit="return confirm('Are you sure you want to activate the product?')">
-                              <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-                                Activate
-                              </button>
-                            </form>
-                          <% } %>
-
-                          <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-                            onclick="editProduct('<%= product._id %>')">Edit</button>
-                          <form action="/admin/products/delete/<%= product._id %>" 
-                            onsubmit="return confirm('Are you sure you want delete the product?')">
-                            <button type="submit"
-                              class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">Delete</button>
-                          </form>
-                        </div>
-                      </td>
-                    </tr>
-                    <% }); %>
-                </tbody>
-              </table>
-            </div>
+    <div class="bg-primary-white rounded-lg shadow-lg w-full overflow-hidden">
+      <!-- Page Header -->
+      <div class="flex flex-col md:flex-row justify-between items-center bg-gray-50 px-4 md:px-6 py-4 border-b space-y-4 md:space-y-0">
+        <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Products Dashboard</h1>
+        <div class="flex gap-4">
+          <div class="relative">
+            <input type="text" id="searchBox" placeholder="Search..."
+              class="w-full md:w-64 border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+              oninput="filterProducts()" />
+            <i class="fas fa-search absolute top-3 right-4 text-gray-400"></i>
           </div>
-    </main>
-  </div>
-  
-
-  <!-- Add Product Modal -->
-  <div id="addProductModal"
-    class="fixed inset-0 bg-black bg-opacity-60 hidden items-start justify-center z-50 overflow-y-auto">
-    <div class="min-h-screen px-4 py-12 flex items-start justify-center">
-        <div class="bg-white rounded-xl w-full max-w-5xl my-8 shadow-2xl transform transition-all">
-            <!-- Modal Header -->
-            <div class="flex justify-between items-center border-b px-8 py-6">
-                <h3 class="text-2xl font-bold text-gray-900">Add New Product</h3>
-                <button onclick="closeAddProductModal()" 
-                    class="text-gray-400 hover:text-gray-500 transition-colors duration-200">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-
-            <!-- Modal Form -->
-            <form id="addProductForm" action="" class="p-8 space-y-6" onsubmit="return validateForm()" enctype="multipart/form-data">
-                <!-- Form Grid Layout -->
-                <div class="grid grid-cols-2 gap-8">
-                    <!-- Product Name -->
-                    <div class="form-group">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
-                        <input type="text" name="name" id="productName" 
-                            class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300 
-                            focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-                            transition duration-200 ease-in-out placeholder-gray-400 shadow-sm
-                            hover:border-gray-400"
-                            placeholder="Enter product name">
-                    </div>
-
-                    <!-- Brand Name -->
-                    <div class="form-group">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
-                        <input type="text" name="brand" id="brandName" 
-                            class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300 
-                            focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-                            transition duration-200 ease-in-out placeholder-gray-400 shadow-sm
-                            hover:border-gray-400"
-                            placeholder="Enter brand name">
-                    </div>
-
-                    <!-- Category -->
-                    <div class="form-group">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                        <div class="relative">
-                            <select name="category" required
-                                class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300 
-                                focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-                                transition duration-200 ease-in-out bg-white
-                                appearance-none cursor-pointer
-                                hover:border-gray-400">
-                                <option value="">Select Category</option>
-                                <% categories.forEach(category=> { %>
-                                    <option value="<%= category._id %>">
-                                        <%= category.name %>
-                                    </option>
-                                <% }); %>
-                            </select>
-                            <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
-                                <i class="fas fa-chevron-down text-gray-400"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Main Image - Update to remove crop and remove buttons -->
-                <div class="mt-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Main Image</label>
-                    <div class="flex flex-col items-center gap-6">
-                        <div class="w-full max-w-[200px]">
-                            <label id="mainImageUploadLabel" class="flex flex-col items-center justify-center px-4 py-4 border-2 border-gray-300 
-                                border-dashed rounded-lg cursor-pointer hover:border-blue-400 transition-colors duration-200">
-                                <div class="space-y-2 text-center">
-                                    <i class="fas fa-cloud-upload-alt text-gray-400 text-2xl"></i>
-                                    <div class="text-sm text-gray-600">
-                                        <span class="font-medium text-blue-600 hover:text-blue-500">Click to upload</span>
-                                    </div>
-                                    <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-                                </div>
-                                <input type="file" name="mainImage" accept="image/*" class="hidden" 
-                                    onchange="handleImageUpload(this, 'mainImagePreview', 'mainImageUploadLabel', 'mainImageCropper')">
-                            </label>
-                        </div>
-                        <div id="mainImagePreview" class="hidden w-full max-w-[200px] cursor-pointer" onclick="triggerFileUpload('mainImageUploadLabel')">
-                            <div class="relative aspect-square rounded-lg border-2 border-gray-200 overflow-hidden">
-                                <img src="#" alt="Preview" class="w-full h-full object-cover">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Cropper Modal -->
-                <div id="cropperModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-                    <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-lg font-semibold">Crop Image</h3>
-                            <button onclick="closeCropper()" class="text-gray-500 hover:text-gray-700">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <div class="relative aspect-square mb-4">
-                            <img id="cropperImage" src="#" class="max-w-full">
-                        </div>
-                        <div class="flex justify-end gap-3">
-                            <button onclick="closeCropper()" 
-                                class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
-                                Cancel
-                            </button>
-                            <button onclick="applyCrop()" 
-                                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-                                Apply
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Variants Section - Add Variant Name Field -->
-                <div id="variantsContainer">
-                    <div class="variant-item space-y-6 p-8 border rounded-lg bg-gray-50">
-                        <h4 class="text-lg font-medium text-gray-900">Variant Details</h4>
-                        <div class="grid grid-cols-3 gap-6">
-                            <!-- Variant Name -->
-                            <div class="form-group col-span-3">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Variant Name</label>
-                                <input type="text" name="variantName[]" id="variantName" 
-                                    class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300 
-                                    focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-                                    transition duration-200 ease-in-out placeholder-gray-400 shadow-sm
-                                    hover:border-gray-400"
-                                    placeholder="Enter variant name">
-                            </div>
-
-                            <!-- Price -->
-                            <div class="form-group">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Price</label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                        <span class="text-gray-500">₹</span>
-                                    </div>
-                                    <input type="text" name="price[]" id="price" 
-                                        class="w-full h-12 pl-8 pr-4 py-2.5 text-base rounded-lg border border-gray-300 
-                                        focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-                                        transition duration-200 ease-in-out
-                                        placeholder-gray-400 shadow-sm
-                                        hover:border-gray-400"
-                                        placeholder="0.00">
-                                </div>
-                            </div>
-
-                            <!-- Discount -->
-                            <div class="form-group">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Discount</label>
-                                <div class="relative">
-                                    <input type="number" name="discount[]" id="discount" min="1" max="100"
-                                        class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300 
-                                        focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-                                        transition duration-200 ease-in-out
-                                        placeholder-gray-400 shadow-sm
-                                        hover:border-gray-400"
-                                        placeholder="Enter discount">
-                                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                        <span class="text-gray-500">%</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Stock -->
-                            <div class="form-group">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
-                                <input type="number" name="stock[]" required min="0"
-                                    class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300 
-                                    focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
-                                    transition duration-200 ease-in-out
-                                    placeholder-gray-400 shadow-sm
-                                    hover:border-gray-400"
-                                    placeholder="Enter stock quantity">
-                            </div>
-                        </div>
-
-                        <!-- Variant Images Section -->
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                            <% [1,2,3,4].forEach(num => { %>
-                                <div class="relative w-full max-w-[150px]">
-                                    <label id="variantUploadLabel<%= num %>" class="flex flex-col items-center justify-center p-3 border-2 border-gray-300 
-                                        border-dashed rounded-lg cursor-pointer hover:border-blue-400 transition-colors duration-200">
-                                        <div class="text-center">
-                                            <i class="fas fa-cloud-upload-alt text-gray-400 text-lg mb-1"></i>
-                                            <p class="text-xs text-gray-500">Image <%= num %></p>
-                                        </div>
-                                        <input type="file" name="variantImages<%= num %>[]" accept="image/*" 
-                                            class="hidden" onchange="handleImageUpload(this, 'variantPreview<%= num %>', 'variantUploadLabel<%= num %>', 'variantCropper<%= num %>')">
-                                    </label>
-
-                                    <div id="variantPreview<%= num %>" class="hidden cursor-pointer" onclick="triggerFileUpload('variantUploadLabel<%= num %>')">
-                                        <div class="relative aspect-square rounded-lg border-2 border-gray-200 overflow-hidden">
-                                            <img src="#" alt="Variant Preview <%= num %>" class="w-full h-full object-cover">
-                                        </div>
-                                    </div>
-                                </div>
-                            <% }); %>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Add Variant Button -->
-                <div class="flex justify-end mt-6">
-                    <button type="button" onclick="addVariant()"
-                        class="inline-flex items-center px-6 py-3 bg-green-500 text-white text-sm font-medium rounded-lg
-                        hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500
-                        transition duration-200 ease-in-out">
-                        <i class="fas fa-plus mr-2"></i>
-                        Add Variant
-                    </button>
-                </div>
-
-                <!-- Form Actions -->
-                <div class="flex justify-end gap-4 pt-6 border-t mt-8">
-                    <button type="button" onclick="closeAddProductModal()"
-                        class="px-6 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 
-                        bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 
-                        transition duration-200 ease-in-out">
-                        Cancel
-                    </button>
-                    <button type="submit"
-                        class="px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg
-                        hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-                        transition duration-200 ease-in-out">
-                        Add Product
-                    </button>
-                </div>
-            </form>
+          <form action="/admin/addproduct" >
+          <button type="submit" class="flex items-center bg-blue-500 text-white px-4 py-2 rounded-md shadow w-full md:w-auto justify-center"
+            >
+            <i class="fas fa-plus mr-2"></i> Add Product
+          </button>
+          </form>
+          <button class="flex items-center bg-primary-accent text-white px-4 py-2 rounded-md shadow w-full md:w-auto justify-center"
+            onclick="exportCategories()">
+            <i class="fas fa-download mr-2"></i> Export
+          </button>
         </div>
+      </div>
+
+      <!-- Products Table -->
+      <div class="overflow-x-auto mt-6">
+        <table class="min-w-full bg-gray-50 text-sm">
+          <thead>
+            <tr class="text-left text-gray-600">
+              <th class="px-6 py-3">#</th>
+              <th class="px-6 py-3">Image</th>
+              <th class="px-6 py-3">Name</th>
+              <th class="px-6 py-3">Category</th>
+              <th class="px-6 py-3">Variants</th>
+              <th class="px-6 py-3">Status</th>
+              <th class="px-6 py-3 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="productsTable" class="text-gray-700">
+            <% products.forEach((product, index) => { %>
+              <tr class="border-b hover:bg-gray-100">
+                <td class="px-6 py-3 font-medium"><%= index + 1 %></td>
+                <td class="px-6 py-3"><img src="<%= product.image %>" alt="Product" class="w-12 h-12 rounded-md"></td>
+                <td class="px-6 py-3"><%= product.name %></td>
+                <td class="px-6 py-3"><%= product.category.name %></td>
+                <td class="px-6 py-3">
+                  <div class="space-y-3 max-h-48 overflow-y-auto pr-2">
+                    <% product.variants.forEach((variant) => { %>
+                      <div class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
+                        <div class="flex-shrink-0">
+                          <img src="<%= variant.image %>" alt="<%= variant.variantName %>" class="w-12 h-12 rounded-md object-cover border border-gray-200">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                          <p class="font-medium text-gray-900 truncate"><%= variant.variantName %></p>
+                          <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
+                            <span class="inline-flex items-center">
+                              <i class="fas fa-tag mr-1 text-gray-400"></i>
+                              ₹<%= variant.price %>
+                            </span>
+                            <span class="inline-flex items-center">
+                              <i class="fas fa-box mr-1 text-gray-400"></i>
+                              <%= variant.stock %> in stock
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    <% }); %>
+                  </div>
+                </td>
+                <td class="px-6 py-3">
+                  <span class="px-3 py-1 rounded-full text-sm font-medium
+                    <%= product.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                    <%= product.status %>
+                  </span>
+                </td>
+                <td class="px-6 py-3 text-center">
+                  <div class="flex justify-center gap-2">
+                    <% if (product.status === 'Active') { %>
+                      <form action="/admin/products/deactivate/<%= product._id %>" method="POST" 
+                        onsubmit="return confirm('Are you sure you want to deactivate the product?')">
+                        <button type="submit" class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">
+                          Deactivate
+                        </button>
+                      </form>
+                    <% } else { %>
+                      <form action="/admin/products/activate/<%= product._id %>" method="POST" 
+                        onsubmit="return confirm('Are you sure you want to activate the product?')">
+                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                          Activate
+                        </button>
+                      </form>
+                    <% } %>
+                    <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                      onclick="editProduct('<%= product._id %>')">Edit</button>
+                    <form action="/admin/products/delete/<%= product._id %>" 
+                      onsubmit="return confirm('Are you sure you want delete the product?')">
+                      <button type="submit"
+                        class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">Delete</button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
     </div>
+  </main>
 </div>
 
-  <script>
-function addProduct() {
-    const modal = document.getElementById('addProductModal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    document.body.style.overflow = 'hidden';
-    
-    // Reset form
-    document.getElementById('addProductForm').reset();
-    
-    // Scroll modal and window to top
-    window.scrollTo(0, 0);
-    modal.scrollTo(0, 0);
-}
-    // Function to close the add product modal
-    function closeAddProductModal() {
-    const modal = document.getElementById('addProductModal');
-    modal.classList.remove('flex');
-    modal.classList.add('hidden');
-    document.body.style.overflow = 'auto';
-    
-    // Reset the form
-    document.getElementById('addProductForm').reset();
-    
-    // Remove all additional variants except the first one
-    const variantsContainer = document.getElementById('variantsContainer');
-    const variants = variantsContainer.querySelectorAll('.variant-item');
-    for (let i = 1; i < variants.length; i++) {
-      variants[i].remove();
-    }
-  }
-
-    // Close modal when clicking outside
-    document.getElementById('addProductModal').addEventListener('click', function(event) {
-    if (event.target === this) {
-      closeAddProductModal();
-    }
-  });
-
-   function addVariant() {
-    const variantsContainer = document.getElementById('variantsContainer');
-    const variantTemplate = document.querySelector('.variant-item').cloneNode(true);
-    
-    // Clear all input values in the clone
-    variantTemplate.querySelectorAll('input').forEach(input => {
-      input.value = '';
-    });
-    
-    // Remove any existing remove buttons from the clone
-    const existingRemoveButtons = variantTemplate.querySelectorAll('.remove-variant-btn');
-    existingRemoveButtons.forEach(button => button.remove());
-    
-    // Add new remove button
-    const removeButton = document.createElement('button');
-    removeButton.type = 'button';
-    removeButton.className = 'remove-variant-btn mt-2 px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600';
-    removeButton.innerHTML = '<i class="fas fa-trash mr-2"></i>Remove Variant';
-    removeButton.onclick = function() {
-      this.parentElement.remove();
-      // Scroll to top of modal after removing variant
-      const modalContent = document.querySelector('#addProductModal > div');
-      modalContent.scrollTop = 0;
-    };
-    
-    variantTemplate.appendChild(removeButton);
-    variantsContainer.appendChild(variantTemplate);
-
-    // Scroll to the newly added variant
-    variantTemplate.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-
-
-    // Add input validation for price fields
-    document.addEventListener('input', function (e) {
-      if (e.target.name === 'price[]') {
-        e.target.value = e.target.value.replace(/[^0-9.]/g, '');
-      }
-    });
-
-    function previewImage(input, previewId, uploadLabelId) {
-        const preview = document.getElementById(previewId);
-        const previewImg = preview.querySelector('img');
-        const uploadLabel = document.getElementById(uploadLabelId);
-        
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                previewImg.src = e.target.result;
-                preview.classList.remove('hidden');
-                uploadLabel.classList.add('hidden');
-            }
-            
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    // Function to trigger file input click
-    function triggerFileUpload(labelId) {
-        const label = document.getElementById(labelId);
-        const input = label.querySelector('input[type="file"]');
-        input.click();
-    }
-
-    // Update removeImage function to reset the input field
-    function removeImage(previewId, uploadLabelId) {
-        const preview = document.getElementById(previewId);
-        const uploadLabel = document.getElementById(uploadLabelId);
-        const input = uploadLabel.querySelector('input[type="file"]');
-        const previewImg = preview.querySelector('img');
-        
-        // Clean up object URL if it exists
-        if (previewImg.dataset.previousUrl) {
-            URL.revokeObjectURL(previewImg.dataset.previousUrl);
-            delete previewImg.dataset.previousUrl;
-        }
-        
-        input.value = ''; // Reset the file input
-        preview.classList.add('hidden'); // Hide the preview
-        uploadLabel.classList.remove('hidden'); // Show the upload label
-        previewImg.src = '#'; // Reset the preview image
-        delete previewImg.dataset.blob; // Clear the blob data
-    }
-
-    // Update the modal styles to ensure proper scrolling
-    document.addEventListener('DOMContentLoaded', function() {
-        const modal = document.getElementById('addProductModal');
-        modal.style.cssText = 'max-height: 100vh; overflow-y: auto;';
-        
-        // Prevent body scroll when modal is open
-        modal.addEventListener('scroll', function(e) {
-            e.stopPropagation();
-        });
-    });
-
-let cropper = null;
-let currentImage = null;
-let currentPreviewId = null;
-
-function handleImageUpload(input, previewId, uploadLabelId, cropperId) {
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            const preview = document.getElementById(previewId);
-            const previewImg = preview.querySelector('img');
-            const uploadLabel = document.getElementById(uploadLabelId);
-            
-            // Create a temporary image to get dimensions
-            const tempImg = new Image();
-            tempImg.onload = function() {
-                // Calculate aspect ratio
-                const aspectRatio = this.width / this.height;
-                
-                // Set the preview image source
-                previewImg.src = e.target.result;
-                preview.classList.remove('hidden');
-                uploadLabel.classList.add('hidden');
-                
-                // Open cropper with calculated aspect ratio
-                openCropper(previewId, cropperId);
-            };
-            tempImg.src = e.target.result;
-        }
-        
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
-function openCropper(previewId, cropperId) {
-    const preview = document.getElementById(previewId);
-    const previewImg = preview.querySelector('img');
-    const cropperModal = document.getElementById('cropperModal');
-    const cropperImage = document.getElementById('cropperImage');
-    
-    currentPreviewId = previewId;
-    currentImage = previewImg;
-    
-    cropperImage.src = previewImg.src;
-    cropperModal.classList.remove('hidden');
-    cropperModal.classList.add('flex');
-    
-    if (cropper) {
-        cropper.destroy();
-    }
-    
-    cropper = new Cropper(cropperImage, {
-        aspectRatio: 1,
-        viewMode: 1,
-        autoCropArea: 1,
-        cropBoxResizable: true,
-        cropBoxMovable: true,
-        dragMode: 'move',
-        background: true,
-        responsive: true,
-        guides: true,
-        center: true,
-        highlight: false,
-        ready() {
-            // Set initial crop box to be square and centered
-            const canvasData = this.cropper.getCanvasData();
-            const minSize = Math.min(canvasData.width, canvasData.height);
-            const cropBoxData = {
-                width: minSize,
-                height: minSize,
-                left: (canvasData.width - minSize) / 2,
-                top: (canvasData.height - minSize) / 2
-            };
-            this.cropper.setCropBoxData(cropBoxData);
-        }
-    });
-}
-
-function closeCropper() {
-    const cropperModal = document.getElementById('cropperModal');
-    cropperModal.classList.add('hidden');
-    cropperModal.classList.remove('flex');
-    
-    if (cropper) {
-        cropper.destroy();
-        cropper = null;
-    }
-}
-
-function applyCrop() {
-    if (cropper && currentImage) {
-        // Get the cropped canvas with specific dimensions
-        const croppedCanvas = cropper.getCroppedCanvas({
-            width: 200,    // Match this with the preview container width
-            height: 200,   // Keep it square
-            imageSmoothingEnabled: true,
-            imageSmoothingQuality: 'high',
-        });
-        
-        // Convert canvas to blob to get actual file size
-        croppedCanvas.toBlob((blob) => {
-            // Create object URL for the blob
-            const croppedImageUrl = URL.createObjectURL(blob);
-            
-            // Update the preview image
-            currentImage.src = croppedImageUrl;
-            
-            // Store the blob in a data attribute for form submission
-            currentImage.dataset.blob = croppedImageUrl;
-            
-            // Clean up previous object URL if it exists
-            if (currentImage.dataset.previousUrl) {
-                URL.revokeObjectURL(currentImage.dataset.previousUrl);
-            }
-            currentImage.dataset.previousUrl = croppedImageUrl;
-            
-            closeCropper();
-        }, 'image/jpeg', 0.9);
-    }
-}
-
-// Close cropper modal when clicking outside
-document.getElementById('cropperModal').addEventListener('click', function(event) {
-    if (event.target === this) {
-        closeCropper();
-    }
-});
-
-// Custom validation function
-function validateForm() {
-    const productName = document.getElementById('productName').value;
-    const brandName = document.getElementById('brandName').value;
-    const variantName = document.getElementById('variantName').value;
-    const discount = document.getElementById('discount').value;
-    const mainImage = document.querySelector('input[name="mainImage"]').files.length;
-    const variantImages = [...document.querySelectorAll('input[type="file"]')].filter(input => input.name.startsWith('variantImages')).map(input => input.files.length);
-
-    // Validate product name, brand name, and variant name
-    const namePattern = /^[A-Za-z\s]+$/; // Only letters and spaces
-    if (!namePattern.test(productName)) {
-        alert('Product name can only contain letters and spaces.');
-        return false;
-    }
-    if (!namePattern.test(brandName)) {
-        alert('Brand name can only contain letters and spaces.');
-        return false;
-    }
-    if (!namePattern.test(variantName)) {
-        alert('Variant name can only contain letters and spaces.');
-        return false;
-    }
-
-    // Validate discount
-    if (discount < 1 || discount > 100) {
-        alert('Discount must be between 1 and 100.');
-        return false;
-    }
-
-    // Validate image uploads
-    if (mainImage === 0) {
-        alert('Please upload the main image.');
-        return false;
-    }
-    if (variantImages.some(count => count === 0)) {
-        alert('Please upload all variant images.');
-        return false;
-    }
-
-    return true; // All validations passed
-}
-
-function filterProducts() {
-    const searchBox = document.getElementById('searchBox');
-    const filter = searchBox.value.toLowerCase();
-    const productsTable = document.getElementById('productsTable');
-    const rows = productsTable.getElementsByTagName('tr');
-
-    for (let i = 0; i < rows.length; i++) {
-        const cells = rows[i].getElementsByTagName('td');
-        let found = false;
-
-        for (let j = 0; j < cells.length; j++) {
-            if (cells[j]) {
-                const cellText = cells[j].textContent || cells[j].innerText;
-                if (cellText.toLowerCase().indexOf(filter) > -1) {
-                    found = true;
-                    break;
-                }
-            }
-        }
-
-        if (found) {
-            rows[i].style.display = ""; // Show the row
-        } else {
-            rows[i].style.display = "none"; // Hide the row
-        }
-    }
-}
-  </script>
+<%- include('../partials/adminfooter') %>

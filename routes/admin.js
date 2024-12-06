@@ -7,20 +7,7 @@ import path from "path"
 
 const router = Router()
 
-// Set up storage for Multer
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // Directory to save uploaded files
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname)); // Append timestamp to the filename
-    }
-})
 
-// Initialize upload variable
-const upload = multer({ storage: storage })
-
-router.use(express.static('static'))
 
 
 //---- login routes ----
@@ -29,7 +16,7 @@ router.post('/login', adminAuth.isLogin, adminController.verifyLogin )
 router.get('/logout',adminController.logoutAdmin)
 
 //---- customers routes ----
-router.get('/customers',adminAuth.checkSession,  adminController.getCustomers) // add middleware to check session in this 
+router.get('/customers',  adminController.getCustomers) // add middleware to check session in this 
 
 router.post('/customers/block/:customerid',adminAuth.checkSession ,adminController.blockCustomer)
 router.post('/customers/unblock/:customerid',adminAuth.checkSession ,adminController.unblockCustomer)
@@ -45,7 +32,7 @@ router.post('/categories/edit/:categoryid',adminAuth.checkSession, adminControll
 
 //---- products routes ---- 
 router.get('/products', adminController.getProducts)
-router.post('/products/add', adminAuth.checkSession, upload.single('mainImage'), adminController.addProduct)
+router.post('/products/add', adminAuth.checkSession, adminController.addProduct)
 router.get('/products/delete/:productid', adminController.deleteProduct)
 router.post('/products/activate/:productid', adminController.activateProduct)
 router.post('/products/deactivate/:productid', adminController.deactivateProduct)

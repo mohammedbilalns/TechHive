@@ -4,6 +4,9 @@ import { configDotenv } from "dotenv";
 import userSchema from "../model/userModel.js";
 import categorySchema from "../model/categoryModel.js"
 import productSchema from "../model/productModel.js"
+import fs from "node:fs"
+import path from "node:path"
+import sharp from "sharp"
 
 configDotenv()
 
@@ -182,9 +185,9 @@ const getProducts = async (req, res) => {
         let message = req.query.message;
         let alertType = req.query.alertType;
 
-        const products = await productSchema.find();
-        const categories = await categorySchema.find();
-        res.render("admin/products", { products, categories, message, alertType });
+        
+        const products = await productSchema.find().populate('category');
+        res.render("admin/products", { products, message, alertType });
     } catch (error) {
         log.red("PRODUCT_FETCH_ERROR", error);
     }
@@ -267,7 +270,7 @@ const activateProduct = async (req,res)=>{
 
 const getAddProduct = async(req,res)=>{
     try{
-        const categories = await categorySchema.find()    
+        const categories = await categorySchema.find({status:"Active"})    
          res.render('admin/addproduct',{categories} )
     }catch(error){
         log.red("FETCH_ADD_PRODUCT",err)
