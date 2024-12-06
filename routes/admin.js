@@ -26,7 +26,7 @@ router.use(express.static('static'))
 //---- login routes ----
 router.get('/login', adminAuth.isLogin, adminController.loadLogin)
 router.post('/login', adminAuth.isLogin, adminController.verifyLogin )
-
+router.get('/logout',adminController.logoutAdmin)
 
 //---- customers routes ----
 router.get('/customers',adminAuth.checkSession,  adminController.getCustomers) // add middleware to check session in this 
@@ -49,7 +49,7 @@ router.post('/products/add', adminAuth.checkSession, upload.single('mainImage'),
 router.get('/products/delete/:productid', adminController.deleteProduct)
 router.post('/products/activate/:productid', adminController.activateProduct)
 router.post('/products/deactivate/:productid', adminController.deactivateProduct)
-
+router.get(`/addproduct`,adminController.getAddProduct )
 const products = [
     {
       id: 1,

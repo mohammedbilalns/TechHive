@@ -1,0 +1,170 @@
+<%- include('../partials/adminheader') %>
+<div class="flex min-h-screen">
+  <!-- Sidebar -->
+  <aside id="sidebar" class="bg-gray-100 w-full md:w-64 h-screen">
+    <nav class="py-4">
+      <div class="px-4 md:px-6">
+        <h2 class="text-sm font-semibold text-gray-600 uppercase">Menu</h2>
+        <ul class="mt-4 space-y-2">
+          <li>
+            <a href="/admin/dashboard" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-th-large mr-3"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/products" class="flex items-center px-4 py-2 bg-primary-accent text-gray-200 hover:bg-primary-hover rounded-lg">
+              <i class="fas fa-box mr-3"></i>
+              <span>Products</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/categories" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-layer-group mr-3"></i>
+              <span>Category</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/orders" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-shopping-cart mr-3"></i>
+              <span>Orders</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/coupons" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-ticket-alt mr-3"></i>
+              <span>Coupon</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/banners" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-images mr-3"></i>
+              <span>Banner</span>
+            </a>
+          </li>
+          <li>
+            <a href="/transactions" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-receipt mr-3"></i>
+              <span>Transaction</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="px-4 md:px-6 mt-8">
+        <h2 class="text-sm font-semibold text-gray-600 uppercase">User Management</h2>
+        <ul class="mt-4 space-y-2">
+          <li>
+            <a href="/admin/admins" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-user-shield mr-3"></i>
+              <span>Manage Admins</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/customers" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-users mr-3"></i>
+              <span>Customers</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="px-4 md:px-6 mt-8">
+        <h2 class="text-sm font-semibold text-gray-600 uppercase">Others</h2>
+        <ul class="mt-4 space-y-2">
+          <li>
+            <a href="/admin/settings" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-cogs mr-3"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/help" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-question-circle mr-3"></i>
+              <span>Help</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/logout" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-sign-out-alt mr-3"></i>
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-grow p-4 md:py-6">
+    <h1 class="text-lg font-semibold">Add New Product</h1>
+    <div class="bg-white shadow-md rounded-md p-6 mt-4">
+      <!-- Add Product Form -->
+      <form id="addProductForm" action="/admin/products/add" method="POST" enctype="multipart/form-data">
+        <!-- Product Name -->
+        <div class="form-group">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
+          <input type="text" name="name" class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300" required placeholder="Enter product name">
+        </div>
+        <!-- Brand Name -->
+        <div class="form-group">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
+          <input type="text" name="brand" class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300" required placeholder="Enter brand name">
+        </div>
+        <!-- Category -->
+        <div class="form-group">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+          <select name="category" class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300" required>
+            <option value="">Select Category</option>
+            <% categories.forEach(category => { %>
+              <option value="<%= category._id %>"><%= category.name %></option>
+            <% }); %>
+          </select>
+        </div>
+        <!-- Main Image -->
+        <div class="form-group">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Main Image</label>
+          <input type="file" name="mainImage" accept="image/*" class="border border-gray-300 rounded-md" required>
+        </div>
+        <!-- Variants Section -->
+        <div id="variantsContainer">
+          <h4 class="text-lg font-medium text-gray-900">Variant Details</h4>
+          <div class="variant-item space-y-6 p-8 border rounded-lg bg-gray-50">
+            <div class="grid grid-cols-3 gap-6">
+              <div class="form-group col-span-3">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Variant Name</label>
+                <input type="text" name="variantName[]" class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300" required placeholder="Enter variant name">
+              </div>
+              <div class="form-group">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Price</label>
+                <input type="text" name="price[]" class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300" required placeholder="0.00">
+              </div>
+              <div class="form-group">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
+                <input type="number" name="stock[]" class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300" required placeholder="Enter stock quantity">
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Add Variant Button -->
+        <div class="flex justify-end mt-6">
+          <button type="button" onclick="addVariant()" class="inline-flex items-center px-6 py-3 bg-green-500 text-white text-sm font-medium rounded-lg hover:bg-green-600">
+            <i class="fas fa-plus mr-2"></i>Add Variant
+          </button>
+        </div>
+        <!-- Form Actions -->
+        <div class="flex justify-end gap-4 pt-6 border-t mt-8">
+          <button type="button" onclick="closeAddProductModal()" class="px-6 py-3 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">Cancel</button>
+          <button type="submit" class="px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">Add Product</button>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+
+<script>
+  function addVariant() {
+    const variantsContainer = document.getElementById('variantsContainer');
+    const variantTemplate = document.querySelector('.variant-item').cloneNode(true);
+    variantTemplate.querySelectorAll('input').forEach(input => input.value = '');
+    variantsContainer.appendChild(variantTemplate);
+  }
+</script>

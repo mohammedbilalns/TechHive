@@ -36,6 +36,18 @@ const verifyLogin = async (req,res)=>{
     }
 }
 
+const logoutAdmin = (req,res)=>{
+
+    req.session.destroy((err) => {
+    if (err) {
+      log.red('Error destroying session', err);
+      return res.status(500).send('Unable to log out');
+    }
+    res.redirect('/admin/login?message=logged+out+successfullt&alertType=error');
+  });
+
+}
+
 //--- Admin Users Dashboard ----
 const getCustomers = async (req,res)=>{
     try{
@@ -253,9 +265,21 @@ const activateProduct = async (req,res)=>{
 
 }
 
+const getAddProduct = async(req,res)=>{
+    try{
+        const categories = await categorySchema.find()    
+         res.render('admin/addproduct',{categories} )
+    }catch(error){
+        log.red("FETCH_ADD_PRODUCT",err)
+        res.redirect('/admin/products?message=Something+went+wrong&alertType=error')
+
+    }
+    
+}
+
 export default {
-     loadLogin, verifyLogin ,
+     loadLogin, verifyLogin , logoutAdmin,
      getCustomers, blockCustomer, unblockCustomer,
      getCategories, deleteCategory, hideCategory, unhideCategory, addCategory,editCategory,
-     getProducts, addProduct, deleteProduct, deactivateProduct, activateProduct
+     getProducts, addProduct, deleteProduct, deactivateProduct, activateProduct, getAddProduct
     }
