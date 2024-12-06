@@ -99,106 +99,81 @@
   <!-- Main Content -->
   <main class="flex-grow p-4 md:py-6 bg-gray-50">
     <h1 class="text-2xl font-bold text-gray-800">Add New Product</h1>
-    <div class="bg-white shadow-lg rounded-lg p-8 mt-4">
-      <!-- Add Product Form -->
-      <form id="addProductForm" action="/admin/products/add" method="POST" enctype="multipart/form-data">
-        <!-- Product Name -->
-        <div class="form-group mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
-          <input type="text" name="name" class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200" required placeholder="Enter product name">
-        </div>
-        <!-- Brand Name -->
-        <div class="form-group mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
-          <input type="text" name="brand" class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200" required placeholder="Enter brand name">
-        </div>
-        <!-- Category -->
-        <div class="form-group mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-          <select name="category" class="w-full h-12 px-4 py-2 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200" required>
-            <option value="">Select Category</option>
-            <% categories.forEach(category => { %>
-              <option value="<%= category._id %>"><%= category.name %></option>
-            <% }); %>
-          </select>
-        </div>
-        <!-- Main Image -->
-        <div class="form-group">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Main Image</label>
-          <div class="flex flex-col items-center gap-6">
-            <div class="w-full max-w-[200px]">
-              <label id="mainImageUploadLabel" class="flex flex-col items-center justify-center p-4 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:border-blue-400 transition-colors duration-200">
-                <div class="space-y-2 text-center">
-                  <i class="fas fa-cloud-upload-alt text-gray-400 text-2xl"></i>
-                  <div class="text-sm text-gray-600">
-                    <span class="font-medium text-blue-600 hover:text-blue-500">Click to upload</span>
-                  </div>
-                  <p class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
-                </div>
-                <input type="file" name="mainImage" accept="image/*" class="hidden" required onchange="handleImageUpload(this, 'mainImagePreview', 'mainImageUploadLabel', 'cropperModal', 'cropperImage')">
-              </label>
-            </div>
-            <div id="mainImagePreview" class="hidden w-full max-w-[200px] cursor-pointer" onclick="triggerFileUpload('mainImageUploadLabel')">
-              <div class="relative aspect-square rounded-lg border-2 border-gray-200 overflow-hidden">
-                <img src="#" alt="Preview" class="w-full h-full object-cover">
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- Variants Section -->
-        <div id="variantsContainer">
-          <h4 class="text-lg font-medium text-gray-900">Variant Details</h4>
-          <div class="variant-item space-y-6 p-8 border rounded-lg bg-gray-50">
-            <div class="grid grid-cols-3 gap-6">
-              <div class="form-group col-span-3">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Variant Name</label>
-                <input type="text" name="variantName[]" class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300" required placeholder="Enter variant name">
-              </div>
-              <div class="form-group">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Price</label>
-                <input type="text" name="price[]" class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300" required placeholder="0.00">
-              </div>
-              <div class="form-group">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
-                <input type="number" name="stock[]" class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300" required placeholder="Enter stock quantity">
-              </div>
-              <div class="form-group">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Discount Percentage</label>
-                <input type="number" name="discount[]" class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300" placeholder="Enter discount percentage" min="0" max="100">
-              </div>
-            </div>
-            <!-- Variant Images Section -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              <% [1, 2, 3].forEach(num => { %>
-                <div class="relative w-full max-w-[150px]">
-                  <label id="variantUploadLabel<%= num %>" class="flex flex-col items-center justify-center p-3 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:border-blue-400 transition-colors duration-200">
-                    <div class="text-center">
-                      <i class="fas fa-cloud-upload-alt text-gray-400 text-lg mb-1"></i>
-                      <p class="text-xs text-gray-500">Image <%= num %></p>
-                    </div>
-                    <input type="file" name="variantImages<%= num %>[]" accept="image/*" class="hidden" onchange="handleImageUpload(this, 'variantPreview<%= num %>', 'variantUploadLabel<%= num %>', 'cropperModal', 'cropperImage')">
-                  </label>
-                </div>
-              <% }); %>
-            </div>
-            <!-- No Remove Variant Button for the first variant -->
-            <div class="flex justify-end mt-2" style="display: none;">
-              <button type="button" class="remove-variant-btn mt-2 px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600" onclick="removeVariant(this)">Remove Variant</button>
-            </div>
-          </div>
-        </div>
-        <!-- Add Variant Button -->
-        <div class="flex justify-end mt-6">
-          <button type="button" onclick="addVariant()" class="inline-flex items-center px-6 py-3 bg-green-500 text-white text-sm font-medium rounded-lg hover:bg-green-600">
-            <i class="fas fa-plus mr-2"></i>Add Variant
-          </button>
-        </div>
-        <!-- Form Actions -->
-        <div class="flex justify-end gap-4 pt-6 border-t mt-8">
-          <button type="submit" class="px-6 py-3 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition duration-200">Add Product</button>
-        </div>
-      </form>
+   <!-- Add Product Form -->
+<div id="productFormContainer" class="bg-white shadow-lg rounded-lg p-8 mt-4">
+  <form id="addProductForm" action="/admin/products/add" method="POST" enctype="multipart/form-data">
+    <!-- Product Name -->
+    <div class="form-group mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
+      <input type="text" name="name" class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" required placeholder="Enter product name">
     </div>
+    <!-- Brand -->
+    <div class="form-group mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
+      <input type="text" name="brand" class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" required placeholder="Enter brand name">
+    </div>
+    <!-- Category -->
+    <div class="form-group mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+      <select name="category" class="w-full h-12 px-4 py-2 rounded-lg border border-gray-300 focus:border-blue-500" required>
+        <option value="">Select Category</option>
+        <% categories.forEach(category => { %>
+          <option value="<%= category._id %>"><%= category.name %></option>
+        <% }); %>
+      </select>
+    </div>
+    <!-- Main Image -->
+    <div class="form-group mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-2">Images</label>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input type="file" name="mainImages" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
+        <input type="file" name="mainImages" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
+        <input type="file" name="mainImages" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
+        <input type="file" name="mainImages" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
+      </div>
+      <small class="text-gray-500">Please upload 4 images.</small>
+    </div>
+  </form>
+
+  <!-- Add Variant Button -->
+  <div class="flex justify-end mt-6">
+    <button type="button" id="openVariantModal" class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600">Add Variant</button>
+  </div>
+
+  <!-- Variants Section -->
+  <div id="variantsContainer" class="mt-8"></div>
+
+  <!-- Add Product Button -->
+  <div id="addProductButtonContainer" class="flex justify-end mt-6 hidden">
+    <button type="submit" form="addProductForm" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Add Product</button>
+  </div>
+</div>
+
+<!-- Variant Modal -->
+<div id="variantModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg p-6 w-full max-w-lg">
+    <h3 class="text-lg font-semibold mb-4">Add Variant</h3>
+    <form id="addVariantForm">
+      <div class="form-group mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Variant Name</label>
+        <input type="text" name="variantName" class="w-full px-4 py-2 border rounded-lg" required>
+      </div>
+      <div class="form-group mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Price</label>
+        <input type="text" name="price" class="w-full px-4 py-2 border rounded-lg" required>
+      </div>
+      <div class="form-group mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
+        <input type="number" name="stock" class="w-full px-4 py-2 border rounded-lg" required>
+      </div>
+      <div class="flex justify-end gap-4">
+        <button type="button" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400" onclick="closeVariantModal()">Cancel</button>
+        <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Add</button>
+      </div>
+    </form>
+  </div>
+</div>
+
   </main>
 </div>
 
@@ -222,87 +197,255 @@
 </div>
 
 <script>
-  let cropper;
-  let currentImageInput;
+let cropper;
+let currentImageInput;
+let currentPreviewId;
+let currentUploadLabelId;
 
-  function handleImageUpload(input, previewId, uploadLabelId, modalId, cropperImageId) {
-    const preview = document.getElementById(previewId);
-    const previewImg = preview.querySelector('img');
-    const uploadLabel = document.getElementById(uploadLabelId);
+function handleImageUpload(input, previewId, uploadLabelId, modalId, cropperImageId) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    currentImageInput = input;
+    currentPreviewId = previewId;
+    currentUploadLabelId = uploadLabelId;
     
-    if (input.files && input.files[0]) {
-      const reader = new FileReader();
+    reader.onload = function(e) {
+      // Set the image in the cropper modal
+      const cropperImg = document.getElementById(cropperImageId);
+      cropperImg.src = e.target.result;
       
-      reader.onload = function(e) {
-        previewImg.src = e.target.result;
-        preview.classList.remove('hidden');
-        uploadLabel.classList.add('hidden');
-        
-        // Open cropper modal
-        currentImageInput = input;
-        document.getElementById(modalId).classList.remove('hidden');
-        
-        // Initialize cropper
-        if (cropper) {
-          cropper.destroy(); // Destroy previous instance if exists
-        }
-        cropper = new Cropper(previewImg, {
-          aspectRatio: 1,
-          viewMode: 1,
-          autoCropArea: 1,
-        });
+      // Show the modal
+      const modal = document.getElementById(modalId);
+      modal.style.display = 'flex';
+      
+      // Initialize cropper
+      if (cropper) {
+        cropper.destroy();
       }
       
-      reader.readAsDataURL(input.files[0]);
-    }
-  }
-
-  function closeCropper() {
-    const modal = document.getElementById('cropperModal');
-    modal.classList.add('hidden');
-    if (cropper) {
-      cropper.destroy();
-      cropper = null;
-    }
-  }
-
-  function applyCrop() {
-    if (cropper && currentImageInput) {
-      cropper.getCroppedCanvas().toBlob((blob) => {
-        const url = URL.createObjectURL(blob);
-        const fileInput = currentImageInput;
-        const dataTransfer = new DataTransfer();
-        dataTransfer.items.add(new File([blob], fileInput.files[0].name, { type: blob.type }));
-        fileInput.files = dataTransfer.files;
-
-        // Update the preview image
-        const preview = document.getElementById(fileInput.getAttribute('data-preview'));
-        const previewImg = preview.querySelector('img');
-        previewImg.src = url;
-        preview.classList.remove('hidden');
-
-        closeCropper();
+      cropper = new Cropper(cropperImg, {
+        aspectRatio: 1,
+        viewMode: 1,
+        autoCropArea: 1,
+        background: false,
+        zoomable: true,
+        scalable: true
       });
-    }
+    };
+    
+    reader.readAsDataURL(input.files[0]);
   }
+}
 
-  function addVariant() {
-    const variantsContainer = document.getElementById('variantsContainer');
-    const variantTemplate = document.querySelector('.variant-item').cloneNode(true);
-    
-    // Show the remove button for additional variants
-    variantTemplate.querySelector('.remove-variant-btn').style.display = 'block';
-    
-    // Clear input values for the new variant
-    variantTemplate.querySelectorAll('input').forEach(input => input.value = '');
-    
-    variantsContainer.appendChild(variantTemplate);
+function closeCropper() {
+  const modal = document.getElementById('cropperModal');
+  modal.style.display = 'none';
+  
+  if (cropper) {
+    cropper.destroy();
+    cropper = null;
   }
+  
+  // Clear the current input if no preview was saved
+  const uploadLabel = document.getElementById(currentUploadLabelId);
+  if (uploadLabel && !uploadLabel.querySelector('.preview-image')) {
+    currentImageInput.value = '';
+  }
+}
 
-  function removeVariant(button) {
-    const variantItem = button.closest('.variant-item');
-    if (variantItem) {
-      variantItem.remove();
-    }
+function applyCrop() {
+  if (cropper && currentImageInput) {
+    cropper.getCroppedCanvas({
+      width: 600,
+      height: 600,
+      fillColor: '#fff'
+    }).toBlob((blob) => {
+      // Create or update preview for the current upload label
+      const uploadLabel = document.getElementById(currentUploadLabelId);
+      let previewContainer = uploadLabel.querySelector('.preview-container');
+      
+      if (!previewContainer) {
+        // Create preview container if it doesn't exist
+        previewContainer = document.createElement('div');
+        previewContainer.className = 'preview-container relative aspect-square w-full';
+        
+        // Create preview image
+        const previewImg = document.createElement('img');
+        previewImg.className = 'preview-image w-full h-full object-cover rounded-lg';
+        previewContainer.appendChild(previewImg);
+        
+        // Create remove button
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600';
+        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        removeBtn.onclick = function(e) {
+          e.stopPropagation();
+          removeImage(currentUploadLabelId);
+        };
+        previewContainer.appendChild(removeBtn);
+        
+        // Hide original upload content
+        const uploadContent = uploadLabel.querySelector('div');
+        if (uploadContent) {
+          uploadContent.style.display = 'none';
+        }
+        
+        uploadLabel.appendChild(previewContainer);
+      }
+      
+      // Update preview image
+      const previewImg = previewContainer.querySelector('.preview-image');
+      const url = URL.createObjectURL(blob);
+      previewImg.src = url;
+      
+      // Update the file input
+      const dataTransfer = new DataTransfer();
+      const file = new File([blob], currentImageInput.files[0].name, {
+        type: 'image/jpeg',
+        lastModified: new Date().getTime()
+      });
+      dataTransfer.items.add(file);
+      currentImageInput.files = dataTransfer.files;
+      
+      // Close the cropper modal
+      closeCropper();
+    }, 'image/jpeg', 0.9);
   }
+}
+
+function removeImage(uploadLabelId) {
+  const uploadLabel = document.getElementById(uploadLabelId);
+  const previewContainer = uploadLabel.querySelector('.preview-container');
+  const uploadContent = uploadLabel.querySelector('div');
+  const fileInput = uploadLabel.querySelector('input[type="file"]');
+  
+  if (previewContainer) {
+    previewContainer.remove();
+  }
+  
+  if (uploadContent) {
+    uploadContent.style.display = 'flex';
+  }
+  
+  if (fileInput) {
+    fileInput.value = '';
+  }
+}
+
+// Function to clone variant with proper event handling
+function addVariant() {
+  const variantsContainer = document.getElementById('variantsContainer');
+  const variantTemplate = document.querySelector('.variant-item').cloneNode(true);
+  
+  // Show the remove button for additional variants
+  const removeBtn = variantTemplate.querySelector('.remove-variant-btn');
+  if (removeBtn) {
+    removeBtn.style.display = 'block';
+  }
+  
+  // Clear input values and file inputs
+  variantTemplate.querySelectorAll('input').forEach(input => {
+    if (input.type === 'file') {
+      // Reset file input and its associated preview
+      const uploadLabel = input.closest('label');
+      const uploadContent = uploadLabel.querySelector('div');
+      if (uploadContent) {
+        uploadContent.style.display = 'flex';
+      }
+      const previewContainer = uploadLabel.querySelector('.preview-container');
+      if (previewContainer) {
+        previewContainer.remove();
+      }
+    }
+    input.value = '';
+  });
+  
+  variantsContainer.appendChild(variantTemplate);
+}
+
+// Add event listener for the modal backdrop click
+document.getElementById('cropperModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeCropper();
+  }
+});
+
+// Prevent propagation of clicks inside the modal content
+document.querySelector('#cropperModal > div').addEventListener('click', function(e) {
+  e.stopPropagation();
+});
+
+
+
+let variants = [];
+
+// Open Variant Modal
+document.getElementById('openVariantModal').addEventListener('click', () => {
+  document.getElementById('variantModal').style.display = 'flex';
+});
+
+// Close Variant Modal
+function closeVariantModal() {
+  document.getElementById('variantModal').style.display = 'none';
+  document.getElementById('addVariantForm').reset();
+}
+
+// Handle Add Variant
+document.getElementById('addVariantForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const variant = Object.fromEntries(formData.entries());
+
+  variants.push(variant);
+  updateVariantsContainer();
+  closeVariantModal();
+});
+
+// Update Variants Display
+function updateVariantsContainer() {
+  const container = document.getElementById('variantsContainer');
+  container.innerHTML = variants.map((variant, index) => `
+    <div class="p-4 border rounded-lg bg-gray-50 mb-4">
+      <div class="flex justify-between items-center">
+        <div>
+          <h4 class="text-lg font-semibold">${variant.variantName}</h4>
+          <p>Price: $${variant.price}</p>
+          <p>Stock: ${variant.stock}</p>
+        </div>
+        <div class="flex gap-2">
+          <button class="px-3 py-1 bg-blue-500 text-white rounded" onclick="editVariant(${index})">Edit</button>
+          <button class="px-3 py-1 bg-red-500 text-white rounded" onclick="removeVariant(${index})">Remove</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  const addButtonContainer = document.getElementById('addProductButtonContainer');
+  addButtonContainer.style.display = variants.length > 0 ? 'block' : 'none';
+}
+
+// Edit Variant
+function editVariant(index) {
+  const variant = variants[index];
+  const form = document.getElementById('addVariantForm');
+  form.variantName.value = variant.variantName;
+  form.price.value = variant.price;
+  form.stock.value = variant.stock;
+
+  document.getElementById('variantModal').style.display = 'flex';
+  form.onsubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    variants[index] = Object.fromEntries(formData.entries());
+    updateVariantsContainer();
+    closeVariantModal();
+  };
+}
+
+// Remove Variant
+function removeVariant(index) {
+  variants.splice(index, 1);
+  updateVariantsContainer();
+}
+
 </script>

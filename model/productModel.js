@@ -20,11 +20,7 @@ const variantSchema = new mongoose.Schema({
     default: 0,
     min: 0,
     max: 100
-  },
-  images: [{
-    type: String,
-    required: true
-  }]
+  }
 });
 
 const productSchema = new mongoose.Schema({
@@ -43,10 +39,11 @@ const productSchema = new mongoose.Schema({
     ref: 'Category',
     required: true
   },
-  mainImage: {
+  images: [{
     type: String,
     required: true
-  },
+  }],
+  
   variants: [variantSchema],
   status: {
     type: String,
