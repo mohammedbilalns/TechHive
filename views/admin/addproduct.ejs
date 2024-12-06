@@ -162,6 +162,10 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
                 <input type="number" name="stock[]" class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300" required placeholder="Enter stock quantity">
               </div>
+              <div class="form-group">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Discount Percentage</label>
+                <input type="number" name="discount[]" class="w-full h-12 px-4 py-2.5 text-base rounded-lg border border-gray-300" placeholder="Enter discount percentage" min="0" max="100">
+              </div>
             </div>
             <!-- Variant Images Section -->
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -237,6 +241,11 @@
         // Open cropper modal
         currentImageInput = input;
         document.getElementById(modalId).classList.remove('hidden');
+        
+        // Initialize cropper
+        if (cropper) {
+          cropper.destroy(); // Destroy previous instance if exists
+        }
         cropper = new Cropper(previewImg, {
           aspectRatio: 1,
           viewMode: 1,
