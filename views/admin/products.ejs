@@ -136,7 +136,9 @@
               <th class="px-6 py-3">Image</th>
               <th class="px-6 py-3">Name</th>
               <th class="px-6 py-3">Category</th>
-              <th class="px-6 py-3">Variants</th>
+              <th class="px-6 py-3">Price</th>
+              <th class="px-6 py-3">Discount (%)</th>
+              <th class="px-6 py-3">Stock</th>
               <th class="px-6 py-3">Status</th>
               <th class="px-6 py-3 text-center">Actions</th>
             </tr>
@@ -145,33 +147,12 @@
             <% products.forEach((product, index) => { %>
               <tr class="border-b hover:bg-gray-100">
                 <td class="px-6 py-3 font-medium"><%= index + 1 %></td>
-                <td class="px-6 py-3"><img src="<%= product.image %>" alt="Product" class="w-12 h-12 rounded-md"></td>
+                <td class="px-6 py-3"><img src="<%= product.images[0] %>" alt="Product" class="w-12 h-12 rounded-md"></td>
                 <td class="px-6 py-3"><%= product.name %></td>
                 <td class="px-6 py-3"><%= product.category.name %></td>
-                <td class="px-6 py-3">
-                  <div class="space-y-3 max-h-48 overflow-y-auto pr-2">
-                    <% product.variants.forEach((variant) => { %>
-                      <div class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
-                        <div class="flex-shrink-0">
-                          <img src="<%= variant.image %>" alt="<%= variant.variantName %>" class="w-12 h-12 rounded-md object-cover border border-gray-200">
-                        </div>
-                        <div class="flex-1 min-w-0">
-                          <p class="font-medium text-gray-900 truncate"><%= variant.variantName %></p>
-                          <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
-                            <span class="inline-flex items-center">
-                              <i class="fas fa-tag mr-1 text-gray-400"></i>
-                              ₹<%= variant.price %>
-                            </span>
-                            <span class="inline-flex items-center">
-                              <i class="fas fa-box mr-1 text-gray-400"></i>
-                              <%= variant.stock %> in stock
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    <% }); %>
-                  </div>
-                </td>
+                <td class="px-6 py-3">₹<%= product.price %></td>
+                <td class="px-6 py-3"><%= product.discount %></td>
+                <td class="px-6 py-3"><%= product.stock %></td>
                 <td class="px-6 py-3">
                   <span class="px-3 py-1 rounded-full text-sm font-medium
                     <%= product.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
@@ -212,5 +193,7 @@
     </div>
   </main>
 </div>
+
+
 
 <%- include('../partials/adminfooter') %>

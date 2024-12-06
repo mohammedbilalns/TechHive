@@ -37,56 +37,7 @@ router.get('/products/delete/:productid', adminController.deleteProduct)
 router.post('/products/activate/:productid', adminController.activateProduct)
 router.post('/products/deactivate/:productid', adminController.deactivateProduct)
 router.get(`/addproduct`,adminController.getAddProduct )
-const products = [
-    {
-      id: 1,
-      name: 'Wireless Mouse',
-      category: 'Electronics',
-      addedDate: '2024-01-15',
-      status: 'Active',
-      variants: [
-        { variantName: 'Black', price: 29.99, stock: 50, image: '/images/mouse-black.jpg' },
-        { variantName: 'White', price: 31.99, stock: 70, image: '/images/mouse-white.jpg' },
-      ],
-    },
-    {
-      id: 2,
-      name: 'Leather Wallet',
-      category: 'Accessories',
-      addedDate: '2024-02-20',
-      status: 'Active',
-      variants: [
-        { variantName: 'Brown', price: 19.99, stock: 45, image: '/images/wallet-brown.jpg' },
-        { variantName: 'Black', price: 21.99, stock: 30, image: '/images/wallet-black.jpg' },
-      ],
-    },
-    {
-      id: 3,
-      name: 'Bluetooth Speaker',
-      category: 'Electronics',
-      addedDate: '2024-03-05',
-      status: 'Inactive',
-      variants: [
-        { variantName: 'Red', price: 49.99, stock: 30, image: '/images/speaker-red.jpg' },
-        { variantName: 'Blue', price: 51.99, stock: 30, image: '/images/speaker-blue.jpg' },
-      ],
-    },
-    {
-      id: 4,
-      name: 'Running Shoes',
-      category: 'Footwear',
-      addedDate: '2024-04-10',
-      status: 'Active',
-      variants: [
-        { variantName: 'Size 8', price: 69.99, stock: 20, image: '/images/shoes-size8.jpg' },
-        { variantName: 'Size 10', price: 74.99, stock: 20, image: '/images/shoes-size10.jpg' },
-      ],
-    },
-  ];
-  
-  // Route to render the products dashboard
-  router.get('/products-dashboard', (req, res) => {
-    res.render('admin/products', { products });
-  });
+
+
   
 export default router
