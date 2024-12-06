@@ -126,10 +126,10 @@
     <div class="form-group mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-2">Images</label>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <input type="file" name="mainImages" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
-        <input type="file" name="mainImages" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
-        <input type="file" name="mainImages" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
-        <input type="file" name="mainImages" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required>
+        <input type="file" name="mainImages" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required onchange="handleImageUpload(this, 'preview1', 'uploadLabel1', 'cropperModal', 'cropperImage')">
+        <input type="file" name="mainImages" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required onchange="handleImageUpload(this, 'preview2', 'uploadLabel2', 'cropperModal', 'cropperImage')">
+        <input type="file" name="mainImages" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required onchange="handleImageUpload(this, 'preview3', 'uploadLabel3', 'cropperModal', 'cropperImage')">
+        <input type="file" name="mainImages" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg" required onchange="handleImageUpload(this, 'preview4', 'uploadLabel4', 'cropperModal', 'cropperImage')">
       </div>
       <small class="text-gray-500">Please upload 4 images.</small>
     </div>
@@ -165,6 +165,10 @@
       <div class="form-group mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
         <input type="number" name="stock" class="w-full px-4 py-2 border rounded-lg" required>
+      </div>
+      <div class="form-group mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-2">Discount</label>
+        <input type="text" name="discount" class="w-full px-4 py-2 border rounded-lg" placeholder="Enter discount (optional)">
       </div>
       <div class="flex justify-end gap-4">
         <button type="button" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400" onclick="closeVariantModal()">Cancel</button>
@@ -379,6 +383,9 @@ document.querySelector('#cropperModal > div').addEventListener('click', function
 
 let variants = [];
 
+// Global variable to track the index of the variant being edited
+let editingVariantIndex = null;
+
 // Open Variant Modal
 document.getElementById('openVariantModal').addEventListener('click', () => {
   document.getElementById('variantModal').style.display = 'flex';
@@ -396,7 +403,15 @@ document.getElementById('addVariantForm').addEventListener('submit', (e) => {
   const formData = new FormData(e.target);
   const variant = Object.fromEntries(formData.entries());
 
-  variants.push(variant);
+  if (editingVariantIndex !== null) {
+    // Update the existing variant
+    variants[editingVariantIndex] = variant;
+    editingVariantIndex = null; // Reset the editing index
+  } else {
+    // Add a new variant
+    variants.push(variant);
+  }
+
   updateVariantsContainer();
   closeVariantModal();
 });
@@ -411,6 +426,7 @@ function updateVariantsContainer() {
           <h4 class="text-lg font-semibold">${variant.variantName}</h4>
           <p>Price: $${variant.price}</p>
           <p>Stock: ${variant.stock}</p>
+          <p>Discount: ${variant.discount ? variant.discount : 'N/A'}</p>
         </div>
         <div class="flex gap-2">
           <button class="px-3 py-1 bg-blue-500 text-white rounded" onclick="editVariant(${index})">Edit</button>
@@ -431,15 +447,10 @@ function editVariant(index) {
   form.variantName.value = variant.variantName;
   form.price.value = variant.price;
   form.stock.value = variant.stock;
+  form.discount.value = variant.discount || ''; // Set discount if it exists
 
+  editingVariantIndex = index; // Set the index of the variant being edited
   document.getElementById('variantModal').style.display = 'flex';
-  form.onsubmit = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    variants[index] = Object.fromEntries(formData.entries());
-    updateVariantsContainer();
-    closeVariantModal();
-  };
 }
 
 // Remove Variant
