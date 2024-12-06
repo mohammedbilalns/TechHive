@@ -5,12 +5,16 @@ import authUtils from "../utils/authUtils.js";
 import { config } from "dotenv";
 import passport from "passport";
 
-// Configure environment variables
+
 config();
 
 // ---- User Login ----  
 const loadLogin = (req, res) => {
-    res.render('user/login');
+    let message = req.query.message 
+    let alertType = req.query.alertType
+    let email = req.query.email
+    console.log(message, alertType, email)
+    res.render('user/login', {message, alertType, email});
 };
 
 // Verify user login credentials
@@ -19,19 +23,19 @@ const verifyLogin = async (req, res) => {
         let { email, password } = req.body;
         email = email.trim()
         password = password.trim()
-        // Check if user exists with the given email
         const user = await userSchema.findOne({ email });
 
         // If no user is found, show an error message
-        if (!user) return res.render('user/login', { message: "Invalid credentials", alertType: "error", email:email });
+        if (!user) return res.redirect('/login?message=Invalid+credentials&alertType=error');
+
         //check the user is active 
-        if(user.status!= "Active") return res.render('user/login', {message:'Your account is currently blocked,Please contact admin', alertType:"error", email:email})
+        if(user.status!= "Active") return res.redirect(`/login?message=Your+account+is+currently+blocked&alertType=error&email=${email}` )
         // Check if the user used Google login
-        if (!user.password) return res.render('user/login', { message: "Please use Google login", alertType: "error" , email:email});
+        if (!user.password) return res.redirect(`/login?message=Please+use+Google+login&alertType=success&email=${email}`);
 
         // Compare the provided password with the stored hashed password
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.render("user/login", { message: "Invalid credentials", alertType: "error", email: email });
+        if (!isMatch) return res.redirect(`/login?message=Invalid+credentials&alertType=error&email=${email}`);
 
         // Store user information in the session upon successful login
         req.session.user = {
@@ -44,13 +48,15 @@ const verifyLogin = async (req, res) => {
         res.render('user/home');
     } catch (error) {
         log.red("ERROR", error);
-        res.render('user/login', { message: "Something went wrong", alertType: "error" });
+        res.redirect('/login?message=Something+went+wrong&alertType=error');
     }
 };
 
 // ---- User Signup ----  
 const loadSignup = (req, res) => {
-    res.render('user/signup');
+    let message = req.query.message 
+    let alertType = req.query.alertType
+    res.render('user/signup', {message, alertType});
 };
 
 // Register a new user
@@ -256,7 +262,19 @@ const authGoogleCallback = (req, res) => {
 };
 
 
+// ---- user logout --- 
 
+const logoutUser = (req,res)=>{
+    
+    req.session.destroy((err) => {
+        if (err) {
+          log.red('Error destroying session', err);
+          return res.status(500).send('Unable to log out');
+        }
+        res.redirect('/login',{message:"Logged out successfully", alertType:"success"});
+      });
+
+}
 
 
 
@@ -277,4 +295,10 @@ const loadHome = (req, res)=>{
 
 
 
-export default {loadLogin, verifyLogin, loadSignup,verifyOTP , resendOTP,  loadForgotpassword, loadResetpassword, loadResetpasswordotp, loadHome, registerUser,authGoogle, authGoogleCallback}
+export default {
+    loadLogin, verifyLogin,
+     loadSignup,verifyOTP , resendOTP,
+    loadForgotpassword, loadResetpassword, loadResetpasswordotp,
+    loadHome, registerUser,authGoogle, authGoogleCallback,
+    logoutUser
+}

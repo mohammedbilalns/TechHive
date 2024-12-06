@@ -604,10 +604,6 @@ video {
   position: relative;
 }
 
-.sticky {
-  position: sticky;
-}
-
 .inset-0 {
   inset: 0px;
 }
@@ -651,14 +647,6 @@ video {
 
 .z-50 {
   z-index: 50;
-}
-
-.z-0 {
-  z-index: 0;
-}
-
-.z-10 {
-  z-index: 10;
 }
 
 .col-span-1 {
@@ -1674,10 +1662,6 @@ video {
     margin-top: 2.5rem;
   }
 
-  .md\:ml-64 {
-    margin-left: 16rem;
-  }
-
   .md\:block {
     display: block;
   }
@@ -1704,10 +1688,6 @@ video {
 
   .md\:h-\[250px\] {
     height: 250px;
-  }
-
-  .md\:h-full {
-    height: 100%;
   }
 
   .md\:w-16 {
