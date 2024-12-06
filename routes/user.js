@@ -11,7 +11,7 @@ router.use(express.static('static'))
 // User Login
 router.get('/login', auth.isLogin, userController.loadLogin)
 router.post('/login', userController.verifyLogin)
-router.get('/logout', userController.logoutUser)
+router.get('/logout',auth.checkSession, userController.logoutUser)
 
 // User Signup
 router.get('/signup', auth.isLogin, userController.loadSignup)

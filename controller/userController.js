@@ -54,9 +54,7 @@ const verifyLogin = async (req, res) => {
 
 // ---- User Signup ----  
 const loadSignup = (req, res) => {
-    let message = req.query.message 
-    let alertType = req.query.alertType
-    res.render('user/signup', {message, alertType});
+    res.render('user/signup');
 };
 
 // Register a new user
@@ -271,7 +269,7 @@ const logoutUser = (req,res)=>{
           log.red('Error destroying session', err);
           return res.status(500).send('Unable to log out');
         }
-        res.redirect('/login',{message:"Logged out successfully", alertType:"success"});
+        res.render('user/login',{message:"Logged out successfully", alertType:"success"});
       });
 
 }
