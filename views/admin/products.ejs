@@ -140,6 +140,7 @@
               <th class="px-6 py-3">Discount (%)</th>
               <th class="px-6 py-3">Stock</th>
               <th class="px-6 py-3">Status</th>
+              <th class="px-6 py-3">Variant</th>
               <th class="px-6 py-3 text-center">Actions</th>
             </tr>
           </thead>
@@ -159,6 +160,7 @@
                     <%= product.status %>
                   </span>
                 </td>
+                <td class="px-6 py-3"><%= product.variant %></td>
                 <td class="px-6 py-3 text-center">
                   <div class="flex justify-center gap-2">
                     <% if (product.status === 'Active') { %>

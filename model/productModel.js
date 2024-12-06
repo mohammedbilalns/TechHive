@@ -41,7 +41,7 @@ const productSchema = new mongoose.Schema({
     required: true,
     min: 0
   },
-  color: {
+  variant: {
     type: String,
     required: true,
     trim: true

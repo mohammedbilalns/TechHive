@@ -149,37 +149,63 @@
       </select>
     </div>
     
+    <!-- Variant -->
+    <div class="form-group mb-4">
+      <label class="block text-sm font-medium text-gray-700 mb-2">Variant</label>
+      <input type="text" name="variant" class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" required placeholder="Enter product variant">
+    </div>
+    
     <!-- Main Image -->
     <div class="form-group mb-4">
       <label class="block text-sm font-medium text-gray-700 mb-2">Images</label>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <label class="w-full">
-          <input type="file" name="mainImages" accept="image/*" class="hidden" required onchange="handleImageUpload(this, 'preview1', 'uploadLabel1', 'cropperModal', 'cropperImage')">
-          <span class="flex items-center justify-center h-20 w-20 border border-gray-300 bg-white text-gray-800 cursor-pointer hover:bg-gray-100 transition duration-200 ease-in-out">
-            <i class="fas fa-plus text-3xl"></i>
-          </span>
-        </label>
-        <label class="w-full">
-          <input type="file" name="mainImages" accept="image/*" class="hidden" required onchange="handleImageUpload(this, 'preview2', 'uploadLabel2', 'cropperModal', 'cropperImage')">
-          <span class="flex items-center justify-center h-20 w-20 border border-gray-300 bg-white text-gray-800 cursor-pointer hover:bg-gray-100 transition duration-200 ease-in-out">
-            <i class="fas fa-plus text-3xl"></i>
-          </span>
-        </label>
-        <label class="w-full">
-          <input type="file" name="mainImages" accept="image/*" class="hidden" required onchange="handleImageUpload(this, 'preview3', 'uploadLabel3', 'cropperModal', 'cropperImage')">
-          <span class="flex items-center justify-center h-20 w-20 border border-gray-300 bg-white text-gray-800 cursor-pointer hover:bg-gray-100 transition duration-200 ease-in-out">
-            <i class="fas fa-plus text-3xl"></i>
-          </span>
-        </label>
-        <label class="w-full">
-          <input type="file" name="mainImages" accept="image/*" class="hidden" required onchange="handleImageUpload(this, 'preview4', 'uploadLabel4', 'cropperModal', 'cropperImage')">
-          <span class="flex items-center justify-center h-20 w-20 border border-gray-300 bg-white text-gray-800 cursor-pointer hover:bg-gray-100 transition duration-200 ease-in-out">
-            <i class="fas fa-plus text-3xl"></i>
-          </span>
-        </label>
+        <div class="w-full">
+          <label class="block">
+            <input type="file" name="mainImages" accept="image/*" class="hidden" required onchange="handleImageUpload(this, 'preview1', 'uploadLabel1', 'cropperModal', 'cropperImage')">
+            <span id="uploadLabel1" class="flex items-center justify-center h-20 w-20 border border-gray-300 bg-white text-gray-800 cursor-pointer hover:bg-gray-100 transition duration-200 ease-in-out">
+              <i class="fas fa-plus text-3xl"></i>
+            </span>
+          </label>
+          <div id="preview1" class="mt-2 hidden">
+            <img src="" alt="Preview 1" class="h-20 w-20 object-cover rounded">
+          </div>
+        </div>
+        <div class="w-full">
+          <label class="block">
+            <input type="file" name="mainImages" accept="image/*" class="hidden" required onchange="handleImageUpload(this, 'preview2', 'uploadLabel2', 'cropperModal', 'cropperImage')">
+            <span id="uploadLabel2" class="flex items-center justify-center h-20 w-20 border border-gray-300 bg-white text-gray-800 cursor-pointer hover:bg-gray-100 transition duration-200 ease-in-out">
+              <i class="fas fa-plus text-3xl"></i>
+            </span>
+          </label>
+          <div id="preview2" class="mt-2 hidden">
+            <img src="" alt="Preview 2" class="h-20 w-20 object-cover rounded">
+          </div>
+        </div>
+        <div class="w-full">
+          <label class="block">
+            <input type="file" name="mainImages" accept="image/*" class="hidden" required onchange="handleImageUpload(this, 'preview3', 'uploadLabel3', 'cropperModal', 'cropperImage')">
+            <span id="uploadLabel3" class="flex items-center justify-center h-20 w-20 border border-gray-300 bg-white text-gray-800 cursor-pointer hover:bg-gray-100 transition duration-200 ease-in-out">
+              <i class="fas fa-plus text-3xl"></i>
+            </span>
+          </label>
+          <div id="preview3" class="mt-2 hidden">
+            <img src="" alt="Preview 3" class="h-20 w-20 object-cover rounded">
+          </div>
+        </div>
+        <div class="w-full">
+          <label class="block">
+            <input type="file" name="mainImages" accept="image/*" class="hidden" required onchange="handleImageUpload(this, 'preview4', 'uploadLabel4', 'cropperModal', 'cropperImage')">
+            <span id="uploadLabel4" class="flex items-center justify-center h-20 w-20 border border-gray-300 bg-white text-gray-800 cursor-pointer hover:bg-gray-100 transition duration-200 ease-in-out">
+              <i class="fas fa-plus text-3xl"></i>
+            </span>
+          </label>
+          <div id="preview4" class="mt-2 hidden">
+            <img src="" alt="Preview 4" class="h-20 w-20 object-cover rounded">
+          </div>
+        </div>
       </div>
       <small class="text-gray-500">Please upload 4 images.</small>
-    </div>
+    </div> 
   </form>
 
   <!-- Add Product Button -->
@@ -209,11 +235,12 @@
 
 <script>
  document.addEventListener("DOMContentLoaded", () => {
-  // DOM Elements
   const addProductForm = document.getElementById("addProductForm");
-  let cropper; // Declare cropper variable
+  let cropper;
+  let currentImageInput;
+  let currentPreviewId;
+  let currentUploadLabelId;
 
-  // Image Upload and Cropping Functions
   function handleImageUpload(input, previewId, uploadLabelId, modalId, cropperImageId) {
     if (input.files && input.files[0]) {
       const reader = new FileReader();
@@ -249,7 +276,7 @@
     document.getElementById("cropperModal").style.display = 'none';
     if (cropper) {
       cropper.destroy();
-      cropper = null; // Reset cropper variable
+      cropper = null;
     }
   }
 
@@ -260,13 +287,22 @@
         const file = new File([blob], "croppedImage.png", { type: "image/png" });
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(file);
-        currentImageInput.files = dataTransfer.files; // Set the cropped image to the input
-        closeCropper(); // Close the modal after applying
+        currentImageInput.files = dataTransfer.files;
+
+        // Show preview
+        const previewContainer = document.getElementById(currentPreviewId);
+        const previewImg = previewContainer.querySelector('img');
+        const uploadLabel = document.getElementById(currentUploadLabelId);
+        
+        previewImg.src = canvas.toDataURL();
+        previewContainer.classList.remove('hidden');
+        uploadLabel.classList.add('hidden');
+        
+        closeCropper();
       });
     }
   }
 
-  // Event Listeners
   addProductForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const formData = new FormData(addProductForm);
@@ -287,10 +323,8 @@
       .catch((error) => console.error("Error submitting form:", error));
   });
 
-  // Make functions globally available
   window.handleImageUpload = handleImageUpload;
   window.closeCropper = closeCropper;
   window.applyCrop = applyCrop;
 });
-
 </script>
