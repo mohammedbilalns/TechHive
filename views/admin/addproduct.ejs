@@ -389,7 +389,7 @@
             const nameRegex = /^[A-Za-z0-9\s]+$/;
             const brandRegex = /^[A-Za-z0-9\s]+$/;
             const variantRegex = /^[A-Za-z0-9\s+]+$/;
-            const descriptionRegex = /^[A-Za-z0-9\s.,]+$/;
+            const descriptionRegex = /^[A-Za-z0-9\s.,'/-]+$/;
 
             if (!nameRegex.test(name)) {
               alertText.textContent = "Product name can only contain letters, numbers, and spaces.";
@@ -404,7 +404,7 @@
               alertMessage.classList.remove('hidden');
               isValid = false;
             } else if (!descriptionRegex.test(description)) {
-              alertText.textContent = "Description can only contain letters, numbers, spaces, ., and ,.";
+              alertText.textContent = "Description can only contain letters, numbers, spaces, and the following characters: . , ' / -";
               alertMessage.classList.remove('hidden');
               isValid = false;
             }

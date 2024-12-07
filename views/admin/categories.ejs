@@ -370,15 +370,15 @@ function validateAddCategoryForm() {
   let isValid = true;
   let errorMessage = '';
 
-  // Validate name
-  if (!name || name.length < 3 || name.length > 100 || /[^a-zA-Z\s.,]/.test(name)) {
-    errorMessage += 'Category Name must be between 3 to 100 characters and only contain letters, spaces, periods (.), or commas (,). <br>';
+  // Validate name (keeping it more restrictive for categories)
+  if (!name || name.length < 3 || name.length > 100 || /[^a-zA-Z\s]/.test(name)) {
+    errorMessage += 'Category Name must be between 3 to 100 characters and only contain letters and spaces. <br>';
     isValid = false;
   }
 
-  // Validate description
-  if (!description || description.length < 10 || description.length > 1000 || /[^a-zA-Z\s.,]/.test(description)) {
-    errorMessage += 'Description must be between 10 to 1000 characters and only contain letters, spaces, periods (.), or commas (,). <br>';
+  // Updated description validation
+  if (!description || description.length < 10 || description.length > 1000 || /[^a-zA-Z0-9\s.,'/-]/.test(description)) {
+    errorMessage += 'Description must be between 10 to 1000 characters and can only contain letters, numbers, spaces, and the following characters: . , \' / - <br>';
     isValid = false;
   }
 
@@ -398,14 +398,13 @@ function validateEditCategoryForm() {
   let isValid = true;
   let errorMessage = '';
 
-  if (!name || name.length < 3 || name.length > 100 || /[^a-zA-Z\s.,]/.test(name)) {
-    errorMessage += 'Category Name must be between 3 to 100 characters and only contain letters, spaces, periods (.), or commas (,). <br>';
+  if (!name || name.length < 3 || name.length > 100 || /[^a-zA-Z\s]/.test(name)) {
+    errorMessage += 'Category Name must be between 3 to 100 characters and only contain letters and spaces. <br>';
     isValid = false;
   }
 
- 
-  if (!description || description.length < 10 || description.length > 1000 || /[^a-zA-Z\s.,]/.test(description)) {
-    errorMessage += 'Description must be between 10 to 1000 characters and only contain letters, spaces, periods (.), or commas (,). <br>';
+  if (!description || description.length < 10 || description.length > 1000 || /[^a-zA-Z0-9\s.,'/-]/.test(description)) {
+    errorMessage += 'Description must be between 10 to 1000 characters and can only contain letters, numbers, spaces, and the following characters: . , \' / - <br>';
     isValid = false;
   }
 
