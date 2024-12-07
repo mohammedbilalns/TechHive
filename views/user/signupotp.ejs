@@ -90,9 +90,13 @@ otpInputs.forEach((input, index) => {
   });
 });
 
+// Update the button style based on the timer state
+resendButton.style.cursor = 'not-allowed'; // Initially set cursor style
+
 // Function to start the timer
 function startTimer() {
   resendButton.disabled = true; // Disable resend button
+  resendButton.style.cursor = 'not-allowed'; // Set cursor style when disabled
   countdownTimer = setInterval(function () {
     timeLeft--;
     let minutes = Math.floor(timeLeft / 60);
@@ -102,6 +106,7 @@ function startTimer() {
     if (timeLeft <= 0) {
       clearInterval(countdownTimer); // Stop the timer when it reaches 0
       resendButton.disabled = false; // Enable the resend button
+      resendButton.style.cursor = 'pointer'; // Change cursor style when enabled
 
       // Disable all OTP input fields
       otpInputs.forEach(input => {
@@ -110,6 +115,9 @@ function startTimer() {
 
       // Show the warning message
       warningMessage.style.display = 'block';
+
+      // Hide the timer message
+      timerDisplay.style.display = 'none';
     }
   }, 1000); // Update every second
 }
