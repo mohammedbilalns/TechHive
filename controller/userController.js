@@ -291,8 +291,7 @@ const loadResetpasswordotp = (req, res)=>{
 // ---- load home ---- homepage 
 const loadHome = async (req, res) => {
     try {
-        // Fetch flash sale products (assuming there's a flashSale field in product schema)
-        const flashSaleProducts = await productSchema
+        const allProducts = await productSchema
             .find({ status: "Active" })
             .limit(6);
 
@@ -308,7 +307,7 @@ const loadHome = async (req, res) => {
             .limit(3);
 
         res.render('user/home', {
-            flashSaleProducts,
+            allProducts,
             categories,
             newArrivals
         });
@@ -350,10 +349,31 @@ const loadAllProducts = async (req, res) => {
     }
 };
 
+const viewProduct = async (req, res) => {
+    try {
+        const product = await productSchema.findById(req.params.id);
+        
+        if (!product) {
+            return res.status(404).render('error', {
+                message: "Product not found",
+                alertType: "error"
+            });
+        }
+
+        res.render('user/viewproduct', { product });
+    } catch (error) {
+        log.red("ERROR", error);
+        res.status(500).render('error', {
+            message: "Error loading product",
+            alertType: "error"
+        });
+    }
+};
+
 export default {
     loadLogin, verifyLogin,
      loadSignup,verifyOTP , resendOTP,
     loadForgotpassword, loadResetpassword, loadResetpasswordotp,
     loadHome, registerUser,authGoogle, authGoogleCallback,
-    logoutUser, loadAllProducts
+    logoutUser, loadAllProducts, viewProduct
 }

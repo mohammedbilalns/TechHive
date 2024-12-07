@@ -1,0 +1,112 @@
+<%- include('../partials/header') %>
+
+<main class="mx-auto my-5 md:my-10 container px-4 md:px-0">
+  <!-- Product Details Section -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <!-- Image Gallery -->
+    <div>
+      <!-- Main Image with Zoom Effect -->
+      <div class="relative overflow-hidden rounded-lg mb-4">
+        <img id="mainImage" 
+             src="<%= product.images[0].path %>" 
+             alt="<%= product.name %>"
+             class="w-full h-[400px] object-cover transform hover:scale-150 transition-transform duration-300 cursor-zoom-in"/>
+      </div>
+      <!-- Thumbnail Images -->
+      <div class="grid grid-cols-4 gap-2">
+        <% product.images.forEach((image, index) => { %>
+          <img src="<%= image.path %>" 
+               alt="Product thumbnail"
+               onclick="changeMainImage(this.src)"
+               class="w-full h-20 object-cover rounded-lg cursor-pointer hover:opacity-75 transition-opacity"/>
+        <% }); %>
+      </div>
+    </div>
+
+    <!-- Product Info -->
+    <div>
+      <h1 class="text-2xl md:text-3xl mb-2"><%= product.name %></h1>
+      <div class="flex items-center mb-4">
+        <div class="flex text-yellow-400">
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="far fa-star"></i>
+        </div>
+        <span class="ml-2 text-gray-500">(4.0 - 125 reviews)</span>
+      </div>
+      <p class="text-xl text-red-600 mb-4">₹<%= product.price.toFixed(2) %></p>
+      <p class="text-gray-600 mb-6"><%= product.description %></p>
+      
+      <!-- Product Details -->
+      <div class="mb-6">
+        <p class="mb-2"><strong>Brand:</strong> <%= product.brand %></p>
+        <p class="mb-2"><strong>Variant:</strong> <%= product.variant %></p>
+        <p class="mb-2"><strong>Stock:</strong> <%= product.stock %> units</p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex gap-4 mb-6">
+        <button class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors">
+          Buy Now
+        </button>
+        <button class="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition-colors">
+          Add to Cart
+        </button>
+        <button class="border border-gray-300 p-2 rounded-lg hover:bg-gray-100 transition-colors">
+          <i class="far fa-heart"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reviews Section -->
+  <section class="mt-12">
+    <h2 class="text-2xl mb-6">Customer Reviews</h2>
+    
+    <!-- Sample Reviews -->
+    <div class="space-y-6">
+      <div class="border-b pb-4">
+        <div class="flex items-center mb-2">
+          <div class="flex text-yellow-400 mr-2">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+          <p class="font-semibold">John Doe</p>
+          <p class="text-gray-500 ml-4">2 days ago</p>
+        </div>
+        <p class="text-gray-600">Great product! The quality is excellent and delivery was fast.</p>
+      </div>
+
+      <div class="border-b pb-4">
+        <div class="flex items-center mb-2">
+          <div class="flex text-yellow-400 mr-2">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="far fa-star"></i>
+          </div>
+          <p class="font-semibold">Jane Smith</p>
+          <p class="text-gray-500 ml-4">1 week ago</p>
+        </div>
+        <p class="text-gray-600">Good value for money. Would recommend to others.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Image Gallery Script -->
+<script>
+function changeMainImage(src) {
+  document.getElementById('mainImage').src = src;
+}
+</script>
+
+<%- include('../partials/footer') %>
+</```
+rewritten_file>

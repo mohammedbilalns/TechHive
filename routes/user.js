@@ -28,4 +28,8 @@ router.get('/home', userController.loadHome)
 //router.post('/forgot-password', userController.validateReset)
 
 router.get('/allproducts', userController.loadAllProducts)
+
+// Add this new route
+router.get('/product/:id', userController.viewProduct)
+
 export default router
