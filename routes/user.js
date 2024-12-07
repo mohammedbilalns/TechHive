@@ -27,5 +27,5 @@ router.get('/home', userController.loadHome)
 //router.get('/forgot-password', userController.loadForgotpassword)
 //router.post('/forgot-password', userController.validateReset)
 
-
+router.get('/allproducts', userController.loadAllProducts)
 export default router

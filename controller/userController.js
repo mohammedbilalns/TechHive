@@ -321,12 +321,39 @@ const loadHome = async (req, res) => {
     }
 };
 
+const loadAllProducts = async (req, res) => {
+    try {
+        // Fetch all active categories with their products
+        const categoriesWithProducts = await categorySchema
+            .aggregate([
+                { $match: { status: "Active" } },
+                {
+                    $lookup: {
+                        from: "products",
+                        localField: "_id",
+                        foreignField: "category",
+                        pipeline: [{ $match: { status: "Active" } }],
+                        as: "products"
+                    }
+                }
+            ]);
 
+        res.render('user/allproducts', {
+            categoriesWithProducts
+        });
+    } catch (error) {
+        log.red("ERROR", error);
+        res.status(500).render('user/allproducts', {
+            message: "Error loading products",
+            alertType: "error"
+        });
+    }
+};
 
 export default {
     loadLogin, verifyLogin,
      loadSignup,verifyOTP , resendOTP,
     loadForgotpassword, loadResetpassword, loadResetpasswordotp,
     loadHome, registerUser,authGoogle, authGoogleCallback,
-    logoutUser
+    logoutUser, loadAllProducts
 }
