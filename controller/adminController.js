@@ -237,16 +237,29 @@ const getProducts = async (req, res) => {
     }
 }
 
-const deleteProduct = async (req, res) =>{
-    try{
-        await productSchema.findByIdAndDelete(req.params.productid)
-        res.redirect('/admin/products?message=Product+deleted+successfully&alertType=success')
-    }catch(error){
-        log.red('PRODUCT_DELETE_ERROR', error)
-        res.redirect('/admin/products?message=Something+went+wrong&alertType=error')
+const deleteProduct = async (req, res) => {
+    try {
+        // Get the product details before deletion
+        const product = await productSchema.findById(req.params.productid);
+        
+        if (product && product.images) {
+            // Delete each image file from the storage
+            product.images.forEach(image => {
+                const imagePath = path.join('static', image.path);
+                if (fs.existsSync(imagePath)) {
+                    fs.unlinkSync(imagePath);
+                }
+            });
+        }
+
+        // Delete the product from database
+        await productSchema.findByIdAndDelete(req.params.productid);
+        res.redirect('/admin/products?message=Product+deleted+successfully&alertType=success');
+    } catch (error) {
+        log.red('PRODUCT_DELETE_ERROR', error);
+        res.redirect('/admin/products?message=Something+went+wrong&alertType=error');
     }
-   
-}
+};
 
 const deactivateProduct = async (req,res)=>{
     try{
