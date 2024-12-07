@@ -4,6 +4,8 @@ import bcrypt from "bcryptjs";
 import authUtils from "../utils/authUtils.js";
 import { config } from "dotenv";
 import passport from "passport";
+import productSchema from "../model/productModel.js";
+import categorySchema from "../model/categoryModel.js";
 
 
 config();
@@ -287,9 +289,37 @@ const loadResetpasswordotp = (req, res)=>{
     res.render('user/forgotpasswordotp')
 }
 // ---- load home ---- homepage 
-const loadHome = (req, res)=>{
-    res.render('user/home')
-}
+const loadHome = async (req, res) => {
+    try {
+        // Fetch flash sale products (assuming there's a flashSale field in product schema)
+        const flashSaleProducts = await productSchema
+            .find({ status: "Active" })
+            .limit(6);
+
+        // Fetch all categories
+        const categories = await categorySchema
+            .find({ status: "Active" })
+            .limit(10);
+
+        // Fetch new arrival products (assuming there's a createdAt field)
+        const newArrivals = await productSchema
+            .find()
+            .sort({ createdAt: -1 })
+            .limit(3);
+
+        res.render('user/home', {
+            flashSaleProducts,
+            categories,
+            newArrivals
+        });
+    } catch (error) {
+        log.red("ERROR", error);
+        res.status(500).render('user/home', { 
+            message: "Error loading products",
+            alertType: "error" 
+        });
+    }
+};
 
 
 

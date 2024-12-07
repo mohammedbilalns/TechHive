@@ -23,7 +23,7 @@ router.get("/auth/google",auth.isLogin,  userController.authGoogle)
 router.get('/auth/google/callback',auth.isLogin, userController.authGoogleCallback)
 
 // User Home
-router.get('/home', auth.checkSession, userController.loadHome)
+router.get('/home', userController.loadHome)
 //router.get('/forgot-password', userController.loadForgotpassword)
 //router.post('/forgot-password', userController.validateReset)
 
