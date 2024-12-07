@@ -322,10 +322,61 @@ const addProduct = async (req, res) => {
     }
 };
 
+
+
+const getEditProduct = async (req,res)=>{
+    try{
+        const product = await productSchema.findById(req.params.productid)
+        console.log(product)
+        const categories = await categorySchema.find({status:"Active"})
+        res.render('admin/editproduct', {product, categories})
+    }catch(error){
+        log.red('FETCH_EDIT_PRODUCT_ERROR', error)
+        res.redirect('/admin/products?message=Something+went+wrong&alertType=error')        
+    }
+}
+
+
+const editProduct = async (req,res)=>{
+    try{
+        const productId = req.params.id;
+        const updateData = {
+            name: req.body.productName,
+            description: req.body.description,
+            category: req.body.category,
+            price: req.body.price,
+            stock: req.body.stock
+        }
+        if(req.body.deleteImages){
+            const imagesToDelete = Array.isArray(req.body.deleteImages) 
+                ? req.body.deleteImages 
+                : [req.body.deleteImages];
+            imagesToDelete.forEach(image => {
+                fs.unlinkSync(path.join(__dirname, '../public/uploads/', image));
+            });
+            await productSchema.findByIdAndUpdate(productId, {
+                $pull: { images: { $in: imagesToDelete } }
+            });
+        }
+        if(req.files && req.files.length > 0){
+            const newImageNames = req.files.map(file => file.filename);
+            await productSchema.findByIdAndUpdate(productId, {
+                $push: { images: { $each: newImageNames } }
+            });
+        }
+        await productSchema.findByIdAndUpdate(productId, updateData);
+        res.redirect('/admin/products?message=Product+updated+successfully&alertType=success');
+   
+    }catch(error){  
+        log.red('EDIT_PRODUCT_ERROR', error)
+        res.redirect('/admin/products?message=Something+went+wrong&alertType=error')
+    }
+
+}
 export default {
      loadLogin, verifyLogin , logoutAdmin,
      getCustomers, blockCustomer, unblockCustomer,
      getCategories, deleteCategory, hideCategory, unhideCategory, addCategory,editCategory,
      getProducts, addProduct, deleteProduct, deactivateProduct, activateProduct, getAddProduct,
-     productUpload
+     productUpload, getEditProduct, editProduct
     }

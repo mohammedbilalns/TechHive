@@ -148,7 +148,15 @@
             <% products.forEach((product, index) => { %>
               <tr class="border-b hover:bg-gray-100">
                 <td class="px-6 py-3 font-medium"><%= index + 1 %></td>
-                <td class="px-6 py-3"><img src="<%= product.images[0] %>" alt="Product" class="w-12 h-12 rounded-md"></td>
+                <td class="px-6 py-3">
+                  <% if (product.images && product.images.length > 0) { %>
+                    <img src="<%= product.images[0].path %>" alt="<%= product.name %>" class="w-12 h-12 object-cover rounded-md">
+                  <% } else { %>
+                    <div class="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center">
+                      <i class="fas fa-image text-gray-400"></i>
+                    </div>
+                  <% } %>
+                </td>
                 <td class="px-6 py-3"><%= product.name %></td>
                 <td class="px-6 py-3"><%= product.category.name %></td>
                 <td class="px-6 py-3">₹<%= product.price %></td>
@@ -178,8 +186,11 @@
                         </button>
                       </form>
                     <% } %>
-                    <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-                      onclick="editProduct('<%= product._id %>')">Edit</button>
+                    <form action="/admin/products/edit/<%= product._id %>">
+                      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                        Edit
+                      </button>
+                    </form>
                     <form action="/admin/products/delete/<%= product._id %>" 
                       onsubmit="return confirm('Are you sure you want delete the product?')">
                       <button type="submit"
