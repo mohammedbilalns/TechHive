@@ -110,6 +110,10 @@ if (timeLeft <= 0) {
     warningMessage.style.display = 'block';
     timerDisplay.style.display = 'none';
 } else {
+    // Update timer display immediately before starting the countdown
+    let minutes = Math.floor(timeLeft / 60);
+    let seconds = timeLeft % 60;
+    timerDisplay.textContent = `You can resend OTP in: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     startTimer();
 }
 

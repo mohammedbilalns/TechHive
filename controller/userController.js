@@ -131,7 +131,7 @@ const verifyOTP = async (req, res) => {
         // Find the user by email
         const user = await userSchema.findOne({ email });
 
-      if (user.otp.otpAttempts > 3) {
+      if (user.otp.otpAttempts > 5) {
             await userSchema.findOneAndDelete({ email });
             return res.render("user/signup", {
                 message: "You have exceeded the maximum OTP attempts. Please try again later.",
