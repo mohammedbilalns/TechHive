@@ -30,8 +30,14 @@ const verifyLogin = async (req, res) => {
         // If no user is found, show an error message
         if (!user) return res.redirect('/login?message=Invalid+credentials&alertType=error');
 
+        // Check if user's status is pending
+        if (user.status === "Pending") {
+            return res.redirect(`/login?message=Please+wait+for+some+time+for+sign+up+again&alertType=warning&email=${email}`);
+        }
+
         //check the user is active 
-        if(user.status!= "Active") return res.redirect(`/login?message=Your+account+is+currently+blocked&alertType=error&email=${email}` )
+        if(user.status != "Active") return res.redirect(`/login?message=Your+account+is+currently+blocked&alertType=error&email=${email}` )
+        
         // Check if the user used Google login
         if (!user.password) return res.redirect(`/login?message=Please+use+Google+login&alertType=success&email=${email}`);
 
@@ -65,9 +71,9 @@ const registerUser = async (req, res) => {
         let { fullname, phonenumber, email, password } = req.body;
         fullname = fullname.trim() 
         phonenumber = phonenumber.trim()
-        email= email.trim()
+        email = email.trim()
         password = password.trim()
-        const otp = authUtils.generateOTP();  // Generate OTP for email verification
+        const otp = authUtils.generateOTP();
 
         // Check if a user already exists with the given email or phone number
         const existingUser = await userSchema.findOne({
@@ -101,18 +107,30 @@ const registerUser = async (req, res) => {
             phonenumber,
             email,
             password: hashedPassword,
-            status: "Pending", // Set initial status as "pending"
+            status: "Pending",
+            createdAt: new Date(),
             otp: {
                 otpValue: otp,
-                otpExpiresAt: Date.now() + 60000, // OTP expiry set to 1 minute
+                otpExpiresAt: Date.now() + 60000,
                 otpAttempts: 0,
             },
         });
 
-
         // Save the new user to the database
         await newUser.save();
 
+        // Schedule deletion after 3 minutes if status is still pending
+        setTimeout(async () => {
+            try {
+                await userSchema.deleteOne({ 
+                    email, 
+                    status: "Pending",
+                    createdAt: { $lt: new Date(Date.now() - 3 * 60 * 1000) }
+                });
+            } catch (error) {
+                log.red("Error deleting pending user:", error);
+            }
+        }, 3 * 60 * 1000); // 3 minutes in milliseconds
 
         // Send OTP email to the user
         await authUtils.sendOTPEmail(email, otp);
