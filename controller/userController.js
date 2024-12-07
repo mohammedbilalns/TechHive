@@ -126,20 +126,10 @@ const registerUser = async (req, res) => {
 // Verify OTP entered by the user during signup
 const verifyOTP = async (req, res) => {
     const { otp1, otp2, otp3, otp4, email, timeRem } = req.body;
-    // Combine OTP digits into a single string
     const userOTP = otp1 + otp2 + otp3 + otp4;
 
     try {
-        // Find the user by email
         const user = await userSchema.findOne({ email });
-
-      if (user.otp.otpAttempts > 5) {
-            await userSchema.findOneAndDelete({ email });
-            return res.render("user/signup", {
-                message: "You have exceeded the maximum OTP attempts. Please try again later.",
-                alertType: "error",
-            });
-        }
         const currentTime = Date.now();
 
         // Check if OTP has expired
@@ -156,14 +146,24 @@ const verifyOTP = async (req, res) => {
         if (user.otp.otpValue === userOTP) {
             // Update user status to "active" and clear OTP data
             user.status = "Active";
-            user.otp = undefined; // Clear OTP data
+            user.otp = undefined;
             await user.save();
 
             // Store user information in session
             req.session.user = { fullname: user.fullname, email: user.email };
 
-            res.render("user/home"); // Redirect to home page after successful verification
+            // Redirect to home with success message
+            return res.redirect('/home?message=Registration+successful!&alertType=success');
         } else {
+            // Check OTP attempts only when wrong OTP is entered
+            if (user.otp.otpAttempts >= 3) {
+                await userSchema.findOneAndDelete({ email });
+                return res.render("user/signup", {
+                    message: "You have exceeded the maximum OTP attempts. Please try again later.",
+                    alertType: "error",
+                });
+            }
+
             // Increment OTP attempts
             user.otp.otpAttempts += 1;
             await user.save();

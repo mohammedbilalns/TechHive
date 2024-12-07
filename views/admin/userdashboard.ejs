@@ -157,8 +157,8 @@
                 <td class="px-4 md:px-6 py-4"><%= customer.phonenumber %></td>
                 <td class="px-4 md:px-6 py-4 truncate max-w-[200px]"><%= customer.email %></td>
                 <td class="px-4 md:px-6 py-4">
-                  <span class="px-4 py-2 rounded-md shadow text-white 
-                    <%= customer.status === 'Active' ? 'text-green-600' : 'text-primary-accent' %>">
+                  <span class="px-4 py-2 rounded-md shadow 
+                    <%= customer.status === 'Active' ? 'text-green-600 ' : 'text-primary-accent bg-red-100' %>">
                     <%= customer.status %>
                   </span>
                 </td>

@@ -9,7 +9,6 @@ import { CloudinaryStorage } from "multer-storage-cloudinary";
 import multer from "multer";
 import fs from "node:fs"
 import path from "node:path"
-import sharp from "sharp"
 
 configDotenv()
 
