@@ -36,28 +36,86 @@
         </div>
         <span class="ml-2 text-gray-500">(4.0 - 125 reviews)</span>
       </div>
-      <p class="text-xl text-red-600 mb-4">₹<%= product.price.toFixed(2) %></p>
+      
+      <!-- Price Section with Discount -->
+      <div class="mb-4">
+        <% if (product.discount > 0) { %>
+          <div class="flex items-center gap-2">
+            <p class="text-xl text-red-600">₹<%= (product.price * (1 - product.discount/100)).toFixed(2) %></p>
+            <p class="text-gray-500 line-through">₹<%= product.price.toFixed(2) %></p>
+            <span class="bg-red-100 text-red-600 text-sm px-2 py-1 rounded">
+              <%= product.discount %>% OFF
+            </span>
+          </div>
+        <% } else { %>
+          <p class="text-xl text-red-600">₹<%= product.price.toFixed(2) %></p>
+        <% } %>
+      </div>
+
       <p class="text-gray-600 mb-6"><%= product.description %></p>
       
       <!-- Product Details -->
       <div class="mb-6">
         <p class="mb-2"><strong>Brand:</strong> <%= product.brand %></p>
         <p class="mb-2"><strong>Variant:</strong> <%= product.variant %></p>
-        <p class="mb-2"><strong>Stock:</strong> <%= product.stock %> units</p>
+        <p class="mb-2">
+          <strong>Stock:</strong> 
+          <% if (product.stock > 0) { %>
+            <span class="text-green-600"><%= product.stock %> units</span>
+          <% } else { %>
+            <span class="text-red-600">Out of Stock</span>
+          <% } %>
+        </p>
       </div>
 
       <!-- Action Buttons -->
       <div class="flex gap-4 mb-6">
-        <button class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors">
+        <button class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors <%= !product.stock ? 'opacity-50 cursor-not-allowed' : '' %>"
+                <%= !product.stock ? 'disabled' : '' %>>
           Buy Now
         </button>
-        <button class="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition-colors">
+        <button class="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition-colors <%= !product.stock ? 'opacity-50 cursor-not-allowed' : '' %>"
+                <%= !product.stock ? 'disabled' : '' %>>
           Add to Cart
         </button>
         <button class="border border-gray-300 p-2 rounded-lg hover:bg-gray-100 transition-colors">
           <i class="far fa-heart"></i>
         </button>
       </div>
+    </div>
+  </section>
+
+  <!-- Related Products Section (Add this before Reviews Section) -->
+  <section class="mt-12 mb-12">
+    <h2 class="text-2xl mb-6">Related Products</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <% relatedProducts.forEach(related => { %>
+        <a href="/product/<%= related._id %>" class="group">
+          <div class="bg-gray-100 rounded-lg p-4 transition-all duration-300 hover:shadow-lg">
+            <img src="<%= related.images[0].path %>" 
+                 alt="<%= related.name %>" 
+                 class="w-full h-48 object-cover rounded-lg mb-4"/>
+            <h3 class="text-lg mb-2 group-hover:text-red-600 transition-colors"><%= related.name %></h3>
+            
+            <div class="flex items-center gap-2">
+              <% if (related.discount > 0) { %>
+                <p class="text-red-600 font-semibold">
+                  ₹<%= (related.price * (1 - related.discount/100)).toFixed(2) %>
+                </p>
+                <p class="text-gray-500 line-through text-sm">
+                  ₹<%= related.price.toFixed(2) %>
+                </p>
+              <% } else { %>
+                <p class="text-red-600 font-semibold">�<%= related.price.toFixed(2) %></p>
+              <% } %>
+            </div>
+            
+            <% if (related.stock <= 0) { %>
+              <p class="text-red-600 text-sm mt-2">Out of Stock</p>
+            <% } %>
+          </div>
+        </a>
+      <% }); %>
     </div>
   </section>
 
@@ -108,5 +166,3 @@ function changeMainImage(src) {
 </script>
 
 <%- include('../partials/footer') %>
-</```
-rewritten_file>

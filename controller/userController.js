@@ -360,7 +360,17 @@ const viewProduct = async (req, res) => {
             });
         }
 
-        res.render('user/viewproduct', { product });
+        // Fetch related products from the same category
+        const relatedProducts = await productSchema.find({
+            category: product.category,
+            _id: { $ne: product._id }, // Exclude current product
+            status: "Active"
+        }).limit(4);
+
+        res.render('user/viewproduct', { 
+            product,
+            relatedProducts
+        });
     } catch (error) {
         log.red("ERROR", error);
         res.status(500).render('error', {
