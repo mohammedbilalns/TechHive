@@ -170,7 +170,7 @@ const verifyOTP = async (req, res) => {
                 email,
                 message: "Invalid OTP, try again",
                 alertType: "error",
-                timeRem: parseInt(timeRem),
+                timeRemaining: timeRem,
             });
         }
     } catch (error) {

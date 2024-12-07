@@ -8,7 +8,9 @@
       <form id="otpForm" action="/verify-otp" method="POST">
         <!-- Hidden input to pass the email -->
         <input type="hidden" name="email" value="<%= locals.email %>" />
-
+        <!-- Add a hidden input for remaining time -->
+        <input type="hidden" name="timeRem" id="timeRemaining" 
+               value="<%= locals.timeRemaining || 60 %>" />
 
         <div class="flex gap-2 mb-6">
           <input type="text" maxlength="1" class="otp-input w-12 h-12 border text-center text-xl rounded-md" name="otp1" />
@@ -52,7 +54,7 @@ const timerDisplay = document.getElementById('timer');
 const warningMessage = document.getElementById('warningMessage'); // Add an element for the warning message
 
 let countdownTimer;
-let timeLeft = 60; // 1 minute timer
+//let timeLeft = 60; // 1 minute timer
 
 // OTP Input Navigation
 otpInputs.forEach((input, index) => {
@@ -94,15 +96,39 @@ otpInputs.forEach((input, index) => {
 // Update the button style based on the timer state
 resendButton.style.cursor = 'not-allowed'; // Initially set cursor style
 
-// Function to start the timer
+// Update to use the persisted time value
+const initialTime = document.getElementById('timeRemaining').value;
+let timeLeft = parseInt(initialTime);
+
+// If time is already expired, show the expired state immediately
+if (timeLeft <= 0) {
+    resendButton.disabled = false;
+    resendButton.style.cursor = 'pointer';
+    otpInputs.forEach(input => {
+        input.disabled = true;
+    });
+    warningMessage.style.display = 'block';
+    timerDisplay.style.display = 'none';
+} else {
+    startTimer();
+}
+
+// Remove the automatic timer start on window.load
+// window.onload = startTimer;
+
+// Update the timer function to sync with hidden input
 function startTimer() {
-  resendButton.disabled = true; // Disable resend button
-  resendButton.style.cursor = 'not-allowed'; // Set cursor style when disabled
+  resendButton.disabled = true;
+  resendButton.style.cursor = 'not-allowed';
+  
   countdownTimer = setInterval(function () {
     timeLeft--;
     let minutes = Math.floor(timeLeft / 60);
     let seconds = timeLeft % 60;
     timerDisplay.textContent = `You can resend OTP in: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    
+    // Update hidden input with current remaining time
+    document.getElementById('timeRemaining').value = timeLeft;
 
     if (timeLeft <= 0) {
       clearInterval(countdownTimer); // Stop the timer when it reaches 0
@@ -122,9 +148,6 @@ function startTimer() {
     }
   }, 1000); // Update every second
 }
-
-// Start the timer when the page loads
-window.onload = startTimer;
 
 // Attach the resend function to the "Resend OTP" button
 resendButton.addEventListener('click', resendOTP);

@@ -27,11 +27,11 @@ router.post('/customers/unblock/:customerid',adminAuth.checkSession ,adminContro
 
 //---- categories routes ----
 router.get('/categories', adminController.getCategories) // add middleware in this 
-router.post('/categories/delete/:categoryid',adminAuth.checkSession,  adminController.deleteCategory)
-router.post('/categories/hide/:categoryid',adminAuth.checkSession,  adminController.hideCategory)
-router.post('/categories/unhide/:categoryid',adminAuth.checkSession,  adminController.unhideCategory)
-router.post('/categories/new',adminAuth.checkSession,  adminController.addCategory)
-router.post('/categories/edit/:categoryid',adminAuth.checkSession, adminController.editCategory)
+router.post('/categories/delete/:categoryid',  adminController.deleteCategory)
+router.post('/categories/hide/:categoryid', adminController.hideCategory)
+router.post('/categories/unhide/:categoryid',  adminController.unhideCategory)
+router.post('/categories/new',  adminController.addCategory)
+router.post('/categories/edit/:categoryid', adminController.editCategory)
 
 //---- products routes ---- 
 router.get('/products', adminController.getProducts)
@@ -41,11 +41,7 @@ router.post('/products/deactivate/:productid', adminController.deactivateProduct
 router.get(`/products/add`,adminController.getAddProduct )
 router.post('/products/add', adminController.productUpload.array('mainImages', 4), adminController.addProduct);
 router.get('/products/edit/:productid', adminController.getEditProduct);
-
-
-
-//router.post('/editproduct/:id', adminController.productUpload.array('newImages'), adminController.editProduct);
-
+router.post('/products/edit/:productid', adminController.productUpload.array('mainImages', 4), adminController.editProduct);
 
   
 export default router

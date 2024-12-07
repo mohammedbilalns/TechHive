@@ -102,7 +102,7 @@
   
     <!-- Add Product Form -->
     <div id="productFormContainer" class="bg-white shadow-lg rounded-lg p-8 mt-4">
-      <form id="addProductForm" action="/admin/products/add" method="POST" enctype="multipart/form-data">
+      <form id="addProductForm" action=/admin/products/edit/<%= product._id %> method="POST" enctype="multipart/form-data">
         <!-- Product Name -->
         <div class="form-group mb-4">
           <label class="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
@@ -181,12 +181,13 @@
                          alt="Preview <%= i+1 %>" 
                          class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity"
                          onclick="document.getElementById('imageInput<%= i+1 %>').click()">
+                    <input type="hidden" name="existingImages" value="<%= product.images[i].filename %>">
                   <% } %>
                 </div>
               </div>
             <% } %>
           </div>
-          <small class="text-gray-500">Please upload 4 images. Click on any image to replace it.</small>
+          <small class="text-gray-500">Click on any image to replace it. You can update individual images or keep existing ones.</small>
         </div> 
    <!-- Error Message -->
    <div id="alertMessage" class="mb-4 p-3 rounded-md hidden bg-red-100 text-red-700">
@@ -305,7 +306,7 @@
         const alertText = document.getElementById("alertText");
 
         addProductForm.addEventListener("submit", (event) => {
-          alertMessage.classList.add('hidden'); // Hide alert initially
+          alertMessage.classList.add('hidden');
           let isValid = true;
 
           const name = addProductForm.name.value.trim();
@@ -315,11 +316,6 @@
           const price = addProductForm.price.value.trim();
           const stock = addProductForm.stock.value.trim();
           const discount = addProductForm.discount.value.trim();
-
-          // Check if all four images are selected
-          const imageInputs = addProductForm.querySelectorAll('input[type="file"]');
-          const imageFiles = Array.from(imageInputs).map(input => input.files[0]);
-          const allImagesSelected = imageFiles.every(file => file !== undefined);
 
           // Define minimum and maximum lengths
           const nameBrandVariantMinLength = 3;
@@ -368,10 +364,6 @@
             alertText.textContent = "Stock is required.";
             alertMessage.classList.remove('hidden');
             isValid = false;
-          } else if (!allImagesSelected) {
-            alertText.textContent = "All four images must be selected.";
-            alertMessage.classList.remove('hidden');
-            isValid = false;
           }
 
           // Validate text fields for allowed characters only if required fields are filled
@@ -418,7 +410,7 @@
           }
 
           if (!isValid) {
-            event.preventDefault(); // Prevent form submission if validation fails
+            event.preventDefault();
           }
         });
 
