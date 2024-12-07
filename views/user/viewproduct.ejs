@@ -1,16 +1,31 @@
 <%- include('../partials/header') %>
 
 <main class="mx-auto my-5 md:my-10 container px-4 md:px-0">
+  <!-- Breadcrumbs -->
+  <nav class="flex mb-4 text-sm">
+    <a href="/home" class="text-gray-500 hover:text-red-600">Home</a>
+    <span class="mx-2 text-gray-500">/</span>
+    <a href="/allproducts" class="text-gray-500 hover:text-red-600">All Products</a>
+    <span class="mx-2 text-gray-500">/</span>
+    <span class="text-gray-800"><%= product.name %></span>
+  </nav>
+
   <!-- Product Details Section -->
   <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
     <!-- Image Gallery -->
     <div>
-      <!-- Main Image with Zoom Effect -->
-      <div class="relative overflow-hidden rounded-lg mb-4">
+      <!-- Main Image with Advanced Zoom Effect -->
+      <div class="relative overflow-hidden rounded-lg mb-4" 
+           id="imageContainer" 
+           style="height: 400px;">
         <img id="mainImage" 
              src="<%= product.images[0].path %>" 
              alt="<%= product.name %>"
-             class="w-full h-[400px] object-cover transform hover:scale-150 transition-transform duration-300 cursor-zoom-in"/>
+             class="w-full h-full object-cover"/>
+        <div id="zoomPane" 
+             class="hidden absolute bg-white pointer-events-none border"
+             style="width: 300px; height: 300px;">
+        </div>
       </div>
       <!-- Thumbnail Images -->
       <div class="grid grid-cols-4 gap-2">
@@ -59,9 +74,9 @@
         <p class="mb-2"><strong>Brand:</strong> <%= product.brand %></p>
         <p class="mb-2"><strong>Variant:</strong> <%= product.variant %></p>
         <p class="mb-2">
-          <strong>Stock:</strong> 
+          <strong>Status:</strong> 
           <% if (product.stock > 0) { %>
-            <span class="text-green-600"><%= product.stock %> units</span>
+            <span class="text-green-600">Available</span>
           <% } else { %>
             <span class="text-red-600">Out of Stock</span>
           <% } %>
@@ -106,7 +121,7 @@
                   ₹<%= related.price.toFixed(2) %>
                 </p>
               <% } else { %>
-                <p class="text-red-600 font-semibold">�<%= related.price.toFixed(2) %></p>
+                <p class="text-red-600 font-semibold">₹<%= related.price.toFixed(2) %></p>
               <% } %>
             </div>
             
@@ -158,10 +173,42 @@
   </section>
 </main>
 
-<!-- Image Gallery Script -->
+<!-- Updated Image Zoom Script -->
 <script>
+const container = document.getElementById('imageContainer');
+const mainImage = document.getElementById('mainImage');
+const zoomPane = document.getElementById('zoomPane');
+
+container.addEventListener('mouseenter', function() {
+  zoomPane.style.display = 'block';
+});
+
+container.addEventListener('mouseleave', function() {
+  zoomPane.style.display = 'none';
+});
+
+container.addEventListener('mousemove', function(e) {
+  // Get relative position
+  const rect = container.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  // Calculate percentage positions
+  const xPercent = (x / rect.width) * 100;
+  const yPercent = (y / rect.height) * 100;
+
+  // Position zoom pane
+  zoomPane.style.left = `${x - zoomPane.offsetWidth / 2}px`;
+  zoomPane.style.top = `${y - zoomPane.offsetHeight / 2}px`;
+
+  // Set background image and position
+  zoomPane.style.backgroundImage = `url(${mainImage.src})`;
+  zoomPane.style.backgroundSize = '200%';
+  zoomPane.style.backgroundPosition = `${xPercent}% ${yPercent}%`;
+});
+
 function changeMainImage(src) {
-  document.getElementById('mainImage').src = src;
+  mainImage.src = src;
 }
 </script>
 
