@@ -117,7 +117,7 @@ const registerUser = async (req, res) => {
         res.render('user/signupotp', {email});  // Render OTP verification page
     } catch (error) {
         log.red('ERROR', error);
-        res.render('user/signup', { message: "Something went wrong", alertType: "error" });
+        res.status(500).render('user/signup', { message: "Something went wrong", alertType: "error" });
     }
 };
 
@@ -175,7 +175,7 @@ const verifyOTP = async (req, res) => {
         }
     } catch (error) {
         log.red("ERROR", error);
-        res.render("user/signupotp", {
+        res.status(500).render("user/signupotp", {
             email,
             message: "Something went wrong",
             alertType: "error",
@@ -223,7 +223,7 @@ const resendOTP = async (req, res) => {
 
     } catch (error) {
         log.red("ERROR", error);
-        res.render("user/signupotp", {
+        res.status(500).render("user/signupotp", {
             email,
             message: "Something went wrong while resending OTP. Please try again.",
             alertType: "error",

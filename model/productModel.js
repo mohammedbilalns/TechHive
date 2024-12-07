@@ -21,11 +21,17 @@ const productSchema = new mongoose.Schema({
     ref: 'Category',
     required: true
   },
-  images: [{
+  variant: {
     type: String,
-    required: true
-  }],
+    required: true,
+    trim: true
+  },
   price: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  stock: {
     type: Number,
     required: true,
     min: 0
@@ -36,16 +42,10 @@ const productSchema = new mongoose.Schema({
     min: 0,
     max: 100
   },
-  stock: {
-    type: Number,
-    required: true,
-    min: 0
-  },
-  variant: {
-    type: String,
-    required: true,
-    trim: true
-  },
+  images: [{
+    path: String,
+    filename: String
+  }],
   status: {
     type: String,
     enum: ['Active', 'Inactive'],

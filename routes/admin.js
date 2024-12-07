@@ -36,7 +36,7 @@ router.get('/products/delete/:productid', adminController.deleteProduct)
 router.post('/products/activate/:productid', adminController.activateProduct)
 router.post('/products/deactivate/:productid', adminController.deactivateProduct)
 router.get(`/products/add`,adminController.getAddProduct )
-router.post('/products/add', adminController.addProduct)
+router.post('/products/add', adminController.productUpload.array('mainImages', 4), adminController.addProduct);
 
 
   

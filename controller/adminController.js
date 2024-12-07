@@ -29,6 +29,32 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage: storage });
 
+// Add multer configuration for local storage
+const productStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const dir = 'static/uploads/products';
+        // Create directory if it doesn't exist
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        cb(null, dir);
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
+});
+
+const productUpload = multer({ 
+    storage: productStorage,
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Not an image! Please upload an image.'), false);
+        }
+    }
+});
+
 //---- Admin Login----
 const loadLogin =  (req, res) => {
 
@@ -211,47 +237,6 @@ const getProducts = async (req, res) => {
     }
 }
 
-// const addProduct = async (req, res) => {
-//     try {
-//         let { name, brand, category, variants } = req.body;
-//         const mainImage = req.file ? req.file.path : ''; // Get the path of the uploaded file
-
-//         // Validate input
-//         name = name.trim();
-//         brand = brand.trim();
-//         category = category.trim();
-
-//         if (!name || !brand || !category || !mainImage || !variants) {
-//             return res.redirect('/admin/products?message=All fields are required&alertType=error');
-//         }
-
-//         // Prepare variants
-//         const preparedVariants = variants.map(variant => ({
-//             variantName: variant.variantName.trim(),
-//             price: parseFloat(variant.price),
-//             stock: parseInt(variant.stock),
-//             discount: parseInt(variant.discount) || 0,
-//             images: variant.images // Assuming images are passed correctly
-//         }));
-
-//         // Create new product
-//         const newProduct = new productSchema({
-//             name,
-//             brand,
-//             category,
-//             mainImage,
-//             variants: preparedVariants,
-//             status: "Active"
-//         });
-
-//         await newProduct.save();
-//         res.redirect('/admin/products?message=Product added successfully&alertType=success');
-//     } catch (error) {
-//         log.red('ADD_PRODUCT_ERROR', error);
-//         res.redirect('/admin/products?message=Something went wrong&alertType=error');
-//     }
-// }
-
 const deleteProduct = async (req, res) =>{
     try{
         await productSchema.findByIdAndDelete(req.params.productid)
@@ -298,15 +283,49 @@ const getAddProduct = async(req,res)=>{
     
 }
 
-const addProduct = async (req, res)=>{
-    console.log(req.body)
-    ``
-}
+const addProduct = async (req, res) => {
+    try {
+        const { name, description, price, discount, stock, brand, category, variant } = req.body;
+        const files = req.files;
 
+        // Basic validation
+        if (!name || !description || !price || !stock || !brand || !category || !variant || !files) {
+            return res.redirect('/admin/products?message=All+fields+are+required&alertType=error');
+        }
+
+        // Process images
+        const images = files.map(file => ({
+            path: file.path.replace('static/', '/'),  // Convert to URL path
+            filename: file.filename
+        }));
+
+        // Create new product
+        const newProduct = new productSchema({
+            name: name.trim(),
+            description: description.trim(),
+            brand: brand.trim(),
+            category,
+            variant: variant.trim(),
+            price: parseFloat(price),
+            stock: parseInt(stock),
+            discount: discount ? parseFloat(discount) : 0,
+            images,
+            status: "Active"
+        });
+
+        await newProduct.save();
+        res.redirect('/admin/products?message=Product+added+successfully&alertType=success');
+
+    } catch (error) {
+        log.red('ADD_PRODUCT_ERROR', error);
+        res.redirect('/admin/products?message=Something+went+wrong&alertType=error');
+    }
+};
 
 export default {
      loadLogin, verifyLogin , logoutAdmin,
      getCustomers, blockCustomer, unblockCustomer,
      getCategories, deleteCategory, hideCategory, unhideCategory, addCategory,editCategory,
-     getProducts, addProduct, deleteProduct, deactivateProduct, activateProduct, getAddProduct
+     getProducts, addProduct, deleteProduct, deactivateProduct, activateProduct, getAddProduct,
+     productUpload
     }
