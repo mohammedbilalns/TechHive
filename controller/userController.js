@@ -53,7 +53,7 @@ const verifyLogin = async (req, res) => {
         };
 
         // Redirect to the home page after successful login
-        res.render('user/home');
+        res.redirect('/home');
     } catch (error) {
         log.red("ERROR", error);
         res.redirect('/login?message=Something+went+wrong&alertType=error');
@@ -323,15 +323,48 @@ const loadHome = async (req, res) => {
             .find()
             .sort({ createdAt: -1 })
             .limit(3);
+        let fullname = req.session.user?.fullname;
 
         res.render('user/home', {
+            allProducts,
+            categories,
+            newArrivals,
+            fullname
+        });
+    } catch (error) {
+        log.red("ERROR", error);
+        res.status(500).render('user/home', { 
+            message: "Error loading products",
+            alertType: "error" 
+        });
+    }
+};
+
+const loadLanding = async (req, res) => {
+    try {
+        const allProducts = await productSchema
+            .find({ status: "Active" })
+            .limit(6);
+
+        // Fetch all categories
+        const categories = await categorySchema
+            .find({ status: "Active" })
+            .limit(10);
+
+        // Fetch new arrival products (assuming there's a createdAt field)
+        const newArrivals = await productSchema
+            .find()
+            .sort({ createdAt: -1 })
+            .limit(3);
+
+        res.render('user/landing', {
             allProducts,
             categories,
             newArrivals
         });
     } catch (error) {
         log.red("ERROR", error);
-        res.status(500).render('user/home', { 
+        res.status(500).render('user/landing', { 
             message: "Error loading products",
             alertType: "error" 
         });
@@ -403,5 +436,5 @@ export default {
      loadSignup,verifyOTP , resendOTP,
     loadForgotpassword, loadResetpassword, loadResetpasswordotp,
     loadHome, registerUser,authGoogle, authGoogleCallback,
-    logoutUser, loadAllProducts, viewProduct
+    logoutUser, loadAllProducts, viewProduct,loadLanding
 }

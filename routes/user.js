@@ -31,5 +31,5 @@ router.get('/allproducts', userController.loadAllProducts)
 
 // Add this new route
 router.get('/product/:id', userController.viewProduct)
-
+router.get('/', userController.loadLanding)
 export default router
