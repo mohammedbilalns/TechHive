@@ -316,11 +316,12 @@ const loadHome = async (req, res) => {
             .find({ status: "Active" })
             .limit(10);
 
-        // Fetch new arrival products (assuming there's a createdAt field)
+        // Updated new arrivals query to include status check
         const newArrivals = await productSchema
-            .find()
+            .find({ status: "Active" })
             .sort({ createdAt: -1 })
             .limit(3);
+
         let fullname = req.session.user?.fullname;
 
         res.render('user/home', {
@@ -349,9 +350,9 @@ const loadLanding = async (req, res) => {
             .find({ status: "Active" })
             .limit(10);
 
-        // Fetch new arrival products (assuming there's a createdAt field)
+        // Updated new arrivals query to include status check
         const newArrivals = await productSchema
-            .find()
+            .find({ status: "Active" })
             .sort({ createdAt: -1 })
             .limit(3);
 
@@ -400,7 +401,11 @@ const loadAllProducts = async (req, res) => {
 
 const viewProduct = async (req, res) => {
     try {
-        const product = await productSchema.findById(req.params.id);
+        // Updated query to only fetch active product
+        const product = await productSchema.findOne({
+            _id: req.params.id,
+            status: "Active"
+        });
         
         if (!product) {
             return res.status(404).render('error', {
@@ -409,10 +414,10 @@ const viewProduct = async (req, res) => {
             });
         }
 
-        // Fetch related products from the same category
+        // Fetch related products from the same category (already includes status check)
         const relatedProducts = await productSchema.find({
             category: product.category,
-            _id: { $ne: product._id }, // Exclude current product
+            _id: { $ne: product._id },
             status: "Active"
         }).limit(4);
 

@@ -155,7 +155,7 @@ const unhideCategory = async (req,res)=>{
 const addCategory = async (req,res)=>{
     try{
         let {name , description} = req.body 
-        name = name.trim()[0].toUpperCase()+name.trim().slice(1)
+        name = name.trim()[0].toUpperCase()+name.trim().slice(1).toLowerCase()
         description = description.trim()
 
         const existingCategory = await categorySchema.findOne({name})
@@ -179,7 +179,7 @@ const editCategory = async (req, res) => {
     try {
         let { name, description } = req.body;
 
-        name = name.trim()[0].toUpperCase() + name.trim().slice(1);
+        name = name.trim()[0].toUpperCase() + name.trim().slice(1).toLowerCase();
         description = description.trim();
         
         // find if there is any collection with the same name already exists in the db 
@@ -276,13 +276,24 @@ const getAddProduct = async(req,res)=>{
 
 const addProduct = async (req, res) => {
     try {
-        const { name, description, price, discount, stock, brand, category, variant } = req.body;
+        let  { name, description, price, discount, stock, brand, category, variant } = req.body;
+      
+        name = name.trim().split(' ')
+            .map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
+        description = description.trim();
+
+        brand = brand.trim().split(' ')
+            .map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
         const files = req.files;
 
         // Basic validation
-        if (!name || !description || !price || !stock || !brand || !category || !variant || !files) {
-            return res.redirect('/admin/products?message=All+fields+are+required&alertType=error');
-        }
+        // if (!name || !description || !price || !stock || !brand || !category || !variant || !files) {
+        //     return res.redirect('/admin/products?message=All+fields+are+required&alertType=error');
+        // }
+        let product = await productSchema.findOne({name})
+        if(product) return res.redirect('/admin/products?message=Product+with+same+name+already+exists&alertType=error')
 
         // Process images
         const images = files.map(file => ({
@@ -331,12 +342,25 @@ const getEditProduct = async (req,res)=>{
 const editProduct = async (req, res) => {
     try {
         const productId = req.params.productid;
-        const { name, description, price, discount, stock, brand, category, variant } = req.body;
+        let { name, description, price, discount, stock, brand, category, variant } = req.body;
+
+        name = name.trim().split(' ')
+            .map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
+        description = description.trim();
+        brand = brand.trim().split(' ')
+            .map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
+            .join(' ');
         
         // Basic validation
         if (!name || !description || !price || !stock || !brand || !category || !variant) {
             return res.redirect('/admin/products?message=All+fields+are+required&alertType=error');
         }
+        let existingproduct = await productSchema.findOne({
+            name,
+            _id: { $ne: productId } 
+        });
+        if(existingproduct) return res.redirect('/admin/products?message=Product+with+same+name+already+exists&alertType=error');
 
         // Get existing product
         const product = await productSchema.findById(productId);
