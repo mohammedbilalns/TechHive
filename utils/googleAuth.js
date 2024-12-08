@@ -19,55 +19,42 @@ async (token, tokenSecret, profile, done) => {
             return done(null, false, { message: "Your account has been blocked" });
         }
 
-        // If user exists with email but no googleId, link the Google ID
-        if (existingUser && !existingUser.googleId) {
-            existingUser.googleId = profile.id;
-            await existingUser.save();
+        // If user exists, return the user
+        if (existingUser) {
+            // Update googleId if not present
+            if (!existingUser.googleId) {
+                existingUser.googleId = profile.id;
+                await existingUser.save();
+            }
             return done(null, existingUser);
         }
 
-        // Check if user exists with Google ID
-        let user = await userSchema.findOne({ googleId: profile.id });
-
-        // If the user does not exist, create a new user in the database
-        if (!user) {
-            // Check if email already exists without Google ID
-            const emailUser = await userSchema.findOne({ 
-                email: profile.emails[0].value,
-                googleId: { $exists: false }
-            });
-
-            if (emailUser) {
-                return done(null, false, { message: "Email already registered without Google login" });
-            }
-
-            user = new userSchema({
-                fullname: profile.displayName,
-                email: profile.emails[0].value,
-                googleId: profile.id,
-                status: "active",
-            });
-            await user.save();
-        }
-
-        // Save user information into session
-        done(null, user);
+        // If user doesn't exist, create a new user
+        const newUser = new userSchema({
+            fullname: profile.displayName,
+            email: profile.emails[0].value,
+            googleId: profile.id,
+            status: "Active",
+        });
+        await newUser.save();
+        
+        return done(null, newUser);
 
     } catch (error) {
         return done(error, null);
     }
 }));
 
-// Serialize user into the session (store user info like ID or a minimal data)
+// save user into the session 
 passport.serializeUser((user, done) => {
     done(null, user._id);  // Store the user's ID in the session
 });
 
-// Deserialize user from the session (retrieve user details using the stored ID)
+// Deserialize user 
 passport.deserializeUser(async (id, done) => {
     try {
         const user = await userSchema.findById(id);
-        done(null, user);  // Attach the full user object to the session
+        done(null, user);  
     } catch (error) {
         done(error, null);
     }
