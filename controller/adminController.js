@@ -4,29 +4,11 @@ import { configDotenv } from "dotenv";
 import userSchema from "../model/userModel.js";
 import categorySchema from "../model/categoryModel.js"
 import productSchema from "../model/productModel.js"
-import {v2 as cloudinary} from "cloudinary"
-import { CloudinaryStorage } from "multer-storage-cloudinary";
 import multer from "multer";
 import fs from "node:fs"
 import path from "node:path"
 
 configDotenv()
-
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-})
-
-const storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-      folder: "product_variants",
-      allowed_formats: ["jpg", "jpeg", "png"],
-    },
-  });
-
-const upload = multer({ storage: storage });
 
 // Add multer configuration for local storage
 const productStorage = multer.diskStorage({
@@ -91,7 +73,6 @@ const logoutAdmin = (req,res)=>{
   });
 
 }
-
 //--- Admin Users Dashboard ----
 const getCustomers = async (req,res)=>{
     try{
@@ -425,4 +406,4 @@ export default {
      getCategories, deleteCategory, hideCategory, unhideCategory, addCategory,editCategory,
      getProducts, addProduct, deleteProduct, deactivateProduct, activateProduct, getAddProduct,
      productUpload, getEditProduct, editProduct
-    }
+}
