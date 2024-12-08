@@ -360,14 +360,13 @@ const verifyForgotPasswordOTP = async (req, res) => {
                 email,
                 message: "OTP has expired",
                 alertType: "error",
-                timeRem: parseInt(timeRem),
+                timeRemaining: 0,
             });
         }
 
         if (user.otp.otpValue === userOTP) {
             user.otp = undefined;
             await user.save();
-            // Redirect to reset password page with a token
             res.redirect(`/reset-password?email=${email}`);
         } else {
             if (user.otp.otpAttempts >= 3) {
@@ -382,11 +381,13 @@ const verifyForgotPasswordOTP = async (req, res) => {
             user.otp.otpAttempts += 1;
             await user.save();
 
+            const remainingTime = Math.max(0, Math.floor((user.otp.otpExpiresAt - currentTime) / 1000));
+
             res.render("user/forgotpasswordotp", {
                 email,
                 message: "Invalid OTP",
                 alertType: "error",
-                timeRem: parseInt(timeRem),
+                timeRemaining: remainingTime,
             });
         }
     } catch (error) {
@@ -395,7 +396,7 @@ const verifyForgotPasswordOTP = async (req, res) => {
             email,
             message: "Something went wrong",
             alertType: "error",
-            timeRem: parseInt(timeRem),
+            timeRemaining: parseInt(timeRem),
         });
     }
 };
