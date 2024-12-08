@@ -52,22 +52,18 @@ const otpForm = document.getElementById('otpForm');
 const resendButton = document.getElementById('resendButton');
 const timerDisplay = document.getElementById('timer');
 const warningMessage = document.getElementById('warningMessage'); // Add an element for the warning message
-
 let countdownTimer;
-
+//let timeLeft = 60; // 1 minute timer
 // OTP Input Navigation
 otpInputs.forEach((input, index) => {
   input.addEventListener('input', (event) => {
     const current = event.target;
     const next = otpInputs[index + 1];
     const prev = otpInputs[index - 1];
-
     current.value = current.value.replace(/[^0-9]/g, '');
-
     if (current.value.length === 1 && next) {
       next.focus();
     }
-
     if (index === otpInputs.length - 1 && current.value.length === 1) {
       const allFilled = Array.from(otpInputs).every(input => input.value.length === 1);
       if (allFilled) {
@@ -75,11 +71,9 @@ otpInputs.forEach((input, index) => {
       }
     }
   });
-
   input.addEventListener('keydown', (e) => {
     const current = e.target;
     const prev = otpInputs[index - 1];
-
     if (e.key === 'Backspace') {
       if (current.value === '' && prev) {
         e.preventDefault();
@@ -91,14 +85,11 @@ otpInputs.forEach((input, index) => {
     }
   });
 });
-
 // Update the button style based on the timer state
 resendButton.style.cursor = 'not-allowed'; // Initially set cursor style
-
 // Update to use the persisted time value
 const initialTime = document.getElementById('timeRemaining').value;
 let timeLeft = parseInt(initialTime);
-
 // If time is already expired, show the expired state immediately
 if (timeLeft <= 0) {
     resendButton.disabled = false;
@@ -115,10 +106,8 @@ if (timeLeft <= 0) {
     timerDisplay.textContent = `You can resend OTP in: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     startTimer();
 }
-
 // Remove the automatic timer start on window.load
 // window.onload = startTimer;
-
 // Update the timer function to sync with hidden input
 function startTimer() {
   resendButton.disabled = true;
@@ -132,29 +121,21 @@ function startTimer() {
     
     // Update hidden input with current remaining time
     document.getElementById('timeRemaining').value = timeLeft;
-
     if (timeLeft <= 0) {
       clearInterval(countdownTimer); // Stop the timer when it reaches 0
       resendButton.disabled = false; // Enable the resend button
       resendButton.style.cursor = 'pointer'; // Change cursor style when enabled
-
       // Disable all OTP input fields
       otpInputs.forEach(input => {
         input.disabled = true;
       });
-
       // Show the warning message
       warningMessage.style.display = 'block';
-
       // Hide the timer message
       timerDisplay.style.display = 'none';
     }
   }, 1000); // Update every second
 }
-
 // Attach the resend function to the "Resend OTP" button
 resendButton.addEventListener('click', resendOTP);
-
-
-
 </script>
