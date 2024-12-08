@@ -160,7 +160,6 @@ const verifyOTP = async (req, res) => {
 
         // Check if the OTP matches
         if (user.otp.otpValue === userOTP) {
-            // Update user status to "active" and clear OTP data
             user.status = "Active";
             user.otp = undefined;
             await user.save();
@@ -265,7 +264,6 @@ const authGoogleCallback = (req, res) => {
             return res.redirect("/login");  // Redirect to login page in case of failure
         }
 
-        // Store user information in session after successful Google login
         req.session.user = {
             id: user._id,
             fullname: user.fullname,
@@ -295,15 +293,185 @@ const logoutUser = (req,res)=>{
 
 
 // ---- forgot password ---- todo 
-const loadForgotpassword = (req,res)=>{
-    res.render('user/forgotpassword')
-}
-const loadResetpassword = (req, res)=>{
-    res.render('user/resetpassword')
-}
-const loadResetpasswordotp = (req, res)=>{
-    res.render('user/forgotpasswordotp')
-}
+const loadForgotpassword = (req, res) => {
+    let message = req.query.message;
+    let alertType = req.query.alertType;
+    let email = req.query.email;
+    res.render('user/forgotpassword', { message, alertType, email });
+};
+const loadResetpassword = (req, res) => {
+    let email = req.query.email;
+    res.render('user/resetpassword', { email });
+};
+
+const processForgotPassword = async (req, res) => {
+    try {
+        let { email } = req.body;
+        email = email.trim();
+        const user = await userSchema.findOne({ email });
+
+        if (!user) {
+            return res.render('user/forgotpassword', {
+                message: "Email not found",
+                alertType: "error",
+                email
+            });
+        }
+
+        // Check if user is a Google auth user (no password field)
+        if (!user.password) {
+            return res.redirect('/login?message=Google+accounts+cannot+reset+password.+Please+login+with+Google&alertType=error');
+        }
+
+        const otp = authUtils.generateOTP();
+
+        // Update user with new OTP details
+        user.otp = {
+            otpValue: otp,
+            otpExpiresAt: Date.now() + 60000, // 1 minute
+            otpAttempts: 0,
+        };
+        await user.save();
+
+        // Send OTP email
+        await authUtils.sendOTPEmail(email, otp);
+        res.render('user/forgotpasswordotp', { email });
+
+    } catch (error) {
+        log.red('ERROR', error);
+        res.render('user/forgotpassword', {
+            message: "Something went wrong",
+            alertType: "error",
+            email: req.body.email
+        });
+    }
+};
+
+const verifyForgotPasswordOTP = async (req, res) => {
+    const { otp1, otp2, otp3, otp4, email, timeRem } = req.body;
+    const userOTP = otp1 + otp2 + otp3 + otp4;
+
+    try {
+        const user = await userSchema.findOne({ email });
+        const currentTime = Date.now();
+
+        if (currentTime > user.otp.otpExpiresAt) {
+            return res.render("user/forgotpasswordotp", {
+                email,
+                message: "OTP has expired",
+                alertType: "error",
+                timeRem: parseInt(timeRem),
+            });
+        }
+
+        if (user.otp.otpValue === userOTP) {
+            user.otp = undefined;
+            await user.save();
+            // Redirect to reset password page with a token
+            res.redirect(`/reset-password?email=${email}`);
+        } else {
+            if (user.otp.otpAttempts >= 3) {
+                user.otp = undefined;
+                await user.save();
+                return res.render("user/forgotpassword", {
+                    message: "Too many attempts. Please try again.",
+                    alertType: "error",
+                });
+            }
+
+            user.otp.otpAttempts += 1;
+            await user.save();
+
+            res.render("user/forgotpasswordotp", {
+                email,
+                message: "Invalid OTP",
+                alertType: "error",
+                timeRem: parseInt(timeRem),
+            });
+        }
+    } catch (error) {
+        log.red("ERROR", error);
+        res.render("user/forgotpasswordotp", {
+            email,
+            message: "Something went wrong",
+            alertType: "error",
+            timeRem: parseInt(timeRem),
+        });
+    }
+};
+
+const resendForgotPasswordOTP = async (req, res) => {
+    let { email } = req.body;
+    email = email.trim();
+
+    try {
+        const user = await userSchema.findOne({ email });
+        
+        if (user.otp?.otpAttempts >= 3) {
+            user.otp = undefined;
+            await user.save();
+            return res.render("user/forgotpassword", {
+                message: "Too many attempts. Please try again later.",
+                alertType: "error",
+            });
+        }
+
+        const otp = authUtils.generateOTP();
+        user.otp = {
+            otpValue: otp,
+            otpExpiresAt: Date.now() + 60000,
+            otpAttempts: user.otp ? user.otp.otpAttempts + 1 : 1,
+        };
+        await user.save();
+
+        await authUtils.sendOTPEmail(email, otp);
+
+        res.render("user/forgotpasswordotp", {
+            email,
+            message: "New OTP sent",
+            alertType: "success",
+        });
+
+    } catch (error) {
+        log.red("ERROR", error);
+        res.render("user/forgotpasswordotp", {
+            email,
+            message: "Failed to resend OTP",
+            alertType: "error",
+        });
+    }
+};
+
+const resetPassword = async (req, res) => {
+    let { email, password } = req.body;
+    email = email.trim();
+    try {
+        const user = await userSchema.findOne({ email });
+        console.log("user: ", user)
+        if (!user) {
+            return res.render('user/resetpassword', {
+                message: "Invalid reset attempt",
+                alertType: "error",
+                email
+            });
+            
+        }
+
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        user.password = hashedPassword;
+        await user.save();
+
+        res.redirect('/login?message=Password+reset+successful&alertType=success');
+    } catch (error) {
+        log.red("ERROR", error);
+        res.render('user/resetpassword', {
+            message: "Failed to reset password",
+            alertType: "error",
+        });
+    }
+};
+
 // ---- load home ---- homepage 
 const loadHome = async (req, res) => {
     try {
@@ -438,7 +606,10 @@ const viewProduct = async (req, res) => {
 export default {
     loadLogin, verifyLogin,
      loadSignup,verifyOTP , resendOTP,
-    loadForgotpassword, loadResetpassword, loadResetpasswordotp,
+    loadForgotpassword, processForgotPassword, verifyForgotPasswordOTP,
+    resendForgotPasswordOTP, resetPassword,loadResetpassword,
     loadHome, registerUser,authGoogle, authGoogleCallback,
     logoutUser, loadAllProducts, viewProduct,loadLanding
 }
+
+

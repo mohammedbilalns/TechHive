@@ -61,7 +61,7 @@
         <% } %>
         <button type="submit" class="w-full py-2 mb-2 text-white bg-primary-accent rounded-md">Log In</button>
       </form>
-      <a href="#" class="text-right text-sm text-primary-accent mb-4 block">Forget Password?</a>
+      <a href="/forgot-password" class="text-right text-sm text-primary-accent mb-4 block">Forgot Password?</a>
       <a href="/signup" class="text-center text-blue-600 block">Sign Up</a>
     </div>
   </div>
@@ -69,6 +69,22 @@
 <%- include('../partials/authfooter') %>
 
 <script>
+document.getElementById('togglePassword').addEventListener('click', function() {
+  const passwordInput = document.querySelector('input[name="password"]');
+  const eyeIcon = this.querySelector('i');
+  
+  // Toggle password visibility
+  if (passwordInput.type === 'password') {
+    passwordInput.type = 'text';
+    eyeIcon.classList.remove('fa-eye');
+    eyeIcon.classList.add('fa-eye-slash');
+  } else {
+    passwordInput.type = 'password';
+    eyeIcon.classList.remove('fa-eye-slash');
+    eyeIcon.classList.add('fa-eye');
+  }
+});
+
 document.getElementById('userlogin').addEventListener('submit', function (event) {
   const email = document.querySelector('input[name="email"]');
   const password = document.querySelector('input[name="password"]');

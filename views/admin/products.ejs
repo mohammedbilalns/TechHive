@@ -145,61 +145,67 @@
             </tr>
           </thead>
           <tbody id="productsTable" class="text-gray-700">
-            <% products.forEach((product, index) => { %>
-              <tr class="border-b hover:bg-gray-100">
-                <td class="px-6 py-3 font-medium"><%= index + 1 %></td>
-                <td class="px-6 py-3">
-                  <% if (product.images && product.images.length > 0) { %>
-                    <img src="<%= product.images[0].path %>" alt="<%= product.name %>" class="w-12 h-12 object-cover rounded-md">
-                  <% } else { %>
-                    <div class="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center">
-                      <i class="fas fa-image text-gray-400"></i>
-                    </div>
-                  <% } %>
-                </td>
-                <td class="px-6 py-3"><%= product.name %></td>
-                <td class="px-6 py-3"><%= product.category.name %></td>
-                <td class="px-6 py-3">₹<%= product.price %></td>
-                <td class="px-6 py-3"><%= product.discount %></td>
-                <td class="px-6 py-3"><%= product.stock %></td>
-                <td class="px-6 py-3">
-                  <span class="px-3 py-1 rounded-full text-sm font-medium
-                    <%= product.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
-                    <%= product.status %>
-                  </span>
-                </td>
-                <td class="px-6 py-3"><%= product.variant %></td>
-                <td class="px-6 py-3 text-center">
-                  <div class="flex justify-center gap-2">
-                    <% if (product.status === 'Active') { %>
-                      <form action="/admin/products/deactivate/<%= product._id %>" method="POST" 
-                        onsubmit="return confirm('Are you sure you want to deactivate the product?')">
-                        <button type="submit" class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">
-                          Deactivate
-                        </button>
-                      </form>
+            <% if (products.length === 0) { %>
+              <div className="text-center py-10">
+                <h2 className="text-xl font-semibold text-gray-600">No products found</h2>
+              </div>
+            <% } else { %>
+              <% products.forEach((product, index) => { %>
+                <tr class="border-b hover:bg-gray-100">
+                  <td class="px-6 py-3 font-medium"><%= index + 1 %></td>
+                  <td class="px-6 py-3">
+                    <% if (product.images && product.images.length > 0) { %>
+                      <img src="<%= product.images[0].path %>" alt="<%= product.name %>" class="w-12 h-12 object-cover rounded-md">
                     <% } else { %>
-                      <form action="/admin/products/activate/<%= product._id %>" method="POST" 
-                        onsubmit="return confirm('Are you sure you want to activate the product?')">
+                      <div class="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center">
+                        <i class="fas fa-image text-gray-400"></i>
+                      </div>
+                    <% } %>
+                  </td>
+                  <td class="px-6 py-3"><%= product.name %></td>
+                  <td class="px-6 py-3"><%= product.category.name %></td>
+                  <td class="px-6 py-3">₹<%= product.price %></td>
+                  <td class="px-6 py-3"><%= product.discount %></td>
+                  <td class="px-6 py-3"><%= product.stock %></td>
+                  <td class="px-6 py-3">
+                    <span class="px-3 py-1 rounded-full text-sm font-medium
+                      <%= product.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                      <%= product.status %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-3"><%= product.variant %></td>
+                  <td class="px-6 py-3 text-center">
+                    <div class="flex justify-center gap-2">
+                      <% if (product.status === 'Active') { %>
+                        <form action="/admin/products/deactivate/<%= product._id %>" method="POST" 
+                          onsubmit="return confirm('Are you sure you want to deactivate the product?')">
+                          <button type="submit" class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">
+                            Deactivate
+                          </button>
+                        </form>
+                      <% } else { %>
+                        <form action="/admin/products/activate/<%= product._id %>" method="POST" 
+                          onsubmit="return confirm('Are you sure you want to activate the product?')">
+                          <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                            Activate
+                          </button>
+                        </form>
+                      <% } %>
+                      <form action="/admin/products/edit/<%= product._id %>">
                         <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-                          Activate
+                          Edit
                         </button>
                       </form>
-                    <% } %>
-                    <form action="/admin/products/edit/<%= product._id %>">
-                      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-                        Edit
-                      </button>
-                    </form>
-                    <form action="/admin/products/delete/<%= product._id %>" 
-                      onsubmit="return confirm('Are you sure you want delete the product?')">
-                      <button type="submit"
-                        class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">Delete</button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
-            <% }); %>
+                      <form action="/admin/products/delete/<%= product._id %>" 
+                        onsubmit="return confirm('Are you sure you want delete the product?')">
+                        <button type="submit"
+                          class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">Delete</button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              <% }); %>
+            <% } %>
           </tbody>
         </table>
       </div>
