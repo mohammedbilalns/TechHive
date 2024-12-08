@@ -60,14 +60,14 @@
       <div class="mb-4">
         <% if (product.discount > 0) { %>
           <div class="flex items-center gap-2">
-            <p class="text-xl text-red-600">₹<%= (product.price * (1 - product.discount/100)).toFixed(2) %></p>
+            <p class="text-xl text-primary-accent">₹<%= (product.price * (1 - product.discount/100)).toFixed(2) %></p>
             <p class="text-gray-500 line-through">₹<%= product.price.toFixed(2) %></p>
             <span class="bg-red-100 text-red-600 text-sm px-2 py-1 rounded">
               <%= product.discount %>% OFF
             </span>
           </div>
         <% } else { %>
-          <p class="text-xl text-red-600">₹<%= product.price.toFixed(2) %></p>
+          <p class="text-xl text-primary-accent">₹<%= product.price.toFixed(2) %></p>
         <% } %>
       </div>
 
@@ -76,20 +76,29 @@
       <!-- Product Details -->
       <div class="mb-6">
         <p class="mb-2"><strong>Brand:</strong> <%= product.brand %></p>
-        <p class="mb-2"><strong>Variant:</strong> <%= product.variant %></p>
+        <% if (product.specifications && product.specifications.length > 0) { %>
+          <div class="mb-2">
+            <strong>Specifications:</strong>
+            <ul class="list-disc list-inside ml-4 mt-1">
+              <% product.specifications.forEach(spec => { %>
+                <li class="text-gray-600"><%= spec %></li>
+              <% }); %>
+            </ul>
+          </div>
+        <% } %>
         <p class="mb-2">
           <strong>Status:</strong> 
           <% if (product.stock > 0) { %>
             <span class="text-green-600">Available</span>
           <% } else { %>
-            <span class="text-red-600">Out of Stock</span>
+            <span class="text-primary-accent">Out of Stock</span>
           <% } %>
         </p>
       </div>
 
       <!-- Action Buttons -->
       <div class="flex gap-4 mb-6">
-        <button class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors <%= !product.stock ? 'opacity-50 cursor-not-allowed' : '' %>"
+        <button class="bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors <%= !product.stock ? 'opacity-50 cursor-not-allowed' : '' %>"
                 <%= !product.stock ? 'disabled' : '' %>>
           Buy Now
         </button>

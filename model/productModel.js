@@ -21,11 +21,10 @@ const productSchema = new mongoose.Schema({
     ref: 'Category',
     required: true
   },
-  variant: {
+  specifications: [{
     type: String,
-    required: true,
     trim: true
-  },
+  }],
   price: {
     type: Number,
     required: true,

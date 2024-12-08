@@ -280,38 +280,36 @@ const getAddProduct = async(req,res)=>{
 
 const addProduct = async (req, res) => {
     try {
-        let  { name, description, price, discount, stock, brand, category, variant } = req.body;
+        let { name, description, price, discount, stock, brand, category, specifications } = req.body;
       
         name = name.trim().split(' ')
             .map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
             .join(' ');
         description = description.trim();
-
         brand = brand.trim().split(' ')
             .map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
             .join(' ');
-        const files = req.files;
 
-        // Basic validation
-        // if (!name || !description || !price || !stock || !brand || !category || !variant || !files) {
-        //     return res.redirect('/admin/products?message=All+fields+are+required&alertType=error');
-        // }
+        // Convert specifications to array if it's not already
+        const specArray = Array.isArray(specifications) ? specifications : [specifications];
+        // Filter out empty specifications and trim each one
+        const cleanedSpecs = specArray.filter(spec => spec && spec.trim()).map(spec => spec.trim());
+
         let product = await productSchema.findOne({name})
         if(product) return res.redirect('/admin/products?message=Product+with+same+name+already+exists&alertType=error')
 
         // Process images
-        const images = files.map(file => ({
-            path: file.path.replace('static/', '/'),  // Convert to URL path
+        const images = req.files.map(file => ({
+            path: file.path.replace('static/', '/'),
             filename: file.filename
         }));
 
-        // Create new product
         const newProduct = new productSchema({
             name: name.trim(),
             description: description.trim(),
             brand: brand.trim(),
             category,
-            variant: variant.trim(),
+            specifications: cleanedSpecs,
             price: parseFloat(price),
             stock: parseInt(stock),
             discount: discount ? parseFloat(discount) : 0,
@@ -346,7 +344,7 @@ const getEditProduct = async (req,res)=>{
 const editProduct = async (req, res) => {
     try {
         const productId = req.params.productid;
-        let { name, description, price, discount, stock, brand, category, variant } = req.body;
+        let { name, description, price, discount, stock, brand, category, specifications } = req.body;
 
         name = name.trim().split(' ')
             .map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
@@ -356,17 +354,22 @@ const editProduct = async (req, res) => {
             .map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
             .join(' ');
         
+        // Convert specifications to array and clean it
+        const specArray = Array.isArray(specifications) ? specifications : [specifications];
+        const cleanedSpecs = specArray.filter(spec => spec && spec.trim()).map(spec => spec.trim());
+
         // Basic validation
-        if (!name || !description || !price || !stock || !brand || !category || !variant) {
-            return res.redirect('/admin/products?message=All+fields+are+required&alertType=error');
+        if (!name || !description || !price || !stock || !brand || !category) {
+            return res.redirect('/admin/products?message=Required+fields+are+missing&alertType=error');
         }
+
         let existingproduct = await productSchema.findOne({
             name,
             _id: { $ne: productId } 
         });
         if(existingproduct) return res.redirect('/admin/products?message=Product+with+same+name+already+exists&alertType=error');
 
-        // Get existing product
+        // Get existing product and handle image updates
         const product = await productSchema.findById(productId);
         if (!product) {
             return res.redirect('/admin/products?message=Product+not+found&alertType=error');
@@ -406,7 +409,7 @@ const editProduct = async (req, res) => {
                 description: description.trim(),
                 brand: brand.trim(),
                 category,
-                variant: variant.trim(),
+                specifications: cleanedSpecs,
                 price: parseFloat(price),
                 stock: parseInt(stock),
                 discount: discount ? parseFloat(discount) : 0,

@@ -892,6 +892,10 @@ video {
   width: 100%;
 }
 
+.w-1\/2 {
+  width: 50%;
+}
+
 .min-w-\[120px\] {
   min-width: 120px;
 }
@@ -958,6 +962,14 @@ video {
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.list-inside {
+  list-style-position: inside;
+}
+
+.list-disc {
+  list-style-type: disc;
 }
 
 .grid-cols-1 {
@@ -1586,6 +1598,10 @@ video {
 
 .bg-primary-dark{
   background-color: var(--color-primary-black);
+}
+
+.last\:border-b-0:last-child {
+  border-bottom-width: 0px;
 }
 
 .hover\:bg-blue-600:hover {
