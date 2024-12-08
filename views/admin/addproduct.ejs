@@ -412,8 +412,8 @@
 
           // Validate numeric fields
           if (isValid) {
-            if (parseFloat(price) < 0) {
-              alertText.textContent = "Price cannot be negative.";
+            if (parseFloat(price) < 50) {
+              alertText.textContent = "Price must be at least ₹50.";
               alertMessage.classList.remove('hidden');
               isValid = false;
             } else if (parseInt(stock) < 0) {

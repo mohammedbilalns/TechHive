@@ -370,15 +370,16 @@ function validateAddCategoryForm() {
   let isValid = true;
   let errorMessage = '';
 
-  // Validate name (now checks for empty or space-only input)
-  if (!name || name.length < 3 || name.length > 100 || /[^a-zA-Z\s]/.test(name)) {
-    errorMessage += 'Category Name must be between 3 to 100 characters, only contain letters and spaces, and cannot be empty. <br>';
+  // Name validation remains the same
+  if (!name || name.length < 3 || name.length > 100 || /[^a-zA-Z\s&,]/.test(name) || /^[&,\s]+$/.test(name)) {
+    errorMessage += 'Category Name must be between 3 to 100 characters, can contain letters, spaces, & and , symbols, and cannot consist of only symbols. <br>';
     isValid = false;
   }
 
-  // Updated description validation
-  if (!description || description.length < 10 || description.length > 1000 || /[^a-zA-Z0-9\s.,'/-]/.test(description)) {
-    errorMessage += 'Description must be between 10 to 1000 characters, cannot be empty, and can only contain letters, numbers, spaces, and the following characters: . , \' / - <br>';
+  // Updated description validation to properly handle single quotes
+  if (!description || description.length < 10 || description.length > 1000 || 
+      /[^a-zA-Z0-9\s.,'&,\/-]/.test(description) || /^[.,'&,\/-\s]+$/.test(description)) {
+    errorMessage += 'Description must be between 10 to 1000 characters, cannot be empty or contain only symbols, and can only contain letters, numbers, spaces, and the following characters: . , \' & / - <br>';
     isValid = false;
   }
 
@@ -398,13 +399,16 @@ function validateEditCategoryForm() {
   let isValid = true;
   let errorMessage = '';
 
-  if (!name || name.length < 3 || name.length > 100 || /[^a-zA-Z\s]/.test(name)) {
-    errorMessage += 'Category Name must be between 3 to 100 characters, only contain letters and spaces, and cannot be empty. <br>';
+  // Name validation remains the same
+  if (!name || name.length < 3 || name.length > 100 || /[^a-zA-Z\s&,]/.test(name) || /^[&,\s]+$/.test(name)) {
+    errorMessage += 'Category Name must be between 3 to 100 characters, can contain letters, spaces, & and , symbols, and cannot consist of only symbols. <br>';
     isValid = false;
   }
 
-  if (!description || description.length < 10 || description.length > 1000 || /[^a-zA-Z0-9\s.,'/-]/.test(description)) {
-    errorMessage += 'Description must be between 10 to 1000 characters, cannot be empty, and can only contain letters, numbers, spaces, and the following characters: . , \' / - <br>';
+  // Updated description validation to properly handle single quotes
+  if (!description || description.length < 10 || description.length > 1000 || 
+      /[^a-zA-Z0-9\s.,'&,\/-]/.test(description) || /^[.,'&,\/-\s]+$/.test(description)) {
+    errorMessage += 'Description must be between 10 to 1000 characters, cannot be empty or contain only symbols, and can only contain letters, numbers, spaces, and the following characters: . , \' & / - <br>';
     isValid = false;
   }
 
