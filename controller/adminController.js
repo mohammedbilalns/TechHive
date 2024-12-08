@@ -76,8 +76,10 @@ const logoutAdmin = (req,res)=>{
 //--- Admin Users Dashboard ----
 const getCustomers = async (req,res)=>{
     try{
+        let message = req.query.message 
+        let alertType = req.query.alertType
         const customers = await userSchema.find()
-        res.render('admin/userdashboard', {customers})
+        res.render('admin/userdashboard', {customers, message, alertType})
 
     }catch(error){
         log.red('FETCH_USERS_ERROR',error)
@@ -89,9 +91,10 @@ const getCustomers = async (req,res)=>{
 const blockCustomer = async (req,res)=>{
    try{
     await userSchema.findByIdAndUpdate(req.params.customerid, {status:"Blocked"})
-    res.redirect('/admin/customers')
+    res.redirect('/admin/customers?message=Customer+blocked+successfully&alertType=success')
    }catch(error){
     log.red('BLOCK_CUSTOMER_ERROR', error)
+    res.redirect('/admin/customers?message=Something+went+wrong&alertType=error')
    }
     
 
@@ -100,9 +103,10 @@ const blockCustomer = async (req,res)=>{
 const unblockCustomer = async (req, res)=>{
     try{
         await userSchema.findByIdAndUpdate(req.params.customerid , {status:"Active"})
-        res.redirect('/admin/customers')
+        res.redirect('/admin/customers?message=Customer+unblocked+successfully&alertType=success')
     }catch(error){
         log.red('UNBLOCK_CUSTOMER_ERROR', error)
+        res.redirect('/admin/customers?message=Something+went+wrong&alertType=error')
 
     }
     

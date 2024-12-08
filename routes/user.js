@@ -24,14 +24,14 @@ router.get('/auth/google/callback',auth.isLogin, userController.authGoogleCallba
 
 // User Home
 router.get('/home', auth.checkSession, userController.loadHome)
-//router.get('/forgot-password', userController.loadForgotpassword)
-//router.post('/forgot-password', userController.validateReset)
-router.get('/forgot-password', userController.loadForgotpassword);
-router.post('/forgot-password', userController.processForgotPassword);
-router.post('/verify-forgot-password-otp', userController.verifyForgotPasswordOTP);
-router.post('/resend-forgot-password-otp', userController.resendForgotPasswordOTP);
-router.get('/reset-password', userController.loadResetpassword);
-router.post('/reset-password', userController.resetPassword);
+
+
+router.get('/forgot-password', auth.isLogin, userController.loadForgotpassword);
+router.post('/forgot-password', auth.isLogin, userController.processForgotPassword);
+router.post('/verify-forgot-password-otp', auth.isLogin, userController.verifyForgotPasswordOTP);
+router.post('/resend-forgot-password-otp', auth.isLogin, userController.resendForgotPasswordOTP);
+router.get('/reset-password', auth.isLogin, userController.loadResetpassword);
+router.post('/reset-password', auth.isLogin, userController.resetPassword);
 
 
 router.get('/allproducts',  userController.loadAllProducts)

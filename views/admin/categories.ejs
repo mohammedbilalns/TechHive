@@ -365,20 +365,20 @@ function closeModal(modalId) {
 
 // Validation for Add Category Form
 function validateAddCategoryForm() {
-  const name = document.getElementById('name').value;
-  const description = document.getElementById('description').value;
+  const name = document.getElementById('name').value.trim();
+  const description = document.getElementById('description').value.trim();
   let isValid = true;
   let errorMessage = '';
 
-  // Validate name (keeping it more restrictive for categories)
+  // Validate name (now checks for empty or space-only input)
   if (!name || name.length < 3 || name.length > 100 || /[^a-zA-Z\s]/.test(name)) {
-    errorMessage += 'Category Name must be between 3 to 100 characters and only contain letters and spaces. <br>';
+    errorMessage += 'Category Name must be between 3 to 100 characters, only contain letters and spaces, and cannot be empty. <br>';
     isValid = false;
   }
 
   // Updated description validation
   if (!description || description.length < 10 || description.length > 1000 || /[^a-zA-Z0-9\s.,'/-]/.test(description)) {
-    errorMessage += 'Description must be between 10 to 1000 characters and can only contain letters, numbers, spaces, and the following characters: . , \' / - <br>';
+    errorMessage += 'Description must be between 10 to 1000 characters, cannot be empty, and can only contain letters, numbers, spaces, and the following characters: . , \' / - <br>';
     isValid = false;
   }
 
@@ -393,18 +393,18 @@ function validateAddCategoryForm() {
 }
 
 function validateEditCategoryForm() {
-  const name = document.getElementById('editCategoryName').value;
-  const description = document.getElementById('editCategoryDescription').value;
+  const name = document.getElementById('editCategoryName').value.trim();
+  const description = document.getElementById('editCategoryDescription').value.trim();
   let isValid = true;
   let errorMessage = '';
 
   if (!name || name.length < 3 || name.length > 100 || /[^a-zA-Z\s]/.test(name)) {
-    errorMessage += 'Category Name must be between 3 to 100 characters and only contain letters and spaces. <br>';
+    errorMessage += 'Category Name must be between 3 to 100 characters, only contain letters and spaces, and cannot be empty. <br>';
     isValid = false;
   }
 
   if (!description || description.length < 10 || description.length > 1000 || /[^a-zA-Z0-9\s.,'/-]/.test(description)) {
-    errorMessage += 'Description must be between 10 to 1000 characters and can only contain letters, numbers, spaces, and the following characters: . , \' / - <br>';
+    errorMessage += 'Description must be between 10 to 1000 characters, cannot be empty, and can only contain letters, numbers, spaces, and the following characters: . , \' / - <br>';
     isValid = false;
   }
 
