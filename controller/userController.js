@@ -604,13 +604,51 @@ const viewProduct = async (req, res) => {
     }
 };
 
+const viewCategory = async (req, res) => {
+    try {
+        const categoryId = req.params.id;
+        
+        // Fetch the category with its products
+        const category = await categorySchema.findOne({
+            _id: categoryId,
+            status: "Active"
+        });
+
+        if (!category) {
+            return res.status(404).render('error', {
+                message: "Category not found",
+                alertType: "error"
+            });
+        }
+
+        // Fetch active products in this category
+        const products = await productSchema.find({
+            category: categoryId,
+            status: "Active"
+        });
+
+        res.render('user/viewcategory', {
+            category,
+            products,
+            fullname: req.session.user?.fullname
+        });
+    } catch (error) {
+        log.red("ERROR", error);
+        res.status(500).render('error', {
+            message: "Error loading category",
+            alertType: "error"
+        });
+    }
+};
+
 export default {
     loadLogin, verifyLogin,
-     loadSignup,verifyOTP , resendOTP,
+    loadSignup, verifyOTP, resendOTP,
     loadForgotpassword, processForgotPassword, verifyForgotPasswordOTP,
-    resendForgotPasswordOTP, resetPassword,loadResetpassword,
-    loadHome, registerUser,authGoogle, authGoogleCallback,
-    logoutUser, loadAllProducts, viewProduct,loadLanding
+    resendForgotPasswordOTP, resetPassword, loadResetpassword,
+    loadHome, registerUser, authGoogle, authGoogleCallback,
+    logoutUser, loadAllProducts, viewProduct, loadLanding,
+    viewCategory
 }
 
 

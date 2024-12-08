@@ -25,6 +25,8 @@ router.get('/auth/google/callback',auth.isLogin, userController.authGoogleCallba
 // User Home
 router.get('/home', auth.checkSession, userController.loadHome)
 
+// Add the new category route here
+router.get('/category/:id', userController.viewCategory)
 
 router.get('/forgot-password', auth.isLogin, userController.loadForgotpassword);
 router.post('/forgot-password', auth.isLogin, userController.processForgotPassword);
