@@ -169,7 +169,7 @@ const verifyOTP = async (req, res) => {
             req.session.user = { fullname: user.fullname, email: user.email };
 
             // Redirect to home with success message
-            return res.redirect('/home?message=Registration+successful!&alertType=success');
+            res.redirect('/home');
         } else {
             // Check OTP attempts only when wrong OTP is entered
             if (user.otp.otpAttempts >= 3) {
@@ -273,7 +273,7 @@ const authGoogleCallback = (req, res) => {
         };
 
         // Redirect to home page after successful login
-        return res.redirect("/home");
+        res.redirect('/home');
     })(req, res);
 };
 
@@ -387,7 +387,7 @@ const loadAllProducts = async (req, res) => {
             ]);
 
         res.render('user/allproducts', {
-            categoriesWithProducts
+            categoriesWithProducts, fullname: req.session.user?.fullname
         });
     } catch (error) {
         log.red("ERROR", error);
@@ -418,7 +418,8 @@ const viewProduct = async (req, res) => {
 
         res.render('user/viewproduct', { 
             product,
-            relatedProducts
+            relatedProducts,
+            fullname: req.session.user?.fullname
         });
     } catch (error) {
         log.red("ERROR", error);
