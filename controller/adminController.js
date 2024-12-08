@@ -70,7 +70,6 @@ const verifyLogin = async (req,res)=>{
         password = password.trim()
         if(email != process.env.ADMIN_EMAIL || password != process.env.ADMIN_PASSWORD){
             return res.redirect(`/admin/login?message=Invalid+credentials&alertType=error&email=${email}`)
-            return res.render('admin/login', { message: "Invalid credentials", alertType: "error" });
         }
 
         req.session.admin = true 
@@ -348,42 +347,78 @@ const getEditProduct = async (req,res)=>{
 }
 
 
-const editProduct = async (req,res)=>{
-    try{
-        const productId = req.params.id;
-        const updateData = {
-            name: req.body.productName,
-            description: req.body.description,
-            category: req.body.category,
-            price: req.body.price,
-            stock: req.body.stock
+const editProduct = async (req, res) => {
+    try {
+        const productId = req.params.productid;
+        const { name, description, price, discount, stock, brand, category, variant } = req.body;
+        
+        // Basic validation
+        if (!name || !description || !price || !stock || !brand || !category || !variant) {
+            return res.redirect('/admin/products?message=All+fields+are+required&alertType=error');
         }
-        if(req.body.deleteImages){
-            const imagesToDelete = Array.isArray(req.body.deleteImages) 
-                ? req.body.deleteImages 
-                : [req.body.deleteImages];
-            imagesToDelete.forEach(image => {
-                fs.unlinkSync(path.join(__dirname, '../public/uploads/', image));
-            });
-            await productSchema.findByIdAndUpdate(productId, {
-                $pull: { images: { $in: imagesToDelete } }
-            });
-        }
-        if(req.files && req.files.length > 0){
-            const newImageNames = req.files.map(file => file.filename);
-            await productSchema.findByIdAndUpdate(productId, {
-                $push: { images: { $each: newImageNames } }
-            });
-        }
-        await productSchema.findByIdAndUpdate(productId, updateData);
-        res.redirect('/admin/products?message=Product+updated+successfully&alertType=success');
-   
-    }catch(error){  
-        log.red('EDIT_PRODUCT_ERROR', error)
-        res.redirect('/admin/products?message=Something+went+wrong&alertType=error')
-    }
 
-}
+        // Get existing product
+        const product = await productSchema.findById(productId);
+        if (!product) {
+            return res.redirect('/admin/products?message=Product+not+found&alertType=error');
+        }
+
+        // Handle image updates
+        let images = [...product.images]; // Start with existing images
+
+        // Handle new images from the form
+        if (req.files && req.files.length > 0) {
+            const newImages = req.files.map(file => ({
+                path: file.path.replace('static/', '/'),
+                filename: file.filename
+            }));
+
+            // Replace images at the corresponding positions
+            req.files.forEach((file, index) => {
+                // If there's an existing image at this position, delete the old file
+                if (images[index]) {
+                    const oldImagePath = path.join('static', images[index].path);
+                    if (fs.existsSync(oldImagePath)) {
+                        fs.unlinkSync(oldImagePath);
+                    }
+                    images[index] = newImages[index];
+                } else {
+                    // If no existing image at this position, add the new one
+                    images.push(newImages[index]);
+                }
+            });
+        }
+
+        // Update product with new data
+        const updatedProduct = await productSchema.findByIdAndUpdate(
+            productId,
+            {
+                name: name.trim(),
+                description: description.trim(),
+                brand: brand.trim(),
+                category,
+                variant: variant.trim(),
+                price: parseFloat(price),
+                stock: parseInt(stock),
+                discount: discount ? parseFloat(discount) : 0,
+                images
+            },
+            { new: true }
+        );
+
+        if (!updatedProduct) {
+            return res.redirect('/admin/products?message=Failed+to+update+product&alertType=error');
+        }
+
+        res.redirect('/admin/products?message=Product+updated+successfully&alertType=success');
+
+    } catch (error) {
+        log.red('EDIT_PRODUCT_ERROR', error);
+        res.redirect('/admin/products?message=Something+went+wrong&alertType=error');
+    }
+};
+
+
 export default {
      loadLogin, verifyLogin , logoutAdmin,
      getCustomers, blockCustomer, unblockCustomer,
