@@ -32,7 +32,7 @@ const upload = multer({ storage: storage });
 const productStorage = multer.diskStorage({
     destination: function (req, file, cb) {
         const dir = 'static/uploads/products';
-        // Create directory if it doesn't exist
+        
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
         }
@@ -68,7 +68,6 @@ const verifyLogin = async (req,res)=>{
         let {email, password} = req.body
         email = email.trim()
         password = password.trim()
-        console.log(email, password)
         if(email != process.env.ADMIN_EMAIL || password != process.env.ADMIN_PASSWORD){
             return res.redirect(`/admin/login?message=Invalid+credentials&alertType=error&email=${email}`)
             return res.render('admin/login', { message: "Invalid credentials", alertType: "error" });

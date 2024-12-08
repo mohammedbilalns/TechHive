@@ -15,7 +15,6 @@ const loadLogin = (req, res) => {
     let message = req.query.message 
     let alertType = req.query.alertType
     let email = req.query.email
-    console.log(message, alertType, email)
     res.render('user/login', {message, alertType, email});
 };
 
@@ -41,7 +40,6 @@ const verifyLogin = async (req, res) => {
         // Check if the user used Google login
         if (!user.password) return res.redirect(`/login?message=Please+use+Google+login&alertType=success&email=${email}`);
 
-        // Compare the provided password with the stored hashed password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.redirect(`/login?message=Invalid+credentials&alertType=error&email=${email}`);
 
