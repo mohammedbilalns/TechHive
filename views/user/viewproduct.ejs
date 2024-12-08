@@ -19,23 +19,25 @@
       <!-- Main Image with Advanced Zoom Effect -->
       <div class="relative overflow-hidden rounded-lg mb-4" 
            id="imageContainer" 
-           style="height: 400px;">
+           style="height: 400px; width: 400px; margin: 0 auto;">
         <img id="mainImage" 
              src="<%= product.images[0].path %>" 
              alt="<%= product.name %>"
-             class="w-full h-full object-cover"/>
+             class="w-full h-full object-contain"/>
         <div id="zoomPane" 
              class="hidden absolute bg-white pointer-events-none border"
              style="width: 300px; height: 300px;">
         </div>
       </div>
       <!-- Thumbnail Images -->
-      <div class="grid grid-cols-4 gap-2">
+      <div class="grid grid-cols-4 gap-2 max-w-[400px] mx-auto">
         <% product.images.forEach((image, index) => { %>
-          <img src="<%= image.path %>" 
-               alt="Product thumbnail"
-               onclick="changeMainImage(this.src)"
-               class="w-full h-20 object-cover rounded-lg cursor-pointer hover:opacity-75 transition-opacity"/>
+          <div class="aspect-square">
+            <img src="<%= image.path %>" 
+                 alt="Product thumbnail"
+                 onclick="changeMainImage(this.src)"
+                 class="w-full h-full object-contain rounded-lg cursor-pointer hover:opacity-75 transition-opacity"/>
+          </div>
         <% }); %>
       </div>
     </div>

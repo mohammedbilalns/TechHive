@@ -18,7 +18,7 @@
                      src="<%= product.images[0].path %>" 
                      class="mx-auto mb-2 w-full h-[150px] md:h-[180px] object-cover"/>
                 <p class="text-white text-sm md:text-base"><%= product.name %></p>
-                <p class="text-red-600">₹<%= product.price.toFixed(2) %></p>
+                <p class="text-primary-accent">₹<%= product.price.toFixed(2) %></p>
             </a>
         <% }); %>
     </div>
@@ -28,7 +28,7 @@
   <section class="mb-6 md:mb-10">
     <div class="flex justify-between items-center mb-3 md:mb-5">
       <p class="text-xl md:text-2xl">View All Products</p>
-      <a href="/allproducts" class="text-sm text-red-600 hover:text-red-700">View All →</a>
+      <a href="/allproducts" class="text-sm text-primary-accent hover:text-red-700">View All →</a>
     </div>
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-5">
         <% allProducts.forEach(product => { %>
@@ -36,8 +36,10 @@
                 <img alt="<%= product.name %>" 
                      src="<%= product.images[0].path %>" 
                      class="w-full h-[100px] md:h-[120px] object-cover rounded-lg"/>
-                <p class="text-black text-sm mt-2"><%= product.name %></p>
-                <p class="text-red-600">₹<%= product.price.toFixed(2) %></p>
+                <div class="flex flex-col h-[64px]">
+                    <p class="text-black text-sm mt-2 h-[40px] line-clamp-2"><%= product.name %></p>
+                    <p class="bg-primary-accent text-white px-2 py-1 rounded-lg mt-auto">₹<%= product.price.toFixed(2) %></p>
+                </div>
             </a>
         <% }); %>
     </div>
