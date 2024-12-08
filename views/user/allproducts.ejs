@@ -17,11 +17,11 @@
                 <h2 class="text-xl md:text-2xl mb-3 md:mb-5"><%= category.name %></h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
                     <% category.products.forEach(product => { %>
-                        <a href="/product/<%= product._id %>" class="bg-black rounded-lg text-center p-4 md:p-5 hover:opacity-90 transition-opacity">
+                        <a href="/product/<%= product._id %>" class="bg-white rounded-lg text-center p-4 md:p-5 hover:opacity-90 transition-opacity border border-gray-200">
                             <img src="<%= product.images[0].path %>" 
                                  alt="<%= product.name %>"
                                  class="mx-auto mb-2 w-full h-[150px] md:h-[180px] object-cover"/>
-                            <p class="text-white text-sm md:text-base"><%= product.name %></p>
+                            <p class="text-gray-800 text-sm md:text-base"><%= product.name %></p>
                             <% if (product.discount > 0) { %>
                                 <div class="flex items-center justify-center gap-2">
                                     <p class="text-red-600">₹<%= (product.price * (1 - product.discount/100)).toFixed(2) %></p>
