@@ -2,7 +2,8 @@ import express from "express"
 import { Router } from "express"
 import userController from "../controller/userController.js"
 import auth from "../middlewares/auth.js"
-
+import proudictController from "../controller/productController.js"
+import productController from "../controller/productController.js"
 
 const router = Router()
 
@@ -21,13 +22,7 @@ router.post('/resend-otp', auth.isLogin, userController.resendOTP)
 // Google OAuth
 router.get("/auth/google",auth.isLogin,  userController.authGoogle)
 router.get('/auth/google/callback',auth.isLogin, userController.authGoogleCallback)
-
-// User Home
-router.get('/home', auth.checkSession, userController.loadHome)
-
-// Add the new category route here
-router.get('/category/:id', userController.viewCategory)
-
+// User Reset OTP 
 router.get('/forgot-password', auth.isLogin, userController.loadForgotpassword);
 router.post('/forgot-password', auth.isLogin, userController.processForgotPassword);
 router.post('/verify-forgot-password-otp', auth.isLogin, userController.verifyForgotPasswordOTP);
@@ -35,10 +30,15 @@ router.post('/resend-forgot-password-otp', auth.isLogin, userController.resendFo
 router.get('/reset-password', auth.isLogin, userController.loadResetpassword);
 router.post('/reset-password', auth.isLogin, userController.resetPassword);
 
+// User Home
+router.get('/home', auth.checkSession, productController.loadHome)
 
-router.get('/allproducts',  userController.loadAllProducts)
+// Add the new category route here
+router.get('/category/:id', productController.viewCategory)
+
+router.get('/allproducts',  productController.loadAllProducts)
 
 // Add this new route
-router.get('/product/:id',  userController.viewProduct)
-router.get('/' , auth.isLogin, userController.loadLanding)
+router.get('/product/:id',  productController.viewProduct)
+router.get('/' , auth.isLogin, productController.loadLanding)
 export default router
