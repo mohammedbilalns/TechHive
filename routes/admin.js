@@ -2,7 +2,7 @@ import express from "express"
 import { Router } from "express"
 import adminController from "../controller/adminController.js"
 import adminAuth from "../middlewares/adminAuth.js"
-
+import categoryController from "../controller/categoryController.js"
 
 const router = Router()
 router.use(express.static('static'));
@@ -26,12 +26,12 @@ router.post('/customers/unblock/:customerid', adminController.unblockCustomer)
 
 
 //---- categories routes ----
-router.get('/categories', adminController.getCategories) 
-router.post('/categories/delete/:categoryid', adminController.deleteCategory)
-router.post('/categories/hide/:categoryid', adminController.hideCategory)
-router.post('/categories/unhide/:categoryid', adminController.unhideCategory)
-router.post('/categories/new', adminController.addCategory)
-router.post('/categories/edit/:categoryid', adminController.editCategory)
+router.get('/categories', categoryController.getCategories) 
+router.post('/categories/delete/:categoryid', categoryController.deleteCategory)
+router.post('/categories/hide/:categoryid', categoryController.hideCategory)
+router.post('/categories/unhide/:categoryid', categoryController.unhideCategory)
+router.post('/categories/new', categoryController.addCategory)
+router.post('/categories/edit/:categoryid', categoryController.editCategory)
 
 //---- products routes ---- 
 router.get('/products', adminController.getProducts)

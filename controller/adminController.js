@@ -113,98 +113,6 @@ const unblockCustomer = async (req, res)=>{
 }
 
 
-//---- Admin Categories ----
-
-const getCategories = async (req, res)=>{
-    try{
-        let message = req.query.message 
-        let alertType = req.query.alertType
-
-        const categories = await categorySchema.find()
-        res.render('admin/categories', {categories, message, alertType})
-    }catch(error){
-        log.red('FETCH_CATEGORIES_ERROR',error)
-    }
-}
-
-const deleteCategory = async (req,res)=>{
-    try{
-        await categorySchema.findByIdAndDelete(req.params.categoryid)
-        res.redirect('/admin/categories?message=Category+deleted+successfully&alertType=success')
-    }catch(error){
-        log.red('DELETE_CATEGORY_ERROR', error)
-    }
-
-}
-
-const hideCategory = async (req,res)=>{
-    try{
-        await categorySchema.findByIdAndUpdate(req.params.categoryid, {status:"Inactive"})
-        res.redirect('/admin/categories?message=Category+hided+successfully&alertType=success')
-    }catch(error){
-        log.red('HIDE_CATEGORY_ERROR', error)
-    }
-}
-const unhideCategory = async (req,res)=>{
-    try{
-        await categorySchema.findByIdAndUpdate(req.params.categoryid, {status:"Active"})
-        res.redirect('/admin/categories?message=Category+unhided+successfully&alertType=success')
-
-    }catch(error){
-        log.red('HIDE_CATEGORY_ERROR', error)
-    }
-}
-
-
-const addCategory = async (req,res)=>{
-    try{
-        let {name , description} = req.body 
-        name = name.trim()[0].toUpperCase()+name.trim().slice(1).toLowerCase()
-        description = description.trim()
-
-        const existingCategory = await categorySchema.findOne({name})
-        if(existingCategory) return  res.redirect('/admin/categories?message=Category+with+same+name+already+exists&alertType=error')
-
-        let newCategory = new categorySchema({
-            name,
-            description,
-            status:"Active"
-        })
-
-        await newCategory.save()
-        res.redirect('/admin/categories?message=Category+created+successfully&alertType=success')
-    }catch(error){
-        log.red('ADD_CATEGORY_ERROR', error)
-    }
-}
-
-
-const editCategory = async (req, res) => {
-    try {
-        let { name, description } = req.body;
-
-        name = name.trim()[0].toUpperCase() + name.trim().slice(1).toLowerCase();
-        description = description.trim();
-        
-        // find if there is any collection with the same name already exists in the db 
-        const existingCategory = await categorySchema.findOne({
-            name: name,
-            _id: { $ne: req.params.categoryid } // Exclude the current category by ID
-        });
-
-        if (existingCategory) {
-            return res.redirect('/admin/categories?message=Category+name+already+exists&alertType=error');
-        }
-
-        await categorySchema.findByIdAndUpdate(req.params.categoryid, { name, description });
-
-        res.redirect('/admin/categories?message=Category+updated+successfully&alertType=success');
-    } catch (error) {
-        log.red("EDIT_CATEGORY_ERROR", error);
-        res.redirect('/admin/categories?message=An+unexpected+error+occurred&alertType=error');
-    }
-};
-
 //---- Admin Products ---- 
 const getProducts = async (req, res) => {
     try {
@@ -427,7 +335,6 @@ const editProduct = async (req, res) => {
 export default {
      loadLogin, verifyLogin , logoutAdmin,
      getCustomers, blockCustomer, unblockCustomer,
-     getCategories, deleteCategory, hideCategory, unhideCategory, addCategory,editCategory,
      getProducts, addProduct, deleteProduct, deactivateProduct, activateProduct, getAddProduct,
      productUpload, getEditProduct, editProduct
 }

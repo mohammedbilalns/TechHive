@@ -163,6 +163,7 @@
                 <td class="px-4 md:px-6 py-4"><%= category.name %></td>
                 <td class="px-4 md:px-6 py-4">
                   <span
+                    id="status-<%= category._id %>"
                     class="px-4 py-2 rounded-md shadow 
                     <%= category.status === 'Active' ? 'text-green-600' : 'text-primary-accent' %>"
                   >
@@ -171,31 +172,21 @@
                 </td>
                 <td class="px-4 md:px-6 py-4 flex gap-2 justify-end">
                   <% if (category.status === 'Active') { %>
-                    <form 
-                      action="/admin/categories/hide/<%= category._id %>" 
-                      method="POST" 
-                      onsubmit="return confirm('Are you sure you want to hide this category?')"
+                    <button
+                      onclick="toggleCategoryStatus('<%= category._id %>', 'hide')"
+                      class="bg-primary-accent text-white px-4 py-2 rounded-md shadow hover:bg-red-600"
+                      id="toggle-<%= category._id %>"
                     >
-                      <button
-                        type="submit"
-                        class="bg-primary-accent text-white px-4 py-2 rounded-md shadow hover:bg-red-600"
-                      >
-                        Hide
-                      </button>
-                    </form>
+                      Hide
+                    </button>
                   <% } else { %>
-                    <form 
-                      action="/admin/categories/unhide/<%= category._id %>" 
-                      method="POST" 
-                      onsubmit="return confirm('Are you sure you want to unhide this category?')"
+                    <button
+                      onclick="toggleCategoryStatus('<%= category._id %>', 'unhide')"
+                      class="bg-green-500 text-white px-4 py-2 rounded-md shadow hover:bg-green-600"
+                      id="toggle-<%= category._id %>"
                     >
-                      <button
-                        type="submit"
-                        class="bg-green-500 text-white px-4 py-2 rounded-md shadow hover:bg-green-600"
-                      >
-                        Unhide
-                      </button>
-                    </form>
+                      Unhide
+                    </button>
                   <% } %>
                   <button
                   class="bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600"
@@ -204,18 +195,12 @@
                   Edit
                 </button>
                 
-                  <form
-                    action="/admin/categories/delete/<%= category._id %>"
-                    method="POST"
-                    onsubmit="return confirm('Are you sure you want to delete this category?')"
+                  <button
+                    onclick="deleteCategory('<%= category._id %>')"
+                    class="bg-primary-accent text-white px-4 py-2 rounded-md shadow hover:bg-red-600"
                   >
-                    <button
-                      type="submit"
-                      class="bg-primary-accent text-white px-4 py-2 rounded-md shadow hover:bg-red-600"
-                    >
-                      Delete
-                    </button>
-                  </form>
+                    Delete
+                  </button>
                 </td>
               </tr>
             <% }); %>
@@ -231,7 +216,7 @@
 <div id="addCategoryModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
   <div class="bg-white p-6 rounded-lg w-96">
     <h2 class="text-xl font-semibold mb-4">Add Category</h2>
-    <form id="addCategoryForm" action="/admin/categories/new" method="POST" onsubmit="return validateAddCategoryForm()">
+    <form id="addCategoryForm" onsubmit="return false">
       <div class="mb-4">
         <label for="name" class="block text-sm font-medium text-gray-700">Category Name</label>
         <input
@@ -272,7 +257,7 @@
 <div id="editCategoryModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
   <div class="bg-white p-6 rounded-lg w-96">
     <h2 class="text-xl font-semibold mb-4">Edit Category</h2>
-    <form id="editCategoryForm" action="/admin/categories/edit" method="POST" onsubmit="return validateEditCategoryForm()">
+    <form id="editCategoryForm" onsubmit="return false">
       <!-- Hidden Input for Category ID -->
       <input type="hidden" id="editCategoryId" name="id" />
     
@@ -310,6 +295,7 @@
 
 
 
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
 
   function exportCategories() {
@@ -331,7 +317,7 @@
 
 
   // Function to show the Add Category modal
-  function addCategory() {
+  async function addCategory() {
     openModal('addCategoryModal');
   }
 
@@ -423,6 +409,188 @@ function validateEditCategoryForm() {
 
   return isValid;
 }
+
+async function toggleCategoryStatus(categoryId, action) {
+  try {
+    const response = await axios.post(`/admin/categories/${action}/${categoryId}`);
+    
+    if (response.data.success) {
+      // Update the status text
+      const statusSpan = document.getElementById(`status-${categoryId}`);
+      const toggleButton = document.getElementById(`toggle-${categoryId}`);
+      
+      if (action === 'hide') {
+        statusSpan.textContent = 'Inactive';
+        statusSpan.classList.remove('text-green-600');
+        statusSpan.classList.add('text-primary-accent');
+        
+        toggleButton.textContent = 'Unhide';
+        toggleButton.classList.remove('bg-primary-accent', 'hover:bg-red-600');
+        toggleButton.classList.add('bg-green-500', 'hover:bg-green-600');
+        toggleButton.onclick = () => toggleCategoryStatus(categoryId, 'unhide');
+      } else {
+        statusSpan.textContent = 'Active';
+        statusSpan.classList.remove('text-primary-accent');
+        statusSpan.classList.add('text-green-600');
+        
+        toggleButton.textContent = 'Hide';
+        toggleButton.classList.remove('bg-green-500', 'hover:bg-green-600');
+        toggleButton.classList.add('bg-primary-accent', 'hover:bg-red-600');
+        toggleButton.onclick = () => toggleCategoryStatus(categoryId, 'hide');
+      }
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('An error occurred while updating the category status');
+  }
+}
+
+async function submitAddCategory(event) {
+    event.preventDefault();
+    
+    if (!validateAddCategoryForm()) return;
+
+    try {
+        const formData = {
+            name: document.getElementById('name').value,
+            description: document.getElementById('description').value
+        };
+
+        const response = await axios.post('/admin/categories/new', formData);
+        
+        if (response.data.success) {
+            // Create new row with the returned category data
+            const category = response.data.category;
+            const tbody = document.getElementById('categoryTableBody');
+            const rowCount = tbody.children.length;
+            
+            const newRow = `
+                <tr class="border-b hover:bg-gray-50">
+                    <td class="px-4 md:px-6 py-4">${rowCount + 1}</td>
+                    <td class="px-4 md:px-6 py-4">${category.name}</td>
+                    <td class="px-4 md:px-6 py-4">
+                        <span id="status-${category._id}" class="px-4 py-2 rounded-md shadow text-green-600">
+                            Active
+                        </span>
+                    </td>
+                    <td class="px-4 md:px-6 py-4 flex gap-2 justify-end">
+                        <button
+                            onclick="toggleCategoryStatus('${category._id}', 'hide')"
+                            class="bg-primary-accent text-white px-4 py-2 rounded-md shadow hover:bg-red-600"
+                            id="toggle-${category._id}"
+                        >
+                            Hide
+                        </button>
+                        <button
+                            class="bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600"
+                            onclick="editCategory('${category._id}', '${category.name}', '${category.description}')"
+                        >
+                            Edit
+                        </button>
+                        <button
+                            onclick="deleteCategory('${category._id}')"
+                            class="bg-primary-accent text-white px-4 py-2 rounded-md shadow hover:bg-red-600"
+                        >
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            `;
+            tbody.insertAdjacentHTML('beforeend', newRow);
+            
+            // Clear form and close modal
+            document.getElementById('addCategoryForm').reset();
+            closeModal('addCategoryModal');
+            
+            // Show success message
+            showAlert('Category added successfully', 'success');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showAlert(error.response?.data?.message || 'Failed to add category', 'error');
+    }
+}
+
+async function submitEditCategory(event) {
+    event.preventDefault();
+    
+    if (!validateEditCategoryForm()) return;
+
+    const categoryId = document.getElementById('editCategoryId').value;
+    
+    try {
+        const formData = {
+            name: document.getElementById('editCategoryName').value,
+            description: document.getElementById('editCategoryDescription').value
+        };
+
+        const response = await axios.post(`/admin/categories/edit/${categoryId}`, formData);
+        
+        if (response.data.success) {
+            const category = response.data.category;
+            
+            // Update the category name in the table
+            const row = document.querySelector(`#toggle-${categoryId}`).closest('tr');
+            row.children[1].textContent = category.name;
+            
+            // Close modal and show success message
+            closeModal('editCategoryModal');
+            showAlert('Category updated successfully', 'success');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showAlert(error.response?.data?.message || 'Failed to update category', 'error');
+    }
+}
+
+async function deleteCategory(categoryId) {
+    if (!confirm('Are you sure you want to delete this category?')) return;
+    
+    try {
+        const response = await axios.post(`/admin/categories/delete/${categoryId}`);
+        
+        if (response.data.success) {
+            // Remove the row from the table
+            const row = document.querySelector(`#toggle-${categoryId}`).closest('tr');
+            row.remove();
+            
+            // Update the numbering of remaining rows
+            const rows = document.querySelectorAll('#categoryTableBody tr');
+            rows.forEach((row, index) => {
+                row.children[0].textContent = index + 1;
+            });
+            
+            showAlert('Category deleted successfully', 'success');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showAlert('Failed to delete category', 'error');
+    }
+}
+
+// Utility function to show alerts
+function showAlert(message, type) {
+    const alertDiv = document.createElement('div');
+    alertDiv.id = 'alertMessage';
+    alertDiv.className = `mb-4 p-3 rounded-md ${type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
+    alertDiv.textContent = message;
+    
+    const existingAlert = document.getElementById('alertMessage');
+    if (existingAlert) {
+        existingAlert.remove();
+    }
+    
+    document.querySelector('main').insertAdjacentElement('afterbegin', alertDiv);
+    
+    // Remove alert after 3 seconds
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 3000);
+}
+
+// Update the form onsubmit handlers in the HTML
+document.getElementById('addCategoryForm').onsubmit = submitAddCategory;
+document.getElementById('editCategoryForm').onsubmit = submitEditCategory;
 
 </script>
 
