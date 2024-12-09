@@ -141,7 +141,7 @@ const editCategory = async (req, res) => {
 
 export default {
     getCategories,
-    deleteCategory,
+    deleteCategory, 
     hideCategory,
     unhideCategory,
     addCategory,

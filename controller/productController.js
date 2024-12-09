@@ -3,9 +3,6 @@ import productSchema from "../model/productModel.js";
 import categorySchema from "../model/categoryModel.js";
 
 
-
-
-
 // ---- load home ---- homepage 
 const loadHome = async (req, res) => {
     try {

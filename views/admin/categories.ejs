@@ -349,49 +349,20 @@ function closeModal(modalId) {
   document.getElementById(modalId).classList.add('hidden');
 }
 
-// Validation for Add Category Form
-function validateAddCategoryForm() {
-  const name = document.getElementById('name').value.trim();
-  const description = document.getElementById('description').value.trim();
+// Combined validation function for both add and edit forms
+function validateCategoryForm(nameId, descriptionId, alertId) {
+  const name = document.getElementById(nameId).value.trim();
+  const description = document.getElementById(descriptionId).value.trim();
   let isValid = true;
   let errorMessage = '';
 
-  // Name validation remains the same
+  // Name validation
   if (!name || name.length < 3 || name.length > 100 || /[^a-zA-Z\s&,]/.test(name) || /^[&,\s]+$/.test(name)) {
     errorMessage += 'Category Name must be between 3 to 100 characters, can contain letters, spaces, & and , symbols, and cannot consist of only symbols. <br>';
     isValid = false;
   }
 
-  // Updated description validation to properly handle single quotes
-  if (!description || description.length < 10 || description.length > 1000 || 
-      /[^a-zA-Z0-9\s.,'&,\/-]/.test(description) || /^[.,'&,\/-\s]+$/.test(description)) {
-    errorMessage += 'Description must be between 10 to 1000 characters, cannot be empty or contain only symbols, and can only contain letters, numbers, spaces, and the following characters: . , \' & / - <br>';
-    isValid = false;
-  }
-
-  if (!isValid) {
-    document.getElementById('alertMessageAdd').innerHTML = errorMessage;
-    document.getElementById('alertMessageAdd').classList.remove('hidden');
-  } else {
-    document.getElementById('alertMessageAdd').classList.add('hidden');
-  }
-
-  return isValid;
-}
-
-function validateEditCategoryForm() {
-  const name = document.getElementById('editCategoryName').value.trim();
-  const description = document.getElementById('editCategoryDescription').value.trim();
-  let isValid = true;
-  let errorMessage = '';
-
-  // Name validation remains the same
-  if (!name || name.length < 3 || name.length > 100 || /[^a-zA-Z\s&,]/.test(name) || /^[&,\s]+$/.test(name)) {
-    errorMessage += 'Category Name must be between 3 to 100 characters, can contain letters, spaces, & and , symbols, and cannot consist of only symbols. <br>';
-    isValid = false;
-  }
-
-  // Updated description validation to properly handle single quotes
+  // Description validation
   if (!description || description.length < 10 || description.length > 1000 || 
       /[^a-zA-Z0-9\s.,'&,\/-]/.test(description) || /^[.,'&,\/-\s]+$/.test(description)) {
     errorMessage += 'Description must be between 10 to 1000 characters, cannot be empty or contain only symbols, and can only contain letters, numbers, spaces, and the following characters: . , \' & / - <br>';
@@ -399,15 +370,24 @@ function validateEditCategoryForm() {
   }
 
   // Display error message
-  const alertMessageEdit = document.getElementById('alertMessageEdit');
+  const alertElement = document.getElementById(alertId);
   if (!isValid) {
-    alertMessageEdit.innerHTML = errorMessage;
-    alertMessageEdit.classList.remove('hidden');
+    alertElement.innerHTML = errorMessage;
+    alertElement.classList.remove('hidden');
   } else {
-    alertMessageEdit.classList.add('hidden');
+    alertElement.classList.add('hidden');
   }
 
   return isValid;
+}
+
+// Update the form validation calls
+function validateAddCategoryForm() {
+  return validateCategoryForm('name', 'description', 'alertMessageAdd');
+}
+
+function validateEditCategoryForm() {
+  return validateCategoryForm('editCategoryName', 'editCategoryDescription', 'alertMessageEdit');
 }
 
 async function toggleCategoryStatus(categoryId, action) {
