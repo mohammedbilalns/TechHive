@@ -14,13 +14,13 @@ async (token, tokenSecret, profile, done) => {
         // Check if user exists with the same email
         const existingUser = await userSchema.findOne({ email: profile.emails[0].value });
 
-        // If user exists and is blocked
-        if (existingUser && existingUser.status === "blocked") {
-            return done(null, false, { message: "Your account has been blocked" });
-        }
-
-        // If user exists, return the user
+        // If user exists, check their status
         if (existingUser) {
+            // Check if user is not Active
+            if (existingUser.status !== "Active") {
+                return done(null, false, { message: "Your account is currently blocked" });
+            }
+
             // Update googleId if not present
             if (!existingUser.googleId) {
                 existingUser.googleId = profile.id;

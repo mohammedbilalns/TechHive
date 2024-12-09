@@ -83,10 +83,15 @@ const registerUser = async (req, res) => {
 
         // If the user already exists, return an error message
         if (existingUser) {
-            let message = existingUser.email === email ? "Email already registered" : "Phone number already registered";
-            if (!existingUser.password) {
+            let message;
+            if (existingUser.status === "Pending") {
+                message = "You recently had a failed attempt. Please try again after some time.";
+            } else if (!existingUser.password) {
                 message = "This email is linked to a Google login. Please log in with Google.";
+            } else {
+                message = existingUser.email === email ? "Email already registered" : "Phone number already registered";
             }
+            
             return res.render('user/signup', {
                 message,
                 alertType: "error",
@@ -117,7 +122,6 @@ const registerUser = async (req, res) => {
         // Save the new user to the database
         await newUser.save();
 
-        // Schedule deletion after 3 minutes if status is still pending
         setTimeout(async () => {
             try {
                 await userSchema.deleteOne({ 
@@ -128,7 +132,7 @@ const registerUser = async (req, res) => {
             } catch (error) {
                 log.red("Error deleting pending user:", error);
             }
-        }, 3 * 60 * 1000); // 3 minutes in milliseconds
+        }, 3 * 60 * 1000);
 
         // Send OTP email to the user
         await authUtils.sendOTPEmail(email, otp);
@@ -148,7 +152,6 @@ const verifyOTP = async (req, res) => {
         const user = await userSchema.findOne({ email });
         const currentTime = Date.now();
 
-        // Check if OTP has expired
         if (currentTime > user.otp.otpExpiresAt) {
             return res.render("user/signupotp", {
                 email,
@@ -164,7 +167,6 @@ const verifyOTP = async (req, res) => {
             user.otp = undefined;
             await user.save();
 
-            // Store user information in session
             req.session.user = { fullname: user.fullname, email: user.email };
 
             // Redirect to home with success message
@@ -179,7 +181,6 @@ const verifyOTP = async (req, res) => {
                 });
             }
 
-            // Increment OTP attempts
             user.otp.otpAttempts += 1;
             await user.save();
 
@@ -205,7 +206,7 @@ const verifyOTP = async (req, res) => {
 // Resend OTP functionality
 const resendOTP = async (req, res) => {
     console.log(req.body)
-    let { email } = req.body;  // Retrieve email from the request body
+    let { email } = req.body; 
     email = email.trim()
     console.log("email: ", email)
     try {
@@ -213,7 +214,6 @@ const resendOTP = async (req, res) => {
         const user = await userSchema.findOne({ email });
         console.log("user: ", user)
       
-        // Check if the OTP attempts limit has been reached
         if (user.otp.otpAttempts >= 3) {
             await userSchema.findOneAndDelete({ email });
             return res.render("user/signup", {
@@ -225,8 +225,8 @@ const resendOTP = async (req, res) => {
         // Generate a new OTP and update the user's document
         const otp = authUtils.generateOTP();
         user.otp.otpValue = otp;
-        user.otp.otpExpiresAt = Date.now() + 60000;  // OTP expiry set to 1 minute
-        user.otp.otpAttempts += 1;  // Increment OTP attempts count
+        user.otp.otpExpiresAt = Date.now() + 60000;  
+        user.otp.otpAttempts += 1;  
         await user.save();
 
         // Send the new OTP email to the user
@@ -260,8 +260,13 @@ const authGoogle = (req, res) => {
 // Callback for Google OAuth, handle success or failure
 const authGoogleCallback = (req, res) => {
     passport.authenticate("google", { failureRedirect: "/login" }, (err, user, info) => {
-        if (err || !user) {
-            return res.redirect("/login");  // Redirect to login page in case of failure
+        if (err) {
+            return res.redirect("/login?message=Something+went+wrong&alertType=error");
+        }
+        
+        if (!user) {
+            // Handle blocked user case
+            return res.redirect("/login?message=Your+account+is+currently+blocked&alertType=error");
         }
 
         req.session.user = {
@@ -270,7 +275,6 @@ const authGoogleCallback = (req, res) => {
             email: user.email,
         };
 
-        // Redirect to home page after successful login
         res.redirect('/home');
     })(req, res);
 };
@@ -318,7 +322,7 @@ const processForgotPassword = async (req, res) => {
             });
         }
 
-        // Check if user is a Google auth user (no password field)
+        // Check if user is a Google auth user
         if (!user.password) {
             return res.redirect('/login?message=Google+accounts+cannot+reset+password.+Please+login+with+Google&alertType=error');
         }

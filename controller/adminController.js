@@ -290,9 +290,7 @@ const addProduct = async (req, res) => {
             .map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
             .join(' ');
 
-        // Convert specifications to array if it's not already
         const specArray = Array.isArray(specifications) ? specifications : [specifications];
-        // Filter out empty specifications and trim each one
         const cleanedSpecs = specArray.filter(spec => spec && spec.trim()).map(spec => spec.trim());
 
         let product = await productSchema.findOne({name})
@@ -354,7 +352,6 @@ const editProduct = async (req, res) => {
             .map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
             .join(' ');
         
-        // Convert specifications to array and clean it
         const specArray = Array.isArray(specifications) ? specifications : [specifications];
         const cleanedSpecs = specArray.filter(spec => spec && spec.trim()).map(spec => spec.trim());
 
@@ -369,14 +366,13 @@ const editProduct = async (req, res) => {
         });
         if(existingproduct) return res.redirect('/admin/products?message=Product+with+same+name+already+exists&alertType=error');
 
-        // Get existing product and handle image updates
         const product = await productSchema.findById(productId);
         if (!product) {
             return res.redirect('/admin/products?message=Product+not+found&alertType=error');
         }
 
         // Handle image updates
-        let images = [...product.images]; // Start with existing images
+        let images = [...product.images]; 
 
         // Handle new images from the form
         if (req.files && req.files.length > 0) {
@@ -385,9 +381,7 @@ const editProduct = async (req, res) => {
                 filename: file.filename
             }));
 
-            // Replace images at the corresponding positions
             req.files.forEach((file, index) => {
-                // If there's an existing image at this position, delete the old file
                 if (images[index]) {
                     const oldImagePath = path.join('static', images[index].path);
                     if (fs.existsSync(oldImagePath)) {
@@ -395,7 +389,6 @@ const editProduct = async (req, res) => {
                     }
                     images[index] = newImages[index];
                 } else {
-                    // If no existing image at this position, add the new one
                     images.push(newImages[index]);
                 }
             });
