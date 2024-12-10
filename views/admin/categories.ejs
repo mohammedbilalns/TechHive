@@ -296,6 +296,31 @@
   </div>
 
 
+  <!-- Custom Alert Modal -->
+  <div id="customAlert" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-4">
+      <div id="alertContent" class="flex items-center mb-4">
+        <div id="alertIcon" class="mr-4 text-2xl">
+          <!-- Icon will be injected by JS -->
+        </div>
+        <div class="flex-1">
+          <h3 id="alertTitle" class="font-semibold text-lg mb-1">
+            <!-- Title will be injected by JS -->
+          </h3>
+          <p id="alertMessage" class="text-gray-600">
+            <!-- Message will be injected by JS -->
+          </p>
+        </div>
+      </div>
+      <div class="flex justify-end">
+        <button onclick="closeCustomAlert()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+
+
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
 
@@ -588,24 +613,50 @@
         }
     }
 
-    // Utility function to show alerts
-    function showAlert(message, type) {
-      const alertDiv = document.createElement('div');
-      alertDiv.id = 'alertMessage';
-      alertDiv.className = `mb-4 p-3 rounded-md ${type === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`;
-      alertDiv.textContent = message;
+    // Replace the showAlert function with this new implementation
+    function showAlert(message, type = 'success') {
+      const alertModal = document.getElementById('customAlert');
+      const alertTitle = document.getElementById('alertTitle');
+      const alertMessage = document.getElementById('alertMessage');
+      const alertIcon = document.getElementById('alertIcon');
+      const alertContent = document.getElementById('alertContent');
 
-      const existingAlert = document.getElementById('alertMessage');
-      if (existingAlert) {
-        existingAlert.remove();
+      // Configure based on type
+      if (type === 'error') {
+        alertTitle.textContent = 'Error';
+        alertIcon.innerHTML = '<i class="fas fa-times-circle text-red-500"></i>';
+        alertContent.classList.add('text-red-600');
+      } else {
+        alertTitle.textContent = 'Success';
+        alertIcon.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
+        alertContent.classList.add('text-green-600');
       }
 
-      document.querySelector('main').insertAdjacentElement('afterbegin', alertDiv);
+      alertMessage.textContent = message;
+      alertModal.classList.remove('hidden');
 
-      // Remove alert after 3 seconds
-      setTimeout(() => {
-        alertDiv.remove();
+      // Auto close after 3 seconds
+      const timeout = setTimeout(() => {
+        closeCustomAlert();
       }, 3000);
+
+      // Store the timeout ID in the modal element
+      alertModal.dataset.timeoutId = timeout;
+    }
+
+    function closeCustomAlert() {
+      const alertModal = document.getElementById('customAlert');
+      
+      // Clear any existing timeout
+      if (alertModal.dataset.timeoutId) {
+        clearTimeout(Number(alertModal.dataset.timeoutId));
+      }
+      
+      alertModal.classList.add('hidden');
+      
+      // Reset classes
+      const alertContent = document.getElementById('alertContent');
+      alertContent.classList.remove('text-red-600', 'text-green-600');
     }
 
     // Update the form onsubmit handlers in the HTML
