@@ -27,7 +27,7 @@ router.post('/customers/unblock/:customerid', adminAuthController.unblockCustome
 
 //---- categories routes ----
 router.get('/categories', adminCategoryController.getCategories) 
-router.post('/categories/delete/:categoryid', adminCategoryController.deleteCategory)
+router.delete('/categories/:categoryid', adminCategoryController.deleteCategory)
 router.post('/categories/hide/:categoryid', adminCategoryController.hideCategory)
 router.post('/categories/unhide/:categoryid', adminCategoryController.unhideCategory)
 router.post('/categories/new', adminCategoryController.addCategory)
