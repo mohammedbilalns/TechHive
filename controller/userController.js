@@ -579,6 +579,106 @@ const editAddress = async (req, res) => {
     }
 };
 
+// Get a single address
+const getAddress = async (req, res) => {
+    try {
+        const address = await Address.findOne({
+            _id: req.params.id,
+            userId: req.session.user.id
+        });
+        
+        if (!address) {
+            return res.status(404).json({
+                success: false,
+                message: 'Address not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            address
+        });
+    } catch (error) {
+        log.red("ERROR", error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch address'
+        });
+    }
+};
+
+// Update an address
+const updateAddress = async (req, res) => {
+    try {
+        const { name, houseName, localityStreet, city, state, pincode, phone, alternatePhone } = req.body;
+        
+        const address = await Address.findOneAndUpdate(
+            {
+                _id: req.params.id,
+                userId: req.session.user.id
+            },
+            {
+                name,
+                houseName,
+                localityStreet,
+                city,
+                state,
+                pincode,
+                phone,
+                alternatePhone
+            },
+            { new: true }
+        );
+
+        if (!address) {
+            return res.status(404).json({
+                success: false,
+                message: 'Address not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Address updated successfully',
+            address
+        });
+    } catch (error) {
+        log.red("ERROR", error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update address'
+        });
+    }
+};
+
+// Delete an address
+const deleteAddress = async (req, res) => {
+    try {
+        const address = await Address.findOneAndDelete({
+            _id: req.params.id,
+            userId: req.session.user.id
+        });
+
+        if (!address) {
+            return res.status(404).json({
+                success: false,
+                message: 'Address not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Address deleted successfully'
+        });
+    } catch (error) {
+        log.red("ERROR", error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to delete address'
+        });
+    }
+};
+
 export default {
     loadLogin, verifyLogin,
     loadSignup, verifyOTP, resendOTP,
@@ -587,7 +687,10 @@ export default {
      registerUser, authGoogle, authGoogleCallback,
     logoutUser, getDashboard, getAccountDetails, getAddresses, getCart, getWishlist, getOrders, getWallet,
     addAddress,
-    editAddress
+    editAddress,
+    getAddress,
+    updateAddress,
+    deleteAddress
 }
 
 

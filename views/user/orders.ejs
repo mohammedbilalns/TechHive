@@ -1,203 +1,219 @@
 <%- include('../partials/header') %>
 
-<!-- Mobile Menu Button -->
-<div class="md:hidden p-4 bg-gray-100 flex justify-between items-center">
-  <h1 class="text-xl font-semibold text-gray-800">My Orders</h1>
-  <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900">
-    <i class="fas fa-bars text-xl"></i>
-  </button>
-</div>
+  <!-- Mobile Menu Button -->
+  <div class="md:hidden p-4 bg-gray-100 flex justify-between items-center">
+    <h1 class="text-xl font-semibold text-gray-800">My Orders</h1>
+    <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900">
+      <i class="fas fa-bars text-xl"></i>
+    </button>
+  </div>
 
-<div class="flex flex-col md:flex-row">
-    <aside id="sidebar" class="bg-gray-100 w-full md:w-64 min-h-screen hidden md:block transform transition-transform duration-300 ease-in-out">
-        <nav class="py-4">
-          <div class="px-4 md:px-6">
-            <div class="flex items-center space-x-4 mb-6">
-              <div class="w-12 h-12 rounded-full bg-primary-accent text-white flex items-center justify-center">
-                <i class="fas fa-user text-xl"></i>
-              </div>
-              <div>
-                <h2 class="text-lg font-semibold text-gray-800"><%= user.fullname %></h2>
-                <p class="text-sm text-gray-600"><%= user.email %></p>
-              </div>
+  <div class="flex flex-col md:flex-row">
+    <aside id="sidebar"
+      class="bg-gray-100 w-full md:w-72 min-h-screen hidden md:block transform transition-transform duration-300 ease-in-out">
+      <nav class="py-4">
+        <div class="px-4 md:px-6">
+          <div class="flex items-center space-x-4 mb-6">
+            <div
+              class="w-10 h-10 rounded-full bg-primary-accent text-white flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-user text-lg"></i>
             </div>
-    
-            <ul class="mt-4 space-y-2">
-              <li>
-                <a href="/profile/dashboard" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                  <i class="fas fa-th-large mr-3"></i> 
-                  <span>Dashboard</span>
-                </a>
-              </li>
-              <li>
-                <a href="/profile/account" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                  <i class="fas fa-user mr-3"></i> 
-                  <span>Account Details</span>
-                </a>
-              </li>
-              <li>
-                <a href="/profile/addresses" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                  <i class="fas fa-map-marker-alt mr-3"></i> 
-                  <span>Addresses</span>
-                </a>
-              </li>
-              <li>
-                <a href="/profile/orders" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                  <i class="fas fa-shopping-bag mr-3"></i> 
-                  <span>Orders</span>
-                </a>
-              </li>
-              <li>
-                <a href="/profile/cart" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                  <i class="fas fa-shopping-cart mr-3"></i> 
-                  <span>Cart</span>
-                  <span class="ml-auto bg-primary-accent text-white px-2 py-1 rounded-full text-xs">
-                    cartCount 
-                  </span>
-                </a>
-              </li>
-              <li>
-                <a href="/profile/wishlist" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                  <i class="fas fa-heart mr-3"></i> 
-                  <span>Wishlist</span>
-                </a>
-              </li>
-              <li>
-                <a href="/profile/wallet" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                  <i class="fas fa-wallet mr-3"></i> 
-                  <span>Wallet</span>
-                </a>
-              </li>
-              <li>
-                <a href="/profile/coupons" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                  <i class="fas fa-ticket-alt mr-3"></i> 
-                  <span>My Coupons</span>
-                </a>
-              </li>
-              <li>
-                <a href="/logout" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                  <i class="fas fa-sign-out-alt mr-3"></i> 
-                  <span>Logout</span>
-                </a>
-              </li>
-            </ul>
+            <div class="min-w-0 flex-1">
+              <h2 class="text-base font-semibold text-gray-800 truncate">
+                <%= user.fullname %>
+              </h2>
+              <p class="text-xs text-gray-600 truncate">
+                <%= user.email %>
+              </p>
+            </div>
           </div>
-        </nav>
-      </aside>
 
-  <!-- Main Content -->
-  <main class="flex-grow p-4 md:py-12">
-    <% if (locals.message && locals.alertType) { %>
-      <div id="alertMessage" class="mb-4 p-3 rounded-md 
+          <ul class="mt-4 space-y-2">
+            <li>
+              <a href="/profile/account" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-th-large mr-3"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li>
+              <a href="/profile/account" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-user mr-3"></i>
+                <span>Account Details</span>
+              </a>
+            </li>
+            <li>
+              <a href="/profile/addresses"
+                class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-map-marker-alt mr-3"></i>
+                <span>Addresses</span>
+              </a>
+            </li>
+            <li>
+              <a href="/profile/orders" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-shopping-bag mr-3"></i>
+                <span>Orders</span>
+              </a>
+            </li>
+            <li>
+              <a href="/profile/cart" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-shopping-cart mr-3"></i>
+                <span>Cart</span>
+                <span class="ml-auto bg-primary-accent text-white px-2 py-1 rounded-full text-xs">
+                  cartCount
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href="/profile/wishlist"
+                class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-heart mr-3"></i>
+                <span>Wishlist</span>
+              </a>
+            </li>
+            <li>
+              <a href="/profile/wallet" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-wallet mr-3"></i>
+                <span>Wallet</span>
+              </a>
+            </li>
+            <li>
+              <a href="/profile/coupons" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-ticket-alt mr-3"></i>
+                <span>My Coupons</span>
+              </a>
+            </li>
+            <li>
+              <a href="/logout" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-sign-out-alt mr-3"></i>
+                <span>Logout</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+
+    <!-- Main Content -->
+    <main class="flex-grow p-4 md:py-12">
+      <% if (locals.message && locals.alertType) { %>
+        <div id="alertMessage" class="mb-4 p-3 rounded-md 
            <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
-        <%= message %>
-      </div>
-    <% } %>
+          <%= message %>
+        </div>
+        <% } %>
 
-    <div class="bg-white rounded-lg shadow-lg p-6">
-      <h1 class="text-2xl font-semibold text-gray-800 mb-6">My Orders</h1>
+          <div class="bg-white rounded-lg shadow-lg p-6">
+            <h1 class="text-2xl font-semibold text-gray-800 mb-6">My Orders</h1>
 
-      <!-- Orders List -->
-      <div class="space-y-6">
-        <% orders.forEach(order => { %>
-          <div class="border rounded-lg overflow-hidden">
-            <!-- Order Header -->
-            <div class="bg-gray-50 p-4 flex flex-wrap justify-between items-center">
-              <div class="space-y-1">
-                <p class="text-sm text-gray-600">Order #<%= order._id %></p>
-                <p class="text-sm text-gray-600">Placed on <%= new Date(order.createdAt).toLocaleDateString() %></p>
-              </div>
-              <div class="text-right">
-                <p class="font-semibold text-lg">₹<%= order.totalAmount %></p>
-                <span class="inline-block px-3 py-1 text-sm rounded-full
+            <!-- Orders List -->
+            <div class="space-y-6">
+              <% orders.forEach(order=> { %>
+                <div class="border rounded-lg overflow-hidden">
+                  <!-- Order Header -->
+                  <div class="bg-gray-50 p-4 flex flex-wrap justify-between items-center">
+                    <div class="space-y-1">
+                      <p class="text-sm text-gray-600">Order #<%= order._id %>
+                      </p>
+                      <p class="text-sm text-gray-600">Placed on <%= new Date(order.createdAt).toLocaleDateString() %>
+                      </p>
+                    </div>
+                    <div class="text-right">
+                      <p class="font-semibold text-lg">₹<%= order.totalAmount %>
+                      </p>
+                      <span class="inline-block px-3 py-1 text-sm rounded-full
                            <%= order.status === 'Delivered' ? 'bg-green-100 text-green-800' :
                               order.status === 'Cancelled' ? 'bg-red-100 text-red-800' :
                               'bg-blue-100 text-blue-800' %>">
-                  <%= order.status %>
-                </span>
-              </div>
-            </div>
-
-            <!-- Order Items -->
-            <div class="p-4">
-              <% order.items.forEach(item => { %>
-                <div class="flex items-center py-4 border-b last:border-0">
-                  <div class="w-20 h-20 flex-shrink-0">
-                    <img src="<%= item.product.image %>" alt="<%= item.product.name %>" 
-                         class="w-full h-full object-cover rounded">
+                        <%= order.status %>
+                      </span>
+                    </div>
                   </div>
-                  <div class="ml-4 flex-grow">
-                    <h3 class="font-semibold"><%= item.product.name %></h3>
-                    <p class="text-gray-600">Quantity: <%= item.quantity %></p>
-                    <p class="text-gray-600">₹<%= item.price %></p>
+
+                  <!-- Order Items -->
+                  <div class="p-4">
+                    <% order.items.forEach(item=> { %>
+                      <div class="flex items-center py-4 border-b last:border-0">
+                        <div class="w-20 h-20 flex-shrink-0">
+                          <img src="<%= item.product.image %>" alt="<%= item.product.name %>"
+                            class="w-full h-full object-cover rounded">
+                        </div>
+                        <div class="ml-4 flex-grow">
+                          <h3 class="font-semibold">
+                            <%= item.product.name %>
+                          </h3>
+                          <p class="text-gray-600">Quantity: <%= item.quantity %>
+                          </p>
+                          <p class="text-gray-600">₹<%= item.price %>
+                          </p>
+                        </div>
+                      </div>
+                      <% }) %>
+                  </div>
+
+                  <!-- Order Actions -->
+                  <div class="bg-gray-50 p-4 flex justify-between items-center">
+                    <div class="space-x-4">
+                      <% if (order.status !=='Cancelled' && order.status !=='Delivered' ) { %>
+                        <button onclick="cancelOrder('<%= order._id %>')" class="text-red-600 hover:text-red-800">
+                          Cancel Order
+                        </button>
+                        <% } %>
+                          <button onclick="viewOrderDetails('<%= order._id %>')"
+                            class="text-blue-600 hover:text-blue-800">
+                            View Details
+                          </button>
+                    </div>
+                    <% if (order.status==='Delivered' ) { %>
+                      <button onclick="downloadInvoice('<%= order._id %>')"
+                        class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-primary-accent/90">
+                        <i class="fas fa-download mr-2"></i> Invoice
+                      </button>
+                      <% } %>
                   </div>
                 </div>
-              <% }) %>
-            </div>
+                <% }) %>
 
-            <!-- Order Actions -->
-            <div class="bg-gray-50 p-4 flex justify-between items-center">
-              <div class="space-x-4">
-                <% if (order.status !== 'Cancelled' && order.status !== 'Delivered') { %>
-                  <button onclick="cancelOrder('<%= order._id %>')" 
-                          class="text-red-600 hover:text-red-800">
-                    Cancel Order
-                  </button>
-                <% } %>
-                <button onclick="viewOrderDetails('<%= order._id %>')" 
-                        class="text-blue-600 hover:text-blue-800">
-                  View Details
-                </button>
-              </div>
-              <% if (order.status === 'Delivered') { %>
-                <button onclick="downloadInvoice('<%= order._id %>')" 
-                        class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-primary-accent/90">
-                  <i class="fas fa-download mr-2"></i> Invoice
-                </button>
-              <% } %>
+                  <% if (orders.length===0) { %>
+                    <div class="text-center py-8">
+                      <i class="fas fa-shopping-bag text-gray-400 text-4xl mb-4"></i>
+                      <p class="text-gray-600">No orders found</p>
+                      <a href="/shop"
+                        class="inline-block mt-4 bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-primary-accent/90">
+                        Start Shopping
+                      </a>
+                    </div>
+                    <% } %>
             </div>
           </div>
-        <% }) %>
+    </main>
+  </div>
 
-        <% if (orders.length === 0) { %>
-          <div class="text-center py-8">
-            <i class="fas fa-shopping-bag text-gray-400 text-4xl mb-4"></i>
-            <p class="text-gray-600">No orders found</p>
-            <a href="/shop" class="inline-block mt-4 bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-primary-accent/90">
-              Start Shopping
-            </a>
-          </div>
-        <% } %>
-      </div>
-    </div>
-  </main>
-</div>
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('hidden');
+      sidebar.classList.toggle('fixed');
+      sidebar.classList.toggle('top-0');
+      sidebar.classList.toggle('left-0');
+      sidebar.classList.toggle('z-50');
+      sidebar.classList.toggle('h-full');
+    }
 
-<script>
-function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  sidebar.classList.toggle('hidden');
-  sidebar.classList.toggle('fixed');
-  sidebar.classList.toggle('top-0');
-  sidebar.classList.toggle('left-0');
-  sidebar.classList.toggle('z-50');
-  sidebar.classList.toggle('h-full');
-}
+    function cancelOrder(orderId) {
+      if (confirm('Are you sure you want to cancel this order?')) {
+        // Implement cancel order functionality
+        window.location.href = `/account/orders/${orderId}/cancel`;
+      }
+    }
 
-function cancelOrder(orderId) {
-  if (confirm('Are you sure you want to cancel this order?')) {
-    // Implement cancel order functionality
-    window.location.href = `/account/orders/${orderId}/cancel`;
-  }
-}
+    function viewOrderDetails(orderId) {
+      window.location.href = `/account/orders/${orderId}`;
+    }
 
-function viewOrderDetails(orderId) {
-  window.location.href = `/account/orders/${orderId}`;
-}
+    function downloadInvoice(orderId) {
+      window.location.href = `/account/orders/${orderId}/invoice`;
+    }
+  </script>
 
-function downloadInvoice(orderId) {
-  window.location.href = `/account/orders/${orderId}/invoice`;
-}
-</script>
-
-<%- include('../partials/footer') %> 
+  <%- include('../partials/footer') %>

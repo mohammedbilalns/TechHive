@@ -62,6 +62,9 @@ router.get('/profile/wallet', auth.checkSession, userController.getWallet)
 router.post('/account/add-address', auth.checkSession, userController.addAddress);
 
 // Edit Address
-router.put('/account/edit-address/:id', auth.checkSession, userController.editAddress);
+
+router.get('/account/address/:id', auth.checkSession, userController.getAddress);
+router.put('/account/address/:id', auth.checkSession, userController.updateAddress);
+router.delete('/account/address/:id', auth.checkSession, userController.deleteAddress);
 
 export default router

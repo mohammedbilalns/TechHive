@@ -1,227 +1,237 @@
 <%- include('../partials/header') %>
 
-<!-- Mobile Menu Button -->
-<div class="md:hidden p-4 bg-gray-100 flex justify-between items-center">
-  <h1 class="text-xl font-semibold text-gray-800">My Wallet</h1>
-  <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900">
-    <i class="fas fa-bars text-xl"></i>
-  </button>
-</div>
+  <!-- Mobile Menu Button -->
+  <div class="md:hidden p-4 bg-gray-100 flex justify-between items-center">
+    <h1 class="text-xl font-semibold text-gray-800">My Wallet</h1>
+    <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900">
+      <i class="fas fa-bars text-xl"></i>
+    </button>
+  </div>
 
-<div class="flex flex-col md:flex-row">
-    <aside id="sidebar" class="bg-gray-100 w-full md:w-64 min-h-screen hidden md:block transform transition-transform duration-300 ease-in-out">
-        <nav class="py-4">
-          <div class="px-4 md:px-6">
-            <div class="flex items-center space-x-4 mb-6">
-              <div class="w-12 h-12 rounded-full bg-primary-accent text-white flex items-center justify-center">
-                <i class="fas fa-user text-xl"></i>
-              </div>
-              <div>
-                <h2 class="text-lg font-semibold text-gray-800"><%= user.fullname %></h2>
-                <p class="text-sm text-gray-600"><%= user.email %></p>
-              </div>
+  <div class="flex flex-col md:flex-row">
+    <aside id="sidebar"
+      class="bg-gray-100 w-full md:w-72 min-h-screen hidden md:block transform transition-transform duration-300 ease-in-out">
+      <nav class="py-4">
+        <div class="px-4 md:px-6">
+          <div class="flex items-center space-x-4 mb-6">
+            <div
+              class="w-10 h-10 rounded-full bg-primary-accent text-white flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-user text-lg"></i>
             </div>
-    
-            <ul class="mt-4 space-y-2">
-              <li>
-                <a href="/account" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                  <i class="fas fa-th-large mr-3"></i> 
-                  <span>Dashboard</span>
-                </a>
-              </li>
-              <li>
-                <a href="/account/profile" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                  <i class="fas fa-user mr-3"></i> 
-                  <span>Account Details</span>
-                </a>
-              </li>
-              <li>
-                <a href="/account/addresses" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                  <i class="fas fa-map-marker-alt mr-3"></i> 
-                  <span>Addresses</span>
-                </a>
-              </li>
-              <li>
-                <a href="/account/orders" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                  <i class="fas fa-shopping-bag mr-3"></i> 
-                  <span>Orders</span>
-                </a>
-              </li>
-              <li>
-                <a href="/cart" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                  <i class="fas fa-shopping-cart mr-3"></i> 
-                  <span>Cart</span>
-                  <span class="ml-auto bg-primary-accent text-white px-2 py-1 rounded-full text-xs">
-                    cartCount 
-                  </span>
-                </a>
-              </li>
-              <li>
-                <a href="/account/wishlist" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                  <i class="fas fa-heart mr-3"></i> 
-                  <span>Wishlist</span>
-                </a>
-              </li>
-              <li>
-                <a href="/account/wallet" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                  <i class="fas fa-wallet mr-3"></i> 
-                  <span>Wallet</span>
-                </a>
-              </li>
-              <li>
-                <a href="/account/coupons" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                  <i class="fas fa-ticket-alt mr-3"></i> 
-                  <span>My Coupons</span>
-                </a>
-              </li>
-              <li>
-                <a href="/logout" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                  <i class="fas fa-sign-out-alt mr-3"></i> 
-                  <span>Logout</span>
-                </a>
-              </li>
-            </ul>
+            <div class="min-w-0 flex-1">
+              <h2 class="text-base font-semibold text-gray-800 truncate">
+                <%= user.fullname %>
+              </h2>
+              <p class="text-xs text-gray-600 truncate">
+                <%= user.email %>
+              </p>
+            </div>
           </div>
-        </nav>
-      </aside>
 
-  <!-- Main Content -->
-  <main class="flex-grow p-4 md:py-12">
-    <% if (locals.message && locals.alertType) { %>
-      <div id="alertMessage" class="mb-4 p-3 rounded-md 
-           <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
-        <%= message %>
-      </div>
-    <% } %>
-
-    <div class="bg-white rounded-lg shadow-lg p-6">
-      <!-- Wallet Balance Card -->
-      <div class="bg-primary-accent text-white rounded-lg p-6 mb-8">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold">Wallet Balance</h2>
-          <i class="fas fa-wallet text-2xl"></i>
+          <ul class="mt-4 space-y-2">
+            <li>
+              <a href="/profile/account" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-th-large mr-3"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li>
+              <a href="/profile/account" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-user mr-3"></i>
+                <span>Account Details</span>
+              </a>
+            </li>
+            <li>
+              <a href="/profile/addresses"
+                class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-map-marker-alt mr-3"></i>
+                <span>Addresses</span>
+              </a>
+            </li>
+            <li>
+              <a href="/profile/orders" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-shopping-bag mr-3"></i>
+                <span>Orders</span>
+              </a>
+            </li>
+            <li>
+              <a href="/profile/cart" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-shopping-cart mr-3"></i>
+                <span>Cart</span>
+                <span class="ml-auto bg-primary-accent text-white px-2 py-1 rounded-full text-xs">
+                  cartCount
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href="/profile/wishlist"
+                class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-heart mr-3"></i>
+                <span>Wishlist</span>
+              </a>
+            </li>
+            <li>
+              <a href="/profile/wallet" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-wallet mr-3"></i>
+                <span>Wallet</span>
+              </a>
+            </li>
+            <li>
+              <a href="/profile/coupons" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-ticket-alt mr-3"></i>
+                <span>My Coupons</span>
+              </a>
+            </li>
+            <li>
+              <a href="/logout" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+                <i class="fas fa-sign-out-alt mr-3"></i>
+                <span>Logout</span>
+              </a>
+            </li>
+          </ul>
         </div>
-        <p class="text-3xl font-bold">₹<%= wallet.balance %></p>
-        <button onclick="showAddMoneyModal()" 
+      </nav>
+    </aside>
+
+
+    <!-- Main Content -->
+    <main class="flex-grow p-4 md:py-12">
+      <% if (locals.message && locals.alertType) { %>
+        <div id="alertMessage" class="mb-4 p-3 rounded-md 
+           <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
+          <%= message %>
+        </div>
+        <% } %>
+
+          <div class="bg-white rounded-lg shadow-lg p-6">
+            <!-- Wallet Balance Card -->
+            <div class="bg-primary-accent text-white rounded-lg p-6 mb-8">
+              <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">Wallet Balance</h2>
+                <i class="fas fa-wallet text-2xl"></i>
+              </div>
+              <p class="text-3xl font-bold">₹<%= wallet.balance %>
+              </p>
+              <button onclick="showAddMoneyModal()"
                 class="mt-4 bg-white text-primary-accent px-6 py-2 rounded-lg hover:bg-gray-100">
-          Add Money
+                Add Money
+              </button>
+            </div>
+
+            <!-- Transaction History -->
+            <div>
+              <h2 class="text-xl font-semibold text-gray-800 mb-4">Transaction History</h2>
+
+              <% if (wallet.transactions && wallet.transactions.length> 0) { %>
+                <div class="space-y-4">
+                  <% wallet.transactions.forEach(transaction=> { %>
+                    <div class="flex items-center justify-between border-b pb-4">
+                      <div class="flex items-center">
+                        <div
+                          class="w-10 h-10 rounded-full flex items-center justify-center
+                              <%= transaction.type === 'credit' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600' %>">
+                          <i class="fas <%= transaction.type === 'credit' ? 'fa-arrow-down' : 'fa-arrow-up' %>"></i>
+                        </div>
+                        <div class="ml-4">
+                          <p class="font-semibold">
+                            <%= transaction.description %>
+                          </p>
+                          <p class="text-sm text-gray-600">
+                            <%= new Date(transaction.date).toLocaleDateString() %>
+                          </p>
+                        </div>
+                      </div>
+                      <p class="font-semibold <%= transaction.type === 'credit' ? 'text-green-600' : 'text-red-600' %>">
+                        <%= transaction.type==='credit' ? '+' : '-' %>₹<%= transaction.amount %>
+                      </p>
+                    </div>
+                    <% }) %>
+                </div>
+                <% } else { %>
+                  <div class="text-center py-8">
+                    <i class="fas fa-receipt text-gray-400 text-4xl mb-4"></i>
+                    <p class="text-gray-600">No transactions yet</p>
+                  </div>
+                  <% } %>
+            </div>
+          </div>
+    </main>
+  </div>
+
+  <!-- Add Money Modal -->
+  <div id="addMoneyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-semibold">Add Money to Wallet</h3>
+        <button onclick="hideAddMoneyModal()" class="text-gray-600 hover:text-gray-800">
+          <i class="fas fa-times"></i>
         </button>
       </div>
 
-      <!-- Transaction History -->
-      <div>
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Transaction History</h2>
-        
-        <% if (wallet.transactions && wallet.transactions.length > 0) { %>
-          <div class="space-y-4">
-            <% wallet.transactions.forEach(transaction => { %>
-              <div class="flex items-center justify-between border-b pb-4">
-                <div class="flex items-center">
-                  <div class="w-10 h-10 rounded-full flex items-center justify-center
-                              <%= transaction.type === 'credit' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600' %>">
-                    <i class="fas <%= transaction.type === 'credit' ? 'fa-arrow-down' : 'fa-arrow-up' %>"></i>
-                  </div>
-                  <div class="ml-4">
-                    <p class="font-semibold"><%= transaction.description %></p>
-                    <p class="text-sm text-gray-600">
-                      <%= new Date(transaction.date).toLocaleDateString() %>
-                    </p>
-                  </div>
-                </div>
-                <p class="font-semibold <%= transaction.type === 'credit' ? 'text-green-600' : 'text-red-600' %>">
-                  <%= transaction.type === 'credit' ? '+' : '-' %>₹<%= transaction.amount %>
-                </p>
-              </div>
-            <% }) %>
-          </div>
-        <% } else { %>
-          <div class="text-center py-8">
-            <i class="fas fa-receipt text-gray-400 text-4xl mb-4"></i>
-            <p class="text-gray-600">No transactions yet</p>
-          </div>
-        <% } %>
-      </div>
-    </div>
-  </main>
-</div>
+      <form onsubmit="addMoney(event)" class="space-y-4">
+        <div>
+          <label class="block text-gray-600 mb-2">Amount (₹)</label>
+          <input type="number" id="amount" min="1" step="1" required
+            class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+        </div>
 
-<!-- Add Money Modal -->
-<div id="addMoneyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-  <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-    <div class="flex justify-between items-center mb-4">
-      <h3 class="text-xl font-semibold">Add Money to Wallet</h3>
-      <button onclick="hideAddMoneyModal()" class="text-gray-600 hover:text-gray-800">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    
-    <form onsubmit="addMoney(event)" class="space-y-4">
-      <div>
-        <label class="block text-gray-600 mb-2">Amount (₹)</label>
-        <input type="number" id="amount" min="1" step="1" required
-               class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-      </div>
-      
-      <!-- Preset Amounts -->
-      <div class="grid grid-cols-3 gap-2">
-        <button type="button" onclick="setAmount(500)" 
-                class="p-2 border rounded-lg hover:bg-gray-50">₹500</button>
-        <button type="button" onclick="setAmount(1000)" 
-                class="p-2 border rounded-lg hover:bg-gray-50">₹1000</button>
-        <button type="button" onclick="setAmount(2000)" 
-                class="p-2 border rounded-lg hover:bg-gray-50">₹2000</button>
-      </div>
+        <!-- Preset Amounts -->
+        <div class="grid grid-cols-3 gap-2">
+          <button type="button" onclick="setAmount(500)" class="p-2 border rounded-lg hover:bg-gray-50">₹500</button>
+          <button type="button" onclick="setAmount(1000)" class="p-2 border rounded-lg hover:bg-gray-50">₹1000</button>
+          <button type="button" onclick="setAmount(2000)" class="p-2 border rounded-lg hover:bg-gray-50">₹2000</button>
+        </div>
 
-      <button type="submit" 
-              class="w-full bg-primary-accent text-white px-6 py-3 rounded-lg hover:bg-primary-accent/90">
-        Proceed to Add Money
-      </button>
-    </form>
+        <button type="submit"
+          class="w-full bg-primary-accent text-white px-6 py-3 rounded-lg hover:bg-primary-accent/90">
+          Proceed to Add Money
+        </button>
+      </form>
+    </div>
   </div>
-</div>
 
-<script>
-function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  sidebar.classList.toggle('hidden');
-  sidebar.classList.toggle('fixed');
-  sidebar.classList.toggle('top-0');
-  sidebar.classList.toggle('left-0');
-  sidebar.classList.toggle('z-50');
-  sidebar.classList.toggle('h-full');
-}
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('hidden');
+      sidebar.classList.toggle('fixed');
+      sidebar.classList.toggle('top-0');
+      sidebar.classList.toggle('left-0');
+      sidebar.classList.toggle('z-50');
+      sidebar.classList.toggle('h-full');
+    }
 
-function showAddMoneyModal() {
-  document.getElementById('addMoneyModal').classList.remove('hidden');
-}
+    function showAddMoneyModal() {
+      document.getElementById('addMoneyModal').classList.remove('hidden');
+    }
 
-function hideAddMoneyModal() {
-  document.getElementById('addMoneyModal').classList.add('hidden');
-}
+    function hideAddMoneyModal() {
+      document.getElementById('addMoneyModal').classList.add('hidden');
+    }
 
-function setAmount(amount) {
-  document.getElementById('amount').value = amount;
-}
+    function setAmount(amount) {
+      document.getElementById('amount').value = amount;
+    }
 
-function addMoney(event) {
-  event.preventDefault();
-  const amount = document.getElementById('amount').value;
-  
-  fetch('/account/wallet/add', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ amount })
-  }).then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        window.location.reload();
-      } else {
-        alert(data.message || 'Error adding money to wallet');
-      }
-    });
-}
-</script>
+    function addMoney(event) {
+      event.preventDefault();
+      const amount = document.getElementById('amount').value;
 
-<%- include('../partials/footer') %> 
+      fetch('/account/wallet/add', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ amount })
+      }).then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            window.location.reload();
+          } else {
+            alert(data.message || 'Error adding money to wallet');
+          }
+        });
+    }
+  </script>
+
+  <%- include('../partials/footer') %>
