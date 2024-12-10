@@ -107,7 +107,7 @@ const viewProduct = async (req, res) => {
         });
         
         if (!product) {
-            return res.status(404).render('error', {
+            return res.status(404).render('notfound', {
                 message: "Product not found",
                 alertType: "error"
             });
@@ -127,10 +127,7 @@ const viewProduct = async (req, res) => {
         });
     } catch (error) {
         log.red("ERROR", error);
-        res.status(500).render('error', {
-            message: "Error loading product",
-            alertType: "error"
-        });
+        res.status(500).render('notfound');
     }
 };
 

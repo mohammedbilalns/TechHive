@@ -1,8 +1,7 @@
-
 import { log } from "mercedlogger";
 import categorySchema from "../model/categoryModel.js"
 
-
+// Fetch the categories page
 const getCategories = async (req, res)=>{
     try{
         let message = req.query.message 
@@ -15,6 +14,7 @@ const getCategories = async (req, res)=>{
     }
 }
 
+// Delete a category
 const deleteCategory = async (req,res) => {
     try {
         await categorySchema.findByIdAndDelete(req.params.categoryid)
@@ -31,6 +31,7 @@ const deleteCategory = async (req,res) => {
     }
 }
 
+// Hide a category
 const hideCategory = async (req,res) => {
     try {
         await categorySchema.findByIdAndUpdate(req.params.categoryid, {status:"Inactive"})
@@ -47,6 +48,7 @@ const hideCategory = async (req,res) => {
     }
 }
 
+// Unhide a category
 const unhideCategory = async (req,res) => {
     try {
         await categorySchema.findByIdAndUpdate(req.params.categoryid, {status:"Active"})
@@ -63,7 +65,7 @@ const unhideCategory = async (req,res) => {
     }
 }
 
-
+// Add a new category
 const addCategory = async (req,res) => {
     try {
         let {name, description} = req.body 
