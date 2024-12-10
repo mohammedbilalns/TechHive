@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import authUtils from "../utils/authUtils.js";
 import { config } from "dotenv";
 import passport from "passport";
-
+import addressSchema from "../model/addressModel.js";   
 
 config();
 
@@ -475,13 +475,72 @@ const resetPassword = async (req, res) => {
     }
 };
 
+const getDashboard = (req, res)=>{
+    try{
+        
+    }catch(error){
+        log.red("FETCH_DASHBOARD_ERROR", error)
+    }
+}
+const getAccountDetails = async (req,res)=>{
+    try{
+        let email = req.session.user.email
+        let user = await userSchema.findOne({email})
+        res.render('user/account', {user})
+    }catch(error){
+        log.red("FETCH_ACCOUNT_DETAILS_ERROR", error)
+    }
+}
+const getAddresses = async(req,res)=>{
+    try{
+        let email = req.session.user.email
+        let user = await userSchema.findOne({email})
+
+        let addresses = await addressSchema.find({userId: user._id})
+        res.render('user/addresses', {addresses, user}) 
+
+    }catch(error){
+        log.red("FETCH_ADDRESSES_ERROR", error)
+    }
+}
+
+const getCart = (req,res)=>{
+    try{
+
+    }catch(error){
+        log.red("FETCH_CART_ERROR", error)
+    }
+}
+
+const getWishlist = (req,res)=>{
+    try{
+
+    }catch(error){
+        log.red("FETCH_WISHLIST_ERROR", error)
+    }
+}
+const getOrders = (req,res)=>{
+    try{
+
+    }catch(error){
+        log.red("FETCH_ORDERS_ERROR", error)
+    }
+}
+const getWallet = (req,res)=>{
+    try{
+
+    }catch(error){
+        log.red("FETCH_WALLET_ERROR", error)
+    }
+}
+
 export default {
     loadLogin, verifyLogin,
     loadSignup, verifyOTP, resendOTP,
     loadForgotpassword, processForgotPassword, verifyForgotPasswordOTP,
     resendForgotPasswordOTP, resetPassword, loadResetpassword,
      registerUser, authGoogle, authGoogleCallback,
-    logoutUser
+    logoutUser, getDashboard, getAccountDetails, getAddresses, getCart, getWishlist, getOrders, getWallet
 }
 
 

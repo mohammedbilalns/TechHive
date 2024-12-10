@@ -38,7 +38,23 @@ router.get('/category/:id', productController.viewCategory)
 
 router.get('/allproducts',  productController.loadAllProducts)
 
-// Add this new route
 router.get('/product/:id',  productController.viewProduct)
 router.get('/' , auth.isLogin, productController.loadLanding)
+
+
+// router for user dashboard
+router.get('profile/dashboard', auth.checkSession, userController.getDashboard)
+
+
+router.get('/profile/account', auth.checkSession, userController.getAccountDetails)
+
+router.get('/profile/addresses', auth.checkSession, userController.getAddresses)
+
+router.get('/profile/cart', auth.checkSession, userController.getCart)  
+
+router.get('/profile/wishlist', auth.checkSession, userController.getWishlist)  
+
+router.get('/profile/orders', auth.checkSession, userController.getOrders)  
+
+router.get('/profile/wallet', auth.checkSession, userController.getWallet)  
 export default router

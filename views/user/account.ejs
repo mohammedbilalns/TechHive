@@ -1,0 +1,176 @@
+<%- include('../partials/header') %>
+
+<!-- Mobile Menu Button (same as dashboard) -->
+<div class="md:hidden p-4 bg-gray-100 flex justify-between items-center">
+  <h1 class="text-xl font-semibold text-gray-800">Account Details</h1>
+  <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900">
+    <i class="fas fa-bars text-xl"></i>
+  </button>
+</div>
+
+<div class="flex flex-col md:flex-row">
+  
+  <aside id="sidebar" class="bg-gray-100 w-full md:w-64 min-h-screen hidden md:block transform transition-transform duration-300 ease-in-out">
+    <nav class="py-4">
+      <div class="px-4 md:px-6">
+        <div class="flex items-center space-x-4 mb-6">
+          <div class="w-12 h-12 rounded-full bg-primary-accent text-white flex items-center justify-center">
+            <i class="fas fa-user text-xl"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold text-gray-800"><%= user.fullname %></h2>
+            <p class="text-sm text-gray-600"><%= user.email %></p>
+          </div>
+        </div>
+
+        <ul class="mt-4 space-y-2">
+          <li>
+            <a href="/profile/dashboard" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-th-large mr-3"></i> 
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="/profile/account" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-user mr-3"></i> 
+              <span>Account Details</span>
+            </a>
+          </li>
+          <li>
+            <a href="/profile/addresses" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-map-marker-alt mr-3"></i> 
+              <span>Addresses</span>
+            </a>
+          </li>
+          <li>
+            <a href="/profile/orders" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-shopping-bag mr-3"></i> 
+              <span>Orders</span>
+            </a>
+          </li>
+          <li>
+            <a href="/profile/cart" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-shopping-cart mr-3"></i> 
+              <span>Cart</span>
+              <span class="ml-auto bg-primary-accent text-white px-2 py-1 rounded-full text-xs">
+                cartCount 
+              </span>
+            </a>
+          </li>
+          <li>
+            <a href="/profile/wishlist" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-heart mr-3"></i> 
+              <span>Wishlist</span>
+            </a>
+          </li>
+          <li>
+            <a href="/profile/wallet" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-wallet mr-3"></i> 
+              <span>Wallet</span>
+            </a>
+          </li>
+          <li>
+            <a href="/account/coupons" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-ticket-alt mr-3"></i> 
+              <span>My Coupons</span>
+            </a>
+          </li>
+          <li>
+            <a href="/logout" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-sign-out-alt mr-3"></i> 
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </aside>
+  <!-- Main Content -->
+  <main class="flex-grow p-4 md:py-12">
+    <% if (locals.message && locals.alertType) { %>
+      <div id="alertMessage" class="mb-4 p-3 rounded-md 
+           <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
+        <%= message %>
+      </div>
+    <% } %>
+
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-semibold text-gray-800">Account Details</h1>
+        <button onclick="toggleEdit()" class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-primary-accent/90">
+          <i class="fas fa-edit mr-2"></i> Edit Details
+        </button>
+      </div>
+
+      <!-- View Mode -->
+      <div id="viewMode" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <p class="text-gray-600">Full Name</p>
+            <p class="text-lg font-semibold"><%= user.fullname %></p>
+          </div>
+          <div>
+            <p class="text-gray-600">Email Address</p>
+            <p class="text-lg font-semibold"><%= user.email %></p>
+          </div>
+          <div>
+            <p class="text-gray-600">Phone Number</p>
+            <p class="text-lg font-semibold"><%= user.phonenumber || 'Not provided' %></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Mode -->
+      <form id="editMode" action="/account/update-profile" method="POST" class="hidden space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-gray-600 mb-2">Full Name</label>
+            <input type="text" name="fullname" value="<%= user.fullname %>" 
+                   class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-2">Email Address</label>
+            <input type="email" name="email" value="<%= user.email %>" 
+                   class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-2">Phone Number</label>
+            <input type="tel" name="phone" value="<%= user.phonenumber || '' %>" 
+                   class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+          </div>
+        </div>
+        <div class="flex justify-end space-x-4">
+          <button type="button" onclick="toggleEdit()" 
+                  class="px-4 py-2 border rounded-lg hover:bg-gray-50">
+            Cancel
+          </button>
+          <button type="submit" 
+                  class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-primary-accent/90">
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+
+<script>
+function toggleEdit() {
+  const viewMode = document.getElementById('viewMode');
+  const editMode = document.getElementById('editMode');
+  viewMode.classList.toggle('hidden');
+  editMode.classList.toggle('hidden');
+}
+
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  sidebar.classList.toggle('hidden');
+  sidebar.classList.toggle('fixed');
+  sidebar.classList.toggle('top-0');
+  sidebar.classList.toggle('left-0');
+  sidebar.classList.toggle('z-50');
+  sidebar.classList.toggle('h-full');
+}
+</script>
+
+<%- include('../partials/footer') %> 
