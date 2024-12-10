@@ -1,9 +1,13 @@
 // Custom Confirm Dialog
-function customConfirm(message) {
+function customConfirm(message, confirmButtonText = 'Confirm') {
     return new Promise((resolve) => {
-        const modal = document.getElementById('deleteCategoryModal');
-        const messageElement = modal.querySelector('p');
+        const modal = document.getElementById('customConfirmModal');
+        const messageElement = document.getElementById('confirmMessage');
         messageElement.textContent = message;
+        
+        // Set confirm button text if provided
+        const confirmButton = document.getElementById('confirmAction');
+        confirmButton.textContent = confirmButtonText;
         
         modal.classList.remove('hidden');
         modal.classList.add('flex');
@@ -11,21 +15,21 @@ function customConfirm(message) {
         const handleConfirm = () => {
             modal.classList.add('hidden');
             modal.classList.remove('flex');
-            document.getElementById('confirmDeleteCategory').removeEventListener('click', handleConfirm);
-            document.getElementById('cancelDeleteCategory').removeEventListener('click', handleCancel);
+            confirmButton.removeEventListener('click', handleConfirm);
+            document.getElementById('cancelConfirm').removeEventListener('click', handleCancel);
             resolve(true);
         };
 
         const handleCancel = () => {
             modal.classList.add('hidden');
             modal.classList.remove('flex');
-            document.getElementById('confirmDeleteCategory').removeEventListener('click', handleConfirm);
-            document.getElementById('cancelDeleteCategory').removeEventListener('click', handleCancel);
+            confirmButton.removeEventListener('click', handleConfirm);
+            document.getElementById('cancelConfirm').removeEventListener('click', handleCancel);
             resolve(false);
         };
 
-        document.getElementById('confirmDeleteCategory').addEventListener('click', handleConfirm);
-        document.getElementById('cancelDeleteCategory').addEventListener('click', handleCancel);
+        confirmButton.addEventListener('click', handleConfirm);
+        document.getElementById('cancelConfirm').addEventListener('click', handleCancel);
     });
 }
 
