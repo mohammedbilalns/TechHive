@@ -876,6 +876,10 @@ video {
   height: 100vh;
 }
 
+.max-h-\[200px\] {
+  max-height: 200px;
+}
+
 .min-h-\[70vh\] {
   min-height: 70vh;
 }
@@ -1134,6 +1138,10 @@ video {
 
 .overflow-x-auto {
   overflow-x: auto;
+}
+
+.overflow-y-auto {
+  overflow-y: auto;
 }
 
 .truncate {

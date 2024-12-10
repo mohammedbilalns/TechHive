@@ -102,50 +102,165 @@
       </div>
 
       <!-- Add Address Form -->
-      <form id="addAddressForm" action="/account/add-address" method="POST" class="hidden mb-8 p-4 border rounded-lg">
+      <form id="addAddressForm" class="hidden mb-8 p-4 border rounded-lg">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-gray-600 mb-2">Address Label</label>
-            <input type="text" name="label" placeholder="Home, Office, etc." 
-                   class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <label class="block text-gray-600 mb-2">Name</label>
+            <input type="text" name="name" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
           </div>
           <div>
-            <label class="block text-gray-600 mb-2">Full Name</label>
-            <input type="text" name="fullname" 
-                   class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <label class="block text-gray-600 mb-2">House Name</label>
+            <input type="text" name="houseName" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
           </div>
           <div>
-            <label class="block text-gray-600 mb-2">Phone Number</label>
-            <input type="tel" name="phone" 
-                   class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-          </div>
-          <div>
-            <label class="block text-gray-600 mb-2">Pincode</label>
-            <input type="text" name="pincode" 
-                   class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-          </div>
-          <div class="md:col-span-2">
-            <label class="block text-gray-600 mb-2">Street Address</label>
-            <textarea name="street" rows="2" 
-                      class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent"></textarea>
+            <label class="block text-gray-600 mb-2">Locality/Street</label>
+            <input type="text" name="localityStreet" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
           </div>
           <div>
             <label class="block text-gray-600 mb-2">City</label>
-            <input type="text" name="city" 
-                   class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <input type="text" name="city" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
           </div>
           <div>
             <label class="block text-gray-600 mb-2">State</label>
-            <input type="text" name="state" 
-                   class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <select name="state" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent h-auto max-h-[200px] overflow-y-auto">
+                <option value="">Select State</option>
+                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                <option value="Assam">Assam</option>
+                <option value="Bihar">Bihar</option>
+                <option value="Chhattisgarh">Chhattisgarh</option>
+                <option value="Goa">Goa</option>
+                <option value="Gujarat">Gujarat</option>
+                <option value="Haryana">Haryana</option>
+                <option value="Himachal Pradesh">Himachal Pradesh</option>
+                <option value="Jharkhand">Jharkhand</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Kerala">Kerala</option>
+                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Manipur">Manipur</option>
+                <option value="Meghalaya">Meghalaya</option>
+                <option value="Mizoram">Mizoram</option>
+                <option value="Nagaland">Nagaland</option>
+                <option value="Odisha">Odisha</option>
+                <option value="Punjab">Punjab</option>
+                <option value="Rajasthan">Rajasthan</option>
+                <option value="Sikkim">Sikkim</option>
+                <option value="Tamil Nadu">Tamil Nadu</option>
+                <option value="Telangana">Telangana</option>
+                <option value="Tripura">Tripura</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="Uttarakhand">Uttarakhand</option>
+                <option value="West Bengal">West Bengal</option>
+                <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                <option value="Chandigarh">Chandigarh</option>
+                <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
+                <option value="Lakshadweep">Lakshadweep</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Puducherry">Puducherry</option>
+                <option value="Ladakh">Ladakh</option>
+                <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-2">Pincode</label>
+            <input type="text" name="pincode" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-2">Phone</label>
+            <input type="tel" name="phone" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-2">Alternate Phone (Optional)</label>
+            <input type="tel" name="alternatePhone" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
           </div>
         </div>
         <div class="flex justify-end space-x-4 mt-4">
-          <button type="button" onclick="toggleAddAddress()" 
-                  class="px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
-          <button type="submit" 
-                  class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-primary-accent/90">
+          <button type="button" onclick="toggleAddAddress()" class="px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
+          <button type="button" onclick="submitAddAddress()" class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-primary-accent/90">
             Save Address
+          </button>
+        </div>
+      </form>
+
+      <!-- Edit Address Form -->
+      <form id="editAddressForm" class="hidden mb-8 p-4 border rounded-lg">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-gray-600 mb-2">Name</label>
+            <input type="text" name="name" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-2">House Name</label>
+            <input type="text" name="houseName" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-2">Locality/Street</label>
+            <input type="text" name="localityStreet" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-2">City</label>
+            <input type="text" name="city" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-2">State</label>
+            <select name="state" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent h-auto max-h-[200px] overflow-y-auto">
+                <option value="">Select State</option>
+                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                <option value="Assam">Assam</option>
+                <option value="Bihar">Bihar</option>
+                <option value="Chhattisgarh">Chhattisgarh</option>
+                <option value="Goa">Goa</option>
+                <option value="Gujarat">Gujarat</option>
+                <option value="Haryana">Haryana</option>
+                <option value="Himachal Pradesh">Himachal Pradesh</option>
+                <option value="Jharkhand">Jharkhand</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Kerala">Kerala</option>
+                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Manipur">Manipur</option>
+                <option value="Meghalaya">Meghalaya</option>
+                <option value="Mizoram">Mizoram</option>
+                <option value="Nagaland">Nagaland</option>
+                <option value="Odisha">Odisha</option>
+                <option value="Punjab">Punjab</option>
+                <option value="Rajasthan">Rajasthan</option>
+                <option value="Sikkim">Sikkim</option>
+                <option value="Tamil Nadu">Tamil Nadu</option>
+                <option value="Telangana">Telangana</option>
+                <option value="Tripura">Tripura</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="Uttarakhand">Uttarakhand</option>
+                <option value="West Bengal">West Bengal</option>
+                <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                <option value="Chandigarh">Chandigarh</option>
+                <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
+                <option value="Lakshadweep">Lakshadweep</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Puducherry">Puducherry</option>
+                <option value="Ladakh">Ladakh</option>
+                <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-2">Pincode</label>
+            <input type="text" name="pincode" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-2">Phone</label>
+            <input type="tel" name="phone" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-2">Alternate Phone (Optional)</label>
+            <input type="tel" name="alternatePhone" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+          </div>
+        </div>
+        <div class="flex justify-end space-x-4 mt-4">
+          <button type="button" onclick="toggleEditAddress()" class="px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
+          <button type="button" onclick="submitEditAddress()" class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-primary-accent/90">
+            Update Address
           </button>
         </div>
       </form>
@@ -181,6 +296,7 @@
   </main>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
 function toggleAddAddress() {
   const form = document.getElementById('addAddressForm');
@@ -197,13 +313,93 @@ function toggleSidebar() {
   sidebar.classList.toggle('h-full');
 }
 
+function validateAddressForm(data) {
+    // Check for required fields
+    if (!data.name || !data.houseName || !data.localityStreet || !data.city || !data.state || !data.pincode || !data.phone) {
+        alert('All fields except Alternate Phone are required');
+        return false;
+    }
+
+    // Validate pincode (assuming it should be 6 digits)
+    if (!/^\d{6}$/.test(data.pincode)) {
+        alert('Invalid pincode');
+        return false;
+    }
+
+    // Validate phone number (assuming it should be 10 digits)
+    if (!/^\d{10}$/.test(data.phone)) {
+        alert('Invalid phone number');
+        return false;
+    }
+
+    // Validate alternate phone number if provided (assuming it should be 10 digits)
+    if (data.alternatePhone && !/^\d{10}$/.test(data.alternatePhone)) {
+        alert('Invalid alternate phone number');
+        return false;
+    }
+
+    return true;
+}
+
+async function submitAddAddress() {
+    const form = document.getElementById('addAddressForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    if (!validateAddressForm(data)) return;
+
+    try {
+        const response = await axios.post('/account/add-address', data);
+        alert(response.data.message);
+        location.reload(); // Reload to update the address list
+    } catch (error) {
+        alert('Failed to add address');
+    }
+}
+
+async function submitEditAddress() {
+    const form = document.getElementById('editAddressForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    if (!validateAddressForm(data)) return;
+
+    const addressId = form.dataset.addressId;
+
+    try {
+        const response = await axios.put(`/account/edit-address/${addressId}`, data);
+        alert(response.data.message);
+        location.reload(); // Reload to update the address list
+    } catch (error) {
+        alert('Failed to update address');
+    }
+}
+
 function editAddress(addressId) {
-  // Implement edit address functionality
+  // Populate the edit form with existing address data
+  const address = addresses.find(addr => addr._id === addressId);
+  const form = document.getElementById('editAddressForm');
+  form.dataset.addressId = addressId;
+  form.querySelector('[name="label"]').value = address.label;
+  form.querySelector('[name="fullname"]').value = address.fullname;
+  form.querySelector('[name="phone"]').value = address.phone;
+  form.querySelector('[name="pincode"]').value = address.pincode;
+  form.querySelector('[name="street"]').value = address.street;
+  form.querySelector('[name="city"]').value = address.city;
+  form.querySelector('[name="state"]').value = address.state;
+  form.classList.remove('hidden');
 }
 
 function deleteAddress(addressId) {
   if (confirm('Are you sure you want to delete this address?')) {
-    // Implement delete address functionality
+    axios.delete(`/account/delete-address/${addressId}`)
+      .then(response => {
+        alert(response.data.message);
+        location.reload(); // Reload to update the address list
+      })
+      .catch(error => {
+        alert('Failed to delete address');
+      });
   }
 }
 </script>

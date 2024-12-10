@@ -3,9 +3,9 @@ import { log } from "mercedlogger";
 import bcrypt from "bcryptjs";
 import authUtils from "../utils/authUtils.js";
 import { config } from "dotenv";
-import passport from "passport";
-import addressSchema from "../model/addressModel.js";   
-
+import passport from "passport"; 
+import Address from "../model/addressModel.js";
+import addressSchema from "../model/addressModel.js";
 config();
 
 // ---- User Login ----  
@@ -534,13 +534,60 @@ const getWallet = (req,res)=>{
     }
 }
 
+// Add a new address
+const addAddress = async (req, res) => {
+    try {
+        const { name, houseName, localityStreet, city, state, pincode, phone, alternatePhone } = req.body;
+        const newAddress = new Address({
+            userId: req.session.user.id,
+            name,
+            houseName,
+            localityStreet,
+            city,
+            state,
+            pincode,
+            phone,
+            alternatePhone
+        });
+        await newAddress.save();
+        res.status(201).json({ message: "Address added successfully", address: newAddress });
+    } catch (error) {
+        log.red("ERROR", error);
+        res.status(500).json({ message: "Failed to add address" });
+    }
+};
+
+// Edit an existing address
+const editAddress = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, houseName, localityStreet, city, state, pincode, phone, alternatePhone } = req.body;
+        const updatedAddress = await Address.findByIdAndUpdate(id, {
+            name,
+            houseName,
+            localityStreet,
+            city,
+            state,
+            pincode,
+            phone,
+            alternatePhone
+        }, { new: true });
+        res.status(200).json({ message: "Address updated successfully", address: updatedAddress });
+    } catch (error) {
+        log.red("ERROR", error);
+        res.status(500).json({ message: "Failed to update address" });
+    }
+};
+
 export default {
     loadLogin, verifyLogin,
     loadSignup, verifyOTP, resendOTP,
     loadForgotpassword, processForgotPassword, verifyForgotPasswordOTP,
     resendForgotPasswordOTP, resetPassword, loadResetpassword,
      registerUser, authGoogle, authGoogleCallback,
-    logoutUser, getDashboard, getAccountDetails, getAddresses, getCart, getWishlist, getOrders, getWallet
+    logoutUser, getDashboard, getAccountDetails, getAddresses, getCart, getWishlist, getOrders, getWallet,
+    addAddress,
+    editAddress
 }
 
 

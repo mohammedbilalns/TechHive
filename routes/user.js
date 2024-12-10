@@ -57,4 +57,11 @@ router.get('/profile/wishlist', auth.checkSession, userController.getWishlist)
 router.get('/profile/orders', auth.checkSession, userController.getOrders)  
 
 router.get('/profile/wallet', auth.checkSession, userController.getWallet)  
+
+// Add Address
+router.post('/account/add-address', auth.checkSession, userController.addAddress);
+
+// Edit Address
+router.put('/account/edit-address/:id', auth.checkSession, userController.editAddress);
+
 export default router
