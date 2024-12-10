@@ -940,16 +940,16 @@ video {
   width: 100%;
 }
 
+.min-w-0 {
+  min-width: 0px;
+}
+
 .min-w-\[120px\] {
   min-width: 120px;
 }
 
 .min-w-full {
   min-width: 100%;
-}
-
-.min-w-0 {
-  min-width: 0px;
 }
 
 .max-w-2xl {
@@ -1909,12 +1909,12 @@ video {
     width: 16rem;
   }
 
-  .md\:w-auto {
-    width: auto;
-  }
-
   .md\:w-72 {
     width: 18rem;
+  }
+
+  .md\:w-auto {
+    width: auto;
   }
 
   .md\:grid-cols-2 {

@@ -2,8 +2,8 @@ import express from "express"
 import { Router } from "express"
 import userController from "../controller/userController.js"
 import auth from "../middlewares/auth.js"
-import proudictController from "../controller/productController.js"
 import productController from "../controller/productController.js"
+import addressController from "../controller/addressController.js"
 
 const router = Router()
 
@@ -44,27 +44,17 @@ router.get('/' , auth.isLogin, productController.loadLanding)
 
 // router for user dashboard
 router.get('profile/dashboard', auth.checkSession, userController.getDashboard)
-
-
 router.get('/profile/account', auth.checkSession, userController.getAccountDetails)
-
-router.get('/profile/addresses', auth.checkSession, userController.getAddresses)
-
 router.get('/profile/cart', auth.checkSession, userController.getCart)  
-
 router.get('/profile/wishlist', auth.checkSession, userController.getWishlist)  
-
 router.get('/profile/orders', auth.checkSession, userController.getOrders)  
-
 router.get('/profile/wallet', auth.checkSession, userController.getWallet)  
 
-// Add Address
-router.post('/account/add-address', auth.checkSession, userController.addAddress);
 
-// Edit Address
-
-router.get('/account/address/:id', auth.checkSession, userController.getAddress);
-router.put('/account/address/:id', auth.checkSession, userController.updateAddress);
-router.delete('/account/address/:id', auth.checkSession, userController.deleteAddress);
+// Address Routess 
+router.get('/profile/addresses', auth.checkSession, addressController.getAddresses)
+router.post('/account/add-address', auth.checkSession, addressController.addAddress);
+router.put('/account/address/:id', auth.checkSession, addressController.updateAddress);
+router.delete('/account/address/:id', auth.checkSession, addressController.deleteAddress);
 
 export default router

@@ -1,0 +1,149 @@
+
+import userSchema from "../model/userModel.js";
+import { log } from "mercedlogger";
+import Address from "../model/addressModel.js";
+import addressSchema from "../model/addressModel.js";
+
+const getAddresses = async(req,res)=>{
+    try{
+        let email = req.session.user.email
+        let user = await userSchema.findOne({email})
+
+        let addresses = await addressSchema.find({userId: user._id})
+        res.render('user/addresses', {addresses, user}) 
+
+    }catch(error){
+        log.red("FETCH_ADDRESSES_ERROR", error)
+    }
+}
+
+// Add a new address
+const addAddress = async (req, res) => {
+    try {
+        console.log("Session user:", req.session.user); // Debug log
+        console.log("Request body:", req.body); // Debug log
+
+        if (!req.session.user || !req.session.user.id) {
+            return res.status(401).json({ 
+                success: false, 
+                message: "User not authenticated" 
+            });
+        }
+
+        const { name, houseName, localityStreet, city, state, pincode, phone, alternatePhone } = req.body;
+
+        // Validate required fields
+        if (!name || !houseName || !localityStreet || !city || !state || !pincode || !phone) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Missing required fields" 
+            });
+        }
+
+        const newAddress = new Address({
+            userId: req.session.user.id,
+            name,
+            houseName,
+            localityStreet,
+            city,
+            state,
+            pincode,
+            phone,
+            alternatePhone
+        });
+
+        console.log("New address object:", newAddress); // Debug log
+
+        const savedAddress = await newAddress.save();
+        console.log("Saved address:", savedAddress); // Debug log
+
+        res.status(201).json({ 
+            success: true, 
+            message: "Address added successfully", 
+            address: savedAddress 
+        });
+    } catch (error) {
+        console.log("Detailed error:", error); // Debug log
+        res.status(500).json({ 
+            success: false, 
+            message: "Failed to add address: " + error.message,
+            error: error.toString()
+        });
+    }
+};
+
+
+// Update an address
+const updateAddress = async (req, res) => {
+    try {
+        const { name, houseName, localityStreet, city, state, pincode, phone, alternatePhone } = req.body;
+        
+        const address = await Address.findOneAndUpdate(
+            {
+                _id: req.params.id,
+                userId: req.session.user.id
+            },
+            {
+                name,
+                houseName,
+                localityStreet,
+                city,
+                state,
+                pincode,
+                phone,
+                alternatePhone
+            },
+            { new: true }
+        );
+
+        if (!address) {
+            return res.status(404).json({
+                success: false,
+                message: 'Address not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Address updated successfully',
+            address
+        });
+    } catch (error) {
+        log.red("ERROR", error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update address'
+        });
+    }
+};
+
+// Delete an address
+const deleteAddress = async (req, res) => {
+    try {
+        const address = await Address.findOneAndDelete({
+            _id: req.params.id,
+            userId: req.session.user.id
+        });
+
+        if (!address) {
+            return res.status(404).json({
+                success: false,
+                message: 'Address not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Address deleted successfully'
+        });
+    } catch (error) {
+        log.red("ERROR", error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to delete address'
+        });
+    }
+};
+
+
+export default {getAddresses, addAddress, updateAddress, deleteAddress}

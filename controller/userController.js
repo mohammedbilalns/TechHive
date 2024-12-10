@@ -491,18 +491,7 @@ const getAccountDetails = async (req,res)=>{
         log.red("FETCH_ACCOUNT_DETAILS_ERROR", error)
     }
 }
-const getAddresses = async(req,res)=>{
-    try{
-        let email = req.session.user.email
-        let user = await userSchema.findOne({email})
 
-        let addresses = await addressSchema.find({userId: user._id})
-        res.render('user/addresses', {addresses, user}) 
-
-    }catch(error){
-        log.red("FETCH_ADDRESSES_ERROR", error)
-    }
-}
 
 const getCart = (req,res)=>{
     try{
@@ -535,149 +524,7 @@ const getWallet = (req,res)=>{
 }
 
 // Add a new address
-const addAddress = async (req, res) => {
-    try {
-        const { name, houseName, localityStreet, city, state, pincode, phone, alternatePhone } = req.body;
-        const newAddress = new Address({
-            userId: req.session.user.id,
-            name,
-            houseName,
-            localityStreet,
-            city,
-            state,
-            pincode,
-            phone,
-            alternatePhone
-        });
-        await newAddress.save();
-        res.status(201).json({ message: "Address added successfully", address: newAddress });
-    } catch (error) {
-        log.red("ERROR", error);
-        res.status(500).json({ message: "Failed to add address" });
-    }
-};
 
-// Edit an existing address
-const editAddress = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { name, houseName, localityStreet, city, state, pincode, phone, alternatePhone } = req.body;
-        const updatedAddress = await Address.findByIdAndUpdate(id, {
-            name,
-            houseName,
-            localityStreet,
-            city,
-            state,
-            pincode,
-            phone,
-            alternatePhone
-        }, { new: true });
-        res.status(200).json({ message: "Address updated successfully", address: updatedAddress });
-    } catch (error) {
-        log.red("ERROR", error);
-        res.status(500).json({ message: "Failed to update address" });
-    }
-};
-
-// Get a single address
-const getAddress = async (req, res) => {
-    try {
-        const address = await Address.findOne({
-            _id: req.params.id,
-            userId: req.session.user.id
-        });
-        
-        if (!address) {
-            return res.status(404).json({
-                success: false,
-                message: 'Address not found'
-            });
-        }
-
-        res.json({
-            success: true,
-            address
-        });
-    } catch (error) {
-        log.red("ERROR", error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to fetch address'
-        });
-    }
-};
-
-// Update an address
-const updateAddress = async (req, res) => {
-    try {
-        const { name, houseName, localityStreet, city, state, pincode, phone, alternatePhone } = req.body;
-        
-        const address = await Address.findOneAndUpdate(
-            {
-                _id: req.params.id,
-                userId: req.session.user.id
-            },
-            {
-                name,
-                houseName,
-                localityStreet,
-                city,
-                state,
-                pincode,
-                phone,
-                alternatePhone
-            },
-            { new: true }
-        );
-
-        if (!address) {
-            return res.status(404).json({
-                success: false,
-                message: 'Address not found'
-            });
-        }
-
-        res.json({
-            success: true,
-            message: 'Address updated successfully',
-            address
-        });
-    } catch (error) {
-        log.red("ERROR", error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to update address'
-        });
-    }
-};
-
-// Delete an address
-const deleteAddress = async (req, res) => {
-    try {
-        const address = await Address.findOneAndDelete({
-            _id: req.params.id,
-            userId: req.session.user.id
-        });
-
-        if (!address) {
-            return res.status(404).json({
-                success: false,
-                message: 'Address not found'
-            });
-        }
-
-        res.json({
-            success: true,
-            message: 'Address deleted successfully'
-        });
-    } catch (error) {
-        log.red("ERROR", error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to delete address'
-        });
-    }
-};
 
 export default {
     loadLogin, verifyLogin,
@@ -685,12 +532,7 @@ export default {
     loadForgotpassword, processForgotPassword, verifyForgotPasswordOTP,
     resendForgotPasswordOTP, resetPassword, loadResetpassword,
      registerUser, authGoogle, authGoogleCallback,
-    logoutUser, getDashboard, getAccountDetails, getAddresses, getCart, getWishlist, getOrders, getWallet,
-    addAddress,
-    editAddress,
-    getAddress,
-    updateAddress,
-    deleteAddress
+    logoutUser, getDashboard, getAccountDetails, getCart, getWishlist, getOrders, getWallet,
 }
 
 

@@ -1,9 +1,9 @@
 import express from "express"
 import { Router } from "express"
-import adminController from "../controller/adminController.js"
+import adminAuthController from "../controller/adminAuthController.js"
 import adminAuth from "../middlewares/adminAuth.js"
-import categoryController from "../controller/categoryController.js"
-
+import adminCategoryController from "../controller/adminCategoryController.js"
+import adminProductController from "../controller/adminProductController.js"
 const router = Router()
 router.use(express.static('static'));
 
@@ -13,35 +13,35 @@ router.use(express.static('static'));
 
 router.route('/login')
     .all(adminAuth.isLogin)
-    .get(adminController.loadLogin)
-    .post(adminController.verifyLogin)
+    .get(adminAuthController.loadLogin)
+    .post(adminAuthController.verifyLogin)
 
 router.use(adminAuth.checkSession)
-router.get('/logout', adminController.logoutAdmin)
+router.get('/logout', adminAuthController.logoutAdmin)
 
 //---- customers routes ----
-router.get('/customers', adminController.getCustomers) 
-router.post('/customers/block/:customerid', adminController.blockCustomer)
-router.post('/customers/unblock/:customerid', adminController.unblockCustomer)
+router.get('/customers', adminAuthController.getCustomers) 
+router.post('/customers/block/:customerid', adminAuthController.blockCustomer)
+router.post('/customers/unblock/:customerid', adminAuthController.unblockCustomer)
 
 
 //---- categories routes ----
-router.get('/categories', categoryController.getCategories) 
-router.post('/categories/delete/:categoryid', categoryController.deleteCategory)
-router.post('/categories/hide/:categoryid', categoryController.hideCategory)
-router.post('/categories/unhide/:categoryid', categoryController.unhideCategory)
-router.post('/categories/new', categoryController.addCategory)
-router.post('/categories/edit/:categoryid', categoryController.editCategory)
+router.get('/categories', adminCategoryController.getCategories) 
+router.post('/categories/delete/:categoryid', adminCategoryController.deleteCategory)
+router.post('/categories/hide/:categoryid', adminCategoryController.hideCategory)
+router.post('/categories/unhide/:categoryid', adminCategoryController.unhideCategory)
+router.post('/categories/new', adminCategoryController.addCategory)
+router.post('/categories/edit/:categoryid', adminCategoryController.editCategory)
 
 //---- products routes ---- 
-router.get('/products', adminController.getProducts)
-router.get('/products/delete/:productid', adminController.deleteProduct)
-router.post('/products/activate/:productid', adminController.activateProduct)
-router.post('/products/deactivate/:productid', adminController.deactivateProduct)
-router.get(`/products/add`, adminController.getAddProduct)
-router.post('/products/add', adminController.productUpload.array('mainImages', 4), adminController.addProduct);
-router.get('/products/edit/:productid', adminController.getEditProduct);
-router.post('/products/edit/:productid', adminController.productUpload.array('mainImages', 4), adminController.editProduct);
+router.get('/products', adminProductController.getProducts)
+router.get('/products/delete/:productid', adminProductController.deleteProduct)
+router.post('/products/activate/:productid', adminProductController.activateProduct)
+router.post('/products/deactivate/:productid', adminProductController.deactivateProduct)
+router.get(`/products/add`, adminProductController.getAddProduct)
+router.post('/products/add', adminProductController.productUpload.array('mainImages', 4), adminProductController.addProduct);
+router.get('/products/edit/:productid', adminProductController.getEditProduct);
+router.post('/products/edit/:productid', adminProductController.productUpload.array('mainImages', 4), adminProductController.editProduct);
 
 
 export default router

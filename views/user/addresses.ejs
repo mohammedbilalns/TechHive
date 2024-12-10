@@ -452,6 +452,31 @@
 
       return true;
     }
+
+    async function submitAddAddress() {
+      try {
+        const form = document.getElementById('addAddressForm');
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        console.log('Form data being sent:', data); // Debug log
+
+        if (!validateAddressForm(data)) return;
+
+        const response = await axios.post('/account/address', data);
+        console.log('Server response:', response.data); // Debug log
+
+        if (response.data.success) {
+          alert('Address added successfully');
+          window.location.reload();
+        } else {
+          alert(response.data.message || 'Failed to add address');
+        }
+      } catch (error) {
+        console.error('Detailed error:', error.response?.data || error); // More detailed error logging
+        alert('Failed to add address: ' + (error.response?.data?.message || error.message));
+      }
+    }
   </script>
 
   <%- include('../partials/footer') %>
