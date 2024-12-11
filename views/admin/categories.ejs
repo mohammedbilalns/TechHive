@@ -380,37 +380,47 @@
     }
 
     async function toggleCategoryStatus(categoryId, action) {
-      try {
-        const response = await axios.post(`/admin/categories/${action}/${categoryId}`);
+      const actionText = action === 'hide' ? 'hide' : 'unhide';
+      const confirmed = await customConfirm(
+        `Are you sure you want to ${actionText} this category?`,
+        `${action === 'hide' ? 'Hide' : 'Unhide'} Category`
+      );
 
-        if (response.data.success) {
-          // Update the status text
-          const statusSpan = document.getElementById(`status-${categoryId}`);
-          const toggleButton = document.getElementById(`toggle-${categoryId}`);
+      if (confirmed) {
+        try {
+          const response = await axios.post(`/admin/categories/${action}/${categoryId}`);
 
-          if (action === 'hide') {
-            statusSpan.textContent = 'Inactive';
-            statusSpan.classList.remove('text-green-600');
-            statusSpan.classList.add('text-primary-accent');
+          if (response.data.success) {
+            // Update the status text
+            const statusSpan = document.getElementById(`status-${categoryId}`);
+            const toggleButton = document.getElementById(`toggle-${categoryId}`);
 
-            toggleButton.textContent = 'Unhide';
-            toggleButton.classList.remove('bg-primary-accent', 'hover:bg-red-600');
-            toggleButton.classList.add('bg-green-500', 'hover:bg-green-600');
-            toggleButton.onclick = () => toggleCategoryStatus(categoryId, 'unhide');
-          } else {
-            statusSpan.textContent = 'Active';
-            statusSpan.classList.remove('text-primary-accent');
-            statusSpan.classList.add('text-green-600');
+            if (action === 'hide') {
+              statusSpan.textContent = 'Inactive';
+              statusSpan.classList.remove('text-green-600');
+              statusSpan.classList.add('text-primary-accent');
 
-            toggleButton.textContent = 'Hide';
-            toggleButton.classList.remove('bg-green-500', 'hover:bg-green-600');
-            toggleButton.classList.add('bg-primary-accent', 'hover:bg-red-600');
-            toggleButton.onclick = () => toggleCategoryStatus(categoryId, 'hide');
+              toggleButton.textContent = 'Unhide';
+              toggleButton.classList.remove('bg-primary-accent', 'hover:bg-red-600');
+              toggleButton.classList.add('bg-green-500', 'hover:bg-green-600');
+              toggleButton.onclick = () => toggleCategoryStatus(categoryId, 'unhide');
+            } else {
+              statusSpan.textContent = 'Active';
+              statusSpan.classList.remove('text-primary-accent');
+              statusSpan.classList.add('text-green-600');
+
+              toggleButton.textContent = 'Hide';
+              toggleButton.classList.remove('bg-green-500', 'hover:bg-green-600');
+              toggleButton.classList.add('bg-primary-accent', 'hover:bg-red-600');
+              toggleButton.onclick = () => toggleCategoryStatus(categoryId, 'hide');
+            }
+
+            showAlert(`Category ${action === 'hide' ? 'hidden' : 'unhidden'} successfully`, 'success');
           }
+        } catch (error) {
+          console.error('Error:', error);
+          showAlert(error.response?.data?.message || `Failed to ${action} category`, 'error');
         }
-      } catch (error) {
-        console.error('Error:', error);
-        alert('An error occurred while updating the category status');
       }
     }
 
