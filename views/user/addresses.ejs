@@ -39,98 +39,99 @@
               <% } %>
             </div>
 
-            <!-- Edit Address Form -->
-            <form id="editAddressForm" class="hidden mb-8 p-4 border rounded-lg">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label class="block text-gray-600 mb-2">Name</label>
-                  <input type="text" name="name"
-                    class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <!-- Edit Address Modal -->
+            <div id="editAddressModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+              <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-4">
+                  <h2 class="text-xl font-semibold text-gray-800">Edit Address</h2>
+                  <button onclick="toggleEditAddress()" class="text-gray-600 hover:text-gray-900">
+                    <i class="fas fa-times"></i>
+                  </button>
                 </div>
-                <div>
-                  <label class="block text-gray-600 mb-2">House Name</label>
-                  <input type="text" name="houseName"
-                    class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-                </div>
-                <div>
-                  <label class="block text-gray-600 mb-2">Locality/Street</label>
-                  <input type="text" name="localityStreet"
-                    class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-                </div>
-                <div>
-                  <label class="block text-gray-600 mb-2">City</label>
-                  <input type="text" name="city"
-                    class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-                </div>
-                <div>
-                  <label class="block text-gray-600 mb-2">State</label>
-                  <select name="state"
-                    class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent h-auto max-h-[200px] overflow-y-auto">
-                    <option value="">Select State</option>
-                    <option value="Andhra Pradesh">Andhra Pradesh</option>
-                    <option value="Arunachal Pradesh">Arunachal Pradesh</option>
-                    <option value="Assam">Assam</option>
-                    <option value="Bihar">Bihar</option>
-                    <option value="Chhattisgarh">Chhattisgarh</option>
-                    <option value="Goa">Goa</option>
-                    <option value="Gujarat">Gujarat</option>
-                    <option value="Haryana">Haryana</option>
-                    <option value="Himachal Pradesh">Himachal Pradesh</option>
-                    <option value="Jharkhand">Jharkhand</option>
-                    <option value="Karnataka">Karnataka</option>
-                    <option value="Kerala">Kerala</option>
-                    <option value="Madhya Pradesh">Madhya Pradesh</option>
-                    <option value="Maharashtra">Maharashtra</option>
-                    <option value="Manipur">Manipur</option>
-                    <option value="Meghalaya">Meghalaya</option>
-                    <option value="Mizoram">Mizoram</option>
-                    <option value="Nagaland">Nagaland</option>
-                    <option value="Odisha">Odisha</option>
-                    <option value="Punjab">Punjab</option>
-                    <option value="Rajasthan">Rajasthan</option>
-                    <option value="Sikkim">Sikkim</option>
-                    <option value="Tamil Nadu">Tamil Nadu</option>
-                    <option value="Telangana">Telangana</option>
-                    <option value="Tripura">Tripura</option>
-                    <option value="Uttar Pradesh">Uttar Pradesh</option>
-                    <option value="Uttarakhand">Uttarakhand</option>
-                    <option value="West Bengal">West Bengal</option>
-                    <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
-                    <option value="Chandigarh">Chandigarh</option>
-                    <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu
-                    </option>
-                    <option value="Lakshadweep">Lakshadweep</option>
-                    <option value="Delhi">Delhi</option>
-                    <option value="Puducherry">Puducherry</option>
-                    <option value="Ladakh">Ladakh</option>
-                    <option value="Jammu and Kashmir">Jammu and Kashmir</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-gray-600 mb-2">Pincode</label>
-                  <input type="text" name="pincode"
-                    class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-                </div>
-                <div>
-                  <label class="block text-gray-600 mb-2">Phone</label>
-                  <input type="tel" name="phone"
-                    class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-                </div>
-                <div>
-                  <label class="block text-gray-600 mb-2">Alternate Phone (Optional)</label>
-                  <input type="tel" name="alternatePhone"
-                    class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-                </div>
+                
+                <form id="editAddressForm">
+                  <input type="hidden" name="addressId">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-gray-600 mb-2">Name</label>
+                      <input type="text" name="name" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                    </div>
+                    <div>
+                      <label class="block text-gray-600 mb-2">House Name</label>
+                      <input type="text" name="houseName" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                    </div>
+                    <div>
+                      <label class="block text-gray-600 mb-2">Locality/Street</label>
+                      <input type="text" name="localityStreet" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                    </div>
+                    <div>
+                      <label class="block text-gray-600 mb-2">City</label>
+                      <input type="text" name="city" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                    </div>
+                    <div>
+                      <label class="block text-gray-600 mb-2">State</label>
+                      <select name="state" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                        <option value="">Select State</option>
+                        <option value="Andhra Pradesh">Andhra Pradesh</option>
+                        <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                        <option value="Assam">Assam</option>
+                        <option value="Bihar">Bihar</option>
+                        <option value="Chhattisgarh">Chhattisgarh</option>
+                        <option value="Goa">Goa</option>
+                        <option value="Gujarat">Gujarat</option>
+                        <option value="Haryana">Haryana</option>
+                        <option value="Himachal Pradesh">Himachal Pradesh</option>
+                        <option value="Jharkhand">Jharkhand</option>
+                        <option value="Karnataka">Karnataka</option>
+                        <option value="Kerala">Kerala</option>
+                        <option value="Madhya Pradesh">Madhya Pradesh</option>
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Manipur">Manipur</option>
+                        <option value="Meghalaya">Meghalaya</option>
+                        <option value="Mizoram">Mizoram</option>
+                        <option value="Nagaland">Nagaland</option>
+                        <option value="Odisha">Odisha</option>
+                        <option value="Punjab">Punjab</option>
+                        <option value="Rajasthan">Rajasthan</option>
+                        <option value="Sikkim">Sikkim</option>
+                        <option value="Tamil Nadu">Tamil Nadu</option>
+                        <option value="Telangana">Telangana</option>
+                        <option value="Tripura">Tripura</option>
+                        <option value="Uttar Pradesh">Uttar Pradesh</option>
+                        <option value="Uttarakhand">Uttarakhand</option>
+                        <option value="West Bengal">West Bengal</option>
+                        <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                        <option value="Chandigarh">Chandigarh</option>
+                        <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
+                        <option value="Lakshadweep">Lakshadweep</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Puducherry">Puducherry</option>
+                        <option value="Ladakh">Ladakh</option>
+                        <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-gray-600 mb-2">Pincode</label>
+                      <input type="text" name="pincode" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                    </div>
+                    <div>
+                      <label class="block text-gray-600 mb-2">Phone</label>
+                      <input type="tel" name="phone" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                    </div>
+                    <div>
+                      <label class="block text-gray-600 mb-2">Alternate Phone (Optional)</label>
+                      <input type="tel" name="alternatePhone" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                    </div>
+                  </div>
+                  <div class="flex justify-end space-x-4 mt-4">
+                    <button type="button" onclick="toggleEditAddress()" class="px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
+                    <button type="button" onclick="submitEditAddress()" class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-primary-accent/90">
+                      Update Address
+                    </button>
+                  </div>
+                </form>
               </div>
-              <div class="flex justify-end space-x-4 mt-4">
-                <button type="button" onclick="toggleEditAddress()"
-                  class="px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
-                <button type="button" onclick="submitEditAddress()"
-                  class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-primary-accent/90">
-                  Update Address
-                </button>
-              </div>
-            </form>
+            </div>
 
             <!-- Address List -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -266,7 +267,13 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script>
+  <script type="module">
+    import { customConfirm, showAlert, closeCustomAlert } from '/js/util.js';
+    window.customConfirm = customConfirm;
+    window.showAlert = showAlert;
+    window.closeCustomAlert = closeCustomAlert;
+  </script>
+ <script>
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
       sidebar.classList.toggle('hidden');
@@ -289,19 +296,24 @@
     }
 
     function toggleEditAddress() {
-      const form = document.getElementById('editAddressForm');
-      form.classList.toggle('hidden');
+      const modal = document.getElementById('editAddressModal');
+      modal.classList.toggle('hidden');
+      modal.classList.toggle('flex');
+      
+      // Reset form when closing
+      if (modal.classList.contains('hidden')) {
+        document.getElementById('editAddressForm').reset();
+      }
     }
 
     async function editAddress(addressId) {
       try {
-        // Get the address data
         const response = await axios.get(`/account/address/${addressId}`);
         const address = response.data.address;
 
         // Populate the edit form
         const form = document.getElementById('editAddressForm');
-        form.dataset.addressId = addressId;
+        form.querySelector('[name="addressId"]').value = addressId;
         form.querySelector('[name="name"]').value = address.name;
         form.querySelector('[name="houseName"]').value = address.houseName;
         form.querySelector('[name="localityStreet"]').value = address.localityStreet;
@@ -311,7 +323,7 @@
         form.querySelector('[name="phone"]').value = address.phone;
         form.querySelector('[name="alternatePhone"]').value = address.alternatePhone || '';
 
-        // Show the edit form
+        // Show the edit modal
         toggleEditAddress();
       } catch (error) {
         console.error('Error fetching address:', error);
@@ -322,23 +334,23 @@
     async function submitEditAddress() {
       try {
         const form = document.getElementById('editAddressForm');
-        const addressId = form.dataset.addressId;
+        const addressId = form.querySelector('[name="addressId"]').value;
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
-
+        
         if (!validateAddressForm(data)) return;
 
         const response = await axios.put(`/account/address/${addressId}`, data);
         
         if (response.data.success) {
-          alert('Address updated successfully');
+          showAlert('Address updated successfully', 'success');
           window.location.reload();
         } else {
-          alert(response.data.message || 'Failed to update address');
+          showAlert(response.data.message || 'Failed to update address', 'error');
         }
       } catch (error) {
         console.error('Error updating address:', error);
-        alert('Failed to update address');
+        showAlert('Failed to update address', 'error');
       }
     }
 
@@ -349,14 +361,14 @@
         const response = await axios.delete(`/account/address/${addressId}`);
         
         if (response.data.success) {
-          alert('Address deleted successfully');
+          showAlert('Address deleted successfully', 'success');
           window.location.reload();
         } else {
-          alert(response.data.message || 'Failed to delete address');
+          showAlert(response.data.message || 'Failed to delete address', 'error');
         }
       } catch (error) {
         console.error('Error deleting address:', error);
-        alert('Failed to delete address');
+        showAlert('Failed to delete address', 'error');
       }
     }
 
@@ -364,25 +376,25 @@
       // Basic validation
       if (!data.name || !data.houseName || !data.localityStreet || 
           !data.city || !data.state || !data.pincode || !data.phone) {
-        alert('Please fill in all required fields');
+        showAlert('Please fill in all required fields', 'error');
         return false;
       }
 
       // Pincode validation (6 digits)
       if (!/^\d{6}$/.test(data.pincode)) {
-        alert('Please enter a valid 6-digit pincode');
+        showAlert('Please enter a valid 6-digit pincode', 'error');
         return false;
       }
 
       // Phone number validation (10 digits)
       if (!/^\d{10}$/.test(data.phone)) {
-        alert('Please enter a valid 10-digit phone number');
+        showAlert('Please enter a valid 10-digit phone number', 'error');
         return false;
       }
 
       // Alternate phone validation (if provided)
       if (data.alternatePhone && !/^\d{10}$/.test(data.alternatePhone)) {
-        alert('Please enter a valid 10-digit alternate phone number');
+        showAlert('Please enter a valid 10-digit alternate phone number', 'error');
         return false;
       }
 
@@ -400,14 +412,14 @@
         const response = await axios.post('/account/add-address', data);
 
         if (response.data.success) {
-          alert('Address added successfully');
+          showAlert('Address added successfully', 'success');
           window.location.reload();
         } else {
-          alert(response.data.message || 'Failed to add address');
+          showAlert(response.data.message || 'Failed to add address', 'error');
         }
       } catch (error) {
         const errorMessage = error.response?.data?.message || 'Failed to add address';
-        alert(errorMessage);
+        showAlert(errorMessage, 'error');
       }
     }
 
@@ -415,6 +427,12 @@
     document.getElementById('addAddressModal').addEventListener('click', function(e) {
       if (e.target === this) {
         toggleAddAddress();
+      }
+    });
+
+    document.getElementById('editAddressModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        toggleEditAddress();
       }
     });
 

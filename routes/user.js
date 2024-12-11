@@ -52,5 +52,6 @@ router.get('/profile/addresses', auth.checkSession, addressController.getAddress
 router.post('/account/add-address', auth.checkSession, addressController.addAddress);
 router.put('/account/address/:id', auth.checkSession, addressController.updateAddress);
 router.delete('/account/address/:id', auth.checkSession, addressController.deleteAddress);
+router.get('/account/address/:id', auth.checkSession, addressController.getAddress);
 
 export default router

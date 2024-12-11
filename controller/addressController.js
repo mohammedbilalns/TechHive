@@ -79,6 +79,37 @@ const updateAddress = async (req, res) => {
     try {
         const { name, houseName, localityStreet, city, state, pincode, phone, alternatePhone } = req.body;
         
+        // Validate required fields
+        if (!name || !houseName || !localityStreet || !city || !state || !pincode || !phone) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Missing required fields" 
+            });
+        }
+
+        // Validate pincode and phone number format
+        if (!/^\d{6}$/.test(pincode)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Invalid pincode format" 
+            });
+        }
+
+        if (!/^\d{10}$/.test(phone)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Invalid phone number format" 
+            });
+        }
+
+        // If alternate phone is provided, validate its format
+        if (alternatePhone && !/^\d{10}$/.test(alternatePhone)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Invalid alternate phone number format" 
+            });
+        }
+
         const address = await Address.findOneAndUpdate(
             {
                 _id: req.params.id,
@@ -146,5 +177,41 @@ const deleteAddress = async (req, res) => {
     }
 };
 
+// Add this new function to get a single address
+const getAddress = async (req, res) => {
+    try {
+        const addressId = req.params.id;
+        const userId = req.session.user.id;
 
-export default {getAddresses, addAddress, updateAddress, deleteAddress}
+        const address = await Address.findOne({
+            _id: addressId,
+            userId: userId
+        });
+        
+        if (!address) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Address not found' 
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            address 
+        });
+    } catch (error) {
+        log.red("ERROR", error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to fetch address' 
+        });
+    }
+};
+
+export default {
+    getAddresses,
+    addAddress,
+    updateAddress,
+    deleteAddress,
+    getAddress
+}
