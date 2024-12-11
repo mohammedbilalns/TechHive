@@ -23,108 +23,131 @@
           <div class="bg-white rounded-lg shadow-lg p-6">
             <h1 class="text-2xl font-semibold text-gray-800 mb-6">Shopping Cart</h1>
 
-            <% if (cart && cart.items && cart.items.length> 0) { %>
-              <div class="flex flex-col lg:flex-row gap-6">
-                <!-- Cart Items -->
-                <div class="flex-grow space-y-4">
-                  <% cart.items.forEach(item=> { %>
-                    <div class="flex items-center border rounded-lg p-4">
-                      <div class="w-24 h-24 flex-shrink-0">
-                        <img src="<%= item.product.image %>" alt="<%= item.product.name %>"
-                          class="w-full h-full object-cover rounded">
-                      </div>
-                      <div class="ml-4 flex-grow">
-                        <div class="flex justify-between items-start">
-                          <div>
-                            <h3 class="font-semibold">
-                              <%= item.product.name %>
-                            </h3>
-                            <p class="text-gray-600 text-sm">₹<%= item.product.price %>
+            <div class="cart-content">
+              <% if (cart && cart.items && cart.items.length > 0) { %>
+                <div class="flex flex-col lg:flex-row gap-6">
+                  <!-- Cart Items -->
+                  <div class="flex-grow space-y-4">
+                    <% cart.items.forEach(item => { %>
+                      <div class="cart-item flex items-center border rounded-lg p-4" data-product="<%= item.productId._id %>">
+                        <div class="w-24 h-24 flex-shrink-0">
+                          <img src="<%= item.productId.images[0].path %>" 
+                               alt="<%= item.productId.name %>"
+                               class="w-full h-full object-cover rounded">
+                        </div>
+                        <div class="ml-4 flex-grow">
+                          <div class="flex justify-between items-start">
+                            <div>
+                              <h3 class="font-semibold"><%= item.productId.name %></h3>
+                              <p class="text-gray-600 text-sm item-price" 
+                                 data-price="<%= item.productId.price %>"
+                                 data-discount="<%= item.productId.discount %>">
+                                <% if (item.productId.discount > 0) { %>
+                                  ₹<%= (item.productId.price * (1 - item.productId.discount/100)).toFixed(2) %>
+                                  <span class="line-through text-gray-400">₹<%= item.productId.price.toFixed(2) %></span>
+                                <% } else { %>
+                                  ₹<%= item.productId.price.toFixed(2) %>
+                                <% } %>
+                              </p>
+                            </div>
+                            <button onclick="removeFromCart('<%= item.productId._id %>')"
+                                    class="text-red-600 hover:text-red-800">
+                              <i class="fas fa-trash"></i>
+                            </button>
+                          </div>
+                          <div class="mt-4 flex items-center">
+                            <div class="flex items-center border rounded">
+                              <button onclick="updateQuantity('<%= item.productId._id %>', 'decrease')"
+                                      class="decrease-btn px-3 py-1 hover:bg-gray-100 <%= item.quantity <= 1 ? 'text-gray-400' : '' %>">
+                                -
+                              </button>
+                              <span class="quantity-value px-4 py-1 border-x"><%= item.quantity %></span>
+                              <button onclick="updateQuantity('<%= item.productId._id %>', 'increase')"
+                                      class="increase-btn px-3 py-1 hover:bg-gray-100 <%= item.quantity >= 4 ? 'text-gray-400' : '' %>">
+                                +
+                              </button>
+                            </div>
+                            <p class="ml-auto font-semibold item-total">
+                              ₹<%= ((item.productId.price * (1 - item.productId.discount/100)) * item.quantity).toFixed(2) %>
                             </p>
                           </div>
-                          <button onclick="removeFromCart('<%= item.product._id %>')"
-                            class="text-red-600 hover:text-red-800">
-                            <i class="fas fa-trash"></i>
-                          </button>
-                        </div>
-                        <div class="mt-4 flex items-center">
-                          <div class="flex items-center border rounded">
-                            <button onclick="updateQuantity('<%= item.product._id %>', 'decrease')"
-                              class="px-3 py-1 hover:bg-gray-100">-</button>
-                            <span class="px-4 py-1 border-x">
-                              <%= item.quantity %>
-                            </span>
-                            <button onclick="updateQuantity('<%= item.product._id %>', 'increase')"
-                              class="px-3 py-1 hover:bg-gray-100">+</button>
-                          </div>
-                          <p class="ml-auto font-semibold">₹<%= item.product.price * item.quantity %>
-                          </p>
                         </div>
                       </div>
-                    </div>
                     <% }) %>
-                </div>
+                  </div>
 
-                <!-- Cart Summary -->
-                <div class="lg:w-80 space-y-4">
-                  <div class="border rounded-lg p-4">
-                    <h2 class="text-lg font-semibold mb-4">Order Summary</h2>
-                    <div class="space-y-2">
-                      <div class="flex justify-between">
-                        <span class="text-gray-600">Subtotal</span>
-                        <span>₹<%= cart.subtotal %></span>
-                      </div>
-                      <div class="flex justify-between">
-                        <span class="text-gray-600">Shipping</span>
-                        <span>₹<%= cart.shipping %></span>
-                      </div>
-                      <% if (cart.discount) { %>
-                        <div class="flex justify-between text-green-600">
-                          <span>Discount</span>
-                          <span>-₹<%= cart.discount %></span>
+                  <!-- Cart Summary -->
+                  <div class="lg:w-80 space-y-4">
+                    <div class="border rounded-lg p-4">
+                      <h2 class="text-lg font-semibold mb-4">Order Summary</h2>
+                      <div class="space-y-2">
+                        <div class="flex justify-between">
+                          <span class="text-gray-600">Subtotal</span>
+                          <span id="subtotal">₹<%= subtotal %></span>
                         </div>
-                        <% } %>
-                          <div class="border-t pt-2 mt-2">
-                            <div class="flex justify-between font-semibold">
-                              <span>Total</span>
-                              <span>₹<%= cart.total %></span>
-                            </div>
+                        <div class="flex justify-between">
+                          <span class="text-gray-600">Shipping</span>
+                          <span id="shipping">Free</span>
+                        </div>
+                        <% if (cart.discount) { %>
+                          <div class="flex justify-between text-green-600">
+                            <span>Discount</span>
+                            <span id="discount">-₹<%= cart.discount %></span>
                           </div>
-                    </div>
+                          <% } %>
+                            <div class="border-t pt-2 mt-2">
+                              <div class="flex justify-between font-semibold">
+                                <span>Total</span>
+                                <span id="total">₹<%= total %></span>
+                              </div>
+                            </div>
+                      </div>
 
-                    <!-- Coupon Code -->
-                    <div class="mt-4">
-                      <form onsubmit="applyCoupon(event)" class="flex gap-2">
-                        <input type="text" id="couponCode" placeholder="Enter coupon code"
-                          class="flex-grow p-2 border rounded focus:ring-2 focus:ring-primary-accent">
-                        <button type="submit" class="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700">
-                          Apply
+                      <!-- Coupon Code -->
+                      <div class="mt-4">
+                        <button onclick="toggleCouponForm()" class="text-primary-accent hover:underline text-sm">
+                          Have a coupon code?
                         </button>
-                      </form>
-                    </div>
+                        <form id="couponForm" onsubmit="applyCoupon(event)" class="hidden mt-2 flex gap-2">
+                          <input type="text" id="couponCode" placeholder="Enter coupon code"
+                                 class="flex-grow p-2 border rounded focus:ring-2 focus:ring-primary-accent">
+                          <button type="submit" class="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700">
+                            Apply
+                          </button>
+                        </form>
+                      </div>
 
-                    <!-- Checkout Button -->
-                    <button onclick="proceedToCheckout()"
-                      class="w-full mt-4 bg-primary-accent text-white px-6 py-3 rounded-lg hover:bg-primary-accent/90">
-                      Proceed to Checkout
-                    </button>
+                      <!-- Checkout Button -->
+                      <button onclick="proceedToCheckout()"
+                        class="w-full mt-4 bg-primary-accent text-white px-6 py-3 rounded-lg hover:bg-primary-accent/90">
+                        Proceed to Checkout
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <% } else { %>
-                <!-- Empty Cart -->
-                <div class="text-center py-8">
-                  <i class="fas fa-shopping-cart text-gray-400 text-4xl mb-4"></i>
-                  <p class="text-gray-600">Your cart is empty</p>
-                  <a href="/shop"
-                    class="inline-block mt-4 bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-primary-accent/90">
-                    Continue Shopping
-                  </a>
-                </div>
+                <% } else { %>
+                  <!-- Empty Cart -->
+                  <div class="text-center py-12">
+                    <div class="flex justify-center mb-6">
+                      <svg class="w-24 h-24 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                      </svg>
+                    </div>
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Your Cart is Empty</h2>
+                    <p class="text-gray-500 mb-8">Looks like you haven't added anything to your cart yet.</p>
+                    <a href="/home" 
+                       class="inline-block bg-primary-accent text-white px-8 py-3 rounded-lg hover:bg-primary-accent/90 transition-colors">
+                      Start Shopping
+                    </a>
+                  </div>
                 <% } %>
+            </div>
           </div>
     </main>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
   <script>
     function toggleSidebar() {
@@ -138,41 +161,127 @@
     }
 
     function updateQuantity(productId, action) {
-      fetch(`/cart/update`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ productId, action })
-      }).then(() => window.location.reload());
+      axios.post('/cart/update', { productId, action })
+        .then(response => {
+          if (response.data.success) {
+            // Update quantity display
+            const quantitySpan = document.querySelector(`[data-product="${productId}"] .quantity-value`);
+            const currentQuantity = parseInt(quantitySpan.textContent);
+            let newQuantity = action === 'increase' ? currentQuantity + 1 : currentQuantity - 1;
+            
+            // Update quantity buttons state
+            const decreaseBtn = document.querySelector(`[data-product="${productId}"] .decrease-btn`);
+            const increaseBtn = document.querySelector(`[data-product="${productId}"] .increase-btn`);
+            
+            if (newQuantity <= 1) {
+              decreaseBtn.classList.add('text-gray-400');
+            } else {
+              decreaseBtn.classList.remove('text-gray-400');
+            }
+            
+            if (newQuantity >= 4) {
+              increaseBtn.classList.add('text-gray-400');
+            } else {
+              increaseBtn.classList.remove('text-gray-400');
+            }
+
+            // Update quantity display
+            quantitySpan.textContent = newQuantity;
+
+            // Update price displays
+            const itemPrice = parseFloat(document.querySelector(`[data-product="${productId}"] .item-price`).dataset.price);
+            const itemDiscount = parseFloat(document.querySelector(`[data-product="${productId}"] .item-price`).dataset.discount);
+            const discountedPrice = itemPrice * (1 - itemDiscount/100);
+            const itemTotal = (discountedPrice * newQuantity).toFixed(2);
+            document.querySelector(`[data-product="${productId}"] .item-total`).textContent = `₹${itemTotal}`;
+
+            // Update cart totals
+            document.getElementById('subtotal').textContent = `₹${response.data.subtotal}`;
+            document.getElementById('total').textContent = `₹${response.data.total}`;
+
+            // If quantity is 0, remove the item
+            if (newQuantity === 0) {
+              document.querySelector(`[data-product="${productId}"]`).remove();
+              // If cart is empty, show empty cart message
+              if (document.querySelectorAll('.cart-item').length === 0) {
+                showEmptyCart();
+              }
+            }
+          } else {
+            alert(response.data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error updating quantity');
+        });
     }
 
     function removeFromCart(productId) {
       if (confirm('Are you sure you want to remove this item?')) {
-        fetch(`/cart/remove`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ productId })
-        }).then(() => window.location.reload());
+        axios.post('/cart/remove', { productId })
+          .then(response => {
+            if (response.data.success) {
+              document.querySelector(`[data-product="${productId}"]`).remove();
+              // If cart is empty, show empty cart message
+              if (document.querySelectorAll('.cart-item').length === 0) {
+                showEmptyCart();
+              }
+            } else {
+              alert(response.data.message);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('Error removing item');
+          });
       }
     }
 
     function applyCoupon(event) {
       event.preventDefault();
       const code = document.getElementById('couponCode').value;
-      fetch(`/cart/apply-coupon`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ code })
-      }).then(() => window.location.reload());
+      
+      axios.post('/cart/apply-coupon', { code })
+        .then(response => {
+          if (response.data.success) {
+            // Update discount and total displays
+            document.getElementById('discount').textContent = `₹${response.data.discount}`;
+            document.getElementById('total').textContent = `₹${response.data.total}`;
+            alert('Coupon applied successfully!');
+          } else {
+            alert(response.data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error applying coupon');
+        });
     }
 
-    function proceedToCheckout() {
-      window.location.href = '/checkout';
+    function showEmptyCart() {
+      const cartContent = document.querySelector('.cart-content');
+      cartContent.innerHTML = `
+        <div class="text-center py-12">
+          <div class="flex justify-center mb-6">
+            <svg class="w-24 h-24 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-semibold text-gray-700 mb-4">Your Cart is Empty</h2>
+          <p class="text-gray-500 mb-8">Looks like you haven't added anything to your cart yet.</p>
+          <a href="/home" 
+             class="inline-block bg-primary-accent text-white px-8 py-3 rounded-lg hover:bg-primary-accent/90 transition-colors">
+            Start Shopping
+          </a>
+        </div>
+      `;
+    }
+
+    function toggleCouponForm() {
+      const form = document.getElementById('couponForm');
+      form.classList.toggle('hidden');
     }
   </script>
 

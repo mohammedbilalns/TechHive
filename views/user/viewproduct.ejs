@@ -102,7 +102,8 @@
                 <%= !product.stock ? 'disabled' : '' %>>
           Buy Now
         </button>
-        <button class="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition-colors <%= !product.stock ? 'opacity-50 cursor-not-allowed' : '' %>"
+        <button onclick="addToCart('<%= product._id %>')" 
+                class="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition-colors <%= !product.stock ? 'opacity-50 cursor-not-allowed' : '' %>"
                 <%= !product.stock ? 'disabled' : '' %>>
           Add to Cart
         </button>
@@ -222,6 +223,48 @@ container.addEventListener('mousemove', function(e) {
 
 function changeMainImage(src) {
   mainImage.src = src;
+}
+</script>
+
+<!-- Add this alert div near the top of your main content -->
+<div id="alertMessage" class="fixed top-4 right-4 max-w-sm hidden"></div>
+
+<!-- Add this script at the bottom of the file -->
+<script>
+async function addToCart(productId) {
+  try {
+    const response = await fetch('/cart/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ productId })
+    });
+    
+    const data = await response.json();
+    
+    // Show alert message
+    const alertDiv = document.getElementById('alertMessage');
+    alertDiv.className = `fixed top-4 right-4 max-w-sm p-4 rounded-lg shadow-lg ${
+      data.success ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+    }`;
+    alertDiv.textContent = data.message;
+    alertDiv.classList.remove('hidden');
+    
+    // Hide alert after 3 seconds
+    setTimeout(() => {
+      alertDiv.classList.add('hidden');
+    }, 3000);
+    
+  } catch (error) {
+    console.error('Error:', error);
+    // Show error alert
+    const alertDiv = document.getElementById('alertMessage');
+    alertDiv.className = 'fixed top-4 right-4 max-w-sm p-4 rounded-lg shadow-lg bg-red-100 text-red-700';
+    alertDiv.textContent = 'Error adding item to cart';
+    alertDiv.classList.remove('hidden');
+    setTimeout(() => alertDiv.classList.add('hidden'), 3000);
+  }
 }
 </script>
 

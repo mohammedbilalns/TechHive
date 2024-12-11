@@ -5,7 +5,7 @@ import auth from "../middlewares/auth.js"
 import productController from "../controller/productController.js"
 import addressController from "../controller/addressController.js"
 import useraccountController from "../controller/useraccountController.js"
-
+import cartController from "../controller/userCartcontroller.js"
 const router = Router()
 
 router.use(express.static('static'))
@@ -41,8 +41,7 @@ router.get('/' , auth.isLogin, productController.loadLanding)
 
 // router for user dashboard
 router.get('profile/dashboard', auth.checkSession, userController.getDashboard)
-router.get('/profile/account', auth.checkSession, userController.getAccountDetails)
-router.get('/profile/cart', auth.checkSession, userController.getCart)  
+router.get('/profile/account', auth.checkSession, userController.getAccountDetails) 
 router.get('/profile/wishlist', auth.checkSession, userController.getWishlist)  
 router.get('/profile/orders', auth.checkSession, userController.getOrders)  
 router.get('/profile/wallet', auth.checkSession, userController.getWallet)  
@@ -54,7 +53,14 @@ router.post('/account/add-address', auth.checkSession, addressController.addAddr
 router.put('/account/address/:id', auth.checkSession, addressController.updateAddress);
 router.delete('/account/address/:id', auth.checkSession, addressController.deleteAddress);
 router.get('/account/address/:id', auth.checkSession, addressController.getAddress);
-
 router.post('/account/update-profile', auth.checkSession, useraccountController.updateProfile)
+
+
+// Cart Routes
+router.get('/profile/cart', auth.checkSession, cartController.getCart)
+router.post('/cart/add', auth.checkSession, cartController.addToCart)
+router.post('/cart/update', auth.checkSession, cartController.updateQuantity)
+router.post('/cart/remove', auth.checkSession, cartController.removeFromCart)
+router.post('/cart/apply-coupon', auth.checkSession, cartController.applyCoupon)
 
 export default router

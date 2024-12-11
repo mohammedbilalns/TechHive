@@ -494,14 +494,6 @@ const getAccountDetails = async (req,res)=>{
 }
 
 
-const getCart = (req,res)=>{
-    try{
-
-    }catch(error){
-        log.red("FETCH_CART_ERROR", error)
-    }
-}
-
 const getWishlist = (req,res)=>{
     try{
 
@@ -533,7 +525,7 @@ export default {
     loadForgotpassword, processForgotPassword, verifyForgotPasswordOTP,
     resendForgotPasswordOTP, resetPassword, loadResetpassword,
      registerUser, authGoogle, authGoogleCallback,
-    logoutUser, getDashboard, getAccountDetails, getCart, getWishlist, getOrders, getWallet,
+    logoutUser, getDashboard, getAccountDetails, getWishlist, getOrders, getWallet,
 }
 
 
