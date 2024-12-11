@@ -475,6 +475,7 @@ const resetPassword = async (req, res) => {
     }
 };
 
+
 const getDashboard = (req, res)=>{
     try{
         
@@ -486,7 +487,7 @@ const getAccountDetails = async (req,res)=>{
     try{
         let email = req.session.user.email
         let user = await userSchema.findOne({email})
-        res.render('user/account', {user})
+        res.render('user/account', {user, page:"account"})
     }catch(error){
         log.red("FETCH_ACCOUNT_DETAILS_ERROR", error)
     }

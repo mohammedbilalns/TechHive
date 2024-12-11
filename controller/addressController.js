@@ -10,7 +10,7 @@ const getAddresses = async(req,res)=>{
         let user = await userSchema.findOne({email})
 
         let addresses = await addressSchema.find({userId: user._id})
-        res.render('user/addresses', {addresses, user}) 
+        res.render('user/addresses', {addresses, user, page:"addresses"}) 
 
     }catch(error){
         log.red("FETCH_ADDRESSES_ERROR", error)

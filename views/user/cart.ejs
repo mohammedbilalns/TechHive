@@ -1,256 +1,179 @@
 <%- include('../partials/header') %>
 
-<!-- Mobile Menu Button -->
-<div class="md:hidden p-4 bg-gray-100 flex justify-between items-center">
-  <h1 class="text-xl font-semibold text-gray-800">Shopping Cart</h1>
-  <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900">
-    <i class="fas fa-bars text-xl"></i>
-  </button>
-</div>
+  <!-- Mobile Menu Button -->
+  <div class="md:hidden p-4 bg-gray-100 flex justify-between items-center">
+    <h1 class="text-xl font-semibold text-gray-800">Shopping Cart</h1>
+    <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900">
+      <i class="fas fa-bars text-xl"></i>
+    </button>
+  </div>
 
-<div class="flex flex-col md:flex-row">
-  <aside id="sidebar"
-  class="bg-gray-100 w-full md:w-72 min-h-screen hidden md:block transform transition-transform duration-300 ease-in-out">
-  <nav class="py-4">
-    <div class="px-4 md:px-6">
-      <div class="flex items-center space-x-4 mb-6">
-        <div
-          class="w-10 h-10 rounded-full bg-primary-accent text-white flex items-center justify-center flex-shrink-0">
-          <i class="fas fa-user text-lg"></i>
-        </div>
-        <div class="min-w-0 flex-1">
-          <h2 class="text-base font-semibold text-gray-800 truncate">
-            <%= user.fullname %>
-          </h2>
-          <p class="text-xs text-gray-600 truncate">
-            <%= user.email %>
-          </p>
-        </div>
-      </div>
-
-      <ul class="mt-4 space-y-2">
-        <li>
-          <a href="/profile/account" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-            <i class="fas fa-th-large mr-3"></i>
-            <span>Dashboard</span>
-          </a>
-        </li>
-        <li>
-          <a href="/profile/account" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-            <i class="fas fa-user mr-3"></i>
-            <span>Account Details</span>
-          </a>
-        </li>
-        <li>
-          <a href="/profile/addresses"
-            class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-            <i class="fas fa-map-marker-alt mr-3"></i>
-            <span>Addresses</span>
-          </a>
-        </li>
-        <li>
-          <a href="/profile/orders" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-            <i class="fas fa-shopping-bag mr-3"></i>
-            <span>Orders</span>
-          </a>
-        </li>
-        <li>
-          <a href="/profile/cart" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-            <i class="fas fa-shopping-cart mr-3"></i>
-            <span>Cart</span>
-            <span class="ml-auto bg-primary-accent text-white px-2 py-1 rounded-full text-xs">
-              cartCount
-            </span>
-          </a>
-        </li>
-        <li>
-          <a href="/profile/wishlist"
-            class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-            <i class="fas fa-heart mr-3"></i>
-            <span>Wishlist</span>
-          </a>
-        </li>
-        <li>
-          <a href="/profile/wallet" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-            <i class="fas fa-wallet mr-3"></i>
-            <span>Wallet</span>
-          </a>
-        </li>
-        <li>
-          <a href="/profile/coupons" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-            <i class="fas fa-ticket-alt mr-3"></i>
-            <span>My Coupons</span>
-          </a>
-        </li>
-        <li>
-          <a href="/logout" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-            <i class="fas fa-sign-out-alt mr-3"></i>
-            <span>Logout</span>
-          </a>
-        </li>
-      </ul>
-    </div>
-  </nav>
-</aside>
-
-
-  <!-- Main Content -->
-  <main class="flex-grow p-4 md:py-12">
-    <% if (locals.message && locals.alertType) { %>
-      <div id="alertMessage" class="mb-4 p-3 rounded-md 
+  <div class="flex flex-col md:flex-row">
+   
+    <%- include('../partials/usersidebar') %>
+    <!-- Main Content -->
+    <main class="flex-grow p-4 md:py-12">
+      <% if (locals.message && locals.alertType) { %>
+        <div id="alertMessage" class="mb-4 p-3 rounded-md 
            <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
-        <%= message %>
-      </div>
-    <% } %>
+          <%= message %>
+        </div>
+        <% } %>
 
-    <div class="bg-white rounded-lg shadow-lg p-6">
-      <h1 class="text-2xl font-semibold text-gray-800 mb-6">Shopping Cart</h1>
+          <div class="bg-white rounded-lg shadow-lg p-6">
+            <h1 class="text-2xl font-semibold text-gray-800 mb-6">Shopping Cart</h1>
 
-      <% if (cart && cart.items && cart.items.length > 0) { %>
-        <div class="flex flex-col lg:flex-row gap-6">
-          <!-- Cart Items -->
-          <div class="flex-grow space-y-4">
-            <% cart.items.forEach(item => { %>
-              <div class="flex items-center border rounded-lg p-4">
-                <div class="w-24 h-24 flex-shrink-0">
-                  <img src="<%= item.product.image %>" alt="<%= item.product.name %>" 
-                       class="w-full h-full object-cover rounded">
-                </div>
-                <div class="ml-4 flex-grow">
-                  <div class="flex justify-between items-start">
-                    <div>
-                      <h3 class="font-semibold"><%= item.product.name %></h3>
-                      <p class="text-gray-600 text-sm">₹<%= item.product.price %></p>
-                    </div>
-                    <button onclick="removeFromCart('<%= item.product._id %>')" 
+            <% if (cart && cart.items && cart.items.length> 0) { %>
+              <div class="flex flex-col lg:flex-row gap-6">
+                <!-- Cart Items -->
+                <div class="flex-grow space-y-4">
+                  <% cart.items.forEach(item=> { %>
+                    <div class="flex items-center border rounded-lg p-4">
+                      <div class="w-24 h-24 flex-shrink-0">
+                        <img src="<%= item.product.image %>" alt="<%= item.product.name %>"
+                          class="w-full h-full object-cover rounded">
+                      </div>
+                      <div class="ml-4 flex-grow">
+                        <div class="flex justify-between items-start">
+                          <div>
+                            <h3 class="font-semibold">
+                              <%= item.product.name %>
+                            </h3>
+                            <p class="text-gray-600 text-sm">₹<%= item.product.price %>
+                            </p>
+                          </div>
+                          <button onclick="removeFromCart('<%= item.product._id %>')"
                             class="text-red-600 hover:text-red-800">
-                      <i class="fas fa-trash"></i>
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </div>
+                        <div class="mt-4 flex items-center">
+                          <div class="flex items-center border rounded">
+                            <button onclick="updateQuantity('<%= item.product._id %>', 'decrease')"
+                              class="px-3 py-1 hover:bg-gray-100">-</button>
+                            <span class="px-4 py-1 border-x">
+                              <%= item.quantity %>
+                            </span>
+                            <button onclick="updateQuantity('<%= item.product._id %>', 'increase')"
+                              class="px-3 py-1 hover:bg-gray-100">+</button>
+                          </div>
+                          <p class="ml-auto font-semibold">₹<%= item.product.price * item.quantity %>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <% }) %>
+                </div>
+
+                <!-- Cart Summary -->
+                <div class="lg:w-80 space-y-4">
+                  <div class="border rounded-lg p-4">
+                    <h2 class="text-lg font-semibold mb-4">Order Summary</h2>
+                    <div class="space-y-2">
+                      <div class="flex justify-between">
+                        <span class="text-gray-600">Subtotal</span>
+                        <span>₹<%= cart.subtotal %></span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-gray-600">Shipping</span>
+                        <span>₹<%= cart.shipping %></span>
+                      </div>
+                      <% if (cart.discount) { %>
+                        <div class="flex justify-between text-green-600">
+                          <span>Discount</span>
+                          <span>-₹<%= cart.discount %></span>
+                        </div>
+                        <% } %>
+                          <div class="border-t pt-2 mt-2">
+                            <div class="flex justify-between font-semibold">
+                              <span>Total</span>
+                              <span>₹<%= cart.total %></span>
+                            </div>
+                          </div>
+                    </div>
+
+                    <!-- Coupon Code -->
+                    <div class="mt-4">
+                      <form onsubmit="applyCoupon(event)" class="flex gap-2">
+                        <input type="text" id="couponCode" placeholder="Enter coupon code"
+                          class="flex-grow p-2 border rounded focus:ring-2 focus:ring-primary-accent">
+                        <button type="submit" class="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700">
+                          Apply
+                        </button>
+                      </form>
+                    </div>
+
+                    <!-- Checkout Button -->
+                    <button onclick="proceedToCheckout()"
+                      class="w-full mt-4 bg-primary-accent text-white px-6 py-3 rounded-lg hover:bg-primary-accent/90">
+                      Proceed to Checkout
                     </button>
                   </div>
-                  <div class="mt-4 flex items-center">
-                    <div class="flex items-center border rounded">
-                      <button onclick="updateQuantity('<%= item.product._id %>', 'decrease')" 
-                              class="px-3 py-1 hover:bg-gray-100">-</button>
-                      <span class="px-4 py-1 border-x"><%= item.quantity %></span>
-                      <button onclick="updateQuantity('<%= item.product._id %>', 'increase')" 
-                              class="px-3 py-1 hover:bg-gray-100">+</button>
-                    </div>
-                    <p class="ml-auto font-semibold">₹<%= item.product.price * item.quantity %></p>
-                  </div>
                 </div>
               </div>
-            <% }) %>
-          </div>
-
-          <!-- Cart Summary -->
-          <div class="lg:w-80 space-y-4">
-            <div class="border rounded-lg p-4">
-              <h2 class="text-lg font-semibold mb-4">Order Summary</h2>
-              <div class="space-y-2">
-                <div class="flex justify-between">
-                  <span class="text-gray-600">Subtotal</span>
-                  <span>₹<%= cart.subtotal %></span>
+              <% } else { %>
+                <!-- Empty Cart -->
+                <div class="text-center py-8">
+                  <i class="fas fa-shopping-cart text-gray-400 text-4xl mb-4"></i>
+                  <p class="text-gray-600">Your cart is empty</p>
+                  <a href="/shop"
+                    class="inline-block mt-4 bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-primary-accent/90">
+                    Continue Shopping
+                  </a>
                 </div>
-                <div class="flex justify-between">
-                  <span class="text-gray-600">Shipping</span>
-                  <span>₹<%= cart.shipping %></span>
-                </div>
-                <% if (cart.discount) { %>
-                  <div class="flex justify-between text-green-600">
-                    <span>Discount</span>
-                    <span>-₹<%= cart.discount %></span>
-                  </div>
                 <% } %>
-                <div class="border-t pt-2 mt-2">
-                  <div class="flex justify-between font-semibold">
-                    <span>Total</span>
-                    <span>₹<%= cart.total %></span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Coupon Code -->
-              <div class="mt-4">
-                <form onsubmit="applyCoupon(event)" class="flex gap-2">
-                  <input type="text" id="couponCode" placeholder="Enter coupon code" 
-                         class="flex-grow p-2 border rounded focus:ring-2 focus:ring-primary-accent">
-                  <button type="submit" 
-                          class="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700">
-                    Apply
-                  </button>
-                </form>
-              </div>
-
-              <!-- Checkout Button -->
-              <button onclick="proceedToCheckout()" 
-                      class="w-full mt-4 bg-primary-accent text-white px-6 py-3 rounded-lg hover:bg-primary-accent/90">
-                Proceed to Checkout
-              </button>
-            </div>
           </div>
-        </div>
-      <% } else { %>
-        <!-- Empty Cart -->
-        <div class="text-center py-8">
-          <i class="fas fa-shopping-cart text-gray-400 text-4xl mb-4"></i>
-          <p class="text-gray-600">Your cart is empty</p>
-          <a href="/shop" class="inline-block mt-4 bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-primary-accent/90">
-            Continue Shopping
-          </a>
-        </div>
-      <% } %>
-    </div>
-  </main>
-</div>
+    </main>
+  </div>
 
-<script>
-function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  sidebar.classList.toggle('hidden');
-  sidebar.classList.toggle('fixed');
-  sidebar.classList.toggle('top-0');
-  sidebar.classList.toggle('left-0');
-  sidebar.classList.toggle('z-50');
-  sidebar.classList.toggle('h-full');
-}
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('hidden');
+      sidebar.classList.toggle('fixed');
+      sidebar.classList.toggle('top-0');
+      sidebar.classList.toggle('left-0');
+      sidebar.classList.toggle('z-50');
+      sidebar.classList.toggle('h-full');
+    }
 
-function updateQuantity(productId, action) {
-  fetch(`/cart/update`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ productId, action })
-  }).then(() => window.location.reload());
-}
+    function updateQuantity(productId, action) {
+      fetch(`/cart/update`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productId, action })
+      }).then(() => window.location.reload());
+    }
 
-function removeFromCart(productId) {
-  if (confirm('Are you sure you want to remove this item?')) {
-    fetch(`/cart/remove`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ productId })
-    }).then(() => window.location.reload());
-  }
-}
+    function removeFromCart(productId) {
+      if (confirm('Are you sure you want to remove this item?')) {
+        fetch(`/cart/remove`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ productId })
+        }).then(() => window.location.reload());
+      }
+    }
 
-function applyCoupon(event) {
-  event.preventDefault();
-  const code = document.getElementById('couponCode').value;
-  fetch(`/cart/apply-coupon`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ code })
-  }).then(() => window.location.reload());
-}
+    function applyCoupon(event) {
+      event.preventDefault();
+      const code = document.getElementById('couponCode').value;
+      fetch(`/cart/apply-coupon`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code })
+      }).then(() => window.location.reload());
+    }
 
-function proceedToCheckout() {
-  window.location.href = '/checkout';
-}
-</script>
+    function proceedToCheckout() {
+      window.location.href = '/checkout';
+    }
+  </script>
 
-<%- include('../partials/footer') %> 
+  <%- include('../partials/footer') %>

@@ -1,177 +1,91 @@
 <%- include('../partials/header') %>
 
-<!-- Mobile Menu Button -->
-<div class="md:hidden p-4 bg-gray-100 flex justify-between items-center">
-  <h1 class="text-xl font-semibold text-gray-800">My Account</h1>
-  <button 
-    onclick="toggleSidebar()"
-    class="text-gray-600 hover:text-gray-900"
-  >
-    <i class="fas fa-bars text-xl"></i>
-  </button>
-</div>
+  <!-- Mobile Menu Button -->
+  <div class="md:hidden p-4 bg-gray-100 flex justify-between items-center">
+    <h1 class="text-xl font-semibold text-gray-800">My Account</h1>
+    <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900">
+      <i class="fas fa-bars text-xl"></i>
+    </button>
+  </div>
 
-<div class="flex flex-col md:flex-row">
-  <!-- Sidebar -->
-  <aside id="sidebar"
-      class="bg-gray-100 w-full md:w-72 min-h-screen hidden md:block transform transition-transform duration-300 ease-in-out">
-      <nav class="py-4">
-        <div class="px-4 md:px-6">
-          <div class="flex items-center space-x-4 mb-6">
-            <div
-              class="w-10 h-10 rounded-full bg-primary-accent text-white flex items-center justify-center flex-shrink-0">
-              <i class="fas fa-user text-lg"></i>
-            </div>
-            <div class="min-w-0 flex-1">
-              <h2 class="text-base font-semibold text-gray-800 truncate">
-                <%= user.fullname %>
-              </h2>
-              <p class="text-xs text-gray-600 truncate">
-                <%= user.email %>
-              </p>
-            </div>
-          </div>
+  <div class="flex flex-col md:flex-row">
+    <!-- Sidebar -->
+    <%- include('../partials/usersidebar') %>
 
-          <ul class="mt-4 space-y-2">
-            <li>
-              <a href="/profile/account" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                <i class="fas fa-th-large mr-3"></i>
-                <span>Dashboard</span>
-              </a>
-            </li>
-            <li>
-              <a href="/profile/account" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                <i class="fas fa-user mr-3"></i>
-                <span>Account Details</span>
-              </a>
-            </li>
-            <li>
-              <a href="/profile/addresses"
-                class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                <i class="fas fa-map-marker-alt mr-3"></i>
-                <span>Addresses</span>
-              </a>
-            </li>
-            <li>
-              <a href="/profile/orders" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                <i class="fas fa-shopping-bag mr-3"></i>
-                <span>Orders</span>
-              </a>
-            </li>
-            <li>
-              <a href="/profile/cart" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                <i class="fas fa-shopping-cart mr-3"></i>
-                <span>Cart</span>
-                <span class="ml-auto bg-primary-accent text-white px-2 py-1 rounded-full text-xs">
-                  cartCount
-                </span>
-              </a>
-            </li>
-            <li>
-              <a href="/profile/wishlist"
-                class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                <i class="fas fa-heart mr-3"></i>
-                <span>Wishlist</span>
-              </a>
-            </li>
-            <li>
-              <a href="/profile/wallet" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                <i class="fas fa-wallet mr-3"></i>
-                <span>Wallet</span>
-              </a>
-            </li>
-            <li>
-              <a href="/profile/coupons" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                <i class="fas fa-ticket-alt mr-3"></i>
-                <span>My Coupons</span>
-              </a>
-            </li>
-            <li>
-              <a href="/logout" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                <i class="fas fa-sign-out-alt mr-3"></i>
-                <span>Logout</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </aside>
-
-
-  <!-- Main Content -->
-  <main class="flex-grow p-4 md:py-12">
-    <% if (locals.message && locals.alertType) { %>
-      <div id="alertMessage" class="mb-4 p-3 rounded-md 
+    <!-- Main Content -->
+    <main class="flex-grow p-4 md:py-12">
+      <% if (locals.message && locals.alertType) { %>
+        <div id="alertMessage" class="mb-4 p-3 rounded-md 
            <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
-        <%= message %>
-      </div>
-    <% } %>
+          <%= message %>
+        </div>
+        <% } %>
 
-    <div class="bg-white rounded-lg shadow-lg p-6">
-      <h1 class="text-2xl font-semibold text-gray-800 mb-6">Welcome Back, <%= user.fullname %>!</h1>
-      
-      <!-- Dashboard Stats -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div class="bg-gray-50 p-4 rounded-lg">
-          <div class="flex items-center">
-            <i class="fas fa-shopping-bag text-primary-accent text-2xl"></i>
-            <div class="ml-4">
-              <p class="text-gray-600">Total Orders</p>
-              <h3 class="text-xl font-semibold">orderCount</h3>
+          <div class="bg-white rounded-lg shadow-lg p-6">
+            <h1 class="text-2xl font-semibold text-gray-800 mb-6">Welcome Back, <%= user.fullname %>!</h1>
+
+            <!-- Dashboard Stats -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <div class="flex items-center">
+                  <i class="fas fa-shopping-bag text-primary-accent text-2xl"></i>
+                  <div class="ml-4">
+                    <p class="text-gray-600">Total Orders</p>
+                    <h3 class="text-xl font-semibold">orderCount</h3>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <div class="flex items-center">
+                  <i class="fas fa-wallet text-primary-accent text-2xl"></i>
+                  <div class="ml-4">
+                    <p class="text-gray-600">Wallet Balance</p>
+                    <h3 class="text-xl font-semibold">walletBalance</h3>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <div class="flex items-center">
+                  <i class="fas fa-heart text-primary-accent text-2xl"></i>
+                  <div class="ml-4">
+                    <p class="text-gray-600">Wishlist Items</p>
+                    <h3 class="text-xl font-semibold">wishlistCount</h3>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <div class="flex items-center">
+                  <i class="fas fa-ticket-alt text-primary-accent text-2xl"></i>
+                  <div class="ml-4">
+                    <p class="text-gray-600">Available Coupons</p>
+                    <h3 class="text-xl font-semibold">couponCount</h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Recent Orders</h2>
+            <div class="overflow-x-auto">
+              <!-- Add your recent orders table here -->
             </div>
           </div>
-        </div>
-        
-        <div class="bg-gray-50 p-4 rounded-lg">
-          <div class="flex items-center">
-            <i class="fas fa-wallet text-primary-accent text-2xl"></i>
-            <div class="ml-4">
-              <p class="text-gray-600">Wallet Balance</p>
-              <h3 class="text-xl font-semibold">walletBalance</h3>
-            </div>
-          </div>
-        </div>
+    </main>
+  </div>
 
-        <div class="bg-gray-50 p-4 rounded-lg">
-          <div class="flex items-center">
-            <i class="fas fa-heart text-primary-accent text-2xl"></i>
-            <div class="ml-4">
-              <p class="text-gray-600">Wishlist Items</p>
-              <h3 class="text-xl font-semibold">wishlistCount</h3>
-            </div>
-          </div>
-        </div>
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('hidden');
+      sidebar.classList.toggle('fixed');
+      sidebar.classList.toggle('top-0');
+      sidebar.classList.toggle('left-0');
+      sidebar.classList.toggle('z-50');
+      sidebar.classList.toggle('h-full');
+    }
+  </script>
 
-        <div class="bg-gray-50 p-4 rounded-lg">
-          <div class="flex items-center">
-            <i class="fas fa-ticket-alt text-primary-accent text-2xl"></i>
-            <div class="ml-4">
-              <p class="text-gray-600">Available Coupons</p>
-              <h3 class="text-xl font-semibold">couponCount</h3>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Recent Orders -->
-      <h2 class="text-xl font-semibold text-gray-800 mb-4">Recent Orders</h2>
-      <div class="overflow-x-auto">
-        <!-- Add your recent orders table here -->
-      </div>
-    </div>
-  </main>
-</div>
-
-<script>
-function toggleSidebar() {
-  const sidebar = document.getElementById('sidebar');
-  sidebar.classList.toggle('hidden');
-  sidebar.classList.toggle('fixed');
-  sidebar.classList.toggle('top-0');
-  sidebar.classList.toggle('left-0');
-  sidebar.classList.toggle('z-50');
-  sidebar.classList.toggle('h-full');
-}
-</script>
-
-<%- include('../partials/footer') %> 
+  <%- include('../partials/footer') %>
