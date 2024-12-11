@@ -343,8 +343,12 @@
         const response = await axios.put(`/account/address/${addressId}`, data);
         
         if (response.data.success) {
+          toggleEditAddress(); // Close the modal first
           showAlert('Address updated successfully', 'success');
-          window.location.reload();
+          // Delay the reload to allow alert to be visible
+          setTimeout(() => {
+            window.location.reload();
+          }, 3500);
         } else {
           showAlert(response.data.message || 'Failed to update address', 'error');
         }
@@ -355,14 +359,18 @@
     }
 
     async function deleteAddress(addressId) {
-      if (!confirm('Are you sure you want to delete this address?')) return;
+      const confirmed = await customConfirm('Are you sure you want to delete this address?');
+      if (!confirmed) return;
 
       try {
         const response = await axios.delete(`/account/address/${addressId}`);
         
         if (response.data.success) {
           showAlert('Address deleted successfully', 'success');
-          window.location.reload();
+          // Delay the reload to allow alert to be visible
+          setTimeout(() => {
+            window.location.reload();
+          }, 3500);
         } else {
           showAlert(response.data.message || 'Failed to delete address', 'error');
         }
@@ -412,8 +420,12 @@
         const response = await axios.post('/account/add-address', data);
 
         if (response.data.success) {
+          toggleAddAddress(); // Close the modal first
           showAlert('Address added successfully', 'success');
-          window.location.reload();
+          // Delay the reload to allow alert to be visible
+          setTimeout(() => {
+            window.location.reload();
+          }, 3500);
         } else {
           showAlert(response.data.message || 'Failed to add address', 'error');
         }
