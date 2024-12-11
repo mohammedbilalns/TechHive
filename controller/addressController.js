@@ -1,4 +1,3 @@
-
 import userSchema from "../model/userModel.js";
 import { log } from "mercedlogger";
 import Address from "../model/addressModel.js";
@@ -16,17 +15,22 @@ const getAddresses = async(req,res)=>{
         log.red("FETCH_ADDRESSES_ERROR", error)
     }
 }
-
 // Add a new address
 const addAddress = async (req, res) => {
     try {
-        console.log("Session user:", req.session.user); // Debug log
-        console.log("Request body:", req.body); // Debug log
-
         if (!req.session.user || !req.session.user.id) {
             return res.status(401).json({ 
                 success: false, 
                 message: "User not authenticated" 
+            });
+        }
+
+        // Check existing address count
+        const addressCount = await Address.countDocuments({ userId: req.session.user.id });
+        if (addressCount >= 5) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Maximum limit of 5 addresses reached" 
             });
         }
 
@@ -52,10 +56,7 @@ const addAddress = async (req, res) => {
             alternatePhone
         });
 
-        console.log("New address object:", newAddress); // Debug log
-
         const savedAddress = await newAddress.save();
-        console.log("Saved address:", savedAddress); // Debug log
 
         res.status(201).json({ 
             success: true, 

@@ -22,7 +22,7 @@ router.post('/resend-otp', auth.isLogin, userController.resendOTP)
 // Google OAuth
 router.get("/auth/google",auth.isLogin,  userController.authGoogle)
 router.get('/auth/google/callback',auth.isLogin, userController.authGoogleCallback)
-// User Reset OTP 
+// User Reset Password
 router.get('/forgot-password', auth.isLogin, userController.loadForgotpassword);
 router.post('/forgot-password', auth.isLogin, userController.processForgotPassword);
 router.post('/verify-forgot-password-otp', auth.isLogin, userController.verifyForgotPasswordOTP);
@@ -30,14 +30,10 @@ router.post('/resend-forgot-password-otp', auth.isLogin, userController.resendFo
 router.get('/reset-password', auth.isLogin, userController.loadResetpassword);
 router.post('/reset-password', auth.isLogin, userController.resetPassword);
 
-// User Home
+// basic user and product routes
 router.get('/home', auth.checkSession, productController.loadHome)
-
-// Add the new category route here
 router.get('/category/:id', productController.viewCategory)
-
 router.get('/allproducts',  productController.loadAllProducts)
-
 router.get('/product/:id',  productController.viewProduct)
 router.get('/' , auth.isLogin, productController.loadLanding)
 
