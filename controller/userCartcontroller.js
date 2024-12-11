@@ -19,6 +19,7 @@ const getCart = async (req, res) => {
             }, 0);
         }
 
+        console.log(cart.items[0].productId._id)
         const shipping = 0; // Free shipping
         const total = subtotal + shipping;
 
