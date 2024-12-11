@@ -4,6 +4,7 @@ import userController from "../controller/userController.js"
 import auth from "../middlewares/auth.js"
 import productController from "../controller/productController.js"
 import addressController from "../controller/addressController.js"
+import useraccountController from "../controller/useraccountController.js"
 
 const router = Router()
 
@@ -53,5 +54,7 @@ router.post('/account/add-address', auth.checkSession, addressController.addAddr
 router.put('/account/address/:id', auth.checkSession, addressController.updateAddress);
 router.delete('/account/address/:id', auth.checkSession, addressController.deleteAddress);
 router.get('/account/address/:id', auth.checkSession, addressController.getAddress);
+
+router.post('/account/update-profile', auth.checkSession, useraccountController.updateProfile)
 
 export default router

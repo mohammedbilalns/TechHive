@@ -55,7 +55,7 @@
             </div>
 
             <!-- Edit Mode -->
-            <form id="editMode" action="/account/update-profile" method="POST" class="hidden space-y-6">
+            <form id="editMode" onsubmit="handleSubmit(event)" class="hidden space-y-6">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label class="block text-gray-600 mb-2">Full Name</label>
@@ -64,13 +64,13 @@
                 </div>
                 <div>
                   <label class="block text-gray-600 mb-2">Email Address</label>
-                  <input type="email" name="email" value="<%= user.email %>"
-                    class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                  <input type="email" value="<%= user.email %>"
+                    class="w-full p-2 border rounded-lg bg-gray-50" disabled>
                 </div>
                 <div>
                   <label class="block text-gray-600 mb-2">Phone Number</label>
-                  <input type="tel" name="phone" value="<%= user.phonenumber || '' %>"
-                    class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                  <input type="tel" value="<%= user.phonenumber || '' %>"
+                    class="w-full p-2 border rounded-lg bg-gray-50" disabled>
                 </div>
               </div>
               <div class="flex justify-end space-x-4">
@@ -87,8 +87,15 @@
     </main>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script type="module">
+    import { customConfirm, showAlert, closeCustomAlert } from '/js/util.js';
+    window.customConfirm = customConfirm;
+    window.showAlert = showAlert;
+    window.closeCustomAlert = closeCustomAlert;
+  </script>
   <script>
-    function toggleEdit() {
+    async function toggleEdit() {
       const viewMode = document.getElementById('viewMode');
       const editMode = document.getElementById('editMode');
       viewMode.classList.toggle('hidden');
@@ -103,6 +110,39 @@
       sidebar.classList.toggle('left-0');
       sidebar.classList.toggle('z-50');
       sidebar.classList.toggle('h-full');
+    }
+
+    async function handleSubmit(event) {
+      event.preventDefault();
+      
+      // Add confirmation before saving changes
+      const confirmed = await customConfirm('Are you sure you want to save these changes?');
+      if (!confirmed) return;
+      
+      const fullname = document.querySelector('input[name="fullname"]').value;
+      
+      try {
+        const response = await axios.post('/account/update-profile', {
+          fullname: fullname
+        });
+        
+        if (response.data.success) {
+          // Update the displayed name in view mode
+          document.querySelector('#viewMode .font-semibold').textContent = fullname;
+          
+          // Show success message using custom alert
+          showAlert(response.data.message, 'success');
+          
+          // Switch back to view mode
+          toggleEdit();
+        }
+      } catch (error) {
+        console.error('Error updating profile:', error);
+        
+        // Show error message using custom alert
+        const errorMessage = error.response?.data?.message || 'Error updating profile';
+        showAlert(errorMessage, 'error');
+      }
     }
   </script>
 
