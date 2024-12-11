@@ -78,6 +78,44 @@
     </div>
 </footer>
 
+<!-- Custom Confirm Modal -->
+<div id="customConfirmModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white p-8 rounded-lg shadow-xl">
+        <h2 class="text-xl font-bold mb-4">Confirm Action</h2>
+        <p id="confirmMessage" class="mb-6"></p>
+        <div class="flex justify-end space-x-4">
+            <button id="cancelConfirm" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
+                Cancel
+            </button>
+            <button id="confirmAction" class="px-4 py-2 bg-primary-accent text-white rounded hover:bg-red-600">
+                Confirm
+            </button>
+        </div>
+    </div>
+  </div>
+
+  <!-- Custom Alert Modal -->
+  <div id="customAlert" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50  items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-4">
+        <div id="alertContent" class="flex items-center mb-4">
+            <div id="alertIcon" class="mr-4 text-2xl">
+            </div>
+            <div class="flex-1">
+                <h3 id="alertTitle" class="font-semibold text-lg mb-1">
+                </h3>
+                <p id="alertMessage" class="text-gray-600">
+                </p>
+            </div>
+        </div>
+        <div class="flex justify-end">
+            <button onclick="closeCustomAlert()" class="px-4 py-2 bg-primary-accent text-white rounded hover:bg-red-600">
+                OK
+            </button>
+        </div>
+    </div>
+  </div>
+
+
 <script>
     // Auto-update year in copyright
     document.getElementById('year').textContent = new Date().getFullYear();

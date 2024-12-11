@@ -53,7 +53,7 @@ function showAlert(message, type = 'success') {
     }
 
     alertMessage.textContent = message;
-    alertModal.classList.remove('hidden');
+    alertModal.classList.replace('hidden', 'flex');
 
     // Auto close after 3 seconds
     const timeout = setTimeout(() => {
