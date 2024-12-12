@@ -11,8 +11,6 @@ const userOrderController = {
       const cart = await cartModel.findOne({ user: userId })
         .populate('items.productId');
 
-        console.log(cart)
-
       if (!cart || cart.items.length === 0) {
         return res.json({ 
           success: false, 
@@ -53,8 +51,8 @@ const userOrderController = {
 
       // Clear the cart
       await cartModel.findOneAndUpdate(
-        { userId },
-        { $set: { items: [], discount: 0 } }
+        { user: userId },
+        { $set: { items: [] } }
       );
 
       res.json({ 
