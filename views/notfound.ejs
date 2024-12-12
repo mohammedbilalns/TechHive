@@ -1,4 +1,4 @@
-<%- include('partials/authheader') %>
+<%- include(locals.fullname ? './partials/header' : './partials/authheader') %>
 <main class="flex-1 flex flex-col justify-center items-center bg-gray-100">
     <div class="bg-primary-white rounded-lg shadow-lg flex flex-col items-center text-center max-w-4xl w-full">
       <!-- Message Section -->

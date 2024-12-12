@@ -1,6 +1,6 @@
 <%- include(locals.fullname ? '../partials/header' : '../partials/authheader') %>
 
-
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 <main class="mx-auto my-5 md:my-10 container px-4 md:px-0">
   <!-- Breadcrumbs -->
@@ -232,22 +232,14 @@ function changeMainImage(src) {
 
   async function addToCart(productId) {
     try {
-      const response = await fetch('/cart/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ productId })
-      });
-      
-      const data = await response.json();
+      const { data } = await axios.post('/cart/add', { productId });
       
       // Use custom alert
       showAlert(data.message, data.success ? 'success' : 'error');
       
     } catch (error) {
       console.error('Error:', error);
-      showAlert('Error adding item to cart', 'error');
+      showAlert(error.response?.data?.message || 'Error adding item to cart', 'error');
     }
   }
 

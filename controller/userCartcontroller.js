@@ -7,9 +7,19 @@ const getCart = async (req, res) => {
         const cart = await cartSchema.findOne({ user: req.session.user.id })
             .populate('items.productId');
 
+        if (!cart) {
+            return res.render('user/cart', {
+                cart: null,
+                subtotal: "0.00",
+                shipping: "0.00",
+                total: "0.00",
+                user: req.session.user
+            });
+        }
+
         // Calculate cart totals
         let subtotal = 0;
-        if (cart && cart.items && cart.items.length > 0) {
+        if (cart.items && cart.items.length > 0) {
             subtotal = cart.items.reduce((total, item) => {
                 if (item.productId) {
                     const discountedPrice = item.productId.price * (1 - item.productId.discount/100);
@@ -19,7 +29,6 @@ const getCart = async (req, res) => {
             }, 0);
         }
 
-        console.log(cart.items[0].productId._id)
         const shipping = 0; // Free shipping
         const total = subtotal + shipping;
 
@@ -139,39 +148,14 @@ const applyCoupon = async (req, res) => {
         const { code } = req.body;
         const userId = req.session.user.id;
 
-        // You'll need to create a coupon schema and implement the coupon logic
-        // This is a placeholder response
         return res.status(200).json({
             success: false,
             message: "Coupon functionality not implemented yet"
         });
 
-        /* 
-        // Example implementation:
-        const coupon = await couponSchema.findOne({ 
-            code, 
-            isActive: true,
-            expiryDate: { $gt: new Date() }
-        });
-
-        if (!coupon) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid or expired coupon code"
-            });
-        }
-
-        const cart = await cartSchema.findOne({ user: userId });
-        cart.coupon = coupon._id;
-        await cart.save();
-
-        return res.status(200).json({
-            success: true,
-            message: "Coupon applied successfully"
-        });
-        */
+  
     } catch (error) {
-        console.error("Apply coupon error:", error);
+        log.red("APPLY_COUPON_ERROR", error);
         res.status(500).json({ 
             success: false, 
             message: "Error applying coupon" 
@@ -184,7 +168,6 @@ const updateQuantity = async (req, res) => {
         const { productId, action } = req.body;
         const userId = req.session.user.id;
 
-        // Find user's cart
         const cart = await cartSchema.findOne({ user: userId });
         if (!cart) {
             return res.status(404).json({ 
