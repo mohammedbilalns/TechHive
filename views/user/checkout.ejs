@@ -380,10 +380,7 @@
     axios.post('/order/place', orderData)
       .then(response => {
         if (response.data.success) {
-          showAlert('Order placed successfully!', 'success');
-          setTimeout(() => {
-            window.location.href = '/profile/orders';
-          }, 2000);
+          window.location.href = `/order/success/${response.data.orderId}`;
         } else {
           showAlert(response.data.message || 'Failed to place order', 'error');
         }

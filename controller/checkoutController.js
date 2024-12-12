@@ -10,7 +10,7 @@ const checkoutController = {
       const user = await userModel.findById(userId);
       const cart = await cartModel.findOne({ user: userId }).populate('items.productId');
       const addresses = await addressModel.find({ userId: userId });
-      console.log(addresses);
+    
       if (!cart || cart.items.length === 0) {
         return res.redirect('/profile/cart');
       }

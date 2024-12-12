@@ -87,7 +87,6 @@
     </main>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script type="module">
     import { customConfirm, showAlert, closeCustomAlert } from '/js/util.js';
     window.customConfirm = customConfirm;
@@ -129,8 +128,6 @@
         if (response.data.success) {
           // Update the displayed name in view mode
           document.querySelector('#viewMode .font-semibold').textContent = fullname;
-          
-          // Show success message using custom alert
           showAlert(response.data.message, 'success');
           
           // Switch back to view mode
@@ -139,7 +136,6 @@
       } catch (error) {
         console.error('Error updating profile:', error);
         
-        // Show error message using custom alert
         const errorMessage = error.response?.data?.message || 'Error updating profile';
         showAlert(errorMessage, 'error');
       }

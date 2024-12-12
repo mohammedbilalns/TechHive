@@ -7,6 +7,7 @@ import addressController from "../controller/addressController.js"
 import useraccountController from "../controller/useraccountController.js"
 import cartController from "../controller/userCartcontroller.js"
 import checkoutController from "../controller/checkoutController.js"
+import userOrderController from "../controller/userOrderController.js"
 const router = Router()
 
 router.use(express.static('static'))
@@ -66,8 +67,9 @@ router.post('/cart/apply-coupon', auth.checkSession, cartController.applyCoupon)
 
 // Add these routes to your existing routes
 router.get('/checkout', auth.checkSession, checkoutController.getCheckout);
-router.post('/order/place', auth.checkSession, checkoutController.placeOrder);
+router.post('/order/place', auth.checkSession, userOrderController.placeOrder);
 router.get('/cart/totals', cartController.getTotals);
+router.get('/order/success/:orderId', auth.checkSession, userOrderController.getOrderSuccess);
 
 
 
