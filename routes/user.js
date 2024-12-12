@@ -6,6 +6,7 @@ import productController from "../controller/productController.js"
 import addressController from "../controller/addressController.js"
 import useraccountController from "../controller/useraccountController.js"
 import cartController from "../controller/userCartcontroller.js"
+import checkoutController from "../controller/checkoutController.js"
 const router = Router()
 
 router.use(express.static('static'))
@@ -62,5 +63,9 @@ router.post('/cart/add', auth.checkSession, cartController.addToCart)
 router.post('/cart/update', auth.checkSession, cartController.updateQuantity)
 router.post('/cart/remove', auth.checkSession, cartController.removeFromCart)
 router.post('/cart/apply-coupon', auth.checkSession, cartController.applyCoupon)
+
+// Add these routes to your existing routes
+router.get('/checkout', auth.checkSession, checkoutController.getCheckout);
+router.post('/order/place', auth.checkSession, checkoutController.placeOrder);
 
 export default router

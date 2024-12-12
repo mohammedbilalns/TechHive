@@ -237,6 +237,8 @@
         .then(response => {
           if (response.data.success) {
             document.querySelector(`[data-product="${productId}"]`).remove();
+            showAlert('Item removed from cart successfully', 'success');
+            
             // If cart is empty, show empty cart message
             if (document.querySelectorAll('.cart-item').length === 0) {
               showEmptyCart();
@@ -295,6 +297,10 @@
     function toggleCouponForm() {
       const form = document.getElementById('couponForm');
       form.classList.toggle('hidden');
+    }
+
+    function proceedToCheckout() {
+      window.location.href = '/checkout';
     }
   </script>
 

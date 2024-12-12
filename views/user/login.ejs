@@ -1,6 +1,4 @@
 <%- include('../partials/authheader') %>
-<!-- Add Font Awesome CDN -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <main class="py-12 flex justify-center items-center" style="height: 70vh;">
   <div class="bg-primary-white rounded-lg shadow-lg flex flex-col lg:flex-row overflow-hidden max-w-4xl w-full">
@@ -56,7 +54,6 @@
           <script type="module">
             import { showAlert, closeCustomAlert } from '/js/util.js';
             showAlert('<%= message %>', '<%= alertType %>')
-            // Add closeCustomAlert to window for global access
             window.closeCustomAlert = closeCustomAlert;
           </script>
         <% } %>
@@ -71,14 +68,12 @@
 
 <script type="module">
   import { showAlert, closeCustomAlert } from '/js/util.js';
-
-  // Add closeCustomAlert to window for global access
+  
   window.closeCustomAlert = closeCustomAlert;
 
   document.getElementById('userlogin').addEventListener('submit', async function (event) {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault(); 
     
-    // Clear any existing alerts first
     closeCustomAlert();
     
     const email = document.querySelector('input[name="email"]');
@@ -109,12 +104,12 @@
       });
 
       if (response.data.success) {
+        
         window.location.href = '/home';
       }
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Login failed';
       showAlert(errorMessage, 'error');
-      // Retain the email in the input field
       email.value = email.value.trim();
     }
   });
@@ -136,4 +131,3 @@
   });
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
