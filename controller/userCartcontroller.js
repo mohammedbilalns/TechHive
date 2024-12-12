@@ -22,7 +22,7 @@ const getCart = async (req, res) => {
         if (cart.items && cart.items.length > 0) {
             subtotal = cart.items.reduce((total, item) => {
                 if (item.productId) {
-                    const discountedPrice = item.productId.price * (1 - item.productId.discount/100);
+                    const discountedPrice = item.productId.price * (1 - item.productId.discount / 100);
                     return total + (discountedPrice * item.quantity);
                 }
                 return total;
@@ -32,12 +32,12 @@ const getCart = async (req, res) => {
         const shipping = 0; // Free shipping
         const total = subtotal + shipping;
 
-        res.render('user/cart', { 
+        res.render('user/cart', {
             cart,
             subtotal: subtotal.toFixed(2),
             shipping: shipping.toFixed(2),
             total: total.toFixed(2),
-            user: req.session.user 
+            user: req.session.user
         });
     } catch (error) {
         console.error("Get cart error:", error);
@@ -61,8 +61,8 @@ const addToCart = async (req, res) => {
         // Check if product exists and has stock
         const product = await productSchema.findById(productId);
         if (!product || product.stock <= 0) {
-            return res.status(400).json({ 
-                success: false, 
+            return res.status(400).json({
+                success: false,
                 message: product ? "Product is out of stock" : "Product not found"
             });
         }
@@ -128,7 +128,7 @@ const removeFromCart = async (req, res) => {
         }
 
         // Remove the item from cart
-        cart.items = cart.items.filter(item => 
+        cart.items = cart.items.filter(item =>
             item.productId.toString() !== productId
         );
 
@@ -136,9 +136,9 @@ const removeFromCart = async (req, res) => {
         res.status(200).json({ success: true });
     } catch (error) {
         console.error("Remove from cart error:", error);
-        res.status(500).json({ 
-            success: false, 
-            message: "Error removing product from cart" 
+        res.status(500).json({
+            success: false,
+            message: "Error removing product from cart"
         });
     }
 }
@@ -153,12 +153,12 @@ const applyCoupon = async (req, res) => {
             message: "Coupon functionality not implemented yet"
         });
 
-  
+
     } catch (error) {
         log.red("APPLY_COUPON_ERROR", error);
-        res.status(500).json({ 
-            success: false, 
-            message: "Error applying coupon" 
+        res.status(500).json({
+            success: false,
+            message: "Error applying coupon"
         });
     }
 }
@@ -170,30 +170,30 @@ const updateQuantity = async (req, res) => {
 
         const cart = await cartSchema.findOne({ user: userId });
         if (!cart) {
-            return res.status(404).json({ 
-                success: false, 
-                message: "Cart not found" 
+            return res.status(404).json({
+                success: false,
+                message: "Cart not found"
             });
         }
 
         // Find the product
         const product = await productSchema.findById(productId);
         if (!product) {
-            return res.status(404).json({ 
-                success: false, 
-                message: "Product not found" 
+            return res.status(404).json({
+                success: false,
+                message: "Product not found"
             });
         }
 
         // Find the item in cart
-        const cartItem = cart.items.find(item => 
+        const cartItem = cart.items.find(item =>
             item.productId.toString() === productId
         );
 
         if (!cartItem) {
-            return res.status(404).json({ 
-                success: false, 
-                message: "Product not found in cart" 
+            return res.status(404).json({
+                success: false,
+                message: "Product not found in cart"
             });
         }
 
@@ -201,23 +201,23 @@ const updateQuantity = async (req, res) => {
         if (action === 'increase') {
             // Check maximum limit
             if (cartItem.quantity >= 4) {
-                return res.status(400).json({ 
-                    success: false, 
-                    message: "Maximum quantity limit (4) reached" 
+                return res.status(400).json({
+                    success: false,
+                    message: "Maximum quantity limit (4) reached"
                 });
             }
             // Check stock availability
             if (cartItem.quantity >= product.stock) {
-                return res.status(400).json({ 
-                    success: false, 
-                    message: "Not enough stock available" 
+                return res.status(400).json({
+                    success: false,
+                    message: "Not enough stock available"
                 });
             }
             cartItem.quantity += 1;
         } else if (action === 'decrease') {
             if (cartItem.quantity <= 1) {
                 // Remove item if quantity would go below 1
-                cart.items = cart.items.filter(item => 
+                cart.items = cart.items.filter(item =>
                     item.productId.toString() !== productId
                 );
             } else {
@@ -231,12 +231,12 @@ const updateQuantity = async (req, res) => {
         // Calculate new totals
         const updatedCart = await cartSchema.findOne({ user: userId })
             .populate('items.productId');
-        
+
         let subtotal = 0;
         if (updatedCart && updatedCart.items.length > 0) {
             subtotal = updatedCart.items.reduce((total, item) => {
                 if (item.productId) {
-                    const price = item.productId.price * (1 - item.productId.discount/100);
+                    const price = item.productId.price * (1 - item.productId.discount / 100);
                     return total + (price * item.quantity);
                 }
                 return total;
@@ -259,10 +259,10 @@ const updateQuantity = async (req, res) => {
     }
 }
 
-export default { 
-    getCart, 
-    addToCart, 
-    updateQuantity, 
-    removeFromCart, 
-    applyCoupon 
+export default {
+    getCart,
+    addToCart,
+    updateQuantity,
+    removeFromCart,
+    applyCoupon
 }

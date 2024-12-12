@@ -53,11 +53,12 @@
           </span>
         </div>
         <% if (locals.message && locals.alertType) { %>
-          <div id="alertMessage" 
-               class="mb-4 p-3 rounded-md 
-               <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
-            <%= message %>
-          </div>
+          <script type="module">
+            import { showAlert, closeCustomAlert } from '/js/util.js';
+            showAlert('<%= message %>', '<%= alertType %>')
+            // Add closeCustomAlert to window for global access
+            window.closeCustomAlert = closeCustomAlert;
+          </script>
         <% } %>
         <button type="submit" class="w-full py-2 mb-2 text-white bg-primary-accent rounded-md">Log In</button>
       </form>
@@ -68,58 +69,71 @@
 </main>
 <%- include('../partials/authfooter') %>
 
-<script>
-document.getElementById('togglePassword').addEventListener('click', function() {
-  const passwordInput = document.querySelector('input[name="password"]');
-  const eyeIcon = this.querySelector('i');
-  
-  // Toggle password visibility
-  if (passwordInput.type === 'password') {
-    passwordInput.type = 'text';
-    eyeIcon.classList.remove('fa-eye');
-    eyeIcon.classList.add('fa-eye-slash');
-  } else {
-    passwordInput.type = 'password';
-    eyeIcon.classList.remove('fa-eye-slash');
-    eyeIcon.classList.add('fa-eye');
-  }
-});
+<script type="module">
+  import { showAlert, closeCustomAlert } from '/js/util.js';
 
-document.getElementById('userlogin').addEventListener('submit', function (event) {
-  const email = document.querySelector('input[name="email"]');
-  const password = document.querySelector('input[name="password"]');
-  const form = document.getElementById('userlogin');
-  const loginButton = form.querySelector('button[type="submit"]');
-  let isValid = true;
+  // Add closeCustomAlert to window for global access
+  window.closeCustomAlert = closeCustomAlert;
 
-  // Clear any previous error messages
-  document.querySelectorAll('.error').forEach(el => el.remove());
+  document.getElementById('userlogin').addEventListener('submit', async function (event) {
+    event.preventDefault(); // Prevent default form submission
+    
+    // Clear any existing alerts first
+    closeCustomAlert();
+    
+    const email = document.querySelector('input[name="email"]');
+    const password = document.querySelector('input[name="password"]');
+    let isValid = true;
 
-  // Helper function to create styled error messages
-  function showError(message) {
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'mb-4 p-3 rounded-md bg-red-100 text-red-700 text-center error';
-    errorDiv.textContent = message;
-    loginButton.parentNode.insertBefore(errorDiv, loginButton);
-  }
+    // Email validation
+    if (!email.value.trim()) {
+      showAlert('Email is required.', 'error');
+      isValid = false;
+    } else if (!/^\S+@\S+\.\S+$/.test(email.value)) {
+      showAlert('Enter a valid email address.', 'error');
+      isValid = false;
+    }
 
-  // Email validation
-  if (!email.value.trim()) {
-    showError('Email is required.');
-    isValid = false;
-  } else if (!/^\S+@\S+\.\S+$/.test(email.value)) {
-    showError('Enter a valid email address.');
-    isValid = false;
-  }
+    // Password validation
+    if (!password.value.trim()) {
+      showAlert('Password is required.', 'error');
+      isValid = false;
+    }
 
-  // Password validation
-  if (!password.value.trim()) {
-    showError('Password is required.');
-    isValid = false;
-  }
+    if (!isValid) return;
 
-  // Prevent form submission if validation fails
-  if (!isValid) event.preventDefault();
-});
+    try {
+      const response = await axios.post('/login', {
+        email: email.value.trim(),
+        password: password.value.trim()
+      });
 
+      if (response.data.success) {
+        window.location.href = '/home';
+      }
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Login failed';
+      showAlert(errorMessage, 'error');
+      // Retain the email in the input field
+      email.value = email.value.trim();
+    }
+  });
+
+  document.getElementById('togglePassword').addEventListener('click', function() {
+    const passwordInput = document.querySelector('input[name="password"]');
+    const eyeIcon = this.querySelector('i');
+    
+    // Toggle password visibility
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      eyeIcon.classList.remove('fa-eye');
+      eyeIcon.classList.add('fa-eye-slash');
+    } else {
+      passwordInput.type = 'password';
+      eyeIcon.classList.remove('fa-eye-slash');
+      eyeIcon.classList.add('fa-eye');
+    }
+  });
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

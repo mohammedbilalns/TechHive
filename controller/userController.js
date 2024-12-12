@@ -4,8 +4,6 @@ import bcrypt from "bcryptjs";
 import authUtils from "../utils/authUtils.js";
 import { config } from "dotenv";
 import passport from "passport"; 
-import Address from "../model/addressModel.js";
-import addressSchema from "../model/addressModel.js";
 config();
 
 // ---- User Login ----  
@@ -16,7 +14,7 @@ const loadLogin = (req, res) => {
     res.render('user/login', {message, alertType, email});
 };
 
-// Verify user login credentials
+// Verify user login 
 const verifyLogin = async (req, res) => {
     try {
         let { email, password } = req.body;
@@ -24,22 +22,45 @@ const verifyLogin = async (req, res) => {
         password = password.trim()
         const user = await userSchema.findOne({ email });
 
-        // If no user is found, show an error message
-        if (!user) return res.redirect('/login?message=Invalid+credentials&alertType=error');
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Email or password is incorrect. Please try again.'
+            });
+        }
 
-        // Check if user's status is pending
+        // Check if user's status is pending and delete if found
         if (user.status === "Pending") {
-            return res.redirect(`/login?message=Please+wait+for+some+time+for+sign+up+again&alertType=warning&email=${email}`);
+            await userSchema.deleteOne({ _id: user._id });
+            return res.status(401).json({
+                success: false,
+                message: 'Your registration was incomplete. Please sign up again.'
+            });
         }
 
         //check the user is active 
-        if(user.status != "Active") return res.redirect(`/login?message=Your+account+is+currently+blocked&alertType=error&email=${email}` )
+        if(user.status != "Active") {
+            return res.status(401).json({
+                success: false,
+                message: 'Your account has been blocked. Please contact support.'
+            });
+        }
         
         // Check if the user used Google login
-        if (!user.password) return res.redirect(`/login?message=Please+use+Google+login&alertType=success&email=${email}`);
+        if (!user.password) {
+            return res.status(401).json({
+                success: false,
+                message: 'This email is registered with Google. Please use Google login.'
+            });
+        }
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.redirect(`/login?message=Invalid+credentials&alertType=error&email=${email}`);
+        if (!isMatch) {
+            return res.status(401).json({
+                success: false,
+                message: 'Email or password is incorrect. Please try again.'
+            });
+        }
 
         // Store user information in the session upon successful login
         req.session.user = {
@@ -48,11 +69,17 @@ const verifyLogin = async (req, res) => {
             email: user.email
         };
 
-        // Redirect to the home page after successful login
-        res.redirect('/home');
+        res.json({
+            success: true,
+            message: 'Login successful'
+        });
+        
     } catch (error) {
         log.red("ERROR", error);
-        res.redirect('/login?message=Something+went+wrong&alertType=error');
+        res.status(500).json({
+            success: false,
+            message: 'Something went wrong'
+        });
     }
 };
 
