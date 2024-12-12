@@ -67,5 +67,8 @@ router.post('/cart/apply-coupon', auth.checkSession, cartController.applyCoupon)
 // Add these routes to your existing routes
 router.get('/checkout', auth.checkSession, checkoutController.getCheckout);
 router.post('/order/place', auth.checkSession, checkoutController.placeOrder);
+router.get('/cart/totals', cartController.getTotals);
+
+
 
 export default router
