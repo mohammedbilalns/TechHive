@@ -1,0 +1,72 @@
+<%- include(locals.fullname ? '../partials/header' : '../partials/authheader') %>
+
+<main class="container mx-auto px-4 py-8 w-[70%] min-h-[calc(100vh-200px)]">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-semibold">Search Results for "<%= query %>"</h1>
+        <div class="flex items-center">
+            <label class="mr-2">Sort by:</label>
+            <select id="sortSelect" class="border rounded-md px-3 py-1">
+                <option value="featured">Featured</option>
+                <option value="newest">New Arrivals</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+                <option value="name_asc">Name: A-Z</option>
+                <option value="name_desc">Name: Z-A</option>
+                <option value="rating">Average Rating</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6" id="productsGrid">
+        <% products.forEach(product => { %>
+            <div class="border rounded-lg p-4 hover:shadow-lg transition-shadow">
+                <a href="/product/<%= product._id %>">
+                    <img src="<%= product.images[0].path %>" 
+                         alt="<%= product.name %>" 
+                         class="w-full h-48 object-cover rounded-lg mb-4"/>
+                    <h2 class="text-lg font-semibold mb-2"><%= product.name %></h2>
+                    <div class="flex items-center gap-2 mb-2">
+                        <% if (product.discount > 0) { %>
+                            <p class="text-red-600 font-semibold">
+                                ₹<%= (product.price * (1 - product.discount/100)).toFixed(2) %>
+                            </p>
+                            <p class="text-gray-500 line-through text-sm">
+                                ₹<%= product.price.toFixed(2) %>
+                            </p>
+                        <% } else { %>
+                            <p class="text-red-600 font-semibold">₹<%= product.price.toFixed(2) %></p>
+                        <% } %>
+                    </div>
+                </a>
+            </div>
+        <% }); %>
+    </div>
+
+    <% if (products.length === 0) { %>
+        <div class="text-center py-8">
+            <p class="text-gray-600">No products found matching your search.</p>
+        </div>
+    <% } %>
+</main>
+
+<script>
+document.getElementById('sortSelect').addEventListener('change', async function() {
+    const sortBy = this.value;
+    const searchQuery = '<%= query %>';
+    
+    try {
+        const response = await fetch(`/search?q=${searchQuery}&sort=${sortBy}`);
+        const html = await response.text();
+        
+        // Update the page content without full reload
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newProductsGrid = doc.getElementById('productsGrid');
+        document.getElementById('productsGrid').innerHTML = newProductsGrid.innerHTML;
+    } catch (error) {
+        console.error('Error sorting products:', error);
+    }
+});
+</script>
+
+<%- include('../partials/footer') %> 

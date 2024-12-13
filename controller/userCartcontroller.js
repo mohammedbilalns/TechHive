@@ -29,7 +29,7 @@ const getCart = async (req, res) => {
             }, 0);
         }
 
-        const shipping = 0; // Free shipping
+        const shipping = 0; 
         const total = subtotal + shipping;
 
         res.render('user/cart', {
@@ -37,7 +37,8 @@ const getCart = async (req, res) => {
             subtotal: subtotal.toFixed(2),
             shipping: shipping.toFixed(2),
             total: total.toFixed(2),
-            user: req.session.user
+            user: req.session.user,
+            page: 'cart'
         });
     } catch (error) {
         console.error("Get cart error:", error);

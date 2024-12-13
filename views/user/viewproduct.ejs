@@ -87,9 +87,9 @@
           </div>
         <% } %>
         <p class="mb-2">
-          <strong>Status:</strong> 
+          <strong>Stock:</strong> 
           <% if (product.stock > 0) { %>
-            <span class="text-green-600">Available</span>
+            <span class="text-green-600"><%= product.stock %> units available</span>
           <% } else { %>
             <span class="text-primary-accent">Out of Stock</span>
           <% } %>
@@ -98,10 +98,6 @@
 
       <!-- Action Buttons -->
       <div class="flex gap-4 mb-6">
-        <button class="bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors <%= !product.stock ? 'opacity-50 cursor-not-allowed' : '' %>"
-                <%= !product.stock ? 'disabled' : '' %>>
-          Buy Now
-        </button>
         <button onclick="addToCart('<%= product._id %>')" 
                 class="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition-colors <%= !product.stock ? 'opacity-50 cursor-not-allowed' : '' %>"
                 <%= !product.stock ? 'disabled' : '' %>>

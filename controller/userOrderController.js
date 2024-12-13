@@ -110,6 +110,7 @@ const userOrderController = {
       res.render('user/orders', { 
         orders,
         user: req.session.user, 
+        page: 'orders'
       });
     } catch (error) {
       console.error('Get orders error:', error);

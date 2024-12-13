@@ -42,10 +42,17 @@
                 <!-- Desktop Search and Icons -->
                 <div class="hidden md:flex items-center space-x-4">
                     <div class="relative">
-                        <input type="text" 
-                               placeholder="What are you looking for?" 
-                               class="border rounded-md px-4 py-2 w-64"
-                        />
+                        <form action="/search" method="GET" class="flex">
+                            <input type="text" 
+                                   name="q"
+                                   placeholder="What are you looking for?" 
+                                   class="border rounded-md px-4 py-2 w-64"
+                                   required
+                            />
+                            <button type="submit" class="ml-2 bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-900">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
                     </div>
                     <div class="flex space-x-4">
                         <a href="/profile/wishlist" class="text-gray-600 hover:text-gray-900" aria-label="Wishlist">
@@ -99,10 +106,17 @@
                 <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600">About</a>
                 <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600">Logout</a>
                 <div class="px-3 py-2">
-                    <input type="text" 
-                           placeholder="What are you looking for?" 
-                           class="w-full border rounded-md px-4 py-2"
-                    />
+                    <form action="/search" method="GET" class="flex">
+                        <input type="text" 
+                               name="q"
+                               placeholder="What are you looking for?" 
+                               class="w-full border rounded-md px-4 py-2"
+                               required
+                        />
+                        <button type="submit" class="ml-2 bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-900">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
                 </div>
                 <div class="flex justify-start space-x-4 px-3 py-2">
                     <a href="/profile/wishlist" class="text-gray-600 hover:text-gray-900" aria-label="Wishlist">
