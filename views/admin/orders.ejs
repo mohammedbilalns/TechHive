@@ -23,16 +23,17 @@
               <span>Products</span>
             </a>
           </li>
+          
           <li>
-            <a href="/admin/customers"
-              class="flex items-center px-4 py-2 bg-primary-accent text-gray-200 hover:bg-primary-hover rounded-lg">
+            <a href="/admin/categories"
+              class="flex items-center px-4 py-2  text-gray-800 hover:bg-gray-200 rounded-lg">
               <i class="fas fa-layer-group mr-3"></i>
               <span>Category</span>
             </a>
 
           <li>
             <a href="/admin/orders" 
-              class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              class="flex items-center px-4 py-2 bg-primary-accent text-gray-200 hover:bg-primary-hover rounded-lg">
               <i class="fas fa-shopping-cart mr-3"></i>
               <span>Orders</span>
             </a>
@@ -171,9 +172,8 @@
                       </button>
                     </div>
                   </td>
-                  <td class="px-6 py-3">
+                  <td class="px-6 py-3 whitespace-nowrap overflow-hidden text-ellipsis">
                     <%= order.userId.fullname %>
-                    <div class="text-xs text-gray-500"><%= order.userId.email %></div>
                   </td>
                   <td class="px-6 py-3">
                     <%= order.shippingAddress.name %><br>
@@ -203,21 +203,21 @@
                   </td>
                   <td class="px-6 py-3"><%= new Date(order.createdAt).toLocaleDateString() %></td>
                   <td class="px-6 py-3">
-                    <% if (order.status !== 'Delivered' && order.status !== 'Cancelled') { %>
+                    <% if (order.status !== 'delivered' && order.status !== 'cancelled') { %>
                       <div class="inline-flex items-center">
                         <select id="status-<%= order._id %>" class="border rounded px-2 py-1 mr-2">
-                          <% if (order.status === 'Pending') { %>
-                            <option value="Processing">Processing</option>
-                            <option value="Shipped">Shipped</option>
-                            <option value="Delivered">Delivered</option>
-                            <option value="Cancelled">Cancelled</option>
-                          <% } else if (order.status === 'Processing') { %>
-                            <option value="Shipped">Shipped</option>
-                            <option value="Delivered">Delivered</option>
-                            <option value="Cancelled">Cancelled</option>
-                          <% } else if (order.status === 'Shipped') { %>
-                            <option value="Delivered">Delivered</option>
-                            <option value="Cancelled">Cancelled</option>
+                          <% if (order.status === 'pending') { %>
+                            <option value="processing">Processing</option>
+                            <option value="shipped">Shipped</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
+                          <% } else if (order.status === 'processing') { %>
+                            <option value="shipped">Shipped</option>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
+                          <% } else if (order.status === 'shipped') { %>
+                            <option value="delivered">Delivered</option>
+                            <option value="cancelled">Cancelled</option>
                           <% } %>
                         </select>
                         <button onclick="updateOrderStatus('<%= order._id %>')" 
@@ -338,4 +338,13 @@
       detailsRow.classList.add('hidden');
     }
   }
+
+  document.querySelectorAll('.status-dropdown, .update-status-btn').forEach(element => {
+    const orderId = element.dataset.orderId;
+    const order = orders.find(o => o._id === orderId);
+    
+    if (['Cancelled', 'Delivered'].includes(order.status)) {
+      element.disabled = true;
+    }
+  });
 </script>

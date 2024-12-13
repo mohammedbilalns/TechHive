@@ -37,11 +37,18 @@ const updateOrderStatus = async (req, res) => {
       });
     }
 
-    // Validate status transition
+    // Check if order is in a final state
+    if (['cancelled', 'delivered'].includes(order.status)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot update order in final state'
+      });
+    }
+
     const validTransitions = {
-      'Pending': ['Processing', 'Shipped', 'Delivered', 'Cancelled'],
-      'Processing': ['Shipped', 'Delivered', 'Cancelled'],
-      'Shipped': ['Delivered', 'Cancelled']
+      'pending': ['processing', 'shipped', 'delivered', 'cancelled'],
+      'processing': ['shipped', 'delivered', 'cancelled'],
+      'shipped': ['delivered', 'cancelled']
     };
 
     if (!validTransitions[order.status]?.includes(status)) {

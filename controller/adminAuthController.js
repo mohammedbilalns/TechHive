@@ -1,6 +1,5 @@
 import { log } from "mercedlogger";
 import { configDotenv } from "dotenv";
-
 import userSchema from "../model/userModel.js";
 
 configDotenv()

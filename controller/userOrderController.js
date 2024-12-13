@@ -145,7 +145,6 @@ const userOrderController = {
         });
       }
 
-      // Update order status
       order.status = 'cancelled';
       await order.save();
 
@@ -157,9 +156,7 @@ const userOrderController = {
         );
       }
 
-      // If payment was made, initiate refund process here
       if (order.paymentStatus === 'paid') {
-        // Add refund logic here
       }
 
       res.json({ 
