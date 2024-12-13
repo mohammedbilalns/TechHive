@@ -163,7 +163,7 @@
               <% orders.forEach((order) => { %>
                 <tr class="border-b hover:bg-gray-100">
                   <td class="px-6 py-3 font-medium">
-                    #<%= order._id.toString().slice(-6).toUpperCase() %>
+                    #<%= order._id.toString() %>
                     <div class="text-xs text-gray-500">
                       Items: <%= order.items.length %>
                       <button onclick="toggleOrderDetails('<%= order._id %>')" 
