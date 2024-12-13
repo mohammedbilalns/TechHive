@@ -45,7 +45,9 @@ router.get('/' , auth.isLogin, productController.loadLanding)
 router.get('profile/dashboard', auth.checkSession, userController.getDashboard)
 router.get('/profile/account', auth.checkSession, userController.getAccountDetails) 
 router.get('/profile/wishlist', auth.checkSession, userController.getWishlist)  
-router.get('/profile/orders', auth.checkSession, userController.getOrders)  
+router.get('/profile/orders', auth.checkSession, userOrderController.getOrders);
+router.get('/profile/orders/:orderId', auth.checkSession, userOrderController.getOrderDetails);
+router.post('/profile/orders/:orderId/cancel', auth.checkSession, userOrderController.cancelOrder);
 router.get('/profile/wallet', auth.checkSession, userController.getWallet)  
 
 
