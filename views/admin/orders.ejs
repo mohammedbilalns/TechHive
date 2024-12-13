@@ -1,0 +1,341 @@
+<%- include('../partials/adminheader') %>
+
+<div class="flex flex-col md:flex-row">
+  <aside id="sidebar"
+  class="bg-gray-100 w-full md:w-64 min-h-screen hidden md:block transform transition-transform duration-300 ease-in-out">
+  <aside id="sidebar"
+    class="bg-gray-100 w-full md:w-64 min-h-screen hidden md:block transform transition-transform duration-300 ease-in-out">
+    <nav class="py-4">
+      <div class="px-4 md:px-6">
+        <h2 class="text-sm font-semibold text-gray-600 uppercase">Menu</h2>
+        <ul class="mt-4 space-y-2">
+          <li>
+            <a href="/admin/dashboard" onclick="return false"
+              class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-th-large mr-3"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/products"
+              class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-box mr-3"></i>
+              <span>Products</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/customers"
+              class="flex items-center px-4 py-2 bg-primary-accent text-gray-200 hover:bg-primary-hover rounded-lg">
+              <i class="fas fa-layer-group mr-3"></i>
+              <span>Category</span>
+            </a>
+
+          <li>
+            <a href="/admin/orders" 
+              class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-shopping-cart mr-3"></i>
+              <span>Orders</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/coupons" onclick="return false"
+              class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-ticket-alt mr-3"></i>
+              <span>Coupon</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/banners" onclick="return false"
+              class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-images mr-3"></i>
+              <span>Banner</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/transactions" onclick="return false"
+              class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-receipt mr-3"></i>
+              <span>Transaction</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="px-4 md:px-6 mt-8">
+        <h2 class="text-sm font-semibold text-gray-600 uppercase">User Management</h2>
+        <ul class="mt-4 space-y-2">
+          <li>
+            <a href="/admin/admins" onclick="return false"
+              class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-user-shield mr-3"></i>
+              <span>Manage Admins</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/customers"
+              class="flex items-center px-4 py-2  text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-users mr-3"></i>
+              <span>Customers</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="px-4 md:px-6 mt-8">
+        <h2 class="text-sm font-semibold text-gray-600 uppercase">Others</h2>
+        <ul class="mt-4 space-y-2">
+          <li>
+            <a href="/admin/settings" onclick="return false"
+              class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-cogs mr-3"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/help" onclick="return false"
+              class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-question-circle mr-3"></i>
+              <span>Help</span>
+            </a>
+          </li>
+          <li>
+            <a href="/admin/logout" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
+              <i class="fas fa-sign-out-alt mr-3"></i>
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </aside>
+</aside>
+
+  <!-- Main Content -->
+  <main class="flex-grow p-4 md:py-12">
+    <% if (locals.message && locals.alertType) { %>
+      <div id="alertMessage" class="mb-4 p-3 rounded-md 
+           <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
+        <%= message %>
+      </div>
+    <% } %>
+
+    <div class="bg-primary-white rounded-lg shadow-lg w-full overflow-hidden">
+      <!-- Page Header -->
+      <div class="flex flex-col md:flex-row justify-between items-center bg-gray-50 px-4 md:px-6 py-4 border-b space-y-4 md:space-y-0">
+        <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Orders Dashboard</h1>
+        <div class="flex gap-4">
+          <div class="relative">
+            <input type="text" id="searchBox" placeholder="Search orders..."
+              class="w-full md:w-64 border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+              oninput="filterOrders()" />
+            <i class="fas fa-search absolute top-3 right-4 text-gray-400"></i>
+          </div>
+          <button class="flex items-center bg-primary-accent text-white px-4 py-2 rounded-md shadow w-full md:w-auto justify-center"
+            onclick="exportOrders()">
+            <i class="fas fa-download mr-2"></i> Export
+          </button>
+        </div>
+      </div>
+
+      <!-- Orders Table -->
+      <div class="overflow-x-auto mt-6">
+        <table class="min-w-full bg-gray-50 text-sm">
+          <thead>
+            <tr class="text-left text-gray-600">
+              <th class="px-6 py-3">Order ID</th>
+              <th class="px-6 py-3">Customer</th>
+              <th class="px-6 py-3">Shipping Address</th>
+              <th class="px-6 py-3">Total</th>
+              <th class="px-6 py-3">Payment Method</th>
+              <th class="px-6 py-3">Payment Status</th>
+              <th class="px-6 py-3">Order Status</th>
+              <th class="px-6 py-3">Order Date</th>
+              <th class="px-6 py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTable" class="text-gray-700">
+            <% if (orders.length === 0) { %>
+              <tr>
+                <td colspan="9" class="text-center py-4">No orders found</td>
+              </tr>
+            <% } else { %>
+              <% orders.forEach((order) => { %>
+                <tr class="border-b hover:bg-gray-100">
+                  <td class="px-6 py-3 font-medium">
+                    #<%= order._id.toString().slice(-6).toUpperCase() %>
+                    <div class="text-xs text-gray-500">
+                      Items: <%= order.items.length %>
+                      <button onclick="toggleOrderDetails('<%= order._id %>')" 
+                              class="text-blue-600 hover:text-blue-800 ml-2">
+                        View Details
+                      </button>
+                    </div>
+                  </td>
+                  <td class="px-6 py-3">
+                    <%= order.userId.fullname %>
+                    <div class="text-xs text-gray-500"><%= order.userId.email %></div>
+                  </td>
+                  <td class="px-6 py-3">
+                    <%= order.shippingAddress.name %><br>
+                    <span class="text-sm text-gray-500">
+                      <%= order.shippingAddress.houseName %>,
+                      <%= order.shippingAddress.localityStreet %>,
+                      <%= order.shippingAddress.city %>,
+                      <%= order.shippingAddress.state %> - 
+                      <%= order.shippingAddress.pincode %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-3">₹<%= order.totalAmount.toFixed(2) %></td>
+                  <td class="px-6 py-3"><%= order.paymentMethod %></td>
+                  <td class="px-6 py-3">
+                    <span class="px-3 py-1 rounded-full text-sm font-medium
+                      <%= order.paymentStatus === 'Paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">
+                      <%= order.paymentStatus %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-3">
+                    <span class="px-3 py-1 rounded-full text-sm font-medium
+                      <%= order.status === 'Delivered' ? 'bg-green-100 text-green-800' : 
+                         order.status === 'Cancelled' ? 'bg-red-100 text-red-800' :
+                         'bg-blue-100 text-blue-800' %>">
+                      <%= order.status %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-3"><%= new Date(order.createdAt).toLocaleDateString() %></td>
+                  <td class="px-6 py-3">
+                    <% if (order.status !== 'Delivered' && order.status !== 'Cancelled') { %>
+                      <div class="inline-flex items-center">
+                        <select id="status-<%= order._id %>" class="border rounded px-2 py-1 mr-2">
+                          <% if (order.status === 'Pending') { %>
+                            <option value="Processing">Processing</option>
+                            <option value="Shipped">Shipped</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Cancelled">Cancelled</option>
+                          <% } else if (order.status === 'Processing') { %>
+                            <option value="Shipped">Shipped</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Cancelled">Cancelled</option>
+                          <% } else if (order.status === 'Shipped') { %>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Cancelled">Cancelled</option>
+                          <% } %>
+                        </select>
+                        <button onclick="updateOrderStatus('<%= order._id %>')" 
+                          class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                          Update
+                        </button>
+                      </div>
+                    <% } %>
+                  </td>
+                </tr>
+                <!-- Order Details Row (Hidden by default) -->
+                <tr id="details-<%= order._id %>" class="hidden bg-gray-50">
+                  <td colspan="9" class="px-6 py-4">
+                    <div class="space-y-4">
+                      <h4 class="font-medium">Order Items:</h4>
+                      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <% order.items.forEach(item => { %>
+                          <div class="flex items-center space-x-4 bg-white p-3 rounded-lg shadow-sm">
+                            <img src="<%= item.product.images[0].path %>" 
+                                 alt="<%= item.product.name %>"
+                                 class="w-16 h-16 object-cover rounded">
+                            <div>
+                              <h5 class="font-medium"><%= item.product.name %></h5>
+                              <p class="text-sm text-gray-600">
+                                Qty: <%= item.quantity %> × ₹<%= item.price %>
+                                <% if (item.product.discount > 0) { %>
+                                  <span class="text-green-600">
+                                    (<%= item.product.discount %>% off)
+                                  </span>
+                                <% } %>
+                              </p>
+                            </div>
+                          </div>
+                        <% }); %>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              <% }); %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<%- include('../partials/adminfooter') %>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+  // Show toast message
+  function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `fixed top-4 right-4 p-4 rounded-md text-white ${
+      type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    } transition-opacity duration-300`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+
+  // Update order status
+  async function updateOrderStatus(orderId) {
+    try {
+      const status = document.getElementById(`status-${orderId}`).value;
+      const response = await axios.post(`/admin/orders/update-status/${orderId}`, { status });
+      
+      if (response.data.success) {
+        showToast(response.data.message);
+        // Reload the page to show updated status
+        location.reload();
+      } else {
+        showToast(response.data.message, 'error');
+      }
+    } catch (error) {
+      showToast(error.response?.data?.message || 'Error updating order status', 'error');
+    }
+  }
+
+  // Filter orders
+  function filterOrders() {
+    const searchText = document.getElementById('searchBox').value.toLowerCase();
+    const rows = document.querySelectorAll('#ordersTable tr');
+    
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      row.style.display = text.includes(searchText) ? '' : 'none';
+    });
+  }
+
+  // Export orders
+  async function exportOrders() {
+    try {
+      const response = await axios.get('/admin/orders/export', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'orders.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      showToast('Error exporting orders', 'error');
+    }
+  }
+
+  // Add this to your existing script section
+  function toggleOrderDetails(orderId) {
+    const detailsRow = document.getElementById(`details-${orderId}`);
+    if (detailsRow.classList.contains('hidden')) {
+      detailsRow.classList.remove('hidden');
+    } else {
+      detailsRow.classList.add('hidden');
+    }
+  }
+</script>

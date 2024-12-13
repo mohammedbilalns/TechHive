@@ -4,6 +4,7 @@ import adminAuthController from "../controller/adminAuthController.js"
 import adminAuth from "../middlewares/adminAuth.js"
 import adminCategoryController from "../controller/adminCategoryController.js"
 import adminProductController from "../controller/adminProductController.js"
+import adminOrderController from "../controller/adminOrderController.js"
 const router = Router()
 router.use(express.static('static'));
 
@@ -43,6 +44,9 @@ router.post('/products/add', adminProductController.productUpload.array('mainIma
 router.get('/products/edit/:productid', adminProductController.getEditProduct);
 router.post('/products/edit/:productid', adminProductController.productUpload.array('mainImages', 4), adminProductController.editProduct);
 
+//---- orders routes ----
+router.get('/orders', adminOrderController.getOrders)
+router.post('/orders/update-status/:orderId', adminOrderController.updateOrderStatus)
 
 export default router
 
