@@ -52,6 +52,13 @@
                   </p>
                 </div>
               </div>
+              <div class="mt-8 border-t pt-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Password Settings</h2>
+                <button onclick="togglePasswordChange()" 
+                  class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                  <i class="fas fa-key mr-2"></i> Change Password
+                </button>
+              </div>
             </div>
 
             <!-- Edit Mode -->
@@ -80,6 +87,37 @@
                 <button type="submit"
                   class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-primary-accent/90">
                   Save Changes
+                </button>
+              </div>
+            </form>
+
+            <form id="passwordChangeForm" onsubmit="handlePasswordChange(event)" class="hidden space-y-6 mt-8 border-t pt-6">
+              <h2 class="text-xl font-semibold text-gray-800 mb-4">Change Password</h2>
+              <div class="grid grid-cols-1 gap-6 max-w-md">
+                <div>
+                  <label class="block text-gray-600 mb-2">Current Password</label>
+                  <input type="password" name="currentPassword" required
+                    class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                </div>
+                <div>
+                  <label class="block text-gray-600 mb-2">New Password</label>
+                  <input type="password" name="newPassword" required
+                    class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                </div>
+                <div>
+                  <label class="block text-gray-600 mb-2">Confirm New Password</label>
+                  <input type="password" name="confirmPassword" required
+                    class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                </div>
+              </div>
+              <div class="flex justify-end space-x-4">
+                <button type="button" onclick="togglePasswordChange()" 
+                  class="px-4 py-2 border rounded-lg hover:bg-gray-50">
+                  Cancel
+                </button>
+                <button type="submit"
+                  class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-primary-accent/90">
+                  Update Password
                 </button>
               </div>
             </form>
@@ -137,6 +175,45 @@
         console.error('Error updating profile:', error);
         
         const errorMessage = error.response?.data?.message || 'Error updating profile';
+        showAlert(errorMessage, 'error');
+      }
+    }
+
+    function togglePasswordChange() {
+      const passwordForm = document.getElementById('passwordChangeForm');
+      passwordForm.classList.toggle('hidden');
+    }
+
+    async function handlePasswordChange(event) {
+      event.preventDefault();
+      
+      const currentPassword = event.target.currentPassword.value;
+      const newPassword = event.target.newPassword.value;
+      const confirmPassword = event.target.confirmPassword.value;
+      
+      if (newPassword !== confirmPassword) {
+        showAlert('New passwords do not match', 'error');
+        return;
+      }
+      
+      // Add confirmation before changing password
+      const confirmed = await customConfirm('Are you sure you want to change your password?');
+      if (!confirmed) return;
+      
+      try {
+        const response = await axios.post('/account/change-password', {
+          currentPassword,
+          newPassword
+        });
+        
+        if (response.data.success) {
+          showAlert(response.data.message, 'success');
+          event.target.reset();
+          togglePasswordChange();
+        }
+      } catch (error) {
+        console.error('Error changing password:', error);
+        const errorMessage = error.response?.data?.message || 'Error changing password';
         showAlert(errorMessage, 'error');
       }
     }

@@ -59,6 +59,7 @@ router.put('/account/address/:id', auth.checkSession, addressController.updateAd
 router.delete('/account/address/:id', auth.checkSession, addressController.deleteAddress);
 router.get('/account/address/:id', auth.checkSession, addressController.getAddress);
 router.post('/account/update-profile', auth.checkSession, useraccountController.updateProfile)
+router.post('/account/change-password', auth.checkSession, useraccountController.changePassword);
 
 
 // Cart Routes
