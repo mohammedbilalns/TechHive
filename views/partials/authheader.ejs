@@ -35,6 +35,23 @@
                     <a href="/logout" type="submit" class="text-gray-600 hover:text-gray-900">Log In</a>
                 </nav>
 
+                <!-- Add Desktop Search -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <div class="relative">
+                        <form action="/search" method="GET" class="flex">
+                            <input type="text" 
+                                   name="q"
+                                   placeholder="What are you looking for?" 
+                                   class="border rounded-md px-4 py-2 w-64"
+                                   required
+                            />
+                            <button type="submit" class="ml-2 bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-900">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
                 <!-- Mobile menu button -->
                 <div class="md:hidden">
                     <button type="button" 
@@ -64,6 +81,20 @@
                 <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600">Contact</a>
                 <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600">About</a>
                 <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600">Log In</a>
+                <!-- Add Mobile Search -->
+                <div class="px-3 py-2">
+                    <form action="/search" method="GET" class="flex">
+                        <input type="text" 
+                               name="q"
+                               placeholder="What are you looking for?" 
+                               class="w-full border rounded-md px-4 py-2"
+                               required
+                        />
+                        <button type="submit" class="ml-2 bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-900">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </header>
