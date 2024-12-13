@@ -173,7 +173,7 @@
                     </div>
                   </td>
                   <td class="px-6 py-3 whitespace-nowrap overflow-hidden text-ellipsis">
-                    <%= order.userId.fullname %>
+                    <%= order.userId.fullname[0].toUpperCase() + order.userId.fullname.slice(1) %>
                   </td>
                   <td class="px-6 py-3">
                     <%= order.shippingAddress.name %><br>

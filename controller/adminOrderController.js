@@ -59,6 +59,12 @@ const updateOrderStatus = async (req, res) => {
     }
 
     order.status = status;
+    
+    // Update payment status to paid when order is delivered
+    if (status === 'delivered') {
+      order.paymentStatus = 'paid';
+    }
+    
     await order.save();
 
     res.json({
