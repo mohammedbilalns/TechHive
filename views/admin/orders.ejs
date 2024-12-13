@@ -268,22 +268,14 @@
 <%- include('../partials/adminfooter') %>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script type="module">
+  import { customConfirm, showAlert, closeCustomAlert } from '/js/util.js';
+  window.customConfirm = customConfirm;
+  window.showAlert = showAlert;
+  window.closeCustomAlert = closeCustomAlert;
+</script>
+
 <script>
-  // Show toast message
-  function showToast(message, type = 'success') {
-    const toast = document.createElement('div');
-    toast.className = `fixed top-4 right-4 p-4 rounded-md text-white ${
-      type === 'success' ? 'bg-green-500' : 'bg-red-500'
-    } transition-opacity duration-300`;
-    toast.textContent = message;
-    document.body.appendChild(toast);
-
-    setTimeout(() => {
-      toast.style.opacity = '0';
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
-  }
-
   // Update order status
   async function updateOrderStatus(orderId) {
     try {
@@ -291,14 +283,15 @@
       const response = await axios.post(`/admin/orders/update-status/${orderId}`, { status });
       
       if (response.data.success) {
-        showToast(response.data.message);
-        // Reload the page to show updated status
-        location.reload();
+        showAlert(response.data.message, 'success', 3000);
+        setTimeout(() => {
+          location.reload();
+        }, 1500);
       } else {
-        showToast(response.data.message, 'error');
+        showAlert(response.data.message, 'error', 3000);
       }
     } catch (error) {
-      showToast(error.response?.data?.message || 'Error updating order status', 'error');
+      showAlert(error.response?.data?.message || 'Error updating order status', 'error', 3000);
     }
   }
 
@@ -325,7 +318,7 @@
       link.click();
       link.remove();
     } catch (error) {
-      showToast('Error exporting orders', 'error');
+      showAlert('Error exporting orders', 'error', 3000);
     }
   }
 
