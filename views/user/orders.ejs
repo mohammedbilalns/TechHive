@@ -51,6 +51,34 @@
 
               <!-- Order Items Preview -->
               <div class="p-4">
+                <!-- Payment and Delivery Info -->
+                <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <!-- Payment Information -->
+                  <div class="bg-gray-50 p-3 rounded-lg">
+                    <h4 class="font-medium text-gray-700 mb-2">Payment Information</h4>
+                    <div class="text-sm text-gray-600">
+                      <p>Method: <%= order.paymentMethod.toUpperCase() %></p>
+                      <p>Status: <span class="<%= order.paymentStatus === 'paid' ? 'text-green-600' : 'text-red-600' %>">
+                        <%= order.paymentStatus %>
+                      </span></p>
+                    </div>
+                  </div>
+
+                  <!-- Shipping Address -->
+                  <div class="bg-gray-50 p-3 rounded-lg">
+                    <h4 class="font-medium text-gray-700 mb-2">Shipping Address</h4>
+                    <div class="text-sm text-gray-600">
+                      <p><%= order.shippingAddress.name %></p>
+                      <p><%= order.shippingAddress.houseName %></p>
+                      <p><%= order.shippingAddress.localityStreet %></p>
+                      <p><%= order.shippingAddress.city %>, <%= order.shippingAddress.state %></p>
+                      <p>PIN: <%= order.shippingAddress.pincode %></p>
+                      <p>Phone: <%= order.shippingAddress.phone %></p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Order Items (existing code) -->
                 <% order.items.slice(0, 2).forEach(item => { %>
                   <div class="flex items-center mb-4 last:mb-0">
                     <img src="<%= item.product.images[0].path %>" 
