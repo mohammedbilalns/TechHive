@@ -309,6 +309,8 @@ const authGoogleCallback = (req, res) => {
 
 const logoutUser = (req,res)=>{
     
+  
+   
     req.session.destroy((err) => {
         if (err) {
           log.red('Error destroying session', err);
@@ -321,7 +323,7 @@ const logoutUser = (req,res)=>{
 
 
 
-// ---- forgot password ---- todo 
+// ---- forgot password ---- 
 const loadForgotpassword = (req, res) => {
     let message = req.query.message;
     let alertType = req.query.alertType;
@@ -543,7 +545,7 @@ const getWallet = (req,res)=>{
     }
 }
 
-// Add a new address
+
 
 
 export default {

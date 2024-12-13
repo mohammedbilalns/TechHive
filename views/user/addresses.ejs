@@ -54,19 +54,19 @@
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label class="block text-gray-600 mb-2">Name</label>
-                      <input type="text" name="name" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                      <input type="text" name="name" minlength="3" maxlength="50" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
                     </div>
                     <div>
                       <label class="block text-gray-600 mb-2">House Name</label>
-                      <input type="text" name="houseName" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                      <input type="text" name="houseName" minlength="3" maxlength="50" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
                     </div>
                     <div>
                       <label class="block text-gray-600 mb-2">Locality/Street</label>
-                      <input type="text" name="localityStreet" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                      <input type="text" name="localityStreet" minlength="3" maxlength="50" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
                     </div>
                     <div>
                       <label class="block text-gray-600 mb-2">City</label>
-                      <input type="text" name="city" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                      <input type="text" name="city" minlength="3" maxlength="50" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
                     </div>
                     <div>
                       <label class="block text-gray-600 mb-2">State</label>
@@ -136,11 +136,8 @@
             <!-- Address List -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <% addresses.forEach(address=> { %>
-                <div class="border rounded-lg p-4">
-                  <div class="flex justify-between items-start mb-2">
-                    <span class="inline-block bg-gray-100 text-gray-700 px-2 py-1 rounded text-sm">
-                      <%= address.label %>
-                    </span>
+                <div class="border rounded-lg p-4" data-address-id="<%= address._id %>">
+                  <div class="flex justify-end items-start mb-2">
                     <div class="flex space-x-2">
                       <button onclick="editAddress('<%= address._id %>')" class="text-blue-600 hover:text-blue-800">
                         <i class="fas fa-edit"></i>
@@ -187,19 +184,19 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-gray-600 mb-2">Name</label>
-            <input type="text" name="name" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <input type="text" name="name" minlength="3" maxlength="50" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
           </div>
           <div>
             <label class="block text-gray-600 mb-2">House Name</label>
-            <input type="text" name="houseName" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <input type="text" name="houseName" minlength="3" maxlength="50" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
           </div>
           <div>
             <label class="block text-gray-600 mb-2">Locality/Street</label>
-            <input type="text" name="localityStreet" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <input type="text" name="localityStreet" minlength="3" maxlength="50" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
           </div>
           <div>
             <label class="block text-gray-600 mb-2">City</label>
-            <input type="text" name="city" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <input type="text" name="city" minlength="3" maxlength="50" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
           </div>
           <div>
             <label class="block text-gray-600 mb-2">State</label>
@@ -343,12 +340,12 @@
         const response = await axios.put(`/account/address/${addressId}`, data);
         
         if (response.data.success) {
-          toggleEditAddress(); // Close the modal first
+          toggleEditAddress(); // Close the modal
           showAlert('Address updated successfully', 'success');
-          // Delay the reload to allow alert to be visible
-          setTimeout(() => {
-            window.location.reload();
-          }, 3500);
+          
+          // Update the address card in the UI
+          const addressCard = document.querySelector(`[data-address-id="${addressId}"]`);
+          addressCard.innerHTML = generateAddressCard(response.data.address);
         } else {
           showAlert(response.data.message || 'Failed to update address', 'error');
         }
@@ -367,10 +364,13 @@
         
         if (response.data.success) {
           showAlert('Address deleted successfully', 'success');
-          // Delay the reload to allow alert to be visible
-          setTimeout(() => {
-            window.location.reload();
-          }, 3500);
+          
+          // Remove the address card from the UI
+          const addressCard = document.querySelector(`[data-address-id="${addressId}"]`);
+          addressCard.remove();
+          
+          // Update the Add Address button
+          updateAddAddressButton();
         } else {
           showAlert(response.data.message || 'Failed to delete address', 'error');
         }
@@ -381,11 +381,46 @@
     }
 
     function validateAddressForm(data) {
-      // Basic validation
+      // Trim all input values
+      Object.keys(data).forEach(key => {
+        if (typeof data[key] === 'string') {
+          data[key] = data[key].trim();
+        }
+      });
+
+      // Check for empty fields after trimming
       if (!data.name || !data.houseName || !data.localityStreet || 
           !data.city || !data.state || !data.pincode || !data.phone) {
         showAlert('Please fill in all required fields', 'error');
         return false;
+      }
+
+      // Validate text fields (name, houseName, localityStreet, city)
+      const textPattern = /^[a-zA-Z0-9\s,.-]+$/;
+      const validationRules = [
+        { field: 'name', label: 'Name' },
+        { field: 'houseName', label: 'House Name' },
+        { field: 'localityStreet', label: 'Locality/Street' },
+        { field: 'city', label: 'City' }
+      ];
+
+      for (const rule of validationRules) {
+        // Check length constraints
+        if (data[rule.field].length < 3 || data[rule.field].length > 50) {
+          showAlert(`${rule.label} must be between 3 and 50 characters`, 'error');
+          return false;
+        }
+
+        if (!textPattern.test(data[rule.field])) {
+          showAlert(`${rule.label} can only contain letters, numbers, spaces, commas, periods, and hyphens`, 'error');
+          return false;
+        }
+
+        // Check for multiple consecutive spaces
+        if (/\s\s+/.test(data[rule.field])) {
+          showAlert(`${rule.label} cannot contain multiple consecutive spaces`, 'error');
+          return false;
+        }
       }
 
       // Pincode validation (6 digits)
@@ -420,12 +455,19 @@
         const response = await axios.post('/account/add-address', data);
 
         if (response.data.success) {
-          toggleAddAddress(); // Close the modal first
+          toggleAddAddress(); // Close the modal
           showAlert('Address added successfully', 'success');
-          // Delay the reload to allow alert to be visible
-          setTimeout(() => {
-            window.location.reload();
-          }, 3500);
+          
+          // Add the new address card to the UI
+          const addressContainer = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.gap-4');
+          const newAddressCard = document.createElement('div');
+          newAddressCard.innerHTML = generateAddressCard(response.data.address);
+          addressContainer.appendChild(newAddressCard.firstElementChild);
+          
+          // Update the Add Address button if limit reached
+          if (checkAddressLimit()) {
+            updateAddAddressButton();
+          }
         } else {
           showAlert(response.data.message || 'Failed to add address', 'error');
         }
@@ -451,6 +493,54 @@
     function checkAddressLimit() {
       const addressCount = document.querySelectorAll('.border.rounded-lg.p-4').length;
       return addressCount >= 5;
+    }
+
+    // Helper function to generate address card HTML
+    function generateAddressCard(address) {
+      return `
+        <div class="border rounded-lg p-4" data-address-id="${address._id}">
+          <div class="flex justify-end items-start mb-2">
+            <div class="flex space-x-2">
+              <button onclick="editAddress('${address._id}')" class="text-blue-600 hover:text-blue-800">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button onclick="deleteAddress('${address._id}')" class="text-red-600 hover:text-red-800">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          <p class="font-semibold">${address.name}</p>
+          <p class="font-semibold">${address.houseName}</p>
+          <p class="text-gray-600">${address.localityStreet}</p>
+          <p class="text-gray-600">${address.city}, ${address.state}</p>
+          <p class="text-gray-600">PIN: ${address.pincode}</p>
+          <p class="text-gray-600">Phone: ${address.phone}</p>
+        </div>
+      `;
+    }
+
+    // Helper function to update Add Address button state
+    function updateAddAddressButton() {
+      const addButton = document.querySelector('button[onclick="toggleAddAddress()"]');
+      const parent = addButton.parentElement;
+      
+      if (checkAddressLimit()) {
+        parent.innerHTML = `
+          <button 
+            class="bg-gray-400 text-white px-4 py-2 rounded-lg cursor-not-allowed"
+            disabled
+            title="Maximum limit of 5 addresses reached">
+            <i class="fas fa-plus mr-2"></i> Add New Address
+          </button>
+        `;
+      } else {
+        parent.innerHTML = `
+          <button onclick="toggleAddAddress()"
+            class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-primary-accent/90">
+            <i class="fas fa-plus mr-2"></i> Add New Address
+          </button>
+        `;
+      }
     }
   </script>
 

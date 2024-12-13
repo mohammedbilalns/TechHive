@@ -283,10 +283,27 @@
       const response = await axios.post(`/admin/orders/update-status/${orderId}`, { status });
       
       if (response.data.success) {
+        // Update the UI directly instead of refreshing
+        const statusCell = document.querySelector(`tr:has(#status-${orderId}) td:nth-child(7)`);
+        const statusSpan = statusCell.querySelector('span');
+        
+        // Update status class
+        statusSpan.className = `px-3 py-1 rounded-full text-sm font-medium ${
+          status === 'delivered' ? 'bg-green-100 text-green-800' : 
+          status === 'cancelled' ? 'bg-red-100 text-red-800' : 
+          'bg-blue-100 text-blue-800'
+        }`;
+        
+        // Update status text (capitalize first letter)
+        statusSpan.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+        
+        // If status is delivered or cancelled, remove the status update controls
+        if (status === 'delivered' || status === 'cancelled') {
+          const actionCell = document.querySelector(`tr:has(#status-${orderId}) td:last-child`);
+          actionCell.innerHTML = '';
+        }
+        
         showAlert(response.data.message, 'success', 3000);
-        setTimeout(() => {
-          location.reload();
-        }, 1500);
       } else {
         showAlert(response.data.message, 'error', 3000);
       }
