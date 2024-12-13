@@ -186,7 +186,7 @@
                     </span>
                   </td>
                   <td class="px-6 py-3">₹<%= order.totalAmount.toFixed(2) %></td>
-                  <td class="px-6 py-3"><%= order.paymentMethod %></td>
+                  <td class="px-6 py-3"><%= order.paymentMethod.toUpperCase() %></td>
                   <td class="px-6 py-3">
                     <span class="px-3 py-1 rounded-full text-sm font-medium
                       <%= order.paymentStatus === 'Paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">

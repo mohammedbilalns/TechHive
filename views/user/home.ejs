@@ -36,9 +36,9 @@
                 <img alt="<%= product.name %>" 
                      src="<%= product.images[0].path %>" 
                      class="w-full h-[100px] md:h-[120px] object-cover rounded-lg"/>
-                <div class="flex flex-col h-[64px]">
-                    <p class="text-black text-sm mt-2 h-[40px] line-clamp-2"><%= product.name %></p>
-                    <p class=" text-primary-accent px-2 py-1 rounded-lg mt-auto">₹<%= product.price.toFixed(2) %></p>
+                <div class="flex flex-col min-h-[64px]">
+                    <p class="text-black text-sm mt-2 line-clamp-2 overflow-hidden"><%= product.name %></p>
+                    <p class="text-primary-accent mt-1">₹<%= product.price.toFixed(2) %></p>
                 </div>
             </a>
         <% }); %>

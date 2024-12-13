@@ -13,28 +13,37 @@ const router = Router()
 
 router.use(express.static('static'))
 
-// User Login
-router.get('/login', auth.isLogin, userController.loadLogin)
-router.post('/login',auth.isLogin, userController.verifyLogin)
+//---- User Authentication ----
+router.route('/login') // login route
+    .all(auth.isLogin)
+     .get(userController.loadLogin)
+     .post(userController.verifyLogin)
+
 router.get('/logout',auth.checkSession, userController.logoutUser)
+router.route('/signup') // signup route
+    .all(auth.isLogin)
+    .get(userController.loadSignup)
+    .post(userController.registerUser)
 
-// User Signup
-router.get('/signup', auth.isLogin, userController.loadSignup)
-router.post('/signup', auth.isLogin, userController.registerUser)
-router.post('/verify-otp', auth.isLogin, userController.verifyOTP)
-router.post('/resend-otp', auth.isLogin, userController.resendOTP)
-// Google OAuth
-router.get("/auth/google",auth.isLogin,  userController.authGoogle)
+router.post('/verify-otp', auth.isLogin, userController.verifyOTP) // verify user otp 
+router.post('/resend-otp', auth.isLogin, userController.resendOTP) // resend otp 
+
+router.get("/auth/google",auth.isLogin,  userController.authGoogle) // google oAuth 
 router.get('/auth/google/callback',auth.isLogin, userController.authGoogleCallback)
-// User Reset Password
-router.get('/forgot-password', auth.isLogin, userController.loadForgotpassword);
-router.post('/forgot-password', auth.isLogin, userController.processForgotPassword);
-router.post('/verify-forgot-password-otp', auth.isLogin, userController.verifyForgotPasswordOTP);
-router.post('/resend-forgot-password-otp', auth.isLogin, userController.resendForgotPasswordOTP);
-router.get('/reset-password', auth.isLogin, userController.loadResetpassword);
-router.post('/reset-password', auth.isLogin, userController.resetPassword);
 
-// basic user and product routes
+router.route('/forgot-password') // user forgot passord 
+    .all(auth.isLogin)
+    .get(userController.loadForgotpassword)
+    .post(userController.processForgotPassword)
+router.post('/verify-forgot-password-otp', auth.isLogin, userController.verifyForgotPasswordOTP)
+router.post('/resend-forgot-password-otp', auth.isLogin, userController.resendForgotPasswordOTP)
+
+router.route('/reset-password') // user reset password 
+    .all(auth.isLogin)
+    .get(userController.loadResetpassword)
+    .post(userController.resetPassword)
+
+//---- user and product routes ---- 
 router.get('/home', auth.checkSession, productController.loadHome)
 router.get('/category/:id', productController.viewCategory)
 router.get('/allproducts',  productController.loadAllProducts)
@@ -42,38 +51,52 @@ router.get('/product/:id',  productController.viewProduct)
 router.get('/' , auth.isLogin, productController.loadLanding)
 
 
-// router for user dashboard
+//---- user dashboard ---- 
 router.get('profile/dashboard', auth.checkSession, userController.getDashboard)
 router.get('/profile/account', auth.checkSession, userController.getAccountDetails) 
 router.get('/profile/wishlist', auth.checkSession, userController.getWishlist)  
 router.get('/profile/orders', auth.checkSession, userOrderController.getOrders);
-router.get('/profile/orders/:orderId', auth.checkSession, userOrderController.getOrderDetails);
-router.post('/profile/orders/:orderId/cancel', auth.checkSession, userOrderController.cancelOrder);
 router.get('/profile/wallet', auth.checkSession, userController.getWallet)  
-
-
-// Address Routess 
 router.get('/profile/addresses', auth.checkSession, addressController.getAddresses)
-router.post('/account/add-address', auth.checkSession, addressController.addAddress);
-router.put('/account/address/:id', auth.checkSession, addressController.updateAddress);
-router.delete('/account/address/:id', auth.checkSession, addressController.deleteAddress);
-router.get('/account/address/:id', auth.checkSession, addressController.getAddress);
+
+
+
+//---- user Address management ---- 
+router.post('/account/add-address', auth.checkSession, addressController.addAddress); // add new address 
+
+router.route('/account/address/:id')
+  .all(auth.checkSession) 
+  .put(addressController.updateAddress) // Update address
+  .delete(addressController.deleteAddress) // Delete an address
+  .get(addressController.getAddress); // Get single address details
+
+// router.put('/account/address/:id', auth.checkSession, addressController.updateAddress); // update address 
+// router.delete('/account/address/:id', auth.checkSession, addressController.deleteAddress); // delete an address 
+// router.get('/account/address/:id', auth.checkSession, addressController.getAddress); // get single address details in the edit modal 
+
+//---- user profile management ---- s
 router.post('/account/update-profile', auth.checkSession, useraccountController.updateProfile)
 router.post('/account/change-password', auth.checkSession, useraccountController.changePassword);
 
 
-// Cart Routes
+//---- usr cart management ---- 
 router.get('/profile/cart', auth.checkSession, cartController.getCart)
 router.post('/cart/add', auth.checkSession, cartController.addToCart)
 router.post('/cart/update', auth.checkSession, cartController.updateQuantity)
 router.post('/cart/remove', auth.checkSession, cartController.removeFromCart)
 router.post('/cart/apply-coupon', auth.checkSession, cartController.applyCoupon)
 
+//---- user checkout management ----
 router.get('/checkout', auth.checkSession, checkoutController.getCheckout);
 router.post('/order/place', auth.checkSession, userOrderController.placeOrder);
 router.get('/cart/totals', cartController.getTotals);
-router.get('/order/success/:orderId', auth.checkSession, userOrderController.getOrderSuccess);
 
+//---- user order management 
+router.get('/order/success/:orderId', auth.checkSession, userOrderController.getOrderSuccess);
+router.get('/profile/orders/:orderId', auth.checkSession, userOrderController.getOrderDetails);
+router.post('/profile/orders/:orderId/cancel', auth.checkSession, userOrderController.cancelOrder);
+
+//---- search products ----
 router.get('/search', userSearchController.searchProducts);
 
 

@@ -18,7 +18,7 @@ const PORT = process.env.PORT
 app.set("view engine", "ejs")
 
 // Middlewares
-app.use(nocache())  // Prevent caching
+app.use(nocache())
 app.use(session({
     secret: process.env.SESSIONSECRET,
     resave: false,
@@ -33,7 +33,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 // Routes
-app.use('/', userRoutes)  
+app.use('/', userRoutes)
 app.use('/admin', adminRoutes)
 
 // 404 handler
