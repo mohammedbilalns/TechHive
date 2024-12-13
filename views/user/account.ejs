@@ -102,7 +102,9 @@
                 <div>
                   <label class="block text-gray-600 mb-2">New Password</label>
                   <input type="password" name="newPassword" required
+                    oninput="validatePassword(this)"
                     class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                  <p class="text-sm text-gray-500 mt-1">Must be at least 8 characters with 1 letter, 1 number, and 1 special character</p>
                 </div>
                 <div>
                   <label class="block text-gray-600 mb-2">Confirm New Password</label>
@@ -184,12 +186,32 @@
       passwordForm.classList.toggle('hidden');
     }
 
+    function validatePassword(input) {
+      const password = input.value;
+      // Simplified regex that correctly validates the requirements
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&]).{8,}$/;
+      
+      if (!passwordRegex.test(password)) {
+        input.setCustomValidity('Password must be at least 8 characters long and include at least one letter, one number, and one special character');
+      } else {
+        input.setCustomValidity('');
+      }
+    }
+
     async function handlePasswordChange(event) {
       event.preventDefault();
       
       const currentPassword = event.target.currentPassword.value;
       const newPassword = event.target.newPassword.value;
       const confirmPassword = event.target.confirmPassword.value;
+      
+      // Updated regex to match the validatePassword function
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&]).{8,}$/;
+      
+      if (!passwordRegex.test(newPassword)) {
+        showAlert('Password must be at least 8 characters long and include at least one letter, one number, and one special character', 'error');
+        return;
+      }
       
       if (newPassword !== confirmPassword) {
         showAlert('New passwords do not match', 'error');
