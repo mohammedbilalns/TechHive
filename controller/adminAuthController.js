@@ -42,6 +42,7 @@ const logoutAdmin = (req,res)=>{
     res.redirect('/admin/login?message=logged+out+successfully&alertType=success');
   });
 
+
 }
 //--- Admin Users Dashboard ----
 const getCustomers = async (req,res)=>{
@@ -101,7 +102,6 @@ const unblockCustomer = async (req, res)=>{
 }
 
 
-//---- Admin Products ---- 
 
 export default {
      loadLogin, verifyLogin , logoutAdmin,

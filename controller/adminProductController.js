@@ -5,7 +5,7 @@ import multer from "multer";
 import fs from "node:fs"
 import path from "node:path"
 
-// Add multer configuration for local storage
+//  multer configuration for local storage
 const productStorage = multer.diskStorage({
     destination: function (req, file, cb) {
         const dir = 'static/uploads/products';
@@ -200,7 +200,6 @@ const editProduct = async (req, res) => {
         // Handle image updates
         let images = [...product.images]; 
 
-        // Handle new images from the form
         if (req.files && req.files.length > 0) {
             const newImages = req.files.map(file => ({
                 path: file.path.replace('static/', '/'),

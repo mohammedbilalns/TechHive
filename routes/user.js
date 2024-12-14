@@ -70,11 +70,7 @@ router.route('/account/address/:id')
   .delete(addressController.deleteAddress) // Delete an address
   .get(addressController.getAddress); // Get single address details
 
-// router.put('/account/address/:id', auth.checkSession, addressController.updateAddress); // update address 
-// router.delete('/account/address/:id', auth.checkSession, addressController.deleteAddress); // delete an address 
-// router.get('/account/address/:id', auth.checkSession, addressController.getAddress); // get single address details in the edit modal 
-
-//---- user profile management ---- s
+  //---- user profile management ---- s
 router.post('/account/update-profile', auth.checkSession, useraccountController.updateProfile)
 router.post('/account/change-password', auth.checkSession, useraccountController.changePassword);
 

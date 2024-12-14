@@ -335,7 +335,7 @@
         const response = await axios.put(`/account/address/${addressId}`, data);
         
         if (response.data.success) {
-          toggleEditAddress(); // Close the modal first
+          toggleEditAddress(); // Close the modal 
           showAlert('Address updated successfully', 'success');
           setTimeout(() => {
             window.location.reload();
@@ -424,13 +424,11 @@
         return false;
       }
 
-      // Alternate phone validation (if provided)
       if (trimmedData.alternatePhone && !/^\d{10}$/.test(trimmedData.alternatePhone)) {
         showAlert('Please enter a valid 10-digit alternate phone number', 'error');
         return false;
       }
 
-      // Update the form with trimmed values
       const form = document.querySelector('#addAddressForm, #editAddressForm');
       form.querySelector('[name="name"]').value = trimmedData.name;
       form.querySelector('[name="houseName"]').value = trimmedData.houseName;
@@ -449,7 +447,6 @@
         if (response.data.success) {
           toggleAddAddress(); // Close the modal first
           showAlert('Address added successfully', 'success');
-          // Delay the reload to allow alert to be visible
           setTimeout(() => {
             window.location.reload();
           }, 1500);
@@ -461,7 +458,6 @@
         showAlert(errorMessage, 'error');
       }
     }
-    // Add this event listener to close the modal when clicking outside
     document.getElementById('addAddressModal').addEventListener('click', function(e) {
       if (e.target === this) {
         toggleAddAddress();

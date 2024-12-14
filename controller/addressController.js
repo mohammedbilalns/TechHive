@@ -18,7 +18,6 @@ const getAddresses = async (req, res) => {
 const addAddress = async (req, res) => {
     try {
 
-        // Check existing address count
         const addressCount = await Address.countDocuments({ userId: req.session.user.id });
         if (addressCount >= 4) {
             return res.status(400).json({
@@ -57,7 +56,7 @@ const addAddress = async (req, res) => {
             address: savedAddress
         });
     } catch (error) {
-        log.red("ADD_ADDRESS_ERROR", error); // Debug log
+        log.red("ADD_ADDRESS_ERROR", error); 
         res.status(500).json({
             success: false,
             message: "Failed to add address: " + error.message,
@@ -77,29 +76,6 @@ const updateAddress = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Missing required fields"
-            });
-        }
-
-        // Validate pincode and phone number format
-        if (!/^\d{6}$/.test(pincode)) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid pincode format"
-            });
-        }
-
-        if (!/^\d{10}$/.test(phone)) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid phone number format"
-            });
-        }
-
-        // If alternate phone is provided, validate its format
-        if (alternatePhone && !/^\d{10}$/.test(alternatePhone)) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid alternate phone number format"
             });
         }
 
