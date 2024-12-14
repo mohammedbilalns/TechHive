@@ -146,8 +146,6 @@ const removeFromCart = async (req, res) => {
 
 const applyCoupon = async (req, res) => {
     try {
-      //  const { code } = req.body;
-       // const userId = req.session.user.id;
 
         return res.status(200).json({
             success: false,
@@ -270,34 +268,12 @@ const updateQuantity = async (req, res) => {
 };
 
 
-const getTotals =  async (req, res) => {
-    try {
-      const userId = req.session.user.id;
-      const cart = await cartModel.findOne({ user: userId }).populate('items.productId');
-      
-      let subtotal = 0;
-      let totalSavings = 0;
-  
-      cart.items.forEach(item => {
-        const originalPrice = item.productId.price * item.quantity;
-        const discountedPrice = originalPrice * (1 - item.productId.discount/100);
-        subtotal += discountedPrice;
-        totalSavings += originalPrice - discountedPrice;
-      });
-  
-      const total = subtotal - (cart.discount || 0);
-  
-      res.json({ subtotal, total, totalSavings });
-    } catch (error) {
-      console.error('Error getting cart totals:', error);
-      res.status(500).json({ error: 'Failed to get cart totals' });
-    }
-  } 
+
 export default {
     getCart,
     addToCart,
     updateQuantity,
     removeFromCart,
     applyCoupon, 
-    getTotals
+    
 }

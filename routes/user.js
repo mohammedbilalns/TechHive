@@ -85,7 +85,7 @@ router.post('/cart/apply-coupon', auth.checkSession, cartController.applyCoupon)
 //---- user checkout management ----
 router.get('/checkout', auth.checkSession, checkoutController.getCheckout);
 router.post('/order/place', auth.checkSession, userOrderController.placeOrder);
-router.get('/cart/totals', cartController.getTotals);
+
 
 //---- user order management 
 router.get('/order/success/:orderId', auth.checkSession, userOrderController.getOrderSuccess);
