@@ -5,6 +5,7 @@ import adminAuth from "../middlewares/adminAuth.js"
 import adminCategoryController from "../controller/admin/adminCategoryController.js"
 import adminProductController from "../controller/admin/adminProductController.js"
 import adminOrderController from "../controller/admin/adminOrderController.js"
+import adminCustomersController from "../controller/admin/adminCustomersController.js"
 const router = Router()
 router.use(express.static('static'));
 
@@ -21,13 +22,13 @@ router.use(adminAuth.checkSession)
 router.get('/logout', adminAuthController.logoutAdmin)
 
 //---- customers routes ----
-router.get('/customers', adminAuthController.getCustomers) 
-router.post('/customers/block/:customerid', adminAuthController.blockCustomer)
-router.post('/customers/unblock/:customerid', adminAuthController.unblockCustomer)
+router.get('/customers', adminCustomersController.getCustomers)
+router.post('/customers/block/:customerid', adminCustomersController.blockCustomer)
+router.post('/customers/unblock/:customerid', adminCustomersController.unblockCustomer)
 
 
 //---- categories routes ----
-router.get('/categories', adminCategoryController.getCategories) 
+router.get('/categories', adminCategoryController.getCategories)
 router.delete('/categories/:categoryid', adminCategoryController.deleteCategory)
 router.post('/categories/hide/:categoryid', adminCategoryController.hideCategory)
 router.post('/categories/unhide/:categoryid', adminCategoryController.unhideCategory)

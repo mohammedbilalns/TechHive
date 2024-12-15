@@ -1,441 +1,376 @@
 <%- include('../partials/adminheader') %>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 
-<div class="flex min-h-screen">
-  <!-- Sidebar -->
-  <aside id="sidebar" class="bg-gray-100 w-full md:w-64 h-screen">
-    <nav class="py-4">
-      <div class="px-4 md:px-6">
-        <h2 class="text-sm font-semibold text-gray-600 uppercase">Menu</h2>
-        <ul class="mt-4 space-y-2">
-          <li>
-            <a href="/admin/dashboard" onclick="return false" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-th-large mr-3"></i>
-              <span>Dashboard</span>
-            </a>
-          </li>
-          <li>
-            <a href="/admin/products"  class="flex items-center px-4 py-2 bg-primary-accent text-gray-200 hover:bg-primary-hover rounded-lg">
-              <i class="fas fa-box mr-3"></i>
-              <span>Products</span>
-            </a>
-          </li>
-          <li>
-            <a href="/admin/categories" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-layer-group mr-3"></i>
-              <span>Category</span>
-            </a>
-          </li>
-          <li>
-            <a href="/admin/orders"  class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-shopping-cart mr-3"></i>
-              <span>Orders</span>
-            </a>
-          </li>
-          <li>
-            <a href="/admin/coupons" onclick="return false" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-ticket-alt mr-3"></i>
-              <span>Coupon</span>
-            </a>
-          </li>
-          <li>
-            <a href="/admin/banners" onclick="return false" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-images mr-3"></i>
-              <span>Banner</span>
-            </a>
-          </li>
-          <li>
-            <a href="/transactions" onclick="return false" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-receipt mr-3"></i>
-              <span>Transaction</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-      <div class="px-4 md:px-6 mt-8">
-        <h2 class="text-sm font-semibold text-gray-600 uppercase">User Management</h2>
-        <ul class="mt-4 space-y-2">
-          <li>
-            <a href="/admin/admins" onclick="return false" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-user-shield mr-3"></i>
-              <span>Manage Admins</span>
-            </a>
-          </li>
-          <li>
-            <a href="/admin/customers" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-users mr-3"></i>
-              <span>Customers</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-      <div class="px-4 md:px-6 mt-8">
-        <h2 class="text-sm font-semibold text-gray-600 uppercase">Others</h2>
-        <ul class="mt-4 space-y-2">
-          <li>
-            <a href="/admin/settings" onclick="return false" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-cogs mr-3"></i>
-              <span>Settings</span>
-            </a>
-          </li>
-          <li>
-            <a href="/admin/help" onclick="return false" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-question-circle mr-3"></i>
-              <span>Help</span>
-            </a>
-          </li>
-          <li>
-            <a href="/admin/logout" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-              <i class="fas fa-sign-out-alt mr-3"></i>
-              <span>Logout</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </nav>
-  </aside>
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+  <%- include('../partials/adminsidebar') %>
 
-  <!-- Main Content -->
-  <main class="flex-grow p-4 md:py-6 bg-gray-50">
-    <h1 class="text-2xl font-bold text-gray-800">Add New Product</h1>
-  
-    <!-- Add Product Form -->
-    <div id="productFormContainer" class="bg-white shadow-lg rounded-lg p-8 mt-4">
-      <form id="addProductForm" action="/admin/products/add" method="POST" enctype="multipart/form-data">
-        <!-- Product Name -->
-        <div class="form-group mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
-          <input type="text" name="name" class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" placeholder="Enter product name">
-        </div>
-        
-        <!-- Product Description -->
-        <div class="form-group mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Product Description</label>
-          <textarea name="description" class="w-full h-24 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" placeholder="Enter product description"></textarea>
-        </div>
-        
-        <!-- Price -->
-        <div class="form-group mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Price</label>
-          <input type="number" name="price" class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" placeholder="Enter product price" step="0.01">
-        </div>
-        
-        <!-- Discount Percentage -->
-        <div class="form-group mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Discount Percentage</label>
-          <input type="number" name="discount" class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" placeholder="Enter discount percentage" min="0" max="100" step="0.01">
-        </div>
-        
-        <!-- Stock -->
-        <div class="form-group mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
-          <input type="number" name="stock" class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" placeholder="Enter stock quantity" min="0">
-        </div>
-        
-        <!-- Brand -->
-        <div class="form-group mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
-          <input type="text" name="brand" class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" placeholder="Enter brand name">
-        </div>
-        
-        <!-- Category -->
-        <div class="form-group mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-          <select name="category" class="w-full h-12 px-4 py-2 rounded-lg border border-gray-300 focus:border-blue-500" >
-            <option value="">Select Category</option>
-            <% categories.forEach(category => { %>
-              <option value="<%= category._id %>"><%= category.name %></option>
-            <% }); %>
-          </select>
-        </div>
-        
-        <!-- Specifications -->
-        <div class="form-group mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Specifications (up to 4)</label>
-          <div class="space-y-2">
-            <% for(let i = 0; i < 4; i++) { %>
-              <input type="text" 
-                     name="specifications" 
-                     class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" 
-                     placeholder="Enter specification <%= i+1 %>">
-            <% } %>
+    <!-- Main Content -->
+    <main class="flex-grow p-4 md:py-6 bg-gray-50">
+      <h1 class="text-2xl font-bold text-gray-800">Add New Product</h1>
+
+      <!-- Add Product Form -->
+      <div id="productFormContainer" class="bg-white shadow-lg rounded-lg p-8 mt-4">
+        <form id="addProductForm" action="/admin/products/add" method="POST" enctype="multipart/form-data">
+          <!-- Product Name -->
+          <div class="form-group mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
+            <input type="text" name="name"
+              class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500"
+              placeholder="Enter product name">
           </div>
-          <small class="text-gray-500">Add up to 4 key specifications for the product</small>
-        </div>
-        
-        <!-- Main Image -->
-        <div class="form-group mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-2">Images</label>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="w-full">
-              <label class="block">
-                <input type="file" name="mainImages" accept="image/*" class="hidden"  onchange="handleImageUpload(this, 'preview1', 'uploadLabel1', 'cropperModal', 'cropperImage')">
-                <span id="uploadLabel1" class="flex items-center justify-center h-20 w-20 border border-gray-300 bg-white text-gray-800 cursor-pointer hover:bg-gray-100 transition duration-200 ease-in-out">
-                  <i class="fas fa-plus text-3xl"></i>
-                </span>
-              </label>
-              <div id="preview1" class="mt-2 hidden">
-                <img src="" alt="Preview 1" class="h-20 w-20 object-cover rounded">
-              </div>
-            </div>
-            <div class="w-full">
-              <label class="block">
-                <input type="file" name="mainImages" accept="image/*" class="hidden"  onchange="handleImageUpload(this, 'preview2', 'uploadLabel2', 'cropperModal', 'cropperImage')">
-                <span id="uploadLabel2" class="flex items-center justify-center h-20 w-20 border border-gray-300 bg-white text-gray-800 cursor-pointer hover:bg-gray-100 transition duration-200 ease-in-out">
-                  <i class="fas fa-plus text-3xl"></i>
-                </span>
-              </label>
-              <div id="preview2" class="mt-2 hidden">
-                <img src="" alt="Preview 2" class="h-20 w-20 object-cover rounded">
-              </div>
-            </div>
-            <div class="w-full">
-              <label class="block">
-                <input type="file" name="mainImages" accept="image/*" class="hidden"  onchange="handleImageUpload(this, 'preview3', 'uploadLabel3', 'cropperModal', 'cropperImage')">
-                <span id="uploadLabel3" class="flex items-center justify-center h-20 w-20 border border-gray-300 bg-white text-gray-800 cursor-pointer hover:bg-gray-100 transition duration-200 ease-in-out">
-                  <i class="fas fa-plus text-3xl"></i>
-                </span>
-              </label>
-              <div id="preview3" class="mt-2 hidden">
-                <img src="" alt="Preview 3" class="h-20 w-20 object-cover rounded">
-              </div>
-            </div>
-            <div class="w-full">
-              <label class="block">
-                <input type="file" name="mainImages" accept="image/*" class="hidden"  onchange="handleImageUpload(this, 'preview4', 'uploadLabel4', 'cropperModal', 'cropperImage')">
-                <span id="uploadLabel4" class="flex items-center justify-center h-20 w-20 border border-gray-300 bg-white text-gray-800 cursor-pointer hover:bg-gray-100 transition duration-200 ease-in-out">
-                  <i class="fas fa-plus text-3xl"></i>
-                </span>
-              </label>
-              <div id="preview4" class="mt-2 hidden">
-                <img src="" alt="Preview 4" class="h-20 w-20 object-cover rounded">
-              </div>
-            </div>
-          </div>
-          <small class="text-gray-500">Please upload 4 images.</small>
-        </div> 
-   <!-- Error Message -->
-   <div id="alertMessage" class="mb-4 p-3 rounded-md hidden bg-red-100 text-red-700">
-    <span id="alertText"></span>
-  </div>
 
-  <!-- Add Product Button -->
-  <div id="addProductButtonContainer" class="flex justify-end mt-6">
-    <button type="submit" form="addProductForm" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Add Product</button>
-  </div>
-</div>
+          <!-- Product Description -->
+          <div class="form-group mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Product Description</label>
+            <textarea name="description"
+              class="w-full h-24 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500"
+              placeholder="Enter product description"></textarea>
+          </div>
+
+          <!-- Price -->
+          <div class="form-group mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Price</label>
+            <input type="number" name="price"
+              class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500"
+              placeholder="Enter product price" step="0.01">
+          </div>
+
+          <!-- Discount Percentage -->
+          <div class="form-group mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Discount Percentage</label>
+            <input type="number" name="discount"
+              class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500"
+              placeholder="Enter discount percentage" min="0" max="100" step="0.01">
+          </div>
+
+          <!-- Stock -->
+          <div class="form-group mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
+            <input type="number" name="stock"
+              class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500"
+              placeholder="Enter stock quantity" min="0">
+          </div>
+
+          <!-- Brand -->
+          <div class="form-group mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
+            <input type="text" name="brand"
+              class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500"
+              placeholder="Enter brand name">
+          </div>
+
+          <!-- Category -->
+          <div class="form-group mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+            <select name="category"
+              class="w-full h-12 px-4 py-2 rounded-lg border border-gray-300 focus:border-blue-500">
+              <option value="">Select Category</option>
+              <% categories.forEach(category=> { %>
+                <option value="<%= category._id %>">
+                  <%= category.name %>
+                </option>
+                <% }); %>
+            </select>
+          </div>
+
+          <!-- Specifications -->
+          <div class="form-group mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Specifications (up to 4)</label>
+            <div class="space-y-2">
+              <% for(let i=0; i < 4; i++) { %>
+                <input type="text" name="specifications"
+                  class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500"
+                  placeholder="Enter specification <%= i+1 %>">
+                <% } %>
+            </div>
+            <small class="text-gray-500">Add up to 4 key specifications for the product</small>
+          </div>
+
+          <!-- Main Image -->
+          <div class="form-group mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Images</label>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="w-full">
+                <label class="block">
+                  <input type="file" name="mainImages" accept="image/*" class="hidden"
+                    onchange="handleImageUpload(this, 'preview1', 'uploadLabel1', 'cropperModal', 'cropperImage')">
+                  <span id="uploadLabel1"
+                    class="flex items-center justify-center h-20 w-20 border border-gray-300 bg-white text-gray-800 cursor-pointer hover:bg-gray-100 transition duration-200 ease-in-out">
+                    <i class="fas fa-plus text-3xl"></i>
+                  </span>
+                </label>
+                <div id="preview1" class="mt-2 hidden">
+                  <img src="" alt="Preview 1" class="h-20 w-20 object-cover rounded">
+                </div>
+              </div>
+              <div class="w-full">
+                <label class="block">
+                  <input type="file" name="mainImages" accept="image/*" class="hidden"
+                    onchange="handleImageUpload(this, 'preview2', 'uploadLabel2', 'cropperModal', 'cropperImage')">
+                  <span id="uploadLabel2"
+                    class="flex items-center justify-center h-20 w-20 border border-gray-300 bg-white text-gray-800 cursor-pointer hover:bg-gray-100 transition duration-200 ease-in-out">
+                    <i class="fas fa-plus text-3xl"></i>
+                  </span>
+                </label>
+                <div id="preview2" class="mt-2 hidden">
+                  <img src="" alt="Preview 2" class="h-20 w-20 object-cover rounded">
+                </div>
+              </div>
+              <div class="w-full">
+                <label class="block">
+                  <input type="file" name="mainImages" accept="image/*" class="hidden"
+                    onchange="handleImageUpload(this, 'preview3', 'uploadLabel3', 'cropperModal', 'cropperImage')">
+                  <span id="uploadLabel3"
+                    class="flex items-center justify-center h-20 w-20 border border-gray-300 bg-white text-gray-800 cursor-pointer hover:bg-gray-100 transition duration-200 ease-in-out">
+                    <i class="fas fa-plus text-3xl"></i>
+                  </span>
+                </label>
+                <div id="preview3" class="mt-2 hidden">
+                  <img src="" alt="Preview 3" class="h-20 w-20 object-cover rounded">
+                </div>
+              </div>
+              <div class="w-full">
+                <label class="block">
+                  <input type="file" name="mainImages" accept="image/*" class="hidden"
+                    onchange="handleImageUpload(this, 'preview4', 'uploadLabel4', 'cropperModal', 'cropperImage')">
+                  <span id="uploadLabel4"
+                    class="flex items-center justify-center h-20 w-20 border border-gray-300 bg-white text-gray-800 cursor-pointer hover:bg-gray-100 transition duration-200 ease-in-out">
+                    <i class="fas fa-plus text-3xl"></i>
+                  </span>
+                </label>
+                <div id="preview4" class="mt-2 hidden">
+                  <img src="" alt="Preview 4" class="h-20 w-20 object-cover rounded">
+                </div>
+              </div>
+            </div>
+            <small class="text-gray-500">Please upload 4 images.</small>
+          </div>
+          <!-- Error Message -->
+          <div id="alertMessage" class="mb-4 p-3 rounded-md hidden bg-red-100 text-red-700">
+            <span id="alertText"></span>
+          </div>
+
+          <!-- Add Product Button -->
+          <div id="addProductButtonContainer" class="flex justify-end mt-6">
+            <button type="submit" form="addProductForm"
+              class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Add Product</button>
+          </div>
+      </div>
 
 
       </form>
 
-   
-    <!-- Cropper Modal -->
-    <div id="cropperModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-      <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-semibold">Crop Image</h3>
-          <button onclick="closeCropper()" class="text-gray-500 hover:text-gray-700">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        <div class="relative aspect-square mb-4">
-          <img id="cropperImage" src="#" class="max-w-full">
-        </div>
-        <div class="flex justify-end gap-3">
-          <button onclick="closeCropper()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Cancel</button>
-          <button class="apply-button px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onclick="applyCrop()">Apply</button>
+
+      <!-- Cropper Modal -->
+      <div id="cropperModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold">Crop Image</h3>
+            <button onclick="closeCropper()" class="text-gray-500 hover:text-gray-700">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="relative aspect-square mb-4">
+            <img id="cropperImage" src="#" class="max-w-full">
+          </div>
+          <div class="flex justify-end gap-3">
+            <button onclick="closeCropper()"
+              class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Cancel</button>
+            <button class="apply-button px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              onclick="applyCrop()">Apply</button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const addProductForm = document.getElementById("addProductForm");
-        let cropper;
-        let currentImageInput;
-        let currentPreviewId;
-        let currentUploadLabelId;
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const addProductForm = document.getElementById("addProductForm");
+          let cropper;
+          let currentImageInput;
+          let currentPreviewId;
+          let currentUploadLabelId;
 
-        function handleImageUpload(input, previewId, uploadLabelId, modalId, cropperImageId) {
-          if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            currentImageInput = input;
-            currentPreviewId = previewId;
-            currentUploadLabelId = uploadLabelId;
-            
-            reader.onload = function(e) {
-              const cropperImg = document.getElementById(cropperImageId);
-              cropperImg.src = e.target.result;
-              
-              document.getElementById(modalId).style.display = 'flex';
-              
-              if (cropper) {
-                cropper.destroy();
-              }
-              
-              cropper = new Cropper(cropperImg, {
-                aspectRatio: 1,
-                viewMode: 1,
-                autoCropArea: 1,
-                background: false,
-                zoomable: true,
-                scalable: true
+          function handleImageUpload(input, previewId, uploadLabelId, modalId, cropperImageId) {
+            if (input.files && input.files[0]) {
+              const reader = new FileReader();
+              currentImageInput = input;
+              currentPreviewId = previewId;
+              currentUploadLabelId = uploadLabelId;
+
+              reader.onload = function (e) {
+                const cropperImg = document.getElementById(cropperImageId);
+                cropperImg.src = e.target.result;
+
+                document.getElementById(modalId).style.display = 'flex';
+
+                if (cropper) {
+                  cropper.destroy();
+                }
+
+                cropper = new Cropper(cropperImg, {
+                  aspectRatio: 1,
+                  viewMode: 1,
+                  autoCropArea: 1,
+                  background: false,
+                  zoomable: true,
+                  scalable: true
+                });
+              };
+
+              reader.readAsDataURL(input.files[0]);
+            }
+          }
+
+          function closeCropper() {
+            document.getElementById("cropperModal").style.display = 'none';
+            if (cropper) {
+              cropper.destroy();
+              cropper = null;
+            }
+          }
+
+          function applyCrop() {
+            if (cropper) {
+              const canvas = cropper.getCroppedCanvas();
+              canvas.toBlob((blob) => {
+                const file = new File([blob], "croppedImage.png", { type: "image/png" });
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                currentImageInput.files = dataTransfer.files;
+
+                // Show preview
+                const previewContainer = document.getElementById(currentPreviewId);
+                const previewImg = previewContainer.querySelector('img');
+                const uploadLabel = document.getElementById(currentUploadLabelId);
+
+                previewImg.src = canvas.toDataURL();
+                previewContainer.classList.remove('hidden');
+                uploadLabel.classList.add('hidden');
+
+                closeCropper();
               });
-            };
-            
-            reader.readAsDataURL(input.files[0]);
-          }
-        }
-
-        function closeCropper() {
-          document.getElementById("cropperModal").style.display = 'none';
-          if (cropper) {
-            cropper.destroy();
-            cropper = null;
-          }
-        }
-
-        function applyCrop() {
-          if (cropper) {
-            const canvas = cropper.getCroppedCanvas();
-            canvas.toBlob((blob) => {
-              const file = new File([blob], "croppedImage.png", { type: "image/png" });
-              const dataTransfer = new DataTransfer();
-              dataTransfer.items.add(file);
-              currentImageInput.files = dataTransfer.files;
-
-              // Show preview
-              const previewContainer = document.getElementById(currentPreviewId);
-              const previewImg = previewContainer.querySelector('img');
-              const uploadLabel = document.getElementById(currentUploadLabelId);
-              
-              previewImg.src = canvas.toDataURL();
-              previewContainer.classList.remove('hidden');
-              uploadLabel.classList.add('hidden');
-              
-              closeCropper();
-            });
-          }
-        }
-
-        const alertMessage = document.getElementById("alertMessage");
-        const alertText = document.getElementById("alertText");
-
-        addProductForm.addEventListener("submit", (event) => {
-          alertMessage.classList.add('hidden');
-          let isValid = true;
-
-          const name = addProductForm.name.value.trim();
-          const brand = addProductForm.brand.value.trim();
-          const description = addProductForm.description.value.trim();
-          const price = addProductForm.price.value.trim();
-          const stock = addProductForm.stock.value.trim();
-          const discount = addProductForm.discount.value.trim();
-          const category = addProductForm.category.value.trim();
-          const specifications = Array.from(addProductForm.querySelectorAll('input[name="specifications"]')).map(input => input.value.trim());
-
-          // Define minimum and maximum lengths for name and brand only
-          const nameBrandMinLength = 3;
-          const nameBrandMaxLength = 100;
-
-          // Check if all four images are selected
-          const imageInputs = addProductForm.querySelectorAll('input[type="file"]');
-          const imageFiles = Array.from(imageInputs).map(input => input.files[0]);
-          const allImagesSelected = imageFiles.every(file => file !== undefined);
-
-          // Validate required fields first
-          if (!name) {
-            alertText.textContent = "Product name is required.";
-            alertMessage.classList.remove('hidden');
-            isValid = false;
-          } else if (name.length < nameBrandMinLength || name.length > nameBrandMaxLength) {
-            alertText.textContent = `Product name must be between ${nameBrandMinLength} and ${nameBrandMaxLength} characters.`;
-            alertMessage.classList.remove('hidden');
-            isValid = false;
-          } else if (!brand) {
-            alertText.textContent = "Brand is required.";
-            alertMessage.classList.remove('hidden');
-            isValid = false;
-          } else if (brand.length < nameBrandMinLength || brand.length > nameBrandMaxLength) {
-            alertText.textContent = `Brand must be between ${nameBrandMinLength} and ${nameBrandMaxLength} characters.`;
-            alertMessage.classList.remove('hidden');
-            isValid = false;
-          } else if (!description || description.replace(/\s/g, '').length === 0) {
-            alertText.textContent = "Product description is required and cannot be only spaces.";
-            alertMessage.classList.remove('hidden');
-            isValid = false;
-          } else if (!category) {
-            alertText.textContent = "Please select a category.";
-            alertMessage.classList.remove('hidden');
-            isValid = false;
-          } else if (!price) {
-            alertText.textContent = "Price is required.";
-            alertMessage.classList.remove('hidden');
-            isValid = false;
-          } else if (!stock) {
-            alertText.textContent = "Stock is required.";
-            alertMessage.classList.remove('hidden');
-            isValid = false;
-          } else if (!allImagesSelected) {
-            alertText.textContent = "All four images must be selected.";
-            alertMessage.classList.remove('hidden');
-            isValid = false;
-          }
-
-          // Validate specifications
-          if (isValid) {
-            const invalidSpecs = specifications.some(spec => !spec || spec.replace(/\s/g, '').length === 0);
-
-            if (invalidSpecs) {
-              alertText.textContent = "All four specifications are required and cannot be only spaces.";
-              alertMessage.classList.remove('hidden');
-              isValid = false;
             }
           }
 
-          // Validate text fields for allowed characters
-          if (isValid) {
-            const nameRegex = /^[A-Za-z0-9\s]+$/;
-            const brandRegex = /^[A-Za-z0-9\s]+$/;
+          const alertMessage = document.getElementById("alertMessage");
+          const alertText = document.getElementById("alertText");
 
-            if (!nameRegex.test(name)) {
-              alertText.textContent = "Product name can only contain letters, numbers, and spaces.";
+          addProductForm.addEventListener("submit", (event) => {
+            alertMessage.classList.add('hidden');
+            let isValid = true;
+
+            const name = addProductForm.name.value.trim();
+            const brand = addProductForm.brand.value.trim();
+            const description = addProductForm.description.value.trim();
+            const price = addProductForm.price.value.trim();
+            const stock = addProductForm.stock.value.trim();
+            const discount = addProductForm.discount.value.trim();
+            const category = addProductForm.category.value.trim();
+            const specifications = Array.from(addProductForm.querySelectorAll('input[name="specifications"]')).map(input => input.value.trim());
+
+            // Define minimum and maximum lengths for name and brand only
+            const nameBrandMinLength = 3;
+            const nameBrandMaxLength = 100;
+
+            // Check if all four images are selected
+            const imageInputs = addProductForm.querySelectorAll('input[type="file"]');
+            const imageFiles = Array.from(imageInputs).map(input => input.files[0]);
+            const allImagesSelected = imageFiles.every(file => file !== undefined);
+
+            // Validate required fields first
+            if (!name) {
+              alertText.textContent = "Product name is required.";
               alertMessage.classList.remove('hidden');
               isValid = false;
-            } else if (!brandRegex.test(brand)) {
-              alertText.textContent = "Brand can only contain letters, numbers, and spaces.";
+            } else if (name.length < nameBrandMinLength || name.length > nameBrandMaxLength) {
+              alertText.textContent = `Product name must be between ${nameBrandMinLength} and ${nameBrandMaxLength} characters.`;
+              alertMessage.classList.remove('hidden');
+              isValid = false;
+            } else if (!brand) {
+              alertText.textContent = "Brand is required.";
+              alertMessage.classList.remove('hidden');
+              isValid = false;
+            } else if (brand.length < nameBrandMinLength || brand.length > nameBrandMaxLength) {
+              alertText.textContent = `Brand must be between ${nameBrandMinLength} and ${nameBrandMaxLength} characters.`;
+              alertMessage.classList.remove('hidden');
+              isValid = false;
+            } else if (!description || description.replace(/\s/g, '').length === 0) {
+              alertText.textContent = "Product description is required and cannot be only spaces.";
+              alertMessage.classList.remove('hidden');
+              isValid = false;
+            } else if (!category) {
+              alertText.textContent = "Please select a category.";
+              alertMessage.classList.remove('hidden');
+              isValid = false;
+            } else if (!price) {
+              alertText.textContent = "Price is required.";
+              alertMessage.classList.remove('hidden');
+              isValid = false;
+            } else if (!stock) {
+              alertText.textContent = "Stock is required.";
+              alertMessage.classList.remove('hidden');
+              isValid = false;
+            } else if (!allImagesSelected) {
+              alertText.textContent = "All four images must be selected.";
               alertMessage.classList.remove('hidden');
               isValid = false;
             }
-          }
 
-          // Validate numeric fields
-          if (isValid) {
-            if (parseFloat(price) < 50) {
-              alertText.textContent = "Price must be at least ₹50.";
-              alertMessage.classList.remove('hidden');
-              isValid = false;
-            } else if (parseInt(stock) < 0) {
-              alertText.textContent = "Stock cannot be negative.";
-              alertMessage.classList.remove('hidden');
-              isValid = false;
-            } else if (discount && (parseFloat(discount) < 0 || parseFloat(discount) > 100)) {
-              alertText.textContent = "Discount percentage must be between 0 and 100.";
-              alertMessage.classList.remove('hidden');
-              isValid = false;
+            // Validate specifications
+            if (isValid) {
+              const invalidSpecs = specifications.some(spec => !spec || spec.replace(/\s/g, '').length === 0);
+
+              if (invalidSpecs) {
+                alertText.textContent = "All four specifications are required and cannot be only spaces.";
+                alertMessage.classList.remove('hidden');
+                isValid = false;
+              }
             }
-          }
 
-          if (!isValid) {
-            event.preventDefault();
-          }
+            // Validate text fields for allowed characters
+            if (isValid) {
+              const nameRegex = /^[A-Za-z0-9\s]+$/;
+              const brandRegex = /^[A-Za-z0-9\s]+$/;
+
+              if (!nameRegex.test(name)) {
+                alertText.textContent = "Product name can only contain letters, numbers, and spaces.";
+                alertMessage.classList.remove('hidden');
+                isValid = false;
+              } else if (!brandRegex.test(brand)) {
+                alertText.textContent = "Brand can only contain letters, numbers, and spaces.";
+                alertMessage.classList.remove('hidden');
+                isValid = false;
+              }
+            }
+
+            // Validate numeric fields
+            if (isValid) {
+              if (parseFloat(price) < 50) {
+                alertText.textContent = "Price must be at least ₹50.";
+                alertMessage.classList.remove('hidden');
+                isValid = false;
+              } else if (parseInt(stock) < 0) {
+                alertText.textContent = "Stock cannot be negative.";
+                alertMessage.classList.remove('hidden');
+                isValid = false;
+              } else if (discount && (parseFloat(discount) < 0 || parseFloat(discount) > 100)) {
+                alertText.textContent = "Discount percentage must be between 0 and 100.";
+                alertMessage.classList.remove('hidden');
+                isValid = false;
+              }
+            }
+
+            if (!isValid) {
+              event.preventDefault();
+            }
+          });
+
+          window.handleImageUpload = handleImageUpload;
+          window.closeCropper = closeCropper;
+          window.applyCrop = applyCrop;
         });
-
-        window.handleImageUpload = handleImageUpload;
-        window.closeCropper = closeCropper;
-        window.applyCrop = applyCrop;
-      });
-    </script>
-  </main>
-</div>
+      </script>
+    </main>
+  </div>

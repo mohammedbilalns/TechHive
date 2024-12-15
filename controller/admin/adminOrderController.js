@@ -7,7 +7,7 @@ const getOrders = async (req, res) => {
       .populate('userId', 'fullname email')
       .sort({ createdAt: -1 });
 
-    res.render('admin/orders', { orders });
+    res.render('admin/orders', { orders, page: 'orders' });
   } catch (error) {
     console.error('Error fetching orders:', error);
     res.status(500).json({

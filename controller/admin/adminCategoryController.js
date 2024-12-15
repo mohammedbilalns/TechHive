@@ -8,7 +8,7 @@ const getCategories = async (req, res)=>{
         let alertType = req.query.alertType
 
         const categories = await categorySchema.find()
-        res.render('admin/categories', {categories, message, alertType})
+        res.render('admin/categories', {categories, message, page: 'categories', alertType})
     }catch(error){
         log.red('FETCH_CATEGORIES_ERROR',error)
     }

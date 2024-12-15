@@ -39,7 +39,7 @@ const getProducts = async (req, res) => {
 
         
         const products = await productSchema.find().populate('category');
-        res.render("admin/products", { products, message, alertType });
+        res.render("admin/products", { products,page:"products" , message, alertType });
     } catch (error) {
         log.red("PRODUCT_FETCH_ERROR", error);
     }
@@ -95,7 +95,7 @@ const activateProduct = async (req,res)=>{
 const getAddProduct = async(req,res)=>{
     try{
         const categories = await categorySchema.find({status:"Active"})    
-         res.render('admin/addproduct',{categories} )
+         res.render('admin/addproduct',{categories, page: 'products'} )
     }catch(error){
         log.red("FETCH_ADD_PRODUCT",err)
         res.redirect('/admin/products?message=Something+went+wrong&alertType=error')
@@ -157,7 +157,7 @@ const getEditProduct = async (req,res)=>{
         const product = await productSchema.findById(req.params.productid)
         console.log(product)
         const categories = await categorySchema.find({status:"Active"})
-        res.render('admin/editproduct', {product, categories})
+        res.render('admin/editproduct', {product, categories, page: 'products'})
     }catch(error){
         log.red('FETCH_EDIT_PRODUCT_ERROR', error)
         res.redirect('/admin/products?message=Something+went+wrong&alertType=error')        
