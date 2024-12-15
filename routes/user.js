@@ -1,12 +1,12 @@
 import express from "express"
 import { Router } from "express"
-import userController from "../controller/user/userController.js"
+import userAuthController from "../controller/user/userAuthController.js"
 import auth from "../middlewares/auth.js"
-import productController from "../controller/user/userProductController.js"
+import userProductController from "../controller/user/userProductController.js"
 import useraddressController from "../controller/user/useraddressController.js"
 import useraccountController from "../controller/user/useraccountController.js"
-import cartController from "../controller/user/userCartcontroller.js"
-import checkoutController from "../controller/user/userCheckoutController.js"
+import userCartController from "../controller/user/userCartcontroller.js"
+import userCheckController from "../controller/user/userCheckoutController.js"
 import userOrderController from "../controller/user/userOrderController.js"
 import userSearchController from "../controller/user/userSearchController.js"
 const router = Router()
@@ -16,47 +16,47 @@ router.use(express.static('static'))
 //---- User Authentication ----
 router.route('/login') // login route
     .all(auth.isLogin)
-     .get(userController.loadLogin)
-     .post(userController.verifyLogin)
+     .get(userAuthController.loadLogin)
+     .post(userAuthController.verifyLogin)
 
-router.get('/logout',auth.checkSession, userController.logoutUser)
+router.get('/logout',auth.checkSession, userAuthController.logoutUser)
 router.route('/signup') // signup route
     .all(auth.isLogin)
-    .get(userController.loadSignup)
-    .post(userController.registerUser)
+    .get(userAuthController.loadSignup)
+    .post(userAuthController.registerUser)
 
-router.post('/verify-otp', auth.isLogin, userController.verifyOTP) // verify user otp 
-router.post('/resend-otp', auth.isLogin, userController.resendOTP) // resend otp 
+router.post('/verify-otp', auth.isLogin, userAuthController.verifyOTP) // verify user otp 
+router.post('/resend-otp', auth.isLogin, userAuthController.resendOTP) // resend otp 
 
-router.get("/auth/google",auth.isLogin,  userController.authGoogle) // google oAuth 
-router.get('/auth/google/callback',auth.isLogin, userController.authGoogleCallback)
+router.get("/auth/google",auth.isLogin,  userAuthController.authGoogle) // google oAuth 
+router.get('/auth/google/callback',auth.isLogin, userAuthController.authGoogleCallback)
 
 router.route('/forgot-password') // user forgot passord 
     .all(auth.isLogin)
-    .get(userController.loadForgotpassword)
-    .post(userController.processForgotPassword)
-router.post('/verify-forgot-password-otp', auth.isLogin, userController.verifyForgotPasswordOTP)
-router.post('/resend-forgot-password-otp', auth.isLogin, userController.resendForgotPasswordOTP)
+    .get(userAuthController.loadForgotpassword)
+    .post(userAuthController.processForgotPassword)
+router.post('/verify-forgot-password-otp', auth.isLogin, userAuthController.verifyForgotPasswordOTP)
+router.post('/resend-forgot-password-otp', auth.isLogin, userAuthController.resendForgotPasswordOTP)
 
 router.route('/reset-password') // user reset password 
     .all(auth.isLogin)
-    .get(userController.loadResetpassword)
-    .post(userController.resetPassword)
+    .get(userAuthController.loadResetpassword)
+    .post(userAuthController.resetPassword)
 
 //---- user and product routes ---- 
-router.get('/home', auth.checkSession, productController.loadHome)
-router.get('/category/:id', productController.viewCategory)
-router.get('/allproducts',  productController.loadAllProducts)
-router.get('/product/:id',  productController.viewProduct)
-router.get('/' , auth.isLogin, productController.loadLanding)
+router.get('/home', auth.checkSession, userProductController.loadHome)
+router.get('/category/:id', userProductController.viewCategory)
+router.get('/allproducts',  userProductController.loadAllProducts)
+router.get('/product/:id',  userProductController.viewProduct)
+router.get('/' , auth.isLogin, userProductController.loadLanding)
 
 
 //---- user dashboard ---- 
-router.get('profile/dashboard', auth.checkSession, userController.getDashboard)
-router.get('/profile/account', auth.checkSession, userController.getAccountDetails) 
-router.get('/profile/wishlist', auth.checkSession, userController.getWishlist)  
+router.get('profile/dashboard', auth.checkSession, userAuthController.getDashboard)
+router.get('/profile/account', auth.checkSession, userAuthController.getAccountDetails) 
+router.get('/profile/wishlist', auth.checkSession, userAuthController.getWishlist)  
 router.get('/profile/orders', auth.checkSession, userOrderController.getOrders);
-router.get('/profile/wallet', auth.checkSession, userController.getWallet)  
+router.get('/profile/wallet', auth.checkSession, userAuthController.getWallet)  
 router.get('/profile/addresses', auth.checkSession, useraddressController.getAddresses)
 
 
@@ -76,14 +76,14 @@ router.post('/account/change-password', auth.checkSession, useraccountController
 
 
 //---- usr cart management ---- 
-router.get('/profile/cart', auth.checkSession, cartController.getCart)
-router.post('/cart/add', auth.checkSession, cartController.addToCart)
-router.post('/cart/update', auth.checkSession, cartController.updateQuantity)
-router.post('/cart/remove', auth.checkSession, cartController.removeFromCart)
-router.post('/cart/apply-coupon', auth.checkSession, cartController.applyCoupon)
+router.get('/profile/cart', auth.checkSession, userCartController.getCart)
+router.post('/cart/add', auth.checkSession, userCartController.addToCart)
+router.post('/cart/update', auth.checkSession, userCartController.updateQuantity)
+router.post('/cart/remove', auth.checkSession, userCartController.removeFromCart)
+router.post('/cart/apply-coupon', auth.checkSession, userCartController.applyCoupon)
 
 //---- user checkout management ----
-router.get('/checkout', auth.checkSession, checkoutController.getCheckout);
+router.get('/checkout', auth.checkSession, userCheckController.getCheckout);
 router.post('/order/place', auth.checkSession, userOrderController.placeOrder);
 
 
