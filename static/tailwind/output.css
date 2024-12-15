@@ -1574,10 +1574,6 @@ video {
   text-transform: lowercase;
 }
 
-.capitalize {
-  text-transform: capitalize;
-}
-
 .leading-relaxed {
   line-height: 1.625;
 }

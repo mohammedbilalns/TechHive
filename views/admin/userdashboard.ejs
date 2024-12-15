@@ -209,7 +209,6 @@
     </main>
   </div>
 
-  <!-- Add this script before the closing body tag -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script type="module">
     import { customConfirm, showAlert, closeCustomAlert } from '/js/util.js';
@@ -356,14 +355,14 @@
       }
     }
 
-    // Make all necessary functions global
+
     window.toggleSidebar = toggleSidebar;
     window.filterCustomers = filterCustomers;
     window.printPage = printPage;
     window.showConfirmDialog = showConfirmDialog;
     window.hideConfirmDialog = hideConfirmDialog;
     window.toggleCustomerStatus = toggleCustomerStatus;
-    window.closeCustomAlert = closeCustomAlert; // Make closeCustomAlert global
+    window.closeCustomAlert = closeCustomAlert;
   </script>
 
   <%- include('../partials/adminfooter') %>

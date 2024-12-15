@@ -51,7 +51,7 @@ const searchProducts = async (req, res) => {
             });
         }
 
-        // Regular page load
+
         res.render('user/searchResults', {
             products,
             query,

@@ -279,7 +279,6 @@
 
 
 
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script type="module">
     import { customConfirm, showAlert, closeCustomAlert } from '/js/util.js';
     window.customConfirm = customConfirm;
@@ -320,7 +319,6 @@
       // set the category id in the hidden input field
       document.getElementById('editCategoryId').value = categoryId;
 
-      // Populate the input fields with the category details
       document.getElementById('editCategoryName').value = categoryName;
       document.getElementById('editCategoryDescription').value = categoryDescription;
       // Open the Edit Category modal
@@ -338,7 +336,7 @@
       document.getElementById(modalId).classList.replace('flex', 'hidden');
     }
 
-    // Combined validation function for both add and edit forms
+    //  validation function for  add and edit forms
     function validateCategoryForm(nameId, descriptionId, alertId) {
       const name = document.getElementById(nameId).value.trim();
       const description = document.getElementById(descriptionId).value.trim();

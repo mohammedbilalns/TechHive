@@ -83,11 +83,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <% order.items.slice(0, 2).forEach(item => { %>
                     <div class="flex items-center p-3 bg-gray-50 rounded-lg">
-                      <img src="<%= item.product.images[0].path %>" 
-                           alt="<%= item.product.name %>"
+                      <img src="<%= item.images[0].path %>" 
+                           alt="<%= item.name %>"
                            class="w-20 h-20 object-cover rounded">
                       <div class="ml-4">
-                        <h3 class="font-medium"><%= item.product.name %></h3>
+                        <h3 class="font-medium"><%= item.name %></h3>
                         <p class="text-sm text-gray-600">Qty: <%= item.quantity %></p>
                       </div>
                     </div>

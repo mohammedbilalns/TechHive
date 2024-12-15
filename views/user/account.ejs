@@ -155,7 +155,7 @@
     async function handleSubmit(event) {
       event.preventDefault();
       
-      // Add confirmation before saving changes
+      //  confirmation before saving changes
       const confirmed = await customConfirm('Are you sure you want to save these changes?');
       if (!confirmed) return;
       
@@ -189,7 +189,7 @@
 
     function validatePassword(input) {
       const password = input.value;
-      // Simplified regex that correctly validates the requirements
+      //  regex for password validation 
       const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&]).{8,}$/;
       
       if (!passwordRegex.test(password)) {
@@ -206,7 +206,6 @@
       const newPassword = event.target.newPassword.value;
       const confirmPassword = event.target.confirmPassword.value;
       
-      // Updated regex to match the validatePassword function
       const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&]).{8,}$/;
       
       if (!passwordRegex.test(newPassword)) {
@@ -219,7 +218,7 @@
         return;
       }
       
-      // Add confirmation before changing password
+      //  confirmation before changing password
       const confirmed = await customConfirm('Are you sure you want to change your password?');
       if (!confirmed) return;
       

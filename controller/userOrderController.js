@@ -1,21 +1,21 @@
 import orderModel from '../model/orderModel.js';
 import cartModel from '../model/cartModel.js';
 import productModel from '../model/productModel.js';
+import addressModel from '../model/addressModel.js';
 
 const placeOrder = async (req, res) => {
   try {
     const { addressId, paymentMethod } = req.body;
     const userId = req.session.user.id;
 
-    // Get user's cart
-    const cart = await cartModel.findOne({ user: userId })
-      .populate('items.productId');
+    // Get user's cart and address
+    const [cart, shippingAddress] = await Promise.all([
+      cartModel.findOne({ user: userId }).populate('items.productId'),
+      addressModel.findById(addressId)
+    ]);
 
     if (!cart || cart.items.length === 0) {
-      return res.json({ 
-        success: false, 
-        message: 'Cart is empty' 
-      });
+      return res.json({ success: false, message: 'Cart is empty' });
     }
 
     // Calculate totals
@@ -26,30 +26,40 @@ const placeOrder = async (req, res) => {
       return total + (discountedPrice * item.quantity);
     }, 0);
 
-    // Create order items array and check stock
+    // Create order items array with product data 
     const orderItems = cart.items.map(item => {
-      // Check if enough stock is available
       if (item.productId.stock < item.quantity) {
         throw new Error(`Insufficient stock for product: ${item.productId.name}`);
       }
       
       return {
-        product: item.productId._id,
+        name: item.productId.name,
+        brand: item.productId.brand,
+        images: item.productId.images,
         quantity: item.quantity,
         price: item.productId.price,
         discount: item.productId.discount
       };
     });
 
-    // Create new order
+    // Create new order with address 
     const order = new orderModel({
       userId,
       items: orderItems,
       totalAmount,
       paymentMethod,
-      shippingAddress: addressId,
+      shippingAddress: {
+        name: shippingAddress.name,
+        houseName: shippingAddress.houseName,
+        localityStreet: shippingAddress.localityStreet,
+        city: shippingAddress.city,
+        state: shippingAddress.state,
+        pincode: shippingAddress.pincode,
+        phone: shippingAddress.phone,
+        alternatePhone: shippingAddress.alternatePhone
+      },
       orderDate: new Date(),
-      expectedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+      expectedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), 
       status: 'processing',
       paymentStatus: paymentMethod === 'cod' ? 'unpaid' : 'paid'
     });
@@ -99,11 +109,6 @@ const getOrders = async (req, res) => {
   try {
     const userId = req.session.user.id;
     const orders = await orderModel.find({ userId })
-      .populate({
-        path: 'items.product',
-        select: 'name images price'
-      })
-      .populate('shippingAddress')
       .sort({ orderDate: -1 });
 
     res.render('user/orders', { 
@@ -126,8 +131,7 @@ const cancelOrder = async (req, res) => {
     const orderId = req.params.orderId;
     const userId = req.session.user.id;
 
-    const order = await orderModel.findOne({ _id: orderId, userId })
-      .populate('items.product');
+    const order = await orderModel.findOne({ _id: orderId, userId });
 
     if (!order) {
       return res.json({ 
@@ -149,13 +153,11 @@ const cancelOrder = async (req, res) => {
 
     // Restore stock for each product
     for (const item of order.items) {
-      await productModel.findByIdAndUpdate(
-        item.product._id,
+      await productModel.findOneAndUpdate(
+        { name: item.name },
         { $inc: { stock: item.quantity } }
       );
     }
-
-  
 
     res.json({ 
       success: true, 

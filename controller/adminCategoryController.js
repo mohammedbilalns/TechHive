@@ -101,7 +101,7 @@ const addCategory = async (req,res) => {
     }
 }
 
-
+// Edit a category
 const editCategory = async (req, res) => {
     try {
         let { name, description } = req.body;

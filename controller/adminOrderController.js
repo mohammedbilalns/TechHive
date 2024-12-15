@@ -5,11 +5,6 @@ const getOrders = async (req, res) => {
   try {
     const orders = await orderModel.find()
       .populate('userId', 'fullname email')
-      .populate({
-        path: 'items.product',
-        select: 'name images discount'
-      })
-      .populate('shippingAddress')
       .sort({ createdAt: -1 });
 
     res.render('admin/orders', { orders });

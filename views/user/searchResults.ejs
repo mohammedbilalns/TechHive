@@ -58,7 +58,6 @@ document.getElementById('sortSelect').addEventListener('change', async function(
         const response = await fetch(`/search?q=${searchQuery}&sort=${sortBy}`);
         const html = await response.text();
         
-        // Update the page content without full reload
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
         const newProductsGrid = doc.getElementById('productsGrid');

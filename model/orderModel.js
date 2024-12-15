@@ -1,23 +1,12 @@
 import mongoose from "mongoose";
 
 const orderItemSchema = new mongoose.Schema({
-  product: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Product', 
-    required: true 
-  },
-  quantity: { 
-    type: Number, 
-    required: true 
-  },
-  price: { 
-    type: Number, 
-    required: true 
-  },
-  discount: { 
-    type: Number, 
-    default: 0 
-  }
+  name: { type: String, required: true },
+  brand: { type: String, required: true },
+  images: [{ path: String, filename: String }],
+  quantity: { type: Number, required: true },
+  price: { type: Number, required: true },
+  discount: { type: Number, default: 0 }
 });
 
 const orderSchema = new mongoose.Schema({
@@ -27,10 +16,7 @@ const orderSchema = new mongoose.Schema({
     required: true 
   },
   items: [orderItemSchema],
-  totalAmount: { 
-    type: Number, 
-    required: true 
-  },
+  totalAmount: { type: Number, required: true },
   status: { 
     type: String, 
     enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'], 
@@ -46,10 +32,15 @@ const orderSchema = new mongoose.Schema({
     enum: ['paid', 'unpaid'], 
     default: 'unpaid' 
   },
-  shippingAddress: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Address', 
-    required: true 
+  shippingAddress: {
+    name: { type: String, required: true },
+    houseName: { type: String, required: true },
+    localityStreet: { type: String, required: true },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    pincode: { type: String, required: true },
+    phone: { type: String, required: true },
+    alternatePhone: { type: String }
   },
   orderDate: { 
     type: Date, 

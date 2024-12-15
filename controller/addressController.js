@@ -3,6 +3,7 @@ import { log } from "mercedlogger";
 import Address from "../model/addressModel.js";
 import addressSchema from "../model/addressModel.js";
 
+// get all addresses of a user
 const getAddresses = async (req, res) => {
     try {
         let email = req.session.user.email
@@ -14,6 +15,7 @@ const getAddresses = async (req, res) => {
         log.red("FETCH_ADDRESSES_ERROR", error)
     }
 }
+
 // Add a new address
 const addAddress = async (req, res) => {
     try {
@@ -71,7 +73,6 @@ const updateAddress = async (req, res) => {
     try {
         const { name, houseName, localityStreet, city, state, pincode, phone, alternatePhone } = req.body;
 
-        // Validate required fields
         if (!name || !houseName || !localityStreet || !city || !state || !pincode || !phone) {
             return res.status(400).json({
                 success: false,

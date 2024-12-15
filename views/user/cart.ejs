@@ -172,7 +172,6 @@
       axios.post('/cart/update', { productId, action })
         .then(response => {
           if (response.data.success) {
-            // Update quantity display
             const quantitySpan = document.querySelector(`[data-product="${productId}"] .quantity-value`);
             const currentQuantity = parseInt(quantitySpan.textContent);
             let newQuantity = action === 'increase' ? currentQuantity + 1 : currentQuantity - 1;
@@ -207,7 +206,6 @@
             document.getElementById('subtotal').textContent = `₹${response.data.subtotal}`;
             document.getElementById('total').textContent = `₹${response.data.total}`;
 
-            // If quantity is 0, remove the item
             if (newQuantity === 0) {
               document.querySelector(`[data-product="${productId}"]`).remove();
               // If cart is empty, show empty cart message
@@ -216,14 +214,12 @@
               }
             }
           } else {
-            // Show specific error message from server using custom alert
             const errorMessage = response.data.message || 'Error updating quantity';
             showAlert(errorMessage, 'error');
           }
         })
         .catch(error => {
           console.error('Error:', error);
-          // Show specific error message if available, otherwise show generic error
           const errorMessage = error.response?.data?.message || 'Error updating cart quantity';
           showAlert(errorMessage, 'error');
         });
