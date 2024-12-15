@@ -3,15 +3,15 @@ import { log } from "mercedlogger";
 import bcrypt from "bcryptjs";
 import authUtils from "../../utils/authUtils.js";
 import { config } from "dotenv";
-import passport from "passport"; 
+import passport from "passport";
 config();
 
 // ---- User Login ----  
 const loadLogin = (req, res) => {
-    let message = req.query.message 
+    let message = req.query.message
     let alertType = req.query.alertType
     let email = req.query.email
-    res.render('user/login', {message, alertType, email});
+    res.render('user/login', { message, alertType, email });
 };
 
 // Verify user login 
@@ -39,13 +39,13 @@ const verifyLogin = async (req, res) => {
         }
 
         //check the user is active 
-        if(user.status != "Active") {
+        if (user.status != "Active") {
             return res.status(401).json({
                 success: false,
                 message: 'Your account has been blocked. Please contact support.'
             });
         }
-        
+
         // Check if the user used Google login
         if (!user.password) {
             return res.status(401).json({
@@ -73,7 +73,7 @@ const verifyLogin = async (req, res) => {
             success: true,
             message: 'Login successful'
         });
-        
+
     } catch (error) {
         log.red("ERROR", error);
         res.status(500).json({
@@ -92,7 +92,7 @@ const loadSignup = (req, res) => {
 const registerUser = async (req, res) => {
     try {
         let { fullname, phonenumber, email, password } = req.body;
-        fullname = fullname.trim() 
+        fullname = fullname.trim()
         phonenumber = phonenumber.trim()
         email = email.trim()
         password = password.trim()
@@ -116,7 +116,7 @@ const registerUser = async (req, res) => {
             } else {
                 message = existingUser.email === email ? "Email already registered" : "Phone number already registered";
             }
-            
+
             return res.render('user/signup', {
                 message,
                 alertType: "error",
@@ -149,8 +149,8 @@ const registerUser = async (req, res) => {
 
         setTimeout(async () => {
             try {
-                await userSchema.deleteOne({ 
-                    email, 
+                await userSchema.deleteOne({
+                    email,
                     status: "Pending",
                     createdAt: { $lt: new Date(Date.now() - 3 * 60 * 1000) }
                 });
@@ -161,7 +161,7 @@ const registerUser = async (req, res) => {
 
         // Send OTP email to the user
         await authUtils.sendOTPEmail(email, otp);
-        res.render('user/signupotp', {email});  // Render OTP verification page
+        res.render('user/signupotp', { email });  // Render OTP verification page
     } catch (error) {
         log.red('ERROR', error);
         res.status(500).render('user/signup', { message: "Something went wrong", alertType: "error" });
@@ -231,14 +231,14 @@ const verifyOTP = async (req, res) => {
 // Resend OTP functionality
 const resendOTP = async (req, res) => {
     console.log(req.body)
-    let { email } = req.body; 
+    let { email } = req.body;
     email = email.trim()
     console.log("email: ", email)
     try {
         // Find the user by email
         const user = await userSchema.findOne({ email });
         console.log("user: ", user)
-      
+
         if (user.otp.otpAttempts >= 3) {
             await userSchema.findOneAndDelete({ email });
             return res.render("user/signup", {
@@ -250,8 +250,8 @@ const resendOTP = async (req, res) => {
         // Generate a new OTP and update the user's document
         const otp = authUtils.generateOTP();
         user.otp.otpValue = otp;
-        user.otp.otpExpiresAt = Date.now() + 60000;  
-        user.otp.otpAttempts += 1;  
+        user.otp.otpExpiresAt = Date.now() + 60000;
+        user.otp.otpAttempts += 1;
         await user.save();
 
         // Send the new OTP email to the user
@@ -271,7 +271,7 @@ const resendOTP = async (req, res) => {
             alertType: "error",
         });
     }
-}; 
+};
 
 
 // ---- Google OAuth ----
@@ -288,7 +288,7 @@ const authGoogleCallback = (req, res) => {
         if (err) {
             return res.redirect("/login?message=Something+went+wrong&alertType=error");
         }
-        
+
         if (!user) {
             // Handle blocked user case
             return res.redirect("/login?message=Your+account+is+currently+blocked&alertType=error");
@@ -307,17 +307,16 @@ const authGoogleCallback = (req, res) => {
 
 // ---- user logout --- 
 
-const logoutUser = (req,res)=>{
+const logoutUser = (req, res) => {
 
-      try{
-        delete req.session.user 
-        res.render('user/login',{message:"Logged out successfully", alertType:"success"});
-        
-      }catch(error){
+    try {
+        delete req.session.user
+        res.render('user/login', { message: "Logged out successfully", alertType: "success" });
+
+    } catch (error) {
         log.red('Error destroying session', err);
         return res.status(500).send('Unable to log out');
-
-      }
+    }
 
 }
 
@@ -438,7 +437,7 @@ const resendForgotPasswordOTP = async (req, res) => {
 
     try {
         const user = await userSchema.findOne({ email });
-        
+
         if (user.otp?.otpAttempts >= 3) {
             user.otp = undefined;
             await user.save();
@@ -486,7 +485,7 @@ const resetPassword = async (req, res) => {
                 alertType: "error",
                 email
             });
-            
+
         }
 
 
@@ -505,42 +504,42 @@ const resetPassword = async (req, res) => {
 };
 
 
-const getDashboard = (req, res)=>{
-    try{
-        
-    }catch(error){
+const getDashboard = (req, res) => {
+    try {
+
+    } catch (error) {
         log.red("FETCH_DASHBOARD_ERROR", error)
     }
 }
-const getAccountDetails = async (req,res)=>{
-    try{
+const getAccountDetails = async (req, res) => {
+    try {
         let email = req.session.user.email
-        let user = await userSchema.findOne({email})
-        res.render('user/account', {user, page:"account"})
-    }catch(error){
+        let user = await userSchema.findOne({ email })
+        res.render('user/account', { user, page: "account" })
+    } catch (error) {
         log.red("FETCH_ACCOUNT_DETAILS_ERROR", error)
     }
 }
 
 
-const getWishlist = (req,res)=>{
-    try{
+const getWishlist = (req, res) => {
+    try {
 
-    }catch(error){
+    } catch (error) {
         log.red("FETCH_WISHLIST_ERROR", error)
     }
 }
-const getOrders = (req,res)=>{
-    try{
+const getOrders = (req, res) => {
+    try {
 
-    }catch(error){
+    } catch (error) {
         log.red("FETCH_ORDERS_ERROR", error)
     }
 }
-const getWallet = (req,res)=>{
-    try{
+const getWallet = (req, res) => {
+    try {
 
-    }catch(error){
+    } catch (error) {
         log.red("FETCH_WALLET_ERROR", error)
     }
 }
@@ -553,7 +552,7 @@ export default {
     loadSignup, verifyOTP, resendOTP,
     loadForgotpassword, processForgotPassword, verifyForgotPasswordOTP,
     resendForgotPasswordOTP, resetPassword, loadResetpassword,
-     registerUser, authGoogle, authGoogleCallback,
+    registerUser, authGoogle, authGoogleCallback,
     logoutUser, getDashboard, getAccountDetails, getWishlist, getOrders, getWallet,
 }
 

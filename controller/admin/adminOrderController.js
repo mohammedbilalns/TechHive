@@ -1,5 +1,5 @@
 import orderModel from '../../model/orderModel.js';
-
+import productModel from '../../model/productModel.js';
 // Get all orders
 const getOrders = async (req, res) => {
   try {
@@ -10,9 +10,9 @@ const getOrders = async (req, res) => {
     res.render('admin/orders', { orders });
   } catch (error) {
     console.error('Error fetching orders:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Error fetching orders' 
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching orders'
     });
   }
 };
@@ -54,12 +54,22 @@ const updateOrderStatus = async (req, res) => {
     }
 
     order.status = status;
-    
+
     // Update payment status to paid when order is delivered
     if (status === 'delivered') {
       order.paymentStatus = 'paid';
     }
-    
+
+    // Restore stocks for each product 
+    if (status === "cancelled") {
+      for (const item of order.items) {
+        await productModel.findOneAndUpdate(
+          { name: item.name },
+          { $inc: { stock: item.quantity } }
+        );
+      }
+    }
+
     await order.save();
 
     res.json({
