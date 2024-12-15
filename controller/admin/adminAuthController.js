@@ -66,7 +66,9 @@ const blockCustomer = async (req,res)=>{
       {status:"Blocked"},
       {new: true}
     );
-   
+    if(req.session.user.id == customer._id ){
+      delete req.session.user
+    }
     res.json({
       success: true,
       message: 'Customer blocked successfully',
