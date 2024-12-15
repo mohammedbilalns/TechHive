@@ -1,14 +1,14 @@
 import express from "express"
 import { Router } from "express"
-import userController from "../controller/userController.js"
+import userController from "../controller/user/userController.js"
 import auth from "../middlewares/auth.js"
-import productController from "../controller/productController.js"
-import addressController from "../controller/addressController.js"
-import useraccountController from "../controller/useraccountController.js"
-import cartController from "../controller/userCartcontroller.js"
-import checkoutController from "../controller/checkoutController.js"
-import userOrderController from "../controller/userOrderController.js"
-import userSearchController from "../controller/userSearchController.js"
+import productController from "../controller/user/userProductController.js"
+import useraddressController from "../controller/user/useraddressController.js"
+import useraccountController from "../controller/user/useraccountController.js"
+import cartController from "../controller/user/userCartcontroller.js"
+import checkoutController from "../controller/user/userCheckoutController.js"
+import userOrderController from "../controller/user/userOrderController.js"
+import userSearchController from "../controller/user/userSearchController.js"
 const router = Router()
 
 router.use(express.static('static'))
@@ -57,18 +57,18 @@ router.get('/profile/account', auth.checkSession, userController.getAccountDetai
 router.get('/profile/wishlist', auth.checkSession, userController.getWishlist)  
 router.get('/profile/orders', auth.checkSession, userOrderController.getOrders);
 router.get('/profile/wallet', auth.checkSession, userController.getWallet)  
-router.get('/profile/addresses', auth.checkSession, addressController.getAddresses)
+router.get('/profile/addresses', auth.checkSession, useraddressController.getAddresses)
 
 
 
 //---- user Address management ---- 
-router.post('/account/add-address', auth.checkSession, addressController.addAddress); // add new address 
+router.post('/account/add-address', auth.checkSession, useraddressController.addAddress); // add new address 
 
 router.route('/account/address/:id')
   .all(auth.checkSession) 
-  .put(addressController.updateAddress) // Update address
-  .delete(addressController.deleteAddress) // Delete an address
-  .get(addressController.getAddress); // Get single address details
+  .put(useraddressController.updateAddress) // Update address
+  .delete(useraddressController.deleteAddress) // Delete an address
+  .get(useraddressController.getAddress); // Get single address details
 
   //---- user profile management ---- s
 router.post('/account/update-profile', auth.checkSession, useraccountController.updateProfile)

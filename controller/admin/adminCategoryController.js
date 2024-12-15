@@ -1,5 +1,5 @@
 import { log } from "mercedlogger";
-import categorySchema from "../model/categoryModel.js"
+import categorySchema from "../../model/categoryModel.js"
 
 // Fetch the categories page
 const getCategories = async (req, res)=>{

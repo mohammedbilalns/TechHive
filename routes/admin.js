@@ -1,10 +1,10 @@
 import express from "express"
 import { Router } from "express"
-import adminAuthController from "../controller/adminAuthController.js"
+import adminAuthController from "../controller/admin/adminAuthController.js"
 import adminAuth from "../middlewares/adminAuth.js"
-import adminCategoryController from "../controller/adminCategoryController.js"
-import adminProductController from "../controller/adminProductController.js"
-import adminOrderController from "../controller/adminOrderController.js"
+import adminCategoryController from "../controller/admin/adminCategoryController.js"
+import adminProductController from "../controller/admin/adminProductController.js"
+import adminOrderController from "../controller/admin/adminOrderController.js"
 const router = Router()
 router.use(express.static('static'));
 

@@ -1,5 +1,5 @@
 import { log } from "mercedlogger";
-import productSchema from "../model/productModel.js";
+import productSchema from "../../model/productModel.js";
 
 const searchProducts = async (req, res) => {
     try {

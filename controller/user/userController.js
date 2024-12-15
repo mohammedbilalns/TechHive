@@ -1,7 +1,7 @@
-import userSchema from "../model/userModel.js";
+import userSchema from "../../model/userModel.js";
 import { log } from "mercedlogger";
 import bcrypt from "bcryptjs";
-import authUtils from "../utils/authUtils.js";
+import authUtils from "../../utils/authUtils.js";
 import { config } from "dotenv";
 import passport from "passport"; 
 config();

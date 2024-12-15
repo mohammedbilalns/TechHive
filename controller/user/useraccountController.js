@@ -1,4 +1,4 @@
-import userSchema from "../model/userModel.js";
+import userSchema from "../../model/userModel.js";
 import { log } from "mercedlogger";
 import bcrypt from 'bcryptjs';
 

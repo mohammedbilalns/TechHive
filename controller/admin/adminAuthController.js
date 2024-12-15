@@ -1,6 +1,6 @@
 import { log } from "mercedlogger";
 import { configDotenv } from "dotenv";
-import userSchema from "../model/userModel.js";
+import userSchema from "../../model/userModel.js";
 
 configDotenv()
 
@@ -66,6 +66,7 @@ const blockCustomer = async (req,res)=>{
       {status:"Blocked"},
       {new: true}
     );
+   
     res.json({
       success: true,
       message: 'Customer blocked successfully',

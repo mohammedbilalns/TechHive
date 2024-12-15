@@ -1,6 +1,6 @@
-import userModel from '../model/userModel.js';
-import cartModel from '../model/cartModel.js';
-import addressModel from '../model/addressModel.js';
+import userModel from '../../model/userModel.js';
+import cartModel from '../../model/cartModel.js';
+import addressModel from '../../model/addressModel.js';
 //import Order from '../models/orderModel.js';
 
 const getCheckout = async (req, res) => {
@@ -68,3 +68,4 @@ export default {
   getCheckout,
   placeOrder
 };
+

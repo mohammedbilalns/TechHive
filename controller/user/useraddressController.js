@@ -1,7 +1,7 @@
-import userSchema from "../model/userModel.js";
+import userSchema from "../../model/userModel.js";
 import { log } from "mercedlogger";
-import Address from "../model/addressModel.js";
-import addressSchema from "../model/addressModel.js";
+import Address from "../../model/addressModel.js";
+import addressSchema from "../../model/addressModel.js";
 
 // get all addresses of a user
 const getAddresses = async (req, res) => {

@@ -1,6 +1,6 @@
 import { log } from "mercedlogger";
-import productSchema from "../model/productModel.js";
-import categorySchema from "../model/categoryModel.js";
+import productSchema from "../../model/productModel.js";
+import categorySchema from "../../model/categoryModel.js";
 
 
 // ---- load home ---- homepage 

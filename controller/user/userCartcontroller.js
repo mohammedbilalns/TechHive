@@ -1,6 +1,6 @@
-import cartSchema from "../model/cartModel.js"
-import userSchema from "../model/userModel.js"
-import productSchema from "../model/productModel.js"
+import cartSchema from "../../model/cartModel.js"
+import userSchema from "../../model/userModel.js"
+import productSchema from "../../model/productModel.js"
 
 const getCart = async (req, res) => {
     try {

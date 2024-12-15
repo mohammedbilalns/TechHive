@@ -1,6 +1,6 @@
 import { log } from "mercedlogger";
-import categorySchema from "../model/categoryModel.js"
-import productSchema from "../model/productModel.js"
+import categorySchema from "../../model/categoryModel.js"
+import productSchema from "../../model/productModel.js"
 import multer from "multer";
 import fs from "node:fs"
 import path from "node:path"
