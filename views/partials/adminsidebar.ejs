@@ -1,7 +1,15 @@
-<aside id="sidebar" class="bg-gray-100 w-full md:w-64 h-screen">
-  <nav class="py-4">
+
+
+
+<aside id="sidebar" class="fixed top-0 left-0 z-40 h-screen w-64 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out bg-gray-100">
+  <nav class="py-4 h-full overflow-y-auto">
     <div class="px-4 md:px-6">
-      <h2 class="text-sm font-semibold text-gray-600 uppercase">Menu</h2>
+      <div class="flex justify-between items-center md:hidden mb-4">
+        <h2 class="text-sm font-semibold text-gray-600 uppercase">Menu</h2>
+        <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
       <ul class="mt-4 space-y-2">
         <li>
           <a href="/admin/dashboard" onclick="return false" class="flex items-center px-4 py-2 <%= locals.page == "dashboard" ? "bg-primary-accent text-gray-200 hover:bg-primary-hover" : "text-gray-800 hover:bg-gray-200" %> rounded-lg">
@@ -95,3 +103,43 @@
     </div>
   </nav>
 </aside>
+
+<div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"></div>
+
+<!-- Mobile Header -->
+<div class="md:hidden fixed top-0 left-0 right-0 z-30 bg-white shadow-md px-4 py-2 flex justify-between items-center">
+  <h1 class="text-xl font-semibold text-gray-800">Admin Dashboard</h1>
+  <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900">
+    <i class="fas fa-bars"></i>
+  </button>
+</div>
+
+<script>
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  
+  if (sidebar.classList.contains('-translate-x-full')) {
+    // Open sidebar
+    sidebar.classList.remove('-translate-x-full');
+    overlay.classList.remove('hidden');
+    document.body.style.overflow = 'hidden'; // Prevent body scroll when sidebar is open
+  } else {
+    // Close sidebar
+    sidebar.classList.add('-translate-x-full');
+    overlay.classList.add('hidden');
+    document.body.style.overflow = ''; // Restore body scroll
+  }
+}
+
+// Close sidebar when screen size changes to desktop
+window.addEventListener('resize', () => {
+  if (window.innerWidth >= 768) { // md breakpoint
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.remove('-translate-x-full');
+    overlay.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+});
+</script>

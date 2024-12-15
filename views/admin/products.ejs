@@ -1,125 +1,127 @@
 <%- include('../partials/adminheader') %>
 
-<div class="flex flex-col md:flex-row">
-  <!-- Sidebar -->
 
-  <%- include("../partials/adminsidebar") %>
-  
+
+<div class="flex min-h-screen">
+  <!-- Sidebar -->
+  <%- include('../partials/adminsidebar') %>
 
   <!-- Main Content -->
-  <main class="flex-grow p-4 md:py-12">
-    <% if (locals.message && locals.alertType) { %>
-      <div id="alertMessage" class="mb-4 p-3 rounded-md 
-           <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
-        <%= message %>
-      </div>
-    <% } %>
-
-    <div class="bg-primary-white rounded-lg shadow-lg w-full overflow-hidden">
-      <!-- Page Header -->
-      <div class="flex flex-col md:flex-row justify-between items-center bg-gray-50 px-4 md:px-6 py-4 border-b space-y-4 md:space-y-0">
-        <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Products Dashboard</h1>
-        <div class="flex gap-4">
-          <div class="relative">
-            <input type="text" id="searchBox" placeholder="Search..."
-              class="w-full md:w-64 border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-              oninput="filterProducts()" />
-            <i class="fas fa-search absolute top-3 right-4 text-gray-400"></i>
-          </div>
-          <form action="/admin/products/add" >
-          <button type="submit" class="flex items-center bg-blue-500 text-white px-4 py-2 rounded-md shadow w-full md:w-auto justify-center"
-            >
-            <i class="fas fa-plus mr-2"></i> Add Product
-          </button>
-          </form>
-          <button class="flex items-center bg-primary-accent text-white px-4 py-2 rounded-md shadow w-full md:w-auto justify-center"
-            onclick="exportCategories()">
-            <i class="fas fa-download mr-2"></i> Export
-          </button>
+  <main class="md:ml-64 w-full min-h-screen bg-gray-50 transition-all duration-300 ease-in-out">
+    <div class="pt-14 md:pt-0 p-4">
+      <% if (locals.message && locals.alertType) { %>
+        <div id="alertMessage" class="mb-4 p-3 rounded-md 
+             <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
+          <%= message %>
         </div>
-      </div>
+      <% } %>
 
-      <!-- Products Table -->
-      <div class="overflow-x-auto mt-6">
-        <table class="min-w-full bg-gray-50 text-sm">
-          <thead>
-            <tr class="text-left text-gray-600">
-              <th class="px-6 py-3">#</th>
-              <th class="px-6 py-3">Image</th>
-              <th class="px-6 py-3">Name</th>
-              <th class="px-6 py-3">Category</th>
-              <th class="px-6 py-3">Price</th>
-              <th class="px-6 py-3">Discount (%)</th>
-              <th class="px-6 py-3">Stock</th>
-              <th class="px-6 py-3">Status</th>
-              <th class="px-6 py-3">Variant</th>
-              <th class="px-6 py-3 text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="productsTable" class="text-gray-700">
-            <% if (products.length === 0) { %>
-              <div className="text-center py-10">
-                <h2 className="text-xl font-semibold text-gray-600">No products found</h2>
-              </div>
-            <% } else { %>
-              <% products.forEach((product, index) => { %>
-                <tr class="border-b hover:bg-gray-100">
-                  <td class="px-6 py-3 font-medium"><%= index + 1 %></td>
-                  <td class="px-6 py-3">
-                    <% if (product.images && product.images.length > 0) { %>
-                      <img src="<%= product.images[0].path %>" alt="<%= product.name %>" class="w-12 h-12 object-cover rounded-md">
-                    <% } else { %>
-                      <div class="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center">
-                        <i class="fas fa-image text-gray-400"></i>
-                      </div>
-                    <% } %>
-                  </td>
-                  <td class="px-6 py-3"><%= product.name %></td>
-                  <td class="px-6 py-3"><%= product.category.name %></td>
-                  <td class="px-6 py-3">₹<%= product.price %></td>
-                  <td class="px-6 py-3"><%= product.discount %></td>
-                  <td class="px-6 py-3"><%= product.stock %></td>
-                  <td class="px-6 py-3">
-                    <span class="px-3 py-1 rounded-full text-sm font-medium
-                      <%= product.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
-                      <%= product.status %>
-                    </span>
-                  </td>
-                  <td class="px-6 py-3"><%= product.variant %></td>
-                  <td class="px-6 py-3 text-center">
-                    <div class="flex justify-center gap-2">
-                      <% if (product.status === 'Active') { %>
-                        <form action="/admin/products/deactivate/<%= product._id %>" method="POST" 
-                          onsubmit="return confirm('Are you sure you want to deactivate the product?')">
-                          <button type="submit" class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">
-                            Deactivate
-                          </button>
-                        </form>
+      <div class="bg-primary-white rounded-lg shadow-lg w-full overflow-hidden">
+        <!-- Page Header -->
+        <div class="flex flex-col md:flex-row justify-between items-center bg-gray-50 px-4 md:px-6 py-4 border-b space-y-4 md:space-y-0">
+          <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Products Dashboard</h1>
+          <div class="flex gap-4">
+            <div class="relative">
+              <input type="text" id="searchBox" placeholder="Search..."
+                class="w-full md:w-64 border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                oninput="filterProducts()" />
+              <i class="fas fa-search absolute top-3 right-4 text-gray-400"></i>
+            </div>
+            <form action="/admin/products/add" >
+            <button type="submit" class="flex items-center bg-blue-500 text-white px-4 py-2 rounded-md shadow w-full md:w-auto justify-center"
+              >
+              <i class="fas fa-plus mr-2"></i> Add Product
+            </button>
+            </form>
+            <button class="flex items-center bg-primary-accent text-white px-4 py-2 rounded-md shadow w-full md:w-auto justify-center"
+              onclick="exportCategories()">
+              <i class="fas fa-download mr-2"></i> Export
+            </button>
+          </div>
+        </div>
+
+        <!-- Products Table -->
+        <div class="overflow-x-auto mt-6">
+          <table class="min-w-full bg-gray-50 text-sm">
+            <thead>
+              <tr class="text-left text-gray-600">
+                <th class="px-6 py-3">#</th>
+                <th class="px-6 py-3">Image</th>
+                <th class="px-6 py-3">Name</th>
+                <th class="px-6 py-3">Category</th>
+                <th class="px-6 py-3">Price</th>
+                <th class="px-6 py-3">Discount (%)</th>
+                <th class="px-6 py-3">Stock</th>
+                <th class="px-6 py-3">Status</th>
+                <th class="px-6 py-3">Variant</th>
+                <th class="px-6 py-3 text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="productsTable" class="text-gray-700">
+              <% if (products.length === 0) { %>
+                <div className="text-center py-10">
+                  <h2 className="text-xl font-semibold text-gray-600">No products found</h2>
+                </div>
+              <% } else { %>
+                <% products.forEach((product, index) => { %>
+                  <tr class="border-b hover:bg-gray-100">
+                    <td class="px-6 py-3 font-medium"><%= index + 1 %></td>
+                    <td class="px-6 py-3">
+                      <% if (product.images && product.images.length > 0) { %>
+                        <img src="<%= product.images[0].path %>" alt="<%= product.name %>" class="w-12 h-12 object-cover rounded-md">
                       <% } else { %>
-                        <form action="/admin/products/activate/<%= product._id %>" method="POST" 
-                          onsubmit="return confirm('Are you sure you want to activate the product?')">
+                        <div class="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center">
+                          <i class="fas fa-image text-gray-400"></i>
+                        </div>
+                      <% } %>
+                    </td>
+                    <td class="px-6 py-3"><%= product.name %></td>
+                    <td class="px-6 py-3"><%= product.category.name %></td>
+                    <td class="px-6 py-3">₹<%= product.price %></td>
+                    <td class="px-6 py-3"><%= product.discount %></td>
+                    <td class="px-6 py-3"><%= product.stock %></td>
+                    <td class="px-6 py-3">
+                      <span class="px-3 py-1 rounded-full text-sm font-medium
+                        <%= product.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                        <%= product.status %>
+                      </span>
+                    </td>
+                    <td class="px-6 py-3"><%= product.variant %></td>
+                    <td class="px-6 py-3 text-center">
+                      <div class="flex justify-center gap-2">
+                        <% if (product.status === 'Active') { %>
+                          <form action="/admin/products/deactivate/<%= product._id %>" method="POST" 
+                            onsubmit="return confirm('Are you sure you want to deactivate the product?')">
+                            <button type="submit" class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">
+                              Deactivate
+                            </button>
+                          </form>
+                        <% } else { %>
+                          <form action="/admin/products/activate/<%= product._id %>" method="POST" 
+                            onsubmit="return confirm('Are you sure you want to activate the product?')">
+                            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                              Activate
+                            </button>
+                          </form>
+                        <% } %>
+                        <form action="/admin/products/edit/<%= product._id %>">
                           <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-                            Activate
+                            Edit
                           </button>
                         </form>
-                      <% } %>
-                      <form action="/admin/products/edit/<%= product._id %>">
-                        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-                          Edit
-                        </button>
-                      </form>
-                      <form action="/admin/products/delete/<%= product._id %>" 
-                        onsubmit="return confirm('Are you sure you want delete the product?')">
-                        <button type="submit"
-                          class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">Delete</button>
-                      </form>
-                    </div>
-                  </td>
-                </tr>
-              <% }); %>
-            <% } %>
-          </tbody>
-        </table>
+                        <form action="/admin/products/delete/<%= product._id %>" 
+                          onsubmit="return confirm('Are you sure you want delete the product?')">
+                          <button type="submit"
+                            class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">Delete</button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                <% }); %>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </main>
