@@ -33,16 +33,13 @@ const verifyLogin = async (req,res)=>{
 }
 
 const logoutAdmin = (req,res)=>{
-
-    req.session.destroy((err) => {
-    if (err) {
-      log.red('Error destroying session', err);
-      return res.status(500).send('Unable to log out');
-    }
+  try{
+    delete req.session.admin
     res.redirect('/admin/login?message=logged+out+successfully&alertType=success');
-  });
-
-
+  }catch(error){
+    log.red('ADMIN_LOGOUT_ERROR',error)
+  }
+    
 }
 //--- Admin Users Dashboard ----
 const getCustomers = async (req,res)=>{

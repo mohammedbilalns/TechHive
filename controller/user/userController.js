@@ -308,16 +308,16 @@ const authGoogleCallback = (req, res) => {
 // ---- user logout --- 
 
 const logoutUser = (req,res)=>{
-    
-  
-   
-    req.session.destroy((err) => {
-        if (err) {
-          log.red('Error destroying session', err);
-          return res.status(500).send('Unable to log out');
-        }
+
+      try{
+        delete req.session.user 
         res.render('user/login',{message:"Logged out successfully", alertType:"success"});
-      });
+        
+      }catch(error){
+        log.red('Error destroying session', err);
+        return res.status(500).send('Unable to log out');
+
+      }
 
 }
 
