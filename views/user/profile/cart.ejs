@@ -52,7 +52,8 @@
                           <div class="mt-4 flex items-center">
                             <div class="flex items-center border rounded">
                               <button onclick="updateQuantity('<%= item.productId._id %>', 'decrease')"
-                                      class="decrease-btn px-3 py-1 hover:bg-gray-100 <%= item.quantity <= 1 ? 'text-gray-400' : '' %>">
+                                      class="decrease-btn px-3 py-1 hover:bg-gray-100 <%= item.quantity <= 1 ? 'text-gray-400' : '' %>"
+                                      <%= item.quantity <= 1 ? 'disabled' : '' %>>
                                 -
                               </button>
                               <span class="quantity-value px-4 py-1 border-x"><%= item.quantity %></span>
@@ -154,6 +155,15 @@
 
 
     function updateQuantity(productId, action) {
+      // Get current quantity before making the request
+      const quantitySpan = document.querySelector(`[data-product="${productId}"] .quantity-value`);
+      const currentQuantity = parseInt(quantitySpan.textContent);
+      
+      // Prevent decrementing if quantity is 1
+      if (action === 'decrease' && currentQuantity <= 1) {
+        return;
+      }
+
       axios.post('/cart/update', { productId, action })
         .then(response => {
           if (response.data.success) {
@@ -167,8 +177,10 @@
             
             if (newQuantity <= 1) {
               decreaseBtn.classList.add('text-gray-400');
+              decreaseBtn.setAttribute('disabled', '');
             } else {
               decreaseBtn.classList.remove('text-gray-400');
+              decreaseBtn.removeAttribute('disabled');
             }
             
             if (newQuantity >= 4) {
