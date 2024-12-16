@@ -20,6 +20,7 @@ router.route('/login') // login route
      .post(userAuthController.verifyLogin)
 
 router.get('/logout',auth.checkSession, userAuthController.logoutUser)
+
 router.route('/signup') // signup route
     .all(auth.isLogin)
     .get(userAuthController.loadSignup)
@@ -53,7 +54,7 @@ router.get('/' , auth.isLogin, userProductController.loadLanding)
 
 //---- user dashboard ---- 
 router.get('profile/dashboard', auth.checkSession, userAuthController.getDashboard)
-router.get('/profile/account', auth.checkSession, userAuthController.getAccountDetails) 
+router.get('/profile/account', auth.checkSession, useraccountController.getAccountDetails) 
 router.get('/profile/wishlist', auth.checkSession, userAuthController.getWishlist)  
 router.get('/profile/orders', auth.checkSession, userOrderController.getOrders);
 router.get('/profile/wallet', auth.checkSession, userAuthController.getWallet)  

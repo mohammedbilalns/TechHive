@@ -8,7 +8,7 @@ const getCart = async (req, res) => {
             .populate('items.productId');
         
         if (!cart) {
-            return res.render('user/cart', {
+            return res.render('user/profile/cart', {
                 cart: null,
                 subtotal: "0.00",
                 shipping: "0.00",
@@ -32,7 +32,7 @@ const getCart = async (req, res) => {
         const shipping = 0; 
         const total = subtotal + shipping;
 
-        res.render('user/cart', {
+        res.render('user/profile/cart', {
             cart,
             subtotal: subtotal.toFixed(2),
             shipping: shipping.toFixed(2),
@@ -42,7 +42,7 @@ const getCart = async (req, res) => {
         });
     } catch (error) {
         console.error("Get cart error:", error);
-        res.status(500).render('user/cart', {
+        res.status(500).render('user/profile/cart', {
             message: "Error loading cart",
             alertType: "error",
             user: req.session.user,

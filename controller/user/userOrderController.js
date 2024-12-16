@@ -111,14 +111,14 @@ const getOrders = async (req, res) => {
     const orders = await orderModel.find({ userId })
       .sort({ orderDate: -1 });
 
-    res.render('user/orders', { 
+    res.render('user/profile/orders', { 
       orders,
       user: req.session.user, 
       page: 'orders'
     });
   } catch (error) {
     console.error('Get orders error:', error);
-    res.render('user/orders', { 
+    res.render('user/profile/orders', { 
       message: 'Failed to load orders',
       alertType: 'error',
       orders: [] 

@@ -3,6 +3,16 @@ import { log } from "mercedlogger";
 import bcrypt from 'bcryptjs';
 
 
+const getAccountDetails = async (req, res) => {
+    try {
+        let email = req.session.user.email
+        let user = await userSchema.findOne({ email })
+        res.render('user/profile/account', { user, page: "account" })
+    } catch (error) {
+        log.red("FETCH_ACCOUNT_DETAILS_ERROR", error)
+    }
+}
+
 const updateProfile = async (req, res) => {
     try {
         const { fullname } = req.body;
@@ -88,4 +98,4 @@ const changePassword = async (req, res) => {
     }
 };
 
-export default { updateProfile, changePassword };
+export default { getAccountDetails,updateProfile, changePassword };

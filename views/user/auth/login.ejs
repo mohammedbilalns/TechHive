@@ -1,9 +1,9 @@
-<%- include('../partials/authheader') %>
+<%- include('../../partials/authheader') %>
 
-<main class="py-12 flex justify-center items-center" style="height: 70vh;">
+<main class="min-h-[70vh] py-8 flex justify-center items-center">
   <div class="bg-primary-white rounded-lg shadow-lg flex flex-col lg:flex-row overflow-hidden max-w-4xl w-full">
     <!-- Image Section -->
-    <div class="bg-blue-100 p-8 flex justify-center items-center">
+    <div class="bg-blue-100 p-6 hidden sm:flex justify-center items-center">
       <img alt="Illustration of a laptop with a clock display and office supplies" src="./images/login.png"
            class="object-cover max-w-full h-auto"/>
     </div>
@@ -64,7 +64,7 @@
     </div>
   </div>
 </main>
-<%- include('../partials/authfooter') %>
+<%- include('../../partials/authfooter') %>
 
 <script type="module">
   import { showAlert, closeCustomAlert } from '/js/util.js';

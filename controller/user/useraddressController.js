@@ -1,6 +1,5 @@
 import userSchema from "../../model/userModel.js";
 import { log } from "mercedlogger";
-import Address from "../../model/addressModel.js";
 import addressSchema from "../../model/addressModel.js";
 
 // get all addresses of a user
@@ -10,7 +9,7 @@ const getAddresses = async (req, res) => {
         let user = await userSchema.findOne({ email })
 
         let addresses = await addressSchema.find({ userId: user._id })
-        res.render('user/addresses', { addresses, user, page: "addresses" })
+        res.render('user/profile/addresses', { addresses, user, page: "addresses" })
     } catch (error) {
         log.red("FETCH_ADDRESSES_ERROR", error)
     }
@@ -20,7 +19,7 @@ const getAddresses = async (req, res) => {
 const addAddress = async (req, res) => {
     try {
 
-        const addressCount = await Address.countDocuments({ userId: req.session.user.id });
+        const addressCount = await addressSchema.countDocuments({ userId: req.session.user.id });
         if (addressCount >= 4) {
             return res.status(400).json({
                 success: false,
@@ -38,7 +37,7 @@ const addAddress = async (req, res) => {
             });
         }
 
-        const newAddress = new Address({
+        const newAddress = new addressSchema({
             userId: req.session.user.id,
             name,
             houseName,
@@ -80,7 +79,7 @@ const updateAddress = async (req, res) => {
             });
         }
 
-        const address = await Address.findOneAndUpdate(
+        const address = await addressSchema.findOneAndUpdate(
             {
                 _id: req.params.id,
                 userId: req.session.user.id
@@ -122,7 +121,7 @@ const updateAddress = async (req, res) => {
 // Delete an address
 const deleteAddress = async (req, res) => {
     try {
-        const address = await Address.findOneAndDelete({
+        const address = await addressSchema.findOneAndDelete({
             _id: req.params.id,
             userId: req.session.user.id
         });
@@ -153,7 +152,7 @@ const getAddress = async (req, res) => {
         const addressId = req.params.id;
         const userId = req.session.user.id;
 
-        const address = await Address.findOne({
+        const address = await addressSchema.findOne({
             _id: addressId,
             userId: userId
         });

@@ -11,7 +11,7 @@ const loadLogin = (req, res) => {
     let message = req.query.message
     let alertType = req.query.alertType
     let email = req.query.email
-    res.render('user/login', { message, alertType, email });
+    res.render('user/auth/login', { message, alertType, email });
 };
 
 // Verify user login 
@@ -85,7 +85,7 @@ const verifyLogin = async (req, res) => {
 
 // ---- User Signup ----  
 const loadSignup = (req, res) => {
-    res.render('user/signup');
+    res.render('user/auth/signup');
 };
 
 // Register a new user
@@ -117,7 +117,7 @@ const registerUser = async (req, res) => {
                 message = existingUser.email === email ? "Email already registered" : "Phone number already registered";
             }
 
-            return res.render('user/signup', {
+            return res.render('user/auth/signup', {
                 message,
                 alertType: "error",
                 fullname,
@@ -161,10 +161,10 @@ const registerUser = async (req, res) => {
 
         // Send OTP email to the user
         await authUtils.sendOTPEmail(email, otp);
-        res.render('user/signupotp', { email });  // Render OTP verification page
+        res.render('user/auth/signupotp', { email });  // Render OTP verification page
     } catch (error) {
         log.red('ERROR', error);
-        res.status(500).render('user/signup', { message: "Something went wrong", alertType: "error" });
+        res.status(500).render('user/auth/signup', { message: "Something went wrong", alertType: "error" });
     }
 };
 
@@ -178,7 +178,7 @@ const verifyOTP = async (req, res) => {
         const currentTime = Date.now();
 
         if (currentTime > user.otp.otpExpiresAt) {
-            return res.render("user/signupotp", {
+            return res.render("user/auth/signupotp", {
                 email,
                 message: "OTP has expired.",
                 alertType: "error",
@@ -200,7 +200,7 @@ const verifyOTP = async (req, res) => {
             // Check OTP attempts only when wrong OTP is entered
             if (user.otp.otpAttempts >= 3) {
                 await userSchema.findOneAndDelete({ email });
-                return res.render("user/signup", {
+                return res.render("user/auth/signup", {
                     message: "You have exceeded the maximum OTP attempts. Please try again later.",
                     alertType: "error",
                 });
@@ -209,7 +209,7 @@ const verifyOTP = async (req, res) => {
             user.otp.otpAttempts += 1;
             await user.save();
 
-            res.render("user/signupotp", {
+            res.render("user/auth/signupotp", {
                 email,
                 message: "Invalid OTP, try again",
                 alertType: "error",
@@ -218,7 +218,7 @@ const verifyOTP = async (req, res) => {
         }
     } catch (error) {
         log.red("ERROR", error);
-        res.status(500).render("user/signupotp", {
+        res.status(500).render("user/auth/signupotp", {
             email,
             message: "Something went wrong",
             alertType: "error",
@@ -241,7 +241,7 @@ const resendOTP = async (req, res) => {
 
         if (user.otp.otpAttempts >= 3) {
             await userSchema.findOneAndDelete({ email });
-            return res.render("user/signup", {
+            return res.render("user/auth/signup", {
                 message: "You have exceeded the maximum OTP attempts. Please try again later.",
                 alertType: "error",
             });
@@ -257,7 +257,7 @@ const resendOTP = async (req, res) => {
         // Send the new OTP email to the user
         await authUtils.sendOTPEmail(email, otp);
 
-        res.render("user/signupotp", {
+        res.render("user/auth/signupotp", {
             email,
             message: "OTP sent to your email.",
             alertType: "success",
@@ -265,7 +265,7 @@ const resendOTP = async (req, res) => {
 
     } catch (error) {
         log.red("ERROR", error);
-        res.status(500).render("user/signupotp", {
+        res.status(500).render("user/auth/signupotp", {
             email,
             message: "Something went wrong while resending OTP. Please try again.",
             alertType: "error",
@@ -311,7 +311,7 @@ const logoutUser = (req, res) => {
 
     try {
         delete req.session.user
-        res.render('user/login', { message: "Logged out successfully", alertType: "success" });
+        res.render('user/auth/login', { message: "Logged out successfully", alertType: "success" });
 
     } catch (error) {
         log.red('Error destroying session', err);
@@ -327,11 +327,11 @@ const loadForgotpassword = (req, res) => {
     let message = req.query.message;
     let alertType = req.query.alertType;
     let email = req.query.email;
-    res.render('user/forgotpassword', { message, alertType, email });
+    res.render('user/auth/forgotpassword', { message, alertType, email });
 };
 const loadResetpassword = (req, res) => {
     let email = req.query.email;
-    res.render('user/resetpassword', { email });
+    res.render('user/auth/resetpassword', { email });
 };
 
 const processForgotPassword = async (req, res) => {
@@ -341,7 +341,7 @@ const processForgotPassword = async (req, res) => {
         const user = await userSchema.findOne({ email });
 
         if (!user) {
-            return res.render('user/forgotpassword', {
+            return res.render('user/auth/forgotpassword', {
                 message: "Email not found",
                 alertType: "error",
                 email
@@ -365,11 +365,11 @@ const processForgotPassword = async (req, res) => {
 
         // Send OTP email
         await authUtils.sendOTPEmail(email, otp);
-        res.render('user/forgotpasswordotp', { email });
+        res.render('user/auth/forgotpasswordotp', { email });
 
     } catch (error) {
         log.red('ERROR', error);
-        res.render('user/forgotpassword', {
+        res.render('user/auth/forgotpassword', {
             message: "Something went wrong",
             alertType: "error",
             email: req.body.email
@@ -386,7 +386,7 @@ const verifyForgotPasswordOTP = async (req, res) => {
         const currentTime = Date.now();
 
         if (currentTime > user.otp.otpExpiresAt) {
-            return res.render("user/forgotpasswordotp", {
+            return res.render("user/auth/forgotpasswordotp", {
                 email,
                 message: "OTP has expired",
                 alertType: "error",
@@ -402,7 +402,7 @@ const verifyForgotPasswordOTP = async (req, res) => {
             if (user.otp.otpAttempts >= 3) {
                 user.otp = undefined;
                 await user.save();
-                return res.render("user/forgotpassword", {
+                return res.render("user/auth/forgotpassword", {
                     message: "Too many attempts. Please try again.",
                     alertType: "error",
                 });
@@ -413,7 +413,7 @@ const verifyForgotPasswordOTP = async (req, res) => {
 
             const remainingTime = Math.max(0, Math.floor((user.otp.otpExpiresAt - currentTime) / 1000));
 
-            res.render("user/forgotpasswordotp", {
+            res.render("user/auth/forgotpasswordotp", {
                 email,
                 message: "Invalid OTP",
                 alertType: "error",
@@ -422,7 +422,7 @@ const verifyForgotPasswordOTP = async (req, res) => {
         }
     } catch (error) {
         log.red("ERROR", error);
-        res.render("user/forgotpasswordotp", {
+        res.render("user/auth/forgotpasswordotp", {
             email,
             message: "Something went wrong",
             alertType: "error",
@@ -441,7 +441,7 @@ const resendForgotPasswordOTP = async (req, res) => {
         if (user.otp?.otpAttempts >= 3) {
             user.otp = undefined;
             await user.save();
-            return res.render("user/forgotpassword", {
+            return res.render("user/auth/forgotpassword", {
                 message: "Too many attempts. Please try again later.",
                 alertType: "error",
             });
@@ -457,7 +457,7 @@ const resendForgotPasswordOTP = async (req, res) => {
 
         await authUtils.sendOTPEmail(email, otp);
 
-        res.render("user/forgotpasswordotp", {
+        res.render("user/auth/forgotpasswordotp", {
             email,
             message: "New OTP sent",
             alertType: "success",
@@ -465,7 +465,7 @@ const resendForgotPasswordOTP = async (req, res) => {
 
     } catch (error) {
         log.red("ERROR", error);
-        res.render("user/forgotpasswordotp", {
+        res.render("user/auth/forgotpasswordotp", {
             email,
             message: "Failed to resend OTP",
             alertType: "error",
@@ -480,14 +480,13 @@ const resetPassword = async (req, res) => {
         const user = await userSchema.findOne({ email });
         console.log("user: ", user)
         if (!user) {
-            return res.render('user/resetpassword', {
+            return res.render('user/auth/resetpassword', {
                 message: "Invalid reset attempt",
                 alertType: "error",
                 email
             });
 
         }
-
 
         const hashedPassword = await bcrypt.hash(password, 10);
         user.password = hashedPassword;
@@ -496,7 +495,7 @@ const resetPassword = async (req, res) => {
         res.redirect('/login?message=Password+reset+successful&alertType=success');
     } catch (error) {
         log.red("ERROR", error);
-        res.render('user/resetpassword', {
+        res.render('user/auth/resetpassword', {
             message: "Failed to reset password",
             alertType: "error",
         });
@@ -511,15 +510,7 @@ const getDashboard = (req, res) => {
         log.red("FETCH_DASHBOARD_ERROR", error)
     }
 }
-const getAccountDetails = async (req, res) => {
-    try {
-        let email = req.session.user.email
-        let user = await userSchema.findOne({ email })
-        res.render('user/account', { user, page: "account" })
-    } catch (error) {
-        log.red("FETCH_ACCOUNT_DETAILS_ERROR", error)
-    }
-}
+
 
 
 const getWishlist = (req, res) => {
@@ -553,7 +544,7 @@ export default {
     loadForgotpassword, processForgotPassword, verifyForgotPasswordOTP,
     resendForgotPasswordOTP, resetPassword, loadResetpassword,
     registerUser, authGoogle, authGoogleCallback,
-    logoutUser, getDashboard, getAccountDetails, getWishlist, getOrders, getWallet,
+    logoutUser, getDashboard, getWishlist, getOrders, getWallet,
 }
 
 

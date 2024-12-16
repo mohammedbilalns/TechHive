@@ -1,12 +1,5 @@
 <%- include('../partials/header') %>
 
-  <!-- Mobile Menu Button -->
-  <div class="md:hidden p-4 bg-gray-100 flex justify-between items-center">
-    <h1 class="text-xl font-semibold text-gray-800">My Addresses</h1>
-    <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900">
-      <i class="fas fa-bars text-xl"></i>
-    </button>
-  </div>
 
   <div class="flex flex-col md:flex-row">
 
@@ -274,15 +267,7 @@
     window.closeCustomAlert = closeCustomAlert;
   </script>
  <script>
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      sidebar.classList.toggle('hidden');
-      sidebar.classList.toggle('fixed');
-      sidebar.classList.toggle('top-0');
-      sidebar.classList.toggle('left-0');
-      sidebar.classList.toggle('z-50');
-      sidebar.classList.toggle('h-full');
-    }
+
     function toggleAddAddress() {
       const modal = document.getElementById('addAddressModal');
       modal.classList.toggle('hidden');
