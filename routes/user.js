@@ -2,6 +2,7 @@ import express from "express"
 import { Router } from "express"
 import userAuthController from "../controller/user/userAuthController.js"
 import auth from "../middlewares/auth.js"
+import cartQuantity from "../middlewares/cartQuantity.js"
 import userProductController from "../controller/user/userProductController.js"
 import useraddressController from "../controller/user/useraddressController.js"
 import useraccountController from "../controller/user/useraccountController.js"
@@ -45,6 +46,8 @@ router.route('/reset-password') // user reset password
     .post(userAuthController.resetPassword)
 
 //---- user and product routes ---- 
+
+router.use(cartQuantity.fetchCartQuantity) // middleware to set the cart Quantity 
 router.get('/home', auth.checkSession, userProductController.loadHome)
 router.get('/category/:id', userProductController.viewCategory)
 router.get('/allproducts',  userProductController.loadAllProducts)

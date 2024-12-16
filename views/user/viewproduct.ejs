@@ -232,6 +232,7 @@ function changeMainImage(src) {
       
       // Use custom alert
       showAlert(data.message, data.success ? 'success' : 'error');
+      document.getElementById("cart-quantity").innerText = data.totalQuantity
       
     } catch (error) {
       console.error('Error:', error);

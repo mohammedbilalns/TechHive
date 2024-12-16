@@ -198,6 +198,8 @@
                 showEmptyCart();
               }
             }
+            document.getElementById("cart-quantity").innerText = response.data.totalQuantity
+
           } else {
             const errorMessage = response.data.message || 'Error updating quantity';
             showAlert(errorMessage, 'error');
@@ -224,6 +226,9 @@
             if (document.querySelectorAll('.cart-item').length === 0) {
               showEmptyCart();
             }
+            document.getElementById("cart-quantity").innerText = response.data.totalQuantity;
+
+
           } else {
             showAlert(response.data.message || 'Failed to remove item', 'error');
           }

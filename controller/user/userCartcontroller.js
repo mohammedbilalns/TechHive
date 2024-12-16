@@ -1,6 +1,7 @@
 import cartSchema from "../../model/cartModel.js"
 import userSchema from "../../model/userModel.js"
 import productSchema from "../../model/productModel.js"
+import {log} from "mercedlogger"
 
 const getCart = async (req, res) => {
     try {
@@ -41,7 +42,7 @@ const getCart = async (req, res) => {
             page: 'cart'
         });
     } catch (error) {
-        console.error("Get cart error:", error);
+        log.red("GET_CART_ERROR:", error);
         res.status(500).render('user/profile/cart', {
             message: "Error loading cart",
             alertType: "error",
@@ -96,6 +97,7 @@ const addToCart = async (req, res) => {
                 });
             }
             existingItem.quantity += 1;
+
         } else {
             cart.items.push({
                 productId,
@@ -104,13 +106,19 @@ const addToCart = async (req, res) => {
         }
 
         await cart.save();
+
+        const totalQuantity = cart.items.reduce((sum , item)=> sum+ item.quantity,0)
+        
         return res.status(200).json({
             success: true,
-            message: "Product added to cart successfully"
+            message: "Product added to cart successfully",
+            totalQuantity
         });
+        
+
 
     } catch (error) {
-        console.error("Add to cart error:", error);
+        log.red("ADDTO_CART_ERROR", error);
         return res.status(500).json({
             success: false,
             message: "Error adding product to cart"
@@ -134,9 +142,17 @@ const removeFromCart = async (req, res) => {
         );
 
         await cart.save();
-        res.status(200).json({ success: true });
+        
+        // Calculate total quantity after removing item
+        const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+
+        res.status(200).json({ 
+            success: true, 
+            totalQuantity,
+            message: "Item removed successfully" 
+        });
     } catch (error) {
-        console.error("Remove from cart error:", error);
+        log.red("REMOVE_FROM_CART_ERROR", error);
         res.status(500).json({
             success: false,
             message: "Error removing product from cart"
@@ -222,6 +238,7 @@ const updateQuantity = async (req, res) => {
             } else {
                 newQuantity = cartItem.quantity - 1;
             }
+
         }
 
         // Update cart item quantity if not removed
@@ -249,17 +266,19 @@ const updateQuantity = async (req, res) => {
         }
 
         const total = subtotal;
-
+        const totalQuantity = updatedCart.items.reduce((sum, item) => sum + item.quantity, 0);
+        
         return res.status(200).json({
             success: true,
             subtotal: subtotal.toFixed(2),
             total: total.toFixed(2),
             totalSavings: totalSavings.toFixed(2),
+            totalQuantity,
             message: "Cart updated successfully"
         });
 
     } catch (error) {
-        console.error("Update quantity error:", error);
+        log.red("UPDATE_QUANTITY_ERROR", error);
         return res.status(500).json({
             success: false,
             message: "Error updating cart quantity"
