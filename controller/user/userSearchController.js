@@ -5,7 +5,7 @@ const searchProducts = async (req, res) => {
     try {
         const query = req.query.q;
         const sortBy = req.query.sort || 'featured';
-        
+
         const baseQuery = {
             status: "Active",
             $or: [
@@ -60,7 +60,7 @@ const searchProducts = async (req, res) => {
 
     } catch (error) {
         log.red("ERROR", error);
-        res.status(500).render('error', {
+        res.status(500).render('notfound', {
             message: "Error searching products",
             alertType: "error"
         });

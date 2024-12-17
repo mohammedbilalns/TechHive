@@ -17,28 +17,79 @@
                 <h2 class="text-xl md:text-2xl mb-3 md:mb-5"><%= category.name %></h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
                     <% category.products.forEach(product => { %>
-                        <a href="/product/<%= product._id %>" class="bg-white rounded-lg text-center p-4 md:p-5 hover:opacity-90 transition-opacity border border-gray-200">
-                            <img src="<%= product.images[0].path %>" 
-                                 alt="<%= product.name %>"
-                                 class="mx-auto mb-2 w-full h-[150px] md:h-[180px] object-cover"/>
-                            <p class="text-gray-800 text-sm md:text-base"><%= product.name %></p>
-                            <% if (product.discount > 0) { %>
-                                <div class="flex items-center justify-center gap-2">
-                                    <p class="text-red-600">₹<%= (product.price * (1 - product.discount/100)).toFixed(2) %></p>
-                                    <p class="text-gray-400 line-through text-sm">₹<%= product.price.toFixed(2) %></p>
-                                </div>
-                            <% } else { %>
-                                <p class="text-red-600">₹<%= product.price.toFixed(2) %></p>
-                            <% } %>
+                        <div class="bg-white rounded-lg text-center p-4 md:p-5 border border-gray-200">
+                            <a href="/product/<%= product._id %>">
+                                <img src="<%= product.images[0].path %>" 
+                                     alt="<%= product.name %>"
+                                     class="mx-auto mb-2 w-full h-[150px] md:h-[180px] object-cover"/>
+                                <p class="text-gray-800 text-sm md:text-base"><%= product.name %></p>
+                                <% if (product.discount > 0) { %>
+                                    <div class="flex items-center justify-center gap-2">
+                                        <p class="text-red-600">₹<%= (product.price * (1 - product.discount/100)).toFixed(2) %></p>
+                                        <p class="text-gray-400 line-through text-sm">₹<%= product.price.toFixed(2) %></p>
+                                    </div>
+                                <% } else { %>
+                                    <p class="text-red-600">₹<%= product.price.toFixed(2) %></p>
+                                <% } %>
+                            </a>
+                            
+                            <!-- Buttons under price -->
+                            <div class="flex justify-center gap-2 mt-3">
+                                <% if (product.stock > 0) { %>
+                                    <button onclick="addToCart('<%= product._id %>')" 
+                                            class="p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        </svg>
+                                    </button>
+                                <% } %>
+                                <button onclick="addToWishlist('<%= product._id %>')" 
+                                        class="p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    </svg>
+                                </button>
+                            </div>
+                            
                             <% if (product.stock <= 0) { %>
                                 <p class="text-red-500 text-sm mt-1">Out of Stock</p>
                             <% } %>
-                        </a>
+                        </div>
                     <% }); %>
                 </div>
             </section>
         <% } %>
     <% }); %>
 </main>
+
+<script type="module">
+
+import { showAlert, closeCustomAlert } from '/js/util.js';
+
+async function addToCart(productId) {
+  try {
+    const { data } = await axios.post('/cart/add', { productId });
+    
+    // Use custom alert
+    showAlert(data.message, data.success ? 'success' : 'error');
+    document.getElementById("cart-quantity").innerText = data.totalQuantity
+    
+  } catch (error) {
+    console.error('Error:', error);
+    showAlert(error.response?.data?.message || 'Error adding item to cart', 'error');
+  }
+}
+
+// Make both functions available globally
+window.addToCart = addToCart;
+window.closeCustomAlert = closeCustomAlert;
+
+async function addToWishlist(productId) {
+    // Implement wishlist functionality
+    alert('Wishlist functionality coming soon!');
+}
+
+
+</script>
 
 <%- include('../partials/footer') %>

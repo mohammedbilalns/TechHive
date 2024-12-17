@@ -24,7 +24,7 @@
                     <img src="<%= product.images[0].path %>" 
                          alt="<%= product.name %>" 
                          class="w-full h-48 object-cover rounded-lg mb-4"/>
-                    <h2 class="text-lg font-semibold mb-2"><%= product.name %></h2>
+                    <h2 class="text-lg font-semibold mb-2 truncate"><%= product.name %></h2>
                     <div class="flex items-center gap-2 mb-2">
                         <% if (product.discount > 0) { %>
                             <p class="text-red-600 font-semibold">
@@ -38,6 +38,25 @@
                         <% } %>
                     </div>
                 </a>
+                <div class="flex justify-center gap-2 mt-3">
+                    <% if (product.stock > 0) { %>
+                        <button onclick="addToCart('<%= product._id %>')" 
+                                class="p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </button>
+                    <% } %>
+                    <button onclick="addToWishlist('<%= product._id %>')" 
+                            class="p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                    </button>
+                </div>
+                <% if (product.stock <= 0) { %>
+                    <p class="text-red-500 text-sm mt-2">Out of Stock</p>
+                <% } %>
             </div>
         <% }); %>
     </div>
@@ -66,6 +85,30 @@ document.getElementById('sortSelect').addEventListener('change', async function(
         console.error('Error sorting products:', error);
     }
 });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script type="module">
+import { showAlert, closeCustomAlert } from '/js/util.js';
+
+async function addToCart(productId) {
+    try {
+        const { data } = await axios.post('/cart/add', { productId });
+        showAlert(data.message, data.success ? 'success' : 'error');
+        document.getElementById("cart-quantity").innerText = data.totalQuantity;
+    } catch (error) {
+        console.error('Error:', error);
+        showAlert(error.response?.data?.message || 'Error adding item to cart', 'error');
+    }
+}
+
+async function addToWishlist(productId) {
+    alert('Wishlist functionality coming soon!');
+}
+
+window.addToCart = addToCart;
+window.addToWishlist = addToWishlist;
+window.closeCustomAlert = closeCustomAlert;
 </script>
 
 <%- include('../partials/footer') %> 
