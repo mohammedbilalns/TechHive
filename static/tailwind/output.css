@@ -797,13 +797,6 @@ video {
   margin-top: 2rem;
 }
 
-.line-clamp-2 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
-
 .block {
   display: block;
 }
@@ -888,6 +881,10 @@ video {
   height: 200px;
 }
 
+.h-\[70px\] {
+  height: 70px;
+}
+
 .h-\[70vh\] {
   height: 70vh;
 }
@@ -904,16 +901,8 @@ video {
   height: 100vh;
 }
 
-.h-\[70px\] {
-  height: 70px;
-}
-
 .max-h-\[90vh\] {
   max-height: 90vh;
-}
-
-.min-h-\[64px\] {
-  min-height: 64px;
 }
 
 .min-h-\[70vh\] {
