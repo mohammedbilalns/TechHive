@@ -14,6 +14,26 @@ const getCheckout = async (req, res) => {
       return res.redirect('/profile/cart');
     }
 
+    // Check stock availability
+    let stockError = false;
+    let outOfStockItems = [];
+
+    for (const item of cart.items) {
+      if (item.productId.stock < item.quantity) {
+        stockError = true;
+        outOfStockItems.push({
+          name: item.productId.name,
+          available: item.productId.stock,
+          requested: item.quantity
+        });
+      }
+    }
+
+    if (stockError) {
+      req.flash('error', 'Some items in your cart are out of stock');
+      return res.redirect('/profile/cart');
+    }
+
     // Calculate totals
     let subtotal = 0;
     let totalSavings = 0;
@@ -49,6 +69,25 @@ const placeOrder = async (req, res) => {
     const cart = await cartModel.findOne({ user: userId }).populate('items.productId');
     if (!cart || cart.items.length === 0) {
       return res.status(400).json({ success: false, message: 'Cart is empty' });
+    }
+
+    // Check stock availability before placing order
+    for (const item of cart.items) {
+      const product = item.productId;
+      if (product.stock < item.quantity) {
+        return res.status(400).json({
+          success: false,
+          message: `Sorry, ${product.name} only has ${product.stock} units available`
+        });
+      }
+    }
+
+    // Update product stock
+    for (const item of cart.items) {
+      await userModel.findByIdAndUpdate(
+        item.productId._id,
+        { $inc: { stock: -item.quantity } }
+      );
     }
 
     // Clear cart

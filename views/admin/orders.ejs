@@ -61,7 +61,8 @@
                       <div class="text-xs text-gray-500">
                         Items: <%= order.items.length %>
                         <button onclick="toggleOrderDetails('<%= order._id %>')"
-                          class="text-blue-600 hover:text-blue-800 ml-2">
+                          class="text-blue-600 hover:text-blue-800 ml-2"
+                          id="toggle-<%= order._id %>">
                           View Details
                         </button>
                       </div>
@@ -228,10 +229,14 @@
 
   function toggleOrderDetails(orderId) {
     const detailsRow = document.getElementById(`details-${orderId}`);
+    const toggleButton = document.getElementById(`toggle-${orderId}`);
+    
     if (detailsRow.classList.contains('hidden')) {
       detailsRow.classList.remove('hidden');
+      toggleButton.textContent = 'Hide Details';
     } else {
       detailsRow.classList.add('hidden');
+      toggleButton.textContent = 'View Details';
     }
   }
 

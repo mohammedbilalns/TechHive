@@ -298,7 +298,18 @@
     }
 
     function proceedToCheckout() {
-      window.location.href = '/checkout';
+      axios.get('/checkout')
+        .then(response => {
+          if (response.data.success === false) {
+            showAlert(response.data.message, 'error');
+          } else {
+            window.location.href = '/checkout';
+          }
+        })
+        .catch(error => {
+          const errorMessage = error.response?.data?.message || 'Error proceeding to checkout';
+          showAlert(errorMessage, 'error');
+        });
     }
   </script>
 
