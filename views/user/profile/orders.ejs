@@ -1,190 +1,167 @@
 <%- include('../../partials/header') %>
 
+<div class="flex flex-col md:flex-row">
+  <%- include('../../partials/usersidebar') %>
+  
+  <main class="flex-grow p-4 md:py-12">
+    <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-6">
+      <h1 class="text-2xl font-semibold text-gray-800 mb-6">My Orders</h1>
 
-  <div class="flex flex-col md:flex-row">
-    <%- include('../../partials/usersidebar') %>
+      <% if (orders.length === 0) { %>
+        <div class="text-center py-8">
+          <i class="fas fa-shopping-bag text-gray-400 text-4xl mb-4"></i>
+          <p class="text-gray-600">No orders found</p>
+          <a href="/allproducts" class="inline-block mt-4 bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-primary-accent/90">
+            Start Shopping
+          </a>
+        </div>
+      <% } else { %>
+        <div class="space-y-4">
+          <% orders.forEach(order => { %>
+            <div class="border rounded-lg overflow-hidden">
+              <!-- Compact Order Header -->
+              <div class="bg-gray-50 p-4">
+                <div class="flex justify-between items-center mb-2">
+                  <div>
+                    <p class="font-medium">Order #<%= order._id %></p>
+                    <p class="text-sm text-gray-600"><%= new Date(order.orderDate).toLocaleDateString() %></p>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-semibold">₹<%= order.totalAmount %></p>
+                    <span class="inline-block px-3 py-1 text-sm rounded-full <%= order.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">
+                      <%= order.paymentStatus %>
+                    </span>
+                  </div>
+                </div>
+                <button 
+                  onclick="toggleOrderDetails('<%= order._id %>')"
+                  class="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium"
+                >
+                  View Details
+                </button>
+              </div>
 
-      <main class="flex-grow p-4 md:py-12">
-        <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-6">
-          <h1 class="text-2xl font-semibold text-gray-800 mb-6">My Orders</h1>
-
-          <% if (orders.length===0) { %>
-            <div class="text-center py-8">
-              <i class="fas fa-shopping-bag text-gray-400 text-4xl mb-4"></i>
-              <p class="text-gray-600">No orders found</p>
-              <a href="/allproducts"
-                class="inline-block mt-4 bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-primary-accent/90">
-                Start Shopping
-              </a>
-            </div>
-            <% } else { %>
-              <div class="space-y-4">
-                <% orders.forEach(order=> { %>
-                  <div class="border rounded-lg overflow-hidden">
-                    <!-- Order Header -->
-                    <div class="bg-gray-50 p-4 flex justify-between items-center">
-                      <div class="flex-grow">
-                        <div class="flex justify-between items-center mb-2">
-                          <p class="font-medium">Order #<%= order._id %></p>
-                          <p class="font-semibold">₹<%= order.totalAmount %></p>
-                        </div>
-                        <div class="flex justify-between items-center">
-                          <p class="text-sm text-gray-600"><%= new Date(order.orderDate).toLocaleDateString() %></p>
-                          <span class="inline-block px-3 py-1 text-sm rounded-full
-                            <%= order.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">
-                            <%= order.paymentStatus %>
-                          </span>
+              <!-- Hidden Detailed Section -->
+              <div id="details-<%= order._id %>" class="hidden">
+                <div class="p-4 border-t">
+                  <!-- Order Items -->
+                  <div class="space-y-4">
+                    <% order.items.forEach(item => { %>
+                      <div class="flex items-center space-x-4 bg-gray-50 p-3 rounded-lg">
+                        <img src="<%= item.images[0].path %>" alt="<%= item.name %>" class="w-16 h-16 object-cover rounded">
+                        <div class="flex-grow">
+                          <h5 class="font-medium"><%= item.name %></h5>
+                          <p class="text-sm text-gray-600">
+                            Qty: <%= item.quantity %> × ₹<%= item.price %>
+                            <% if (item.discount > 0) { %>
+                              <span class="text-green-600">(<%= item.discount %>% off)</span>
+                            <% } %>
+                          </p>
+                          <p class="text-sm mt-1">
+                            Status: <span class="<%= item.status === 'delivered' ? 'text-green-600' : item.status === 'cancelled' ? 'text-red-600' : 'text-blue-600' %>">
+                              <%= item.status %>
+                            </span>
+                          </p>
+                          <div class="mt-2">
+                            <% if (!['delivered', 'cancelled', 'returned'].includes(item.status)) { %>
+                              <button onclick="cancelOrderItem('<%= order._id %>', '<%= item._id %>')" class="text-red-600 text-sm hover:underline">
+                                Cancel Item
+                              </button>
+                            <% } %>
+                            <% if (item.status === 'delivered') { %>
+                              <button onclick="returnOrderItem('<%= order._id %>', '<%= item._id %>')" class="text-blue-600 text-sm hover:underline ml-2">
+                                Return Item
+                              </button>
+                            <% } %>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    <% }); %>
+                  </div>
 
-                    <!-- Compact Order Items Preview -->
-                    <div class="p-4">
-                      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <% order.items.forEach(item => { %>
-                          <div class="flex items-center space-x-4 bg-white p-3 rounded-lg shadow-sm">
-                            <img src="<%= item.images[0].path %>" alt="<%= item.name %>"
-                              class="w-16 h-16 object-cover rounded">
-                            <div class="flex-grow">
-                              <h5 class="font-medium"><%= item.name %></h5>
-                              <p class="text-sm text-gray-600">
-                                Qty: <%= item.quantity %> × ₹<%= item.price %>
-                                <% if (item.discount > 0) { %>
-                                  <span class="text-green-600">(<%= item.discount %>% off)</span>
-                                <% } %>
-                              </p>
-                              <p class="text-sm mt-1">
-                                Status: <span class="<%= item.status === 'delivered' ? 'text-green-600' : 
-                                                       item.status === 'cancelled' ? 'text-red-600' : 
-                                                       'text-blue-600' %>">
-                                  <%= item.status %>
-                                </span>
-                              </p>
-                              <div class="mt-2">
-                                <% if (!['delivered', 'cancelled', 'returned'].includes(item.status)) { %>
-                                  <button onclick="cancelOrderItem('<%= order._id %>', '<%= item._id %>')"
-                                    class="text-red-600 text-sm hover:underline">
-                                    Cancel Item
-                                  </button>
-                                <% } %>
-                                <% if (item.status === 'delivered') { %>
-                                  <button onclick="returnOrderItem('<%= order._id %>', '<%= item._id %>')"
-                                    class="text-blue-600 text-sm hover:underline ml-2">
-                                    Return Item
-                                  </button>
-                                <% } %>
-                              </div>
-                            </div>
-                          </div>
-                        <% }); %>
+                  <!-- Shipping and Payment Info -->
+                  <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                      <h4 class="font-medium text-gray-700 mb-2">Payment Information</h4>
+                      <div class="text-sm text-gray-600">
+                        <p>Method: <%= order.paymentMethod.toUpperCase() %></p>
+                        <p>Status: <span class="<%= order.paymentStatus === 'paid' ? 'text-green-600' : 'text-red-600' %>">
+                          <%= order.paymentStatus %>
+                        </span></p>
                       </div>
                     </div>
-
-                    <!-- Detailed Information (Hidden by default) -->
-                    <div id="details-<%= order._id %>" class="hidden border-t">
-                      <!-- Previous detailed content goes here -->
-                      <div class="p-4">
-                        <!-- Payment and Delivery Info -->
-                        <div class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-6">
-                          <!-- Payment Information -->
-                          <div class="bg-gray-50 p-4 rounded-lg">
-                            <h4 class="font-medium text-gray-700 mb-2">Payment Information</h4>
-                            <div class="text-sm text-gray-600">
-                              <p>Method: <%= order.paymentMethod.toUpperCase() %>
-                              </p>
-                              <p>Status: <span
-                                  class="<%= order.paymentStatus === 'paid' ? 'text-green-600' : 'text-red-600' %>">
-                                  <%= order.paymentStatus %>
-                                </span></p>
-                            </div>
-                          </div>
-                          <!-- Shipping Address -->
-                          <div class="bg-gray-50 p-4 rounded-lg md:col-span-2">
-                            <h4 class="font-medium text-gray-700 mb-2">Shipping Address</h4>
-                            <div class="text-sm text-gray-600">
-                              <p>
-                                <%= order.shippingAddress.name %>
-                              </p>
-                              <p>
-                                <%= order.shippingAddress.houseName %>
-                              </p>
-                              <p>
-                                <%= order.shippingAddress.localityStreet %>
-                              </p>
-                              <p>
-                                <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %>
-                              </p>
-                              <p>PIN: <%= order.shippingAddress.pincode %>
-                              </p>
-                              <p>Phone: <%= order.shippingAddress.phone %>
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                        <!-- ... rest of the detailed content ... -->
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                      <h4 class="font-medium text-gray-700 mb-2">Shipping Address</h4>
+                      <div class="text-sm text-gray-600">
+                        <p><%= order.shippingAddress.name %></p>
+                        <p><%= order.shippingAddress.houseName %></p>
+                        <p><%= order.shippingAddress.localityStreet %></p>
+                        <p><%= order.shippingAddress.city %>, <%= order.shippingAddress.state %></p>
+                        <p>PIN: <%= order.shippingAddress.pincode %></p>
+                        <p>Phone: <%= order.shippingAddress.phone %></p>
                       </div>
                     </div>
                   </div>
-                <% }) %>
+                </div>
               </div>
-              <% } %>
+            </div>
+          <% }); %>
         </div>
-      </main>
-  </div>
+      <% } %>
+    </div>
+  </main>
+</div>
 
-  <script type="module">
-    import { customConfirm, showAlert, closeCustomAlert } from '/js/util.js';
-    window.customConfirm = customConfirm;
-    window.showAlert = showAlert;
-    window.closeCustomAlert = closeCustomAlert;
-  </script>
-  <script>
+<script type="module">
+  import { customConfirm, showAlert, closeCustomAlert } from '/js/util.js';
+  window.customConfirm = customConfirm;
+  window.showAlert = showAlert;
+  window.closeCustomAlert = closeCustomAlert;
+</script>
 
-    async function cancelOrder(orderId) {
-      try {
-        const confirmed = await customConfirm('Are you sure you want to cancel this order?');
-        if (!confirmed) return;
-
-        const response = await axios.post(`/profile/orders/${orderId}/cancel`);
-
-        if (response.data.success) {
-          showAlert('Order cancelled successfully', 'success');
-          setTimeout(() => {
-            window.location.reload();
-          }, 1500);
-        } else {
-          showAlert(response.data.message || 'Failed to cancel order', 'error');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        showAlert('Failed to cancel order', 'error');
-      }
+<script>
+  function toggleOrderDetails(orderId) {
+    const detailsElement = document.getElementById(`details-${orderId}`);
+    if (detailsElement) {
+      detailsElement.classList.toggle('hidden');
     }
+  }
 
-    function toggleOrderDetails(orderId) {
-      const detailsElement = document.getElementById(`details-${orderId}`);
-      if (detailsElement) {
-        detailsElement.classList.toggle('hidden');
+  async function cancelOrderItem(orderId, itemId) {
+    try {
+      const confirmed = await customConfirm('Are you sure you want to cancel this item?');
+      if (!confirmed) return;
+
+      const response = await axios.post(`/profile/orders/${orderId}/items/${itemId}/cancel`);
+      if (response.data.success) {
+        showAlert('Item cancelled successfully', 'success');
+        setTimeout(() => window.location.reload(), 1500);
+      } else {
+        showAlert(response.data.message || 'Failed to cancel item', 'error');
       }
+    } catch (error) {
+      console.error('Error:', error);
+      showAlert('Failed to cancel item', 'error');
     }
+  }
 
-    async function cancelOrderItem(orderId, itemId) {
-      try {
-        const confirmed = await customConfirm('Are you sure you want to cancel this item?');
-        if (!confirmed) return;
+  async function returnOrderItem(orderId, itemId) {
+    try {
+      const confirmed = await customConfirm('Are you sure you want to return this item?');
+      if (!confirmed) return;
 
-        const response = await axios.post(`/profile/orders/${orderId}/items/${itemId}/cancel`);
-        if (response.data.success) {
-          showAlert('Item cancelled successfully', 'success');
-          setTimeout(() => window.location.reload(), 1500);
-        } else {
-          showAlert(response.data.message || 'Failed to cancel item', 'error');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        showAlert('Failed to cancel item', 'error');
+      const response = await axios.post(`/profile/orders/${orderId}/items/${itemId}/return`);
+      if (response.data.success) {
+        showAlert('Return request submitted successfully', 'success');
+        setTimeout(() => window.location.reload(), 1500);
+      } else {
+        showAlert(response.data.message || 'Failed to submit return request', 'error');
       }
+    } catch (error) {
+      console.error('Error:', error);
+      showAlert('Failed to submit return request', 'error');
     }
-  </script>
+  }
+</script>
 
-  <%- include('../../partials/footer') %>
+<%- include('../../partials/footer') %>
