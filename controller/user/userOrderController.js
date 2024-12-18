@@ -2,6 +2,7 @@ import orderModel from '../../model/orderModel.js';
 import cartModel from '../../model/cartModel.js';
 import productModel from '../../model/productModel.js';
 import addressModel from '../../model/addressModel.js';
+import { nanoid } from 'nanoid';
 
 const placeOrder = async (req, res) => {
   try {
@@ -42,8 +43,12 @@ const placeOrder = async (req, res) => {
       };
     });
 
+    // Generate unique order ID
+    const orderId = 'ORD' + nanoid(10).toUpperCase();
+
     // Create new order with address 
     const order = new orderModel({
+      orderId,
       userId,
       items: orderItems,
       totalAmount,

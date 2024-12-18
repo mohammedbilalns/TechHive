@@ -23,7 +23,7 @@
               <div class="bg-gray-50 p-4">
                 <div class="flex justify-between items-center mb-2">
                   <div>
-                    <p class="font-medium">Order #<%= order._id %></p>
+                    <p class="font-medium">Order <%= order.orderId %></p>
                     <p class="text-sm text-gray-600"><%= new Date(order.orderDate).toLocaleDateString() %></p>
                     <div class="mt-2 text-sm text-gray-600">
                       <% const productNames = order.items.map(item => item.name).join(', ') %>
@@ -44,7 +44,7 @@
                   onclick="toggleOrderDetails('<%= order._id %>')"
                   class="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium"
                 >
-                  View Details
+                  <span id="toggle-text-<%= order._id %>">View Details</span>
                 </button>
               </div>
 
@@ -157,8 +157,10 @@
 <script>
   function toggleOrderDetails(orderId) {
     const detailsElement = document.getElementById(`details-${orderId}`);
+    const toggleText = document.getElementById(`toggle-text-${orderId}`);
     if (detailsElement) {
       detailsElement.classList.toggle('hidden');
+      toggleText.textContent = detailsElement.classList.contains('hidden') ? 'View Details' : 'Hide Details';
     }
   }
 
