@@ -203,10 +203,50 @@ const getOrderDetails = async (req, res) => {
   }
 };
 
+const cancelOrderItem = async (req, res) => {
+  try {
+    const { orderId, itemId } = req.params;
+    const userId = req.session.user.id;
+
+    const order = await orderModel.findOne({ _id: orderId, userId });
+
+    if (!order) {
+      return res.json({ success: false, message: 'Order not found' });
+    }
+
+    const orderItem = order.items.id(itemId);
+    if (!orderItem) {
+      return res.json({ success: false, message: 'Order item not found' });
+    }
+
+    // Check if item can be cancelled
+    if (['delivered', 'cancelled', 'returned'].includes(orderItem.status)) {
+      return res.json({ success: false, message: 'Item cannot be cancelled' });
+    }
+
+    // Update item status
+    orderItem.status = 'cancelled';
+    await order.save();
+
+    // Restore stock for the cancelled item
+    await productModel.findOneAndUpdate(
+      { name: orderItem.name },
+      { $inc: { stock: orderItem.quantity } }
+    );
+
+    res.json({ success: true, message: 'Item cancelled successfully' });
+
+  } catch (error) {
+    console.error('Cancel order item error:', error);
+    res.json({ success: false, message: 'Failed to cancel item' });
+  }
+};
+
 export default {
   placeOrder,
   getOrderSuccess,
   getOrders,
   cancelOrder,
-  getOrderDetails
+  getOrderDetails,
+  cancelOrderItem
 };

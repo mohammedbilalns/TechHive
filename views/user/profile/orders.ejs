@@ -42,23 +42,43 @@
 
                     <!-- Compact Order Items Preview -->
                     <div class="p-4">
-                      <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                          <% if (order.items[0]) { %>
-                            <img src="<%= order.items[0].images[0].path %>" alt="<%= order.items[0].name %>"
+                      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <% order.items.forEach(item => { %>
+                          <div class="flex items-center space-x-4 bg-white p-3 rounded-lg shadow-sm">
+                            <img src="<%= item.images[0].path %>" alt="<%= item.name %>"
                               class="w-16 h-16 object-cover rounded">
-                            <div class="ml-4">
-                              <p class="font-medium"><%= order.items[0].name %></p>
+                            <div class="flex-grow">
+                              <h5 class="font-medium"><%= item.name %></h5>
                               <p class="text-sm text-gray-600">
-                                <%= order.items.length > 1 ? `+${order.items.length - 1} more items` : '1 item' %>
+                                Qty: <%= item.quantity %> × ₹<%= item.price %>
+                                <% if (item.discount > 0) { %>
+                                  <span class="text-green-600">(<%= item.discount %>% off)</span>
+                                <% } %>
                               </p>
+                              <p class="text-sm mt-1">
+                                Status: <span class="<%= item.status === 'delivered' ? 'text-green-600' : 
+                                                       item.status === 'cancelled' ? 'text-red-600' : 
+                                                       'text-blue-600' %>">
+                                  <%= item.status %>
+                                </span>
+                              </p>
+                              <div class="mt-2">
+                                <% if (!['delivered', 'cancelled', 'returned'].includes(item.status)) { %>
+                                  <button onclick="cancelOrderItem('<%= order._id %>', '<%= item._id %>')"
+                                    class="text-red-600 text-sm hover:underline">
+                                    Cancel Item
+                                  </button>
+                                <% } %>
+                                <% if (item.status === 'delivered') { %>
+                                  <button onclick="returnOrderItem('<%= order._id %>', '<%= item._id %>')"
+                                    class="text-blue-600 text-sm hover:underline ml-2">
+                                    Return Item
+                                  </button>
+                                <% } %>
+                              </div>
                             </div>
-                          <% } %>
-                        </div>
-                        <button onclick="toggleOrderDetails('<%= order._id %>')" 
-                                class="text-primary-accent hover:underline">
-                          View Details
-                        </button>
+                          </div>
+                        <% }); %>
                       </div>
                     </div>
 
@@ -156,6 +176,24 @@
       const detailsElement = document.getElementById(`details-${orderId}`);
       if (detailsElement) {
         detailsElement.classList.toggle('hidden');
+      }
+    }
+
+    async function cancelOrderItem(orderId, itemId) {
+      try {
+        const confirmed = await customConfirm('Are you sure you want to cancel this item?');
+        if (!confirmed) return;
+
+        const response = await axios.post(`/profile/orders/${orderId}/items/${itemId}/cancel`);
+        if (response.data.success) {
+          showAlert('Item cancelled successfully', 'success');
+          setTimeout(() => window.location.reload(), 1500);
+        } else {
+          showAlert(response.data.message || 'Failed to cancel item', 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showAlert('Failed to cancel item', 'error');
       }
     }
   </script>

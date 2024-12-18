@@ -99,5 +99,7 @@ router.post('/profile/orders/:orderId/cancel', auth.checkSession, userOrderContr
 //---- search products ----
 router.get('/search', userSearchController.searchProducts);
 
+// Add new route for canceling individual items
+router.post('/profile/orders/:orderId/items/:itemId/cancel', auth.checkSession, userOrderController.cancelOrderItem);
 
 export default router
