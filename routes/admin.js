@@ -47,7 +47,7 @@ router.post('/products/edit/:productid', adminProductController.productUpload.ar
 
 //---- orders routes ----
 router.get('/orders', adminOrderController.getOrders)
-router.post('/orders/update-status/:orderId', adminOrderController.updateOrderStatus)
+//router.post('/orders/update-status/:orderId', adminOrderController.updateOrderStatus)
 router.post('/orders/:orderId/items/:itemId/update-status', adminOrderController.updateOrderItemStatus);
 
 export default router
