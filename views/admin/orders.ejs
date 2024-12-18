@@ -106,20 +106,51 @@
                                 <p class="text-sm text-gray-600">
                                   Qty: <%= item.quantity %> × ₹<%= item.price %>
                                 </p>
+                                <p class="text-sm mb-2">
+                                  Status: <span class="font-medium <%= 
+                                    item.status === 'delivered' ? 'text-green-600' :
+                                    item.status === 'cancelled' ? 'text-red-600' :
+                                    item.status === 'returned' ? 'text-gray-600' :
+                                    item.status === 'shipped' ? 'text-blue-600' :
+                                    item.status === 'processing' ? 'text-yellow-600' :
+                                    'text-purple-600'
+                                  %>"><%= item.status.charAt(0).toUpperCase() + item.status.slice(1) %></span>
+                                </p>
                                 <div class="mt-2 flex items-center">
-                                  <select id="status-<%= order._id %>-<%= item._id %>" 
-                                          class="border rounded px-2 py-1 text-sm mr-2"
-                                          <%= ['delivered', 'cancelled', 'returned'].includes(item.status) ? 'disabled' : '' %>>
-                                    <option value="processing" <%= item.status === 'processing' ? 'selected' : '' %>>Processing</option>
-                                    <option value="shipped" <%= item.status === 'shipped' ? 'selected' : '' %>>Shipped</option>
-                                    <option value="delivered" <%= item.status === 'delivered' ? 'selected' : '' %>>Delivered</option>
-                                    <option value="cancelled" <%= item.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
-                                  </select>
-                                  <% if (!['delivered', 'cancelled', 'returned'].includes(item.status)) { %>
-                                    <button onclick="updateItemStatus('<%= order._id %>', '<%= item._id %>')"
-                                      class="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600">
-                                      Update
-                                    </button>
+                                  <% if (item.status !== 'cancelled') { %>
+                                    <select id="status-<%= order._id %>-<%= item._id %>" 
+                                            class="border rounded px-2 py-1 text-sm mr-2">
+                                      <% if (item.status === 'pending') { %>
+                                        <option value="pending" selected>Pending</option>
+                                        <option value="processing">Processing</option>
+                                        <option value="shipped">Shipped</option>
+                                        <option value="delivered">Delivered</option>
+                                        <option value="cancelled">Cancelled</option>
+                                        <option value="returned">Returned</option>
+                                      <% } else if (item.status === 'processing') { %>
+                                        <option value="processing" selected>Processing</option>
+                                        <option value="shipped">Shipped</option>
+                                        <option value="delivered">Delivered</option>
+                                        <option value="cancelled">Cancelled</option>
+                                        <option value="returned">Returned</option>
+                                      <% } else if (item.status === 'shipped') { %>
+                                        <option value="shipped" selected>Shipped</option>
+                                        <option value="delivered">Delivered</option>
+                                        <option value="cancelled">Cancelled</option>
+                                        <option value="returned">Returned</option>
+                                      <% } else if (item.status === 'delivered') { %>
+                                        <option value="delivered" selected>Delivered</option>
+                                        <option value="returned">Returned</option>
+                                      <% } else if (item.status === 'returned') { %>
+                                        <option value="returned" selected>Returned</option>
+                                      <% } %>
+                                    </select>
+                                    <% if (!['cancelled', 'returned'].includes(item.status)) { %>
+                                      <button onclick="updateItemStatus('<%= order._id %>', '<%= item._id %>')"
+                                        class="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600">
+                                        Update
+                                      </button>
+                                    <% } %>
                                   <% } %>
                                 </div>
                               </div>
