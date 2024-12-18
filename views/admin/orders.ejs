@@ -45,9 +45,7 @@
                 <th class="px-6 py-3">Total</th>
                 <th class="px-6 py-3">Payment Method</th>
                 <th class="px-6 py-3">Payment Status</th>
-                <th class="px-6 py-3">Order Status</th>
                 <th class="px-6 py-3">Order Date</th>
-                <th class="px-6 py-3">Actions</th>
               </tr>
             </thead>
             <tbody id="ordersTable" class="text-gray-700">
@@ -68,8 +66,8 @@
                         </button>
                       </div>
                     </td>
-                    <td class="px-6 py-3 whitespace-nowrap overflow-hidden text-ellipsis">
-                      <%= order.userId.fullname[0].toUpperCase() + order.userId.fullname.slice(1) %>
+                    <td class="px-6 py-3">
+                      <%= order.userId.fullname %>
                     </td>
                     <td class="px-6 py-3">
                       <%= order.shippingAddress.name %><br>
@@ -81,53 +79,16 @@
                         <%= order.shippingAddress.pincode %>
                       </span>
                     </td>
-                    <td class="px-6 py-3">₹<%= order.totalAmount.toFixed(2) %>
-                    </td>
+                    <td class="px-6 py-3">₹<%= order.totalAmount.toFixed(2) %></td>
+                    <td class="px-6 py-3"><%= order.paymentMethod.toUpperCase() %></td>
                     <td class="px-6 py-3">
-                      <%= order.paymentMethod.toUpperCase() %>
-                    </td>
-                    <td class="px-6 py-3">
-                      <span
-                        class="px-3 py-1 rounded-full text-sm font-medium
-                      <%= order.paymentStatus === 'Paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">
+                      <span class="px-3 py-1 rounded-full text-sm font-medium
+                        <%= order.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">
                         <%= order.paymentStatus %>
                       </span>
                     </td>
                     <td class="px-6 py-3">
-                      <span class="px-3 py-1 rounded-full text-sm font-medium
-                      <%= order.status === 'delivered' ? 'bg-green-100 text-green-800' : 
-                         order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
-                         'bg-blue-100 text-blue-800' %>">
-                        <%= order.status %>
-                      </span>
-                    </td>
-                    <td class="px-6 py-3">
-                      <%= new Date(order.createdAt).toLocaleDateString() %>
-                    </td>
-                    <td class="px-6 py-3">
-                      <% if (order.status !=='delivered' && order.status !=='cancelled' ) { %>
-                        <div class="inline-flex items-center">
-                          <select id="status-<%= order._id %>" class="border rounded px-2 py-1 mr-2">
-                            <% if (order.status==='pending' ) { %>
-                              <option value="processing">Processing</option>
-                              <option value="shipped">Shipped</option>
-                              <option value="delivered">Delivered</option>
-                              <option value="cancelled">Cancelled</option>
-                              <% } else if (order.status==='processing' ) { %>
-                                <option value="shipped">Shipped</option>
-                                <option value="delivered">Delivered</option>
-                                <option value="cancelled">Cancelled</option>
-                                <% } else if (order.status==='shipped' ) { %>
-                                  <option value="delivered">Delivered</option>
-                                  <option value="cancelled">Cancelled</option>
-                                  <% } %>
-                          </select>
-                          <button onclick="updateOrderStatus('<%= order._id %>')"
-                            class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
-                            Update
-                          </button>
-                        </div>
-                        <% } %>
+                      <%= new Date(order.orderDate).toLocaleDateString() %>
                     </td>
                   </tr>
                   <!-- Order Details Row  -->

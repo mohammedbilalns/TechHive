@@ -94,12 +94,9 @@ router.post('/order/place', auth.checkSession, userOrderController.placeOrder);
 //---- user order management 
 router.get('/order/success/:orderId', auth.checkSession, userOrderController.getOrderSuccess);
 router.get('/profile/orders/:orderId', auth.checkSession, userOrderController.getOrderDetails);
-router.post('/profile/orders/:orderId/cancel', auth.checkSession, userOrderController.cancelOrder);
+router.post('/profile/orders/:orderId/items/:itemId/cancel', auth.checkSession, userOrderController.cancelOrderItem);
 
 //---- search products ----
 router.get('/search', userSearchController.searchProducts);
-
-// Add new route for canceling individual items
-router.post('/profile/orders/:orderId/items/:itemId/cancel', auth.checkSession, userOrderController.cancelOrderItem);
 
 export default router

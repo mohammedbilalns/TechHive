@@ -126,53 +126,6 @@ const getOrders = async (req, res) => {
   }
 };
 
-const cancelOrder = async (req, res) => {
-  try {
-    const orderId = req.params.orderId;
-    const userId = req.session.user.id;
-
-    const order = await orderModel.findOne({ _id: orderId, userId });
-
-    if (!order) {
-      return res.json({ 
-        success: false, 
-        message: 'Order not found' 
-      });
-    }
-
-    // Check if order can be cancelled (not delivered/already cancelled)
-    if (order.status === 'delivered' || order.status === 'cancelled') {
-      return res.json({ 
-        success: false, 
-        message: 'Order cannot be cancelled' 
-      });
-    }
-
-    order.status = 'cancelled';
-    await order.save();
-
-    // Restore stock for each product
-    for (const item of order.items) {
-      await productModel.findOneAndUpdate(
-        { name: item.name },
-        { $inc: { stock: item.quantity } }
-      );
-    }
-
-    res.json({ 
-      success: true, 
-      message: 'Order cancelled successfully' 
-    });
-
-  } catch (error) {
-    console.error('Cancel order error:', error);
-    res.json({ 
-      success: false, 
-      message: 'Failed to cancel order' 
-    });
-  }
-};
-
 const getOrderDetails = async (req, res) => {
   try {
     const orderId = req.params.orderId;
@@ -246,7 +199,6 @@ export default {
   placeOrder,
   getOrderSuccess,
   getOrders,
-  cancelOrder,
   getOrderDetails,
   cancelOrderItem
 };

@@ -22,11 +22,6 @@ const orderSchema = new mongoose.Schema({
   },
   items: [orderItemSchema],
   totalAmount: { type: Number, required: true },
-  status: { 
-    type: String, 
-    enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'], 
-    default: 'pending' 
-  },
   paymentMethod: { 
     type: String, 
     enum: ['cod', 'card', 'bank_transfer', 'upi'], 
@@ -56,12 +51,7 @@ const orderSchema = new mongoose.Schema({
   },
   deliveryDate: { 
     type: Date 
-  },
-  deliveryStatus: { 
-    type: String, 
-    enum: ['pending', 'in_transit', 'delivered', 'failed'], 
-    default: 'pending' 
-  },
+  }
 }, { 
   timestamps: true 
 });
