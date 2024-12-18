@@ -108,20 +108,39 @@ const getOrderSuccess = async (req, res) => {
 const getOrders = async (req, res) => {
   try {
     const userId = req.session.user.id;
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    // Get total count for pagination
+    const totalOrders = await orderModel.countDocuments({ userId });
+    const totalPages = Math.ceil(totalOrders / limit);
+
+    // Get paginated orders
     const orders = await orderModel.find({ userId })
-      .sort({ orderDate: -1 });
+      .sort({ orderDate: -1 })
+      .skip(skip)
+      .limit(limit);
 
     res.render('user/profile/orders', { 
       orders,
       user: req.session.user, 
-      page: 'orders'
+      page: 'orders',
+      currentPage: page,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1
     });
   } catch (error) {
     console.error('Get orders error:', error);
     res.render('user/profile/orders', { 
       message: 'Failed to load orders',
       alertType: 'error',
-      orders: [] 
+      orders: [],
+      currentPage: 1,
+      totalPages: 1,
+      hasNextPage: false,
+      hasPrevPage: false
     });
   }
 };
