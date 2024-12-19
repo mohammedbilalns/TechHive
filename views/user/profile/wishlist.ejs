@@ -1,5 +1,13 @@
 <%- include('../../partials/header') %>
 
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script type="module">
+  import { customConfirm, showAlert, closeCustomAlert } from '/js/util.js';
+  window.customConfirm = customConfirm;
+  window.showAlert = showAlert;
+  window.closeCustomAlert = closeCustomAlert;
+</script>
+
   <!-- Mobile Menu Button -->
   <div class="md:hidden p-4 bg-gray-100 flex justify-between items-center">
     <h1 class="text-xl font-semibold text-gray-800">My Wishlist</h1>
@@ -95,15 +103,21 @@
       sidebar.classList.toggle('h-full');
     }
 
-    function removeFromWishlist(productId) {
-      if (confirm('Are you sure you want to remove this item from your wishlist?')) {
-        fetch(`/account/wishlist/remove`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ productId })
-        }).then(() => window.location.reload());
+    async function removeFromWishlist(productId) {
+      const confirmed = await customConfirm('Are you sure you want to remove this item from your wishlist?');
+      if (!confirmed) return;
+
+      try {
+        const response = await axios.post('/wishlist/remove', { productId });
+        if (response.data.success) {
+          showAlert('Item removed from wishlist successfully', 'success');
+          window.location.reload();
+        } else {
+          showAlert(response.data.message || 'Failed to remove item', 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showAlert('Error removing item from wishlist', 'error');
       }
     }
 

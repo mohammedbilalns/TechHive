@@ -5,7 +5,7 @@ const getWishlist = async (req, res) => {
     try {
         const wishlist = await wishlistSchema.findOne({ userId: req.session.user.id })
             .populate('products');
-console.log(wishlist?.products)
+
         res.render('user/profile/wishlist', { 
             wishlist: wishlist ? wishlist: [],
             page: "wishlist", 
@@ -49,13 +49,25 @@ const addToWishlist = async (req, res) => {
 
 const removeFromWishlist = async (req, res) => {
     try {
+        console.log("removeFromWishlist");
         const { productId } = req.body;
         const userId = req.session.user.id;
 
-        await wishlistSchema.updateOne(
-            { userId },
-            { $pull: { products: productId } }
+        const wishlist = await wishlistSchema.findOne({ userId });
+        
+        if (!wishlist) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "Wishlist not found" 
+            });
+        }
+
+        // Remove the product from the wishlist
+        wishlist.products = wishlist.products.filter(
+            product => product.toString() !== productId
         );
+        
+        await wishlist.save();
 
         res.json({ 
             success: true, 
