@@ -129,8 +129,16 @@ async function addToCart(productId) {
 }
 
 async function addToWishlist(productId) {
-    alert('Wishlist functionality coming soon!');
+    try {
+        const { data } = await axios.post('/wishlist/add', { productId });
+        showAlert(data.message, data.success ? 'success' : 'error');
+    } catch (error) {
+        console.error('Error:', error);
+        showAlert(error.response?.data?.message || 'Error adding item to wishlist', 'error');
+    }
 }
+
+window.addToWishlist = addToWishlist;
 
 window.addToCart = addToCart;
 window.addToWishlist = addToWishlist;

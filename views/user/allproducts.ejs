@@ -79,15 +79,22 @@ async function addToCart(productId) {
     showAlert(error.response?.data?.message || 'Error adding item to cart', 'error');
   }
 }
+async function addToWishlist(productId) {
+    try {
+        const { data } = await axios.post('/wishlist/add', { productId });
+        showAlert(data.message, data.success ? 'success' : 'error');
+    } catch (error) {
+        console.error('Error:', error);
+        showAlert(error.response?.data?.message || 'Error adding item to wishlist', 'error');
+    }
+}
+
+window.addToWishlist = addToWishlist;
 
 // Make both functions available globally
 window.addToCart = addToCart;
 window.closeCustomAlert = closeCustomAlert;
 
-async function addToWishlist(productId) {
-    // Implement wishlist functionality
-    alert('Wishlist functionality coming soon!');
-}
 
 
 </script>

@@ -10,6 +10,7 @@ import userCartController from "../controller/user/userCartcontroller.js"
 import userCheckController from "../controller/user/userCheckoutController.js"
 import userOrderController from "../controller/user/userOrderController.js"
 import userSearchController from "../controller/user/userSearchController.js"
+import userWishlistController from "../controller/user/userWishlistController.js"
 const router = Router()
 
 router.use(express.static('static'))
@@ -46,7 +47,6 @@ router.route('/reset-password') // user reset password
     .post(userAuthController.resetPassword)
 
 //---- user and product routes ---- 
-
 router.use(cartQuantity.fetchCartQuantity) // middleware to set the cart Quantity 
 router.get('/home', auth.checkSession, userProductController.loadHome)
 router.get('/category/:id', userProductController.viewCategory)
@@ -58,7 +58,6 @@ router.get('/' , auth.isLogin, userProductController.loadLanding)
 //---- user dashboard ---- 
 router.get('profile/dashboard', auth.checkSession, userAuthController.getDashboard)
 router.get('/profile/account', auth.checkSession, useraccountController.getAccountDetails) 
-router.get('/profile/wishlist', auth.checkSession, userAuthController.getWishlist)  
 router.get('/profile/orders', auth.checkSession, userOrderController.getOrders);
 router.get('/profile/wallet', auth.checkSession, userAuthController.getWallet)  
 router.get('/profile/addresses', auth.checkSession, useraddressController.getAddresses)
@@ -98,5 +97,10 @@ router.post('/profile/orders/:orderId/items/:itemId/cancel', auth.checkSession, 
 
 //---- search products ----
 router.get('/search', userSearchController.searchProducts);
+
+//---- wishlist management ----
+router.get('/profile/wishlist', auth.checkSession, userWishlistController.getWishlist);
+router.post('/wishlist/add', auth.checkSession, userWishlistController.addToWishlist);
+router.post('/wishlist/remove', auth.checkSession, userWishlistController.removeFromWishlist);
 
 export default router
