@@ -10,16 +10,32 @@
 
   <!-- New Arrival -->
   <section class="mb-6 md:mb-10">
-    <p class="text-xl md:text-2xl mb-3 md:mb-5">New Arrival</p>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5">
-        <% newArrivals.forEach(product => { %>
-            <a href="/product/<%= product._id %>" class="bg-black rounded-lg text-center p-4 md:p-5 hover:opacity-90 transition-opacity">
-                <img alt="<%= product.name %>" 
-                     src="<%= product.images[0].path %>" 
-                     class="mx-auto mb-2 w-full h-[150px] md:h-[180px] object-cover"/>
-                <p class="text-white text-sm md:text-base"><%= product.name %></p>
-                <p class="text-red-600">₹<%= product.price.toFixed(2) %></p>
-            </a>
+    <div class="flex justify-between items-center mb-3 md:mb-5">
+        <p class="text-xl md:text-2xl">New Arrival</p>
+        <a href="/allproducts" class="text-sm text-red-600 hover:text-red-700">View All →</a>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <% newArrivals.slice(0, 4).forEach(product => { %>
+            <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 max-w-[300px] border border-gray-100">
+                <a href="/product/<%= product._id %>" class="block">
+                    <div class="aspect-square rounded-t-lg overflow-hidden p-4 bg-gray-50">
+                        <img alt="<%= product.name %>" 
+                             src="<%= product.images[0].path %>" 
+                             class="w-full h-full object-contain"/>
+                    </div>
+                    <div class="p-4">
+                        <p class="text-gray-800 text-sm font-medium truncate mb-2"><%= product.name %></p>
+                        <% if (product.discount > 0) { %>
+                            <div class="flex items-center gap-2">
+                                <p class="text-red-600 text-sm font-bold">₹<%= (product.price * (1 - product.discount/100)).toFixed(2) %></p>
+                                <p class="text-gray-400 line-through text-xs">₹<%= product.price.toFixed(2) %></p>
+                            </div>
+                        <% } else { %>
+                            <p class="text-red-600 text-sm font-bold">₹<%= product.price.toFixed(2) %></p>
+                        <% } %>
+                    </div>
+                </a>
+            </div>
         <% }); %>
     </div>
   </section>
@@ -33,9 +49,11 @@
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-5">
         <% allProducts.forEach(product => { %>
             <a href="/product/<%= product._id %>" class="col-span-1 hover:opacity-90 transition-opacity">
-                <img alt="<%= product.name %>" 
-                     src="<%= product.images[0].path %>" 
-                     class="w-full h-[100px] md:h-[120px] object-cover rounded-lg"/>
+                <div class="aspect-square rounded-lg overflow-hidden">
+                    <img alt="<%= product.name %>" 
+                         src="<%= product.images[0].path %>" 
+                         class="w-full h-full object-contain"/>
+                </div>
                 <p class="text-black text-sm mt-2"><%= product.name %></p>
                 <p class="text-red-600">₹<%= product.price.toFixed(2) %></p>
             </a>

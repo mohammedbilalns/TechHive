@@ -18,7 +18,7 @@ const loadHome = async (req, res) => {
         const newArrivals = await productSchema
             .find({ status: "Active" })
             .sort({ createdAt: -1 })
-            .limit(3);
+            .limit(4);
 
         let fullname = req.session.user?.fullname;
 
@@ -51,7 +51,7 @@ const loadLanding = async (req, res) => {
         const newArrivals = await productSchema
             .find({ status: "Active" })
             .sort({ createdAt: -1 })
-            .limit(3);
+            .limit(4);
 
         res.render('user/landing', {
             allProducts,

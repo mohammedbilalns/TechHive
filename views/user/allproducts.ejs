@@ -19,9 +19,11 @@
                     <% category.products.forEach(product => { %>
                         <div class="bg-white rounded-lg text-center p-4 md:p-5 border border-gray-200">
                             <a href="/product/<%= product._id %>">
-                                <img src="<%= product.images[0].path %>" 
-                                     alt="<%= product.name %>"
-                                     class="mx-auto mb-2 w-full h-[150px] md:h-[180px] object-cover"/>
+                                <div class="aspect-square rounded-lg overflow-hidden mb-2">
+                                    <img src="<%= product.images[0].path %>" 
+                                         alt="<%= product.name %>"
+                                         class="w-full h-full object-contain"/>
+                                </div>
                                 <p class="text-gray-800 text-sm md:text-base"><%= product.name %></p>
                                 <% if (product.discount > 0) { %>
                                     <div class="flex items-center justify-center gap-2">
