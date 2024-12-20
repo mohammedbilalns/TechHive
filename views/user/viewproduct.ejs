@@ -97,15 +97,26 @@
       </div>
 
       <!-- Action Buttons -->
+      
       <div class="flex gap-4 mb-6">
-        <button onclick="addToCart('<%= product._id %>')" 
-                class="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition-colors <%= !product.stock ? 'opacity-50 cursor-not-allowed' : '' %>"
-                <%= !product.stock ? 'disabled' : '' %>>
-          Add to Cart
-        </button>
-        <button class="border border-gray-300 p-2 rounded-lg hover:bg-gray-100 transition-colors">
-          <i class="far fa-heart"></i>
-        </button>
+        <% if (locals.fullname) { %>
+          <button onclick="addToCart('<%= product._id %>')" 
+                  class="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition-colors <%= !product.stock ? 'opacity-50 cursor-not-allowed' : '' %>"
+                  <%= !product.stock ? 'disabled' : '' %>>
+            Add to Cart
+          </button>
+        <% } else { %>
+          <a href="/login" 
+             class="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition-colors text-center">
+            Add to Cart
+          </a>
+        <% } %>
+        
+        <% if(locals.fullname) { %>
+          <button class="border border-gray-300 p-2 rounded-lg hover:bg-gray-100 transition-colors">
+            <i class="far fa-heart"></i>
+          </button>
+        <% } %>
       </div>
     </div>
   </section>
