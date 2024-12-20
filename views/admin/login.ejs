@@ -27,20 +27,12 @@
           class="border w-full mb-6 px-3 py-2 rounded-md"
         />
 
-        <!-- Error message container -->
-        <div id="errorMessages" class="text-sm mb-4 hidden">
-          <div id="emailError" class="mb-4 p-3 rounded-md bg-red-100 text-red-700">
-            Please enter a valid email.
-          </div>
-          <div id="passwordError" class="mb-4 p-3 rounded-md bg-red-100 text-red-700">
-            Password is required.
-          </div>
-        </div>
         <% if (locals.message && locals.alertType) { %>
-        <div id="alertMessage" class="mb-4 p-3 rounded-md 
-           <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
-          <%= message %>
-        </div>
+          <script type="module">
+            import { showAlert, closeCustomAlert } from '/js/util.js';
+            showAlert('<%= message %>', '<%= alertType %>')
+            window.closeCustomAlert = closeCustomAlert;
+          </script>
         <% } %>
         <button type="submit" class="w-full py-2 mb-2 text-white bg-primary-accent rounded-md">
           Log In
@@ -51,39 +43,37 @@
 </main>
 <%- include('../partials/adminfooter') %>
 
-<script>
+<script type="module">
+  import { showAlert, closeCustomAlert } from '/js/util.js';
+  
+  window.closeCustomAlert = closeCustomAlert;
+
   document.getElementById('adminLoginForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+    
+    closeCustomAlert();
+    
     let isValid = true;
-
-    // Clear previous error messages
-    const errorMessages = document.getElementById('errorMessages');
-    errorMessages.classList.add('hidden');
-    document.getElementById('emailError').classList.add('hidden');
-    document.getElementById('passwordError').classList.add('hidden');
-
-    // Validate email
     const email = document.getElementById('email');
-    const emailError = document.getElementById('emailError');
-    const emailPattern = /^[^@]+@[^@]+\.[a-zA-Z]{2,}$/;
-
-    if (!email.value.trim() || !emailPattern.test(email.value)) {
-      emailError.classList.remove('hidden');
-      isValid = false;
-    }
-
-    // Validate password
     const password = document.getElementById('password');
-    const passwordError = document.getElementById('passwordError');
 
+    // First check password since we want to show its specific message
     if (!password.value.trim()) {
-      passwordError.classList.remove('hidden');
+      showAlert('Password is required.', 'error');
       isValid = false;
+      return;
     }
 
-    // Show error messages if validation fails
-    if (!isValid) {
-      errorMessages.classList.remove('hidden');
-      event.preventDefault();
+    // Check email, but show generic message
+    if (!email.value.trim() || !/^[^@]+@[^@]+\.[a-zA-Z]{2,}$/.test(email.value)) {
+      showAlert('Invalid credentials', 'error');
+      isValid = false;
+      return;
     }
+
+    if (!isValid) return;
+
+    // Submit the form
+    this.submit();
   });
 </script>

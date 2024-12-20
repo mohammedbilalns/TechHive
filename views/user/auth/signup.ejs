@@ -82,7 +82,6 @@
             <%= message %>
           </div>
         <% } %>
-        <div id="errorMessage" class="text-red-700 bg-red-100 p-3 text-sm mb-3 hidden"></div>
         <button type="submit" class="w-full py-2 mb-2 text-white bg-primary-accent rounded-md">Sign Up</button>
       </form>
       <a href="/login" class="text-right text-sm text-primary-accent block">Already have an account? Login</a>
@@ -91,7 +90,10 @@
 </main>
 <%- include('../../partials/authfooter') %>
 
-<script>
+<script type="module">
+   import { showAlert, closeCustomAlert } from '/js/util.js';
+  
+  window.closeCustomAlert = closeCustomAlert;
   // Toggle password visibility
   function togglePasswordVisibility(inputId, toggleId) {
     const input = document.getElementById(inputId);
@@ -115,37 +117,30 @@
   togglePasswordVisibility('password', 'togglePassword');
   togglePasswordVisibility('confirmPassword', 'toggleConfirmPassword');
 
-  // Form validation
+  // Updated form validation
   document.getElementById('signupForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    closeCustomAlert();
+    
     const fullname = document.getElementById('fullname').value.trim();
     const phonenumber = document.getElementById('phonenumber').value.trim();
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
     const confirmPassword = document.getElementById('confirmPassword').value.trim();
-    const errorMessage = document.getElementById('errorMessage');
-
-    // Reset error message
-    errorMessage.textContent = '';
-    errorMessage.classList.add('hidden');
 
     if (!fullname) {
-      errorMessage.textContent = 'Full Name is required.';
-      errorMessage.classList.remove('hidden');
-      event.preventDefault();
+      showAlert('Full Name is required', 'error');
       return;
     }
 
     if (!/^\d{10}$/.test(phonenumber)) {
-      errorMessage.textContent = 'Phone number must be 10 digits.';
-      errorMessage.classList.remove('hidden');
-      event.preventDefault();
+      showAlert('Phone number must be 10 digits', 'error');
       return;
     }
 
     if (!email.includes('@') || !email.includes('.')) {
-      errorMessage.textContent = 'Please enter a valid email address.';
-      errorMessage.classList.remove('hidden');
-      event.preventDefault();
+      showAlert('Please enter a valid email address', 'error');
       return;
     }
 
@@ -157,18 +152,17 @@
     const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};:'",.<>/?\\|]/.test(password);
 
     if (!hasMinLength || !hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecialChar) {
-      errorMessage.textContent = 'Password must be at least 8 characters long and include uppercase, lowercase, numbers, and special characters.';
-      errorMessage.classList.remove('hidden');
-      event.preventDefault();
+      showAlert('Password must contain 8+ characters with uppercase, lowercase, number, and special character', 'error');
       return;
     }
 
     // Confirm password validation
     if (password !== confirmPassword) {
-      errorMessage.textContent = 'Passwords do not match.';
-      errorMessage.classList.remove('hidden');
-      event.preventDefault();
+      showAlert('Passwords do not match', 'error');
       return;
     }
+
+    // If all validations pass, submit the form
+    this.submit();
   });
 </script>
