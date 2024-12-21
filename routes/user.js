@@ -3,6 +3,7 @@ import { Router } from "express"
 import userAuthController from "../controller/user/userAuthController.js"
 import auth from "../middlewares/auth.js"
 import cartQuantity from "../middlewares/cartQuantity.js"
+import wishlistItems  from "../middlewares/wishlistItems.js"
 import userProductController from "../controller/user/userProductController.js"
 import useraddressController from "../controller/user/useraddressController.js"
 import useraccountController from "../controller/user/useraccountController.js"
@@ -48,7 +49,7 @@ router.route('/reset-password') // user reset password
 
 //---- user and product routes ---- 
 router.use(cartQuantity.fetchCartQuantity) // middleware to set the cart Quantity 
-router.get('/home', auth.checkSession, userProductController.loadHome)
+router.get('/home', auth.checkSession, wishlistItems.fetchWishlistItems , userProductController.loadHome)
 router.get('/category/:id', userProductController.viewCategory)
 router.get('/allproducts',  userProductController.loadAllProducts)
 router.get('/product/:id',  userProductController.viewProduct)
@@ -84,6 +85,7 @@ router.post('/cart/add', auth.checkSession, userCartController.addToCart)
 router.post('/cart/update', auth.checkSession, userCartController.updateQuantity)
 router.post('/cart/remove', auth.checkSession, userCartController.removeFromCart)
 router.post('/cart/apply-coupon', auth.checkSession, userCartController.applyCoupon)
+router.post('/cart/clear', auth.checkSession, userCartController.clearCart)
 
 //---- user checkout management ----
 router.get('/checkout', auth.checkSession, userCheckController.getCheckout);

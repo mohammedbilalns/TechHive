@@ -1,6 +1,7 @@
 import { log } from "mercedlogger";
 import productSchema from "../../model/productModel.js";
 import categorySchema from "../../model/categoryModel.js";
+import wishlistSchema from "../../model/wishlistModel.js"
 
 
 // ---- load home ---- homepage 
@@ -20,8 +21,14 @@ const loadHome = async (req, res) => {
             .sort({ createdAt: -1 })
             .limit(4);
 
+        // const wishlist = await wishlistSchema
+        //     .findOne({ userId: req.session.user.id })
+        //     .populate({
+        //         path: 'products',
+        //         match: { status: 'Active' }
+        //     })       
         let fullname = req.session.user?.fullname;
-
+        
         res.render('user/home', {
             allProducts,
             categories,

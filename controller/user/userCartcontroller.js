@@ -286,13 +286,41 @@ const updateQuantity = async (req, res) => {
     }
 };
 
+const clearCart = async (req, res) => {
+    try {
+        const userId = req.session.user.id;
+        
+        // Find and remove all items from cart
+        const cart = await cartSchema.findOne({ user: userId });
+        if (!cart) {
+            return res.status(404).json({
+                success: false,
+                message: "Cart not found"
+            });
+        }
 
+        cart.items = [];
+        await cart.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Cart cleared successfully"
+        });
+
+    } catch (error) {
+        log.red("CLEAR_CART_ERROR", error);
+        return res.status(500).json({
+            success: false,
+            message: "Error clearing cart"
+        });
+    }
+};
 
 export default {
     getCart,
     addToCart,
     updateQuantity,
     removeFromCart,
-    applyCoupon, 
-    
+    applyCoupon,
+    clearCart
 }
