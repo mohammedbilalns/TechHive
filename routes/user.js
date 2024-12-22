@@ -50,11 +50,11 @@ router.route('/reset-password') // user reset password
 //---- user and product routes ---- 
 router.use(cartQuantity.fetchCartQuantity) // middleware to set the cart Quantity 
 router.get('/home', auth.checkSession, wishlistItems.fetchWishlistItems , userProductController.loadHome)
-router.get('/category/:id', auth.checkSession, wishlistItems.fetchWishlistItems, userProductController.viewCategory)
-router.get('/allproducts',auth.checkSession, wishlistItems.fetchWishlistItems,  userProductController.loadAllProducts)
-router.get('/product/:id',  userProductController.viewProduct)
+router.get('/category/:id',  wishlistItems.fetchWishlistItems, userProductController.viewCategory)
+router.get('/allproducts', wishlistItems.fetchWishlistItems,  userProductController.loadAllProducts)
+router.get('/product/:id',wishlistItems.fetchWishlistItems,  userProductController.viewProduct)
 router.get('/' , auth.isLogin, userProductController.loadLanding)
-router.get('/search', auth.checkSession, wishlistItems.fetchWishlistItems, userSearchController.searchProducts);
+router.get('/search',  wishlistItems.fetchWishlistItems, userSearchController.searchProducts);
 
 
 //---- user dashboard ---- .
