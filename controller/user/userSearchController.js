@@ -1,17 +1,26 @@
 import { log } from "mercedlogger";
 import productSchema from "../../model/productModel.js";
+import categorySchema from "../../model/categoryModel.js";
 
 const searchProducts = async (req, res) => {
     try {
         const query = req.query.q;
         const sortBy = req.query.sort || 'featured';
 
+        const matchingCategories = await categorySchema.find({
+            name: { $regex: query, $options: 'i' },
+            status: 'Active'
+        });
+
+        const categoryIds = matchingCategories.map(cat => cat._id);
+
         const baseQuery = {
             status: "Active",
             $or: [
                 { name: { $regex: query, $options: 'i' } },
                 { description: { $regex: query, $options: 'i' } },
-                { brand: { $regex: query, $options: 'i' } }
+                { brand: { $regex: query, $options: 'i' } },
+                { category: { $in: categoryIds } }
             ]
         };
 
@@ -41,6 +50,7 @@ const searchProducts = async (req, res) => {
 
         const products = await productSchema
             .find(baseQuery)
+            .populate('category', 'name')
             .sort(sortOptions);
 
         if (req.xhr) {
