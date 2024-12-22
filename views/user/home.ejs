@@ -187,11 +187,32 @@ async function addToCart(productId) {
     }
 }
 
+
 async function addToWishlist(productId) {
     try {
         const { data } = await axios.post('/wishlist/add', { productId });
+        if (data.success) {
+            // Find all wishlist buttons for this product (in case it appears multiple times on page)
+            const wishlistButtons = document.querySelectorAll(`button[onclick="addToWishlist('${productId}')"]`);
+            
+            wishlistButtons.forEach(button => {
+                // Create the new button with "remove" functionality
+                const newButton = document.createElement('button');
+                newButton.setAttribute('onclick', `removeFromWishlist('${productId}')`);
+                newButton.className = 'p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300';
+                
+                // Set the SVG content
+                newButton.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                `;
+                
+                // Replace the old button with the new one
+                button.parentNode.replaceChild(newButton, button);
+            });
+        }
         showAlert(data.message, data.success ? 'success' : 'error');
-        
     } catch (error) {
         console.error('Error:', error);
         showAlert(error.response?.data?.message || 'Error adding item to wishlist', 'error');
@@ -199,21 +220,39 @@ async function addToWishlist(productId) {
 }
 
 async function removeFromWishlist(productId) {
-      try {
+    try {
         const response = await axios.post('/wishlist/remove', { productId });
         if (response.data.success) {
-          showAlert('Item removed from wishlist successfully', 'success');
+            // Find all wishlist buttons for this product
+            const wishlistButtons = document.querySelectorAll(`button[onclick="removeFromWishlist('${productId}')"]`);
+            
+            wishlistButtons.forEach(button => {
+                // Create the new button with "add" functionality
+                const newButton = document.createElement('button');
+                newButton.setAttribute('onclick', `addToWishlist('${productId}')`);
+                newButton.className = 'p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300';
+                
+                // Set the SVG content
+                newButton.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                `;
+                
+                // Replace the old button with the new one
+                button.parentNode.replaceChild(newButton, button);
+            });
+            showAlert('Item removed from wishlist successfully', 'success');
         } else {
-          showAlert(response.data.message || 'Failed to remove item', 'error');
+            showAlert(response.data.message || 'Failed to remove item', 'error');
         }
-      } catch (error) {
+    } catch (error) {
         console.error('Error:', error);
         showAlert('Error removing item from wishlist', 'error');
-      }
     }
+}
 
 
-window.addToWishlist = addToWishlist;
 window.removeFromWishlist = removeFromWishlist;
 window.addToCart = addToCart;
 window.addToWishlist = addToWishlist;

@@ -50,13 +50,14 @@ router.route('/reset-password') // user reset password
 //---- user and product routes ---- 
 router.use(cartQuantity.fetchCartQuantity) // middleware to set the cart Quantity 
 router.get('/home', auth.checkSession, wishlistItems.fetchWishlistItems , userProductController.loadHome)
-router.get('/category/:id', userProductController.viewCategory)
-router.get('/allproducts',  userProductController.loadAllProducts)
+router.get('/category/:id', auth.checkSession, wishlistItems.fetchWishlistItems, userProductController.viewCategory)
+router.get('/allproducts',auth.checkSession, wishlistItems.fetchWishlistItems,  userProductController.loadAllProducts)
 router.get('/product/:id',  userProductController.viewProduct)
 router.get('/' , auth.isLogin, userProductController.loadLanding)
+router.get('/search', auth.checkSession, wishlistItems.fetchWishlistItems, userSearchController.searchProducts);
 
 
-//---- user dashboard ---- 
+//---- user dashboard ---- .
 router.get('profile/dashboard', auth.checkSession, userAuthController.getDashboard)
 router.get('/profile/account', auth.checkSession, useraccountController.getAccountDetails) 
 router.get('/profile/orders', auth.checkSession, userOrderController.getOrders);
@@ -98,7 +99,6 @@ router.get('/profile/orders/:orderId', auth.checkSession, userOrderController.ge
 router.post('/profile/orders/:orderId/items/:itemId/cancel', auth.checkSession, userOrderController.cancelOrderItem);
 
 //---- search products ----
-router.get('/search', userSearchController.searchProducts);
 
 //---- wishlist management ----
 router.get('/profile/wishlist', auth.checkSession, userWishlistController.getWishlist);
