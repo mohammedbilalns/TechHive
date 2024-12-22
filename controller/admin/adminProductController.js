@@ -50,7 +50,14 @@ const deleteProduct = async (req, res) => {
         // Get the product details before deletion
         const product = await productSchema.findById(req.params.productid);
         
-        if (product && product.images) {
+        if (!product) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Product not found' 
+            });
+        }
+
+        if (product.images) {
             // Delete each image file from the storage
             product.images.forEach(image => {
                 const imagePath = path.join('static', image.path);
@@ -62,35 +69,77 @@ const deleteProduct = async (req, res) => {
 
         // Delete the product from database
         await productSchema.findByIdAndDelete(req.params.productid);
-        res.redirect('/admin/products?message=Product+deleted+successfully&alertType=success');
+        
+        res.json({ 
+            success: true, 
+            message: 'Product deleted successfully' 
+        });
     } catch (error) {
         log.red('PRODUCT_DELETE_ERROR', error);
-        res.redirect('/admin/products?message=Something+went+wrong&alertType=error');
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to delete product' 
+        });
     }
 };
 
-const deactivateProduct = async (req,res)=>{
-    try{
-        await productSchema.findByIdAndUpdate(req.params.productid, {status:"Inactive"})
-        res.redirect('/admin/products?message=Product+deactivated+successfully&alertType=success')
+const deactivateProduct = async (req, res) => {
+    try {
+        const product = await productSchema.findByIdAndUpdate(
+            req.params.productid, 
+            { status: "Inactive" },
+            { new: true }
+        );
 
-    }catch(error){
-        log.red('PRODUCT_DEACTIVATE_ERROR', error)
-        res.redirect('/admin/products?message=Something+went+wrong&alertType=error')
+        if (!product) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Product not found' 
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            message: 'Product deactivated successfully',
+            product 
+        });
+    } catch (error) {
+        log.red('PRODUCT_DEACTIVATE_ERROR', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to deactivate product' 
+        });
     }
+};
 
-}
-const activateProduct = async (req,res)=>{
-    try{
-        await productSchema.findByIdAndUpdate(req.params.productid, {status:"Active"})
-        res.redirect('/admin/products?message=Product+activated+successfully&alertType=success')
+const activateProduct = async (req, res) => {
+    try {
+        const product = await productSchema.findByIdAndUpdate(
+            req.params.productid, 
+            { status: "Active" },
+            { new: true }
+        );
 
-    }catch(error){
-         log.red('PRODUCT_ACTIVATE_ERROR', error)
-        res.redirect('/admin/products?message=Something+went+wrong&alertType=error')
+        if (!product) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Product not found' 
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            message: 'Product activated successfully',
+            product 
+        });
+    } catch (error) {
+        log.red('PRODUCT_ACTIVATE_ERROR', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to activate product' 
+        });
     }
-
-}
+};
 
 const getAddProduct = async(req,res)=>{
     try{

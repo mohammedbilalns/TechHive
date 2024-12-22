@@ -37,7 +37,7 @@ router.post('/categories/edit/:categoryid', adminCategoryController.editCategory
 
 //---- products routes ---- 
 router.get('/products', adminProductController.getProducts)
-router.get('/products/delete/:productid', adminProductController.deleteProduct)
+router.delete('/products/delete/:productid', adminProductController.deleteProduct)
 router.post('/products/activate/:productid', adminProductController.activateProduct)
 router.post('/products/deactivate/:productid', adminProductController.deactivateProduct)
 router.get(`/products/add`, adminProductController.getAddProduct)

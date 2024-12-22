@@ -96,9 +96,8 @@
                     <% }); %>
     </main>
 
-    <script type="module">
+    <script >
 
-        import { showAlert, closeCustomAlert } from '/js/util.js';
 
         async function addToCart(productId) {
             try {
@@ -176,13 +175,6 @@
                 showAlert('Error removing item from wishlist', 'error');
             }
         }
-
-        window.removeFromWishlist = removeFromWishlist;
-        window.addToWishlist = addToWishlist;
-        window.addToCart = addToCart;
-        window.closeCustomAlert = closeCustomAlert;
-
-
 
     </script>
 

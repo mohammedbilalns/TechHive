@@ -255,8 +255,57 @@
       const response = await axios.post(`/admin/orders/${orderId}/items/${itemId}/update-status`, { status });
 
       if (response.data.success) {
+        // Update the status text and color in the UI
+        const statusElement = document.querySelector(`#status-${orderId}-${itemId}`).parentElement
+          .previousElementSibling.querySelector('span');
+        const selectElement = document.getElementById(`status-${orderId}-${itemId}`);
+        
+        // Update the status text
+        statusElement.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+        
+        // Remove existing color classes
+        statusElement.className = 'font-medium ';
+        
+        // Add new color class based on status
+        const statusColors = {
+          'delivered': 'text-green-600',
+          'cancelled': 'text-red-600',
+          'returned': 'text-gray-600',
+          'shipped': 'text-blue-600',
+          'processing': 'text-yellow-600',
+          'pending': 'text-purple-600'
+        };
+        
+        statusElement.classList.add(statusColors[status] || 'text-gray-600');
+
+        // Update dropdown options based on new status
+        selectElement.innerHTML = ''; // Clear existing options
+        
+        const availableOptions = {
+          'pending': ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'returned'],
+          'processing': ['processing', 'shipped', 'delivered', 'cancelled', 'returned'],
+          'shipped': ['shipped', 'delivered', 'cancelled', 'returned'],
+          'delivered': ['delivered', 'returned'],
+          'returned': ['returned'],
+          'cancelled': ['cancelled']
+        };
+
+        const options = availableOptions[status] || [];
+        options.forEach(option => {
+          const optionElement = document.createElement('option');
+          optionElement.value = option;
+          optionElement.textContent = option.charAt(0).toUpperCase() + option.slice(1);
+          optionElement.selected = option === status;
+          selectElement.appendChild(optionElement);
+        });
+
+        // If status is cancelled or returned, remove the update controls
+        if (['cancelled', 'returned'].includes(status)) {
+          const controlsContainer = document.getElementById(`status-${orderId}-${itemId}`).parentElement;
+          controlsContainer.innerHTML = '';
+        }
+
         showAlert('Item status updated successfully', 'success');
-        setTimeout(() => window.location.reload(), 1500);
       } else {
         showAlert(response.data.message || 'Failed to update status', 'error');
       }

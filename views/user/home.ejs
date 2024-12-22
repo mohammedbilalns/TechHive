@@ -173,8 +173,7 @@
 </main>
 <%- include('../partials/footer') %>
 
-<script type="module">
-import { showAlert, closeCustomAlert } from '/js/util.js';
+<script >
 
 async function addToCart(productId) {
     try {
@@ -253,8 +252,4 @@ async function removeFromWishlist(productId) {
 }
 
 
-window.removeFromWishlist = removeFromWishlist;
-window.addToCart = addToCart;
-window.addToWishlist = addToWishlist;
-window.closeCustomAlert = closeCustomAlert;
 </script>

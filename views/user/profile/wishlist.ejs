@@ -92,7 +92,9 @@
     </main>
   </div>
 
-  <script>
+  <script type="module">
+    import { customConfirm, showAlert, closeCustomAlert } from '/js/util.js';
+    
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
       sidebar.classList.toggle('hidden');
@@ -121,22 +123,22 @@
       }
     }
 
-    function addToCart(productId) {
-      fetch(`/cart/add`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ productId, quantity: 1 })
-      }).then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            window.location.href = '/cart';
-          } else {
-            alert(data.message || 'Error adding to cart');
-          }
-        });
+    async function addToCart(productId) {
+      try {
+        const { data } = await axios.post('/cart/add', { productId });
+        showAlert(data.message, data.success ? 'success' : 'error');
+        document.getElementById("cart-quantity").innerText = data.totalQuantity;
+      } catch (error) {
+        console.error('Error:', error);
+        showAlert(error.response?.data?.message || 'Error adding item to cart', 'error');
+      }
     }
+
+    window.addToCart = addToCart;
+    window.removeFromWishlist = removeFromWishlist;
+    window.customConfirm = customConfirm;
+    window.showAlert = showAlert;
+    window.closeCustomAlert = closeCustomAlert;
   </script>
 
   <%- include('../../partials/footer') %>

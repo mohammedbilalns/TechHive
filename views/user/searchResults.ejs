@@ -99,8 +99,7 @@ document.getElementById('sortSelect').addEventListener('change', async function(
 });
 </script>
 
-<script type="module">
-import { showAlert, closeCustomAlert } from '/js/util.js';
+<script >
 
 async function addToCart(productId) {
     try {
@@ -178,10 +177,7 @@ async function removeFromWishlist(productId) {
     }
 }
 
-window.removeFromWishlist = removeFromWishlist;
-window.addToCart = addToCart;
-window.addToWishlist = addToWishlist;
-window.closeCustomAlert = closeCustomAlert;
+
 </script>
 
 <%- include('../partials/footer') %> 

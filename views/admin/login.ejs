@@ -43,10 +43,8 @@
 </main>
 <%- include('../partials/adminfooter') %>
 
-<script type="module">
-  import { showAlert, closeCustomAlert } from '/js/util.js';
-  
-  window.closeCustomAlert = closeCustomAlert;
+<script >
+ 
 
   document.getElementById('adminLoginForm').addEventListener('submit', function (event) {
     event.preventDefault();

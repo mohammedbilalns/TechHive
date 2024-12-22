@@ -90,30 +90,25 @@
                     <td class="px-6 py-3 text-center">
                       <div class="flex justify-center gap-2">
                         <% if (product.status === 'Active') { %>
-                          <form action="/admin/products/deactivate/<%= product._id %>" method="POST" 
-                            onsubmit="return confirm('Are you sure you want to deactivate the product?')">
-                            <button type="submit" class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">
-                              Deactivate
-                            </button>
-                          </form>
+                          <button onclick="toggleProductStatus('<%= product._id %>', 'deactivate')"
+                            class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">
+                            Deactivate
+                          </button>
                         <% } else { %>
-                          <form action="/admin/products/activate/<%= product._id %>" method="POST" 
-                            onsubmit="return confirm('Are you sure you want to activate the product?')">
-                            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-                              Activate
-                            </button>
-                          </form>
+                          <button onclick="toggleProductStatus('<%= product._id %>', 'activate')"
+                            class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                            Activate
+                          </button>
                         <% } %>
                         <form action="/admin/products/edit/<%= product._id %>">
                           <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
                             Edit
                           </button>
                         </form>
-                        <form action="/admin/products/delete/<%= product._id %>" 
-                          onsubmit="return confirm('Are you sure you want delete the product?')">
-                          <button type="submit"
-                            class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">Delete</button>
-                        </form>
+                        <button onclick="deleteProduct('<%= product._id %>')"
+                          class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">
+                          Delete
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -130,3 +125,91 @@
 
 
 <%- include('../partials/adminfooter') %>
+
+<script type="module">
+  import { customConfirm, showAlert, closeCustomAlert } from '/js/util.js';
+  window.customConfirm = customConfirm;
+  window.showAlert = showAlert;
+  window.closeCustomAlert = closeCustomAlert;
+</script>
+
+<script>
+  async function toggleProductStatus(productId, action) {
+    const confirmed = await customConfirm(
+      `Are you sure you want to ${action} this product?`,
+      `${action === 'activate' ? 'Activate' : 'Deactivate'} Product`
+    );
+
+    if (confirmed) {
+      try {
+        const response = await axios.post(`/admin/products/${action}/${productId}`);
+
+        if (response.data.success) {
+          const row = document.querySelector(`button[onclick="toggleProductStatus('${productId}', '${action}')"]`).closest('tr');
+          const statusCell = row.querySelector('td:nth-child(8) span');
+          const actionCell = row.querySelector('td:last-child div');
+
+          // Update status cell
+          statusCell.textContent = action === 'activate' ? 'Active' : 'Inactive';
+          statusCell.className = `px-3 py-1 rounded-full text-sm font-medium ${
+            action === 'activate' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          }`;
+
+          // Update action buttons
+          const newButton = action === 'activate' ? 
+            `<button onclick="toggleProductStatus('${productId}', 'deactivate')" class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">Deactivate</button>` :
+            `<button onclick="toggleProductStatus('${productId}', 'activate')" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Activate</button>`;
+          
+          actionCell.innerHTML = newButton + actionCell.innerHTML.split('</button>').slice(1).join('</button>');
+
+          showAlert(`Product ${action}d successfully`, 'success');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showAlert(error.response?.data?.message || `Failed to ${action} product`, 'error');
+      }
+    }
+  }
+
+  async function deleteProduct(productId) {
+    const confirmed = await customConfirm(
+      'Are you sure you want to delete this product?',
+      'Delete Product'
+    );
+
+    if (confirmed) {
+      try {
+        const response = await axios.delete(`/admin/products/delete/${productId}`);
+
+        if (response.data.success) {
+          const row = document.querySelector(`button[onclick="deleteProduct('${productId}')"]`).closest('tr');
+          row.remove();
+
+          // Update row numbers
+          const rows = document.querySelectorAll('#productsTable tr');
+          rows.forEach((row, index) => {
+            row.querySelector('td:first-child').textContent = index + 1;
+          });
+
+          showAlert('Product deleted successfully', 'success');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showAlert(error.response?.data?.message || 'Failed to delete product', 'error');
+      }
+    }
+  }
+
+  function filterProducts() {
+    const searchValue = document.getElementById('searchBox').value.toLowerCase();
+    const rows = document.querySelectorAll('#productsTable tr');
+    rows.forEach(row => {
+      const productName = row.children[2]?.textContent.toLowerCase() || '';
+      row.style.display = productName.includes(searchValue) ? '' : 'none';
+    });
+  }
+
+  function exportCategories() {
+    alert('Exporting products...');
+  }
+</script>

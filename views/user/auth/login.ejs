@@ -66,10 +66,8 @@
 </main>
 <%- include('../../partials/authfooter') %>
 
-<script type="module">
-  import { showAlert, closeCustomAlert } from '/js/util.js';
-  
-  window.closeCustomAlert = closeCustomAlert;
+<script >
+
 
   document.getElementById('userlogin').addEventListener('submit', async function (event) {
     event.preventDefault(); 

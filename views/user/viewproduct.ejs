@@ -306,8 +306,7 @@
     }
   </script>
 
-  <script type="module">
-    import { showAlert, closeCustomAlert } from '/js/util.js';
+  <script >
 
     async function addToCart(productId) {
       try {
@@ -386,10 +385,7 @@
     }
 
 
-    window.removeFromWishlist = removeFromWishlist;
-    window.addToWishlist = addToWishlist;
-    window.addToCart = addToCart;
-    window.closeCustomAlert = closeCustomAlert;
+
   </script>
 
   <%- include('../partials/footer') %>
