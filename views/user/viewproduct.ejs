@@ -110,13 +110,13 @@
         <div class="flex gap-4 mb-6">
           <% if (locals.fullname) { %>
             <button onclick="addToCart('<%= product._id %>')"
-              class="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition-colors <%= !product.stock ? 'opacity-50 cursor-not-allowed' : '' %>"
+              class="bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors <%= !product.stock ? 'opacity-50 cursor-not-allowed' : '' %>"
               <%=!product.stock ? 'disabled' : '' %>>
               Add to Cart
             </button>
             <% } else { %>
               <a href="/login"
-                class="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition-colors text-center">
+                class="bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors text-center">
                 Add to Cart
               </a>
               <% } %>
@@ -125,7 +125,7 @@
 
                   <% if(wishlistItems.some(id=> id.equals(product._id))) { %>
                     <button onclick="removeFromWishlist('<%= product._id %>')"
-                      class="p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
+                      class="p-2 rounded-full bg-primary-accent text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
                       <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -135,7 +135,7 @@
                     </button>
                     <% } else { %>
                       <button onclick="addToWishlist('<%= product._id %>')"
-                        class="p-2 rounded-full  bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
+                        class="p-2 rounded-full  bg-gray-100 hover:bg-primary-accent hover:text-white transition-colors duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                           stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
