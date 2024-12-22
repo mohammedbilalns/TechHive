@@ -194,7 +194,7 @@
   </section>
 </main>
 
-<!-- Updated Image Zoom Script -->
+<!--  Image Zoom Script -->
 <script>
 const container = document.getElementById('imageContainer');
 const mainImage = document.getElementById('mainImage');
@@ -213,18 +213,29 @@ container.addEventListener('mousemove', function(e) {
   const rect = container.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
-
-  // Calculate percentage positions
-  const xPercent = (x / rect.width) * 100;
-  const yPercent = (y / rect.height) * 100;
-
+  
+  // Calculate zoom pane position 
+  let zoomX = x - zoomPane.offsetWidth / 2;
+  let zoomY = y - zoomPane.offsetHeight / 2;
+  
+  // Prevent zoom pane from going outside container bounds
+  zoomX = Math.max(0, Math.min(zoomX, rect.width - zoomPane.offsetWidth));
+  zoomY = Math.max(0, Math.min(zoomY, rect.height - zoomPane.offsetHeight));
+  
   // Position zoom pane
-  zoomPane.style.left = `${x - zoomPane.offsetWidth / 2}px`;
-  zoomPane.style.top = `${y - zoomPane.offsetHeight / 2}px`;
-
+  zoomPane.style.left = `${zoomX}px`;
+  zoomPane.style.top = `${zoomY}px`;
+  
+  // Calculate background position percentages
+  const paddingPercent = 10; // Padding around zoomed area
+  const xPercent = Math.max(paddingPercent, Math.min(100 - paddingPercent,
+    (x / rect.width) * 100));
+  const yPercent = Math.max(paddingPercent, Math.min(100 - paddingPercent,
+    (y / rect.height) * 100));
+  
   // Set background image and position
   zoomPane.style.backgroundImage = `url(${mainImage.src})`;
-  zoomPane.style.backgroundSize = '200%';
+  zoomPane.style.backgroundSize = '250%'; // Increased zoom level
   zoomPane.style.backgroundPosition = `${xPercent}% ${yPercent}%`;
 });
 
@@ -233,15 +244,12 @@ function changeMainImage(src) {
 }
 </script>
 
-<!-- Update the script section -->
 <script type="module">
   import { showAlert, closeCustomAlert } from '/js/util.js';
 
   async function addToCart(productId) {
     try {
       const { data } = await axios.post('/cart/add', { productId });
-      
-      // Use custom alert
       showAlert(data.message, data.success ? 'success' : 'error');
       document.getElementById("cart-quantity").innerText = data.totalQuantity
       
@@ -260,9 +268,7 @@ function changeMainImage(src) {
     }
 }
 
-window.addToWishlist = addToWishlist;
-
-  // Make both functions available globally
+  window.addToWishlist = addToWishlist;
   window.addToCart = addToCart;
   window.closeCustomAlert = closeCustomAlert;
 </script>
