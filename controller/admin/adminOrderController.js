@@ -3,11 +3,29 @@ import productModel from '../../model/productModel.js';
 // Get all orders
 const getOrders = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    // Get total count for pagination
+    const totalOrders = await orderModel.countDocuments();
+    const totalPages = Math.ceil(totalOrders / limit);
+
+    // Get paginated orders
     const orders = await orderModel.find()
       .populate('userId', 'fullname email')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
-    res.render('admin/orders', { orders, page: 'orders' });
+    res.render('admin/orders', {
+      orders,
+      page: 'orders',
+      currentPage: page,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1
+    });
   } catch (error) {
     console.error('Error fetching orders:', error);
     res.status(500).json({

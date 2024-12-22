@@ -9,7 +9,7 @@ import path from "node:path"
 const productStorage = multer.diskStorage({
     destination: function (req, file, cb) {
         const dir = 'static/uploads/products';
-        
+
         if (!fs.existsSync(dir)) {
             fs.mkdirSync(dir, { recursive: true });
         }
@@ -20,7 +20,7 @@ const productStorage = multer.diskStorage({
     }
 });
 
-const productUpload = multer({ 
+const productUpload = multer({
     storage: productStorage,
     fileFilter: (req, file, cb) => {
         if (file.mimetype.startsWith('image/')) {
@@ -36,10 +36,30 @@ const getProducts = async (req, res) => {
     try {
         let message = req.query.message;
         let alertType = req.query.alertType;
+        const page = parseInt(req.query.page) || 1
+        const limit = 10
+        const skip = (page - 1) * limit
 
+        const totalProducts = await productSchema.countDocuments()
+        const totalPages = Math.ceil(totalProducts / limit)
+
+
+        const products = await productSchema.find()
+        .populate('category')
+        .sort({createdAt: 1})
+        .skip(skip)
+        .limit(limit)
         
-        const products = await productSchema.find().populate('category');
-        res.render("admin/products", { products,page:"products" , message, alertType });
+        res.render("admin/products", {
+            products,
+            page: "products",
+            message,
+            alertType,
+            currentPage: page,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1
+        });
     } catch (error) {
         log.red("PRODUCT_FETCH_ERROR", error);
     }
@@ -49,11 +69,11 @@ const deleteProduct = async (req, res) => {
     try {
         // Get the product details before deletion
         const product = await productSchema.findById(req.params.productid);
-        
+
         if (!product) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'Product not found' 
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
             });
         }
 
@@ -69,16 +89,16 @@ const deleteProduct = async (req, res) => {
 
         // Delete the product from database
         await productSchema.findByIdAndDelete(req.params.productid);
-        
-        res.json({ 
-            success: true, 
-            message: 'Product deleted successfully' 
+
+        res.json({
+            success: true,
+            message: 'Product deleted successfully'
         });
     } catch (error) {
         log.red('PRODUCT_DELETE_ERROR', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to delete product' 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to delete product'
         });
     }
 };
@@ -86,28 +106,28 @@ const deleteProduct = async (req, res) => {
 const deactivateProduct = async (req, res) => {
     try {
         const product = await productSchema.findByIdAndUpdate(
-            req.params.productid, 
+            req.params.productid,
             { status: "Inactive" },
             { new: true }
         );
 
         if (!product) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'Product not found' 
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
             });
         }
 
-        res.json({ 
-            success: true, 
+        res.json({
+            success: true,
             message: 'Product deactivated successfully',
-            product 
+            product
         });
     } catch (error) {
         log.red('PRODUCT_DEACTIVATE_ERROR', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to deactivate product' 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to deactivate product'
         });
     }
 };
@@ -115,48 +135,48 @@ const deactivateProduct = async (req, res) => {
 const activateProduct = async (req, res) => {
     try {
         const product = await productSchema.findByIdAndUpdate(
-            req.params.productid, 
+            req.params.productid,
             { status: "Active" },
             { new: true }
         );
 
         if (!product) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'Product not found' 
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
             });
         }
 
-        res.json({ 
-            success: true, 
+        res.json({
+            success: true,
             message: 'Product activated successfully',
-            product 
+            product
         });
     } catch (error) {
         log.red('PRODUCT_ACTIVATE_ERROR', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Failed to activate product' 
+        res.status(500).json({
+            success: false,
+            message: 'Failed to activate product'
         });
     }
 };
 
-const getAddProduct = async(req,res)=>{
-    try{
-        const categories = await categorySchema.find({status:"Active"})    
-         res.render('admin/addproduct',{categories, page: 'products'} )
-    }catch(error){
-        log.red("FETCH_ADD_PRODUCT",err)
+const getAddProduct = async (req, res) => {
+    try {
+        const categories = await categorySchema.find({ status: "Active" })
+        res.render('admin/addproduct', { categories, page: 'products' })
+    } catch (error) {
+        log.red("FETCH_ADD_PRODUCT", err)
         res.redirect('/admin/products?message=Something+went+wrong&alertType=error')
 
     }
-    
+
 }
 
 const addProduct = async (req, res) => {
     try {
         let { name, description, price, discount, stock, brand, category, specifications } = req.body;
-      
+
         name = name.trim().split(' ')
             .map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
             .join(' ');
@@ -168,8 +188,8 @@ const addProduct = async (req, res) => {
         const specArray = Array.isArray(specifications) ? specifications : [specifications];
         const cleanedSpecs = specArray.filter(spec => spec && spec.trim()).map(spec => spec.trim());
 
-        let product = await productSchema.findOne({name})
-        if(product) return res.redirect('/admin/products?message=Product+with+same+name+already+exists&alertType=error')
+        let product = await productSchema.findOne({ name })
+        if (product) return res.redirect('/admin/products?message=Product+with+same+name+already+exists&alertType=error')
 
         // Process images
         const images = req.files.map(file => ({
@@ -201,15 +221,15 @@ const addProduct = async (req, res) => {
 
 
 
-const getEditProduct = async (req,res)=>{
-    try{
+const getEditProduct = async (req, res) => {
+    try {
         const product = await productSchema.findById(req.params.productid)
         console.log(product)
-        const categories = await categorySchema.find({status:"Active"})
-        res.render('admin/editproduct', {product, categories, page: 'products'})
-    }catch(error){
+        const categories = await categorySchema.find({ status: "Active" })
+        res.render('admin/editproduct', { product, categories, page: 'products' })
+    } catch (error) {
         log.red('FETCH_EDIT_PRODUCT_ERROR', error)
-        res.redirect('/admin/products?message=Something+went+wrong&alertType=error')        
+        res.redirect('/admin/products?message=Something+went+wrong&alertType=error')
     }
 }
 
@@ -226,7 +246,7 @@ const editProduct = async (req, res) => {
         brand = brand.trim().split(' ')
             .map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
             .join(' ');
-        
+
         const specArray = Array.isArray(specifications) ? specifications : [specifications];
         const cleanedSpecs = specArray.filter(spec => spec && spec.trim()).map(spec => spec.trim());
 
@@ -237,9 +257,9 @@ const editProduct = async (req, res) => {
 
         let existingproduct = await productSchema.findOne({
             name,
-            _id: { $ne: productId } 
+            _id: { $ne: productId }
         });
-        if(existingproduct) return res.redirect('/admin/products?message=Product+with+same+name+already+exists&alertType=error');
+        if (existingproduct) return res.redirect('/admin/products?message=Product+with+same+name+already+exists&alertType=error');
 
         const product = await productSchema.findById(productId);
         if (!product) {
@@ -247,7 +267,7 @@ const editProduct = async (req, res) => {
         }
 
         // Handle image updates
-        let images = [...product.images]; 
+        let images = [...product.images];
 
         if (req.files && req.files.length > 0) {
             const newImages = req.files.map(file => ({
@@ -297,4 +317,4 @@ const editProduct = async (req, res) => {
     }
 };
 
-export default {getProducts, deleteProduct, deactivateProduct, activateProduct, getAddProduct, addProduct, getEditProduct, editProduct, productUpload}
+export default { getProducts, deleteProduct, deactivateProduct, activateProduct, getAddProduct, addProduct, getEditProduct, editProduct, productUpload }

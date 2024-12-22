@@ -5,12 +5,33 @@ const getCustomers = async (req,res)=>{
     try{
         let message = req.query.message 
         let alertType = req.query.alertType
+        
+        // Add pagination
+        const page = parseInt(req.query.page) || 1
+        const limit = 10
+        const skip = (page - 1) * limit
+        
+        const totalCustomers = await userSchema.countDocuments()
+        const totalPages = Math.ceil(totalCustomers / limit)
+        
         const customers = await userSchema.find()
-        res.render('admin/userdashboard', {customers, message, alertType, page: 'customers'})
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: -1 })
+
+        res.render('admin/userdashboard', {
+            customers, 
+            message, 
+            alertType, 
+            page: 'customers',
+            currentPage: page,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1
+        })
 
     }catch(error){
         log.red('FETCH_USERS_ERROR',error)
-
     }
 }
 

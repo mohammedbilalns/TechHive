@@ -6,9 +6,28 @@ const getCategories = async (req, res)=>{
     try{
         let message = req.query.message 
         let alertType = req.query.alertType
+        const page = parseInt(req.query.page) || 1
+        const limit = 10
+        const skip = (page - 1) * limit
+
+        const totalCategories = await categorySchema.countDocuments()
+        const totalPages = Math.ceil(totalCategories / limit)
 
         const categories = await categorySchema.find()
-        res.render('admin/categories', {categories, message, page: 'categories', alertType})
+        .sort({createdAt: 1})
+        .skip(skip)
+        .limit(limit)
+
+        res.render('admin/categories', {
+            categories,
+            message,
+            page: 'categories',
+            alertType,
+            currentPage: page,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1
+        });
     }catch(error){
         log.red('FETCH_CATEGORIES_ERROR',error)
     }

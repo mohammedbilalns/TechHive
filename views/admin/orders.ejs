@@ -2,317 +2,353 @@
 
 
 
-<div class="flex min-h-screen">
-  <!-- Sidebar -->
-  <%- include('../partials/adminsidebar') %>
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <%- include('../partials/adminsidebar') %>
 
-  <!-- Main Content -->
-  <main class="md:ml-64 w-full min-h-screen bg-gray-50 transition-all duration-300 ease-in-out">
-    <div class="pt-14 md:pt-0 p-4">
-      <% if (locals.message && locals.alertType) { %>
-        <div id="alertMessage" class="mb-4 p-3 rounded-md 
+      <!-- Main Content -->
+      <main class="md:ml-64 w-full min-h-screen bg-gray-50 transition-all duration-300 ease-in-out">
+        <div class="pt-14 md:pt-0 p-4">
+          <% if (locals.message && locals.alertType) { %>
+            <div id="alertMessage" class="mb-4 p-3 rounded-md 
            <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
-          <%= message %>
-        </div>
-      <% } %>
-
-      <div class="bg-primary-white rounded-lg shadow-lg w-full overflow-hidden">
-        <!-- Page Header -->
-        <div class="flex flex-col md:flex-row justify-between items-center bg-gray-50 px-4 md:px-6 py-4 border-b space-y-4 md:space-y-0">
-          <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Orders Dashboard</h1>
-          <div class="flex gap-4">
-            <div class="relative">
-              <input type="text" id="searchBox" placeholder="Search orders..."
-                class="w-full md:w-64 border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-                oninput="filterOrders()" />
-              <i class="fas fa-search absolute top-3 right-4 text-gray-400"></i>
+              <%= message %>
             </div>
-            <button class="flex items-center bg-primary-accent text-white px-4 py-2 rounded-md shadow w-full md:w-auto justify-center"
-              onclick="exportOrders()">
-              <i class="fas fa-download mr-2"></i> Export
-            </button>
-          </div>
-        </div>
+            <% } %>
 
-        <!-- Orders Table -->
-        <div class="overflow-x-auto mt-6">
-          <table class="min-w-full bg-gray-50 text-sm">
-            <thead>
-              <tr class="text-left text-gray-600">
-                <th class="px-6 py-3">Order ID</th>
-                <th class="px-6 py-3">Customer</th>
-                <th class="px-6 py-3">Shipping Address</th>
-                <th class="px-6 py-3">Total</th>
-                <th class="px-6 py-3">Payment Method</th>
-                <th class="px-6 py-3">Payment Status</th>
-                <th class="px-6 py-3">Order Date</th>
-              </tr>
-            </thead>
-            <tbody id="ordersTable" class="text-gray-700">
-              <% if (orders.length === 0) { %>
-                <tr>
-                  <td colspan="9" class="text-center py-4">No orders found</td>
-                </tr>
-              <% } else { %>
-                <% orders.forEach((order) => { %>
-                  <tr class="border-b hover:bg-gray-100">
-                    <td class="px-6 py-3 font-medium">
-                      <%= order.orderId %>
-                      <div class="text-xs text-gray-500">
-                        Items: <%= order.items.length %>
-                        <button onclick="toggleOrderDetails('<%= order._id %>')"
-                          class="text-blue-600 hover:text-blue-800 ml-2"
-                          id="toggle-<%= order._id %>">
-                          View Details
-                        </button>
-                      </div>
-                    </td>
-                    <td class="px-6 py-3">
-                      <%= order.userId.fullname %>
-                    </td>
-                    <td class="px-6 py-3">
-                      <%= order.shippingAddress.name %><br>
-                      <span class="text-sm text-gray-500">
-                        <%= order.shippingAddress.houseName %>,
-                        <%= order.shippingAddress.localityStreet %>,
-                        <%= order.shippingAddress.city %>,
-                        <%= order.shippingAddress.state %> -
-                        <%= order.shippingAddress.pincode %>
-                      </span>
-                    </td>
-                    <td class="px-6 py-3">₹<%= order.totalAmount.toFixed(2) %></td>
-                    <td class="px-6 py-3"><%= order.paymentMethod.toUpperCase() %></td>
-                    <td class="px-6 py-3">
-                      <span class="px-3 py-1 rounded-full text-sm font-medium
+              <div class="bg-primary-white rounded-lg shadow-lg w-full overflow-hidden pb-3">
+                <!-- Page Header -->
+                <div
+                  class="flex flex-col md:flex-row justify-between items-center bg-gray-50 px-4 md:px-6 py-4 border-b space-y-4 md:space-y-0">
+                  <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Orders Dashboard</h1>
+                  <div class="flex gap-4">
+                    <div class="relative">
+                      <input type="text" id="searchBox" placeholder="Search orders..."
+                        class="w-full md:w-64 border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                        oninput="filterOrders()" />
+                      <i class="fas fa-search absolute top-3 right-4 text-gray-400"></i>
+                    </div>
+                    <button
+                      class="flex items-center bg-primary-accent text-white px-4 py-2 rounded-md shadow w-full md:w-auto justify-center"
+                      onclick="exportOrders()">
+                      <i class="fas fa-download mr-2"></i> Export
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Orders Table -->
+                <div class="overflow-x-auto mt-6">
+                  <table class="min-w-full bg-gray-50 text-sm">
+                    <thead>
+                      <tr class="text-left text-gray-600">
+                        <th class="px-6 py-3">Order ID</th>
+                        <th class="px-6 py-3">Customer</th>
+                        <th class="px-6 py-3">Shipping Address</th>
+                        <th class="px-6 py-3">Total</th>
+                        <th class="px-6 py-3">Payment Method</th>
+                        <th class="px-6 py-3">Payment Status</th>
+                        <th class="px-6 py-3">Order Date</th>
+                      </tr>
+                    </thead>
+                    <tbody id="ordersTable" class="text-gray-700">
+                      <% if (orders.length===0) { %>
+                        <tr>
+                          <td colspan="9" class="text-center py-4">No orders found</td>
+                        </tr>
+                        <% } else { %>
+                          <% orders.forEach((order)=> { %>
+                            <tr class="border-b hover:bg-gray-100">
+                              <td class="px-6 py-3 font-medium">
+                                <%= order.orderId %>
+                                  <div class="text-xs text-gray-500">
+                                    Items: <%= order.items.length %>
+                                      <button onclick="toggleOrderDetails('<%= order._id %>')"
+                                        class="text-blue-600 hover:text-blue-800 ml-2" id="toggle-<%= order._id %>">
+                                        View Details
+                                      </button>
+                                  </div>
+                              </td>
+                              <td class="px-6 py-3">
+                                <%= order.userId.fullname %>
+                              </td>
+                              <td class="px-6 py-3">
+                                <%= order.shippingAddress.name %><br>
+                                  <span class="text-sm text-gray-500">
+                                    <%= order.shippingAddress.houseName %>,
+                                      <%= order.shippingAddress.localityStreet %>,
+                                        <%= order.shippingAddress.city %>,
+                                          <%= order.shippingAddress.state %> -
+                                            <%= order.shippingAddress.pincode %>
+                                  </span>
+                              </td>
+                              <td class="px-6 py-3">₹<%= order.totalAmount.toFixed(2) %>
+                              </td>
+                              <td class="px-6 py-3">
+                                <%= order.paymentMethod.toUpperCase() %>
+                              </td>
+                              <td class="px-6 py-3">
+                                <span
+                                  class="px-3 py-1 rounded-full text-sm font-medium
                         <%= order.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">
-                        <%= order.paymentStatus %>
-                      </span>
-                    </td>
-                    <td class="px-6 py-3">
-                      <%= new Date(order.orderDate).toLocaleDateString() %>
-                    </td>
-                  </tr>
-                  <!-- Order Details Row  -->
-                  <tr id="details-<%= order._id %>" class="hidden bg-gray-50">
-                    <td colspan="9" class="px-6 py-4">
-                      <div class="space-y-4">
-                        <h4 class="font-medium">Order Items:</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                          <% order.items.forEach(item => { %>
-                            <div class="flex items-center space-x-4 bg-white p-3 rounded-lg shadow-sm">
-                              <img src="<%= item.images[0].path %>" alt="<%= item.name %>"
-                                class="w-16 h-16 object-cover rounded">
-                              <div class="flex-grow">
-                                <h5 class="font-medium"><%= item.name %></h5>
-                                <p class="text-sm text-gray-600">
-                                  Qty: <%= item.quantity %> × ₹<%= item.price %>
-                                </p>
-                                <p class="text-sm mb-2">
-                                  Status: <span class="font-medium <%= 
+                                  <%= order.paymentStatus %>
+                                </span>
+                              </td>
+                              <td class="px-6 py-3">
+                                <%= new Date(order.orderDate).toLocaleDateString() %>
+                              </td>
+                            </tr>
+                            <!-- Order Details Row  -->
+                            <tr id="details-<%= order._id %>" class="hidden bg-gray-50">
+                              <td colspan="9" class="px-6 py-4">
+                                <div class="space-y-4">
+                                  <h4 class="font-medium">Order Items:</h4>
+                                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <% order.items.forEach(item=> { %>
+                                      <div class="flex items-center space-x-4 bg-white p-3 rounded-lg shadow-sm">
+                                        <img src="<%= item.images[0].path %>" alt="<%= item.name %>"
+                                          class="w-16 h-16 object-cover rounded">
+                                        <div class="flex-grow">
+                                          <h5 class="font-medium">
+                                            <%= item.name %>
+                                          </h5>
+                                          <p class="text-sm text-gray-600">
+                                            Qty: <%= item.quantity %> × ₹<%= item.price %>
+                                          </p>
+                                          <p class="text-sm mb-2">
+                                            Status: <span class="font-medium <%= 
                                     item.status === 'delivered' ? 'text-green-600' :
                                     item.status === 'cancelled' ? 'text-red-600' :
                                     item.status === 'returned' ? 'text-gray-600' :
                                     item.status === 'shipped' ? 'text-blue-600' :
                                     item.status === 'processing' ? 'text-yellow-600' :
                                     'text-purple-600'
-                                  %>"><%= item.status.charAt(0).toUpperCase() + item.status.slice(1) %></span>
-                                </p>
-                                <div class="mt-2 flex items-center">
-                                  <% if (item.status !== 'cancelled') { %>
-                                    <select id="status-<%= order._id %>-<%= item._id %>" 
-                                            class="border rounded px-2 py-1 text-sm mr-2">
-                                      <% if (item.status === 'pending') { %>
-                                        <option value="pending" selected>Pending</option>
-                                        <option value="processing">Processing</option>
-                                        <option value="shipped">Shipped</option>
-                                        <option value="delivered">Delivered</option>
-                                        <option value="cancelled">Cancelled</option>
-                                        <option value="returned">Returned</option>
-                                      <% } else if (item.status === 'processing') { %>
-                                        <option value="processing" selected>Processing</option>
-                                        <option value="shipped">Shipped</option>
-                                        <option value="delivered">Delivered</option>
-                                        <option value="cancelled">Cancelled</option>
-                                        <option value="returned">Returned</option>
-                                      <% } else if (item.status === 'shipped') { %>
-                                        <option value="shipped" selected>Shipped</option>
-                                        <option value="delivered">Delivered</option>
-                                        <option value="cancelled">Cancelled</option>
-                                        <option value="returned">Returned</option>
-                                      <% } else if (item.status === 'delivered') { %>
-                                        <option value="delivered" selected>Delivered</option>
-                                        <option value="returned">Returned</option>
-                                      <% } else if (item.status === 'returned') { %>
-                                        <option value="returned" selected>Returned</option>
-                                      <% } %>
-                                    </select>
-                                    <% if (!['cancelled', 'returned'].includes(item.status)) { %>
-                                      <button onclick="updateItemStatus('<%= order._id %>', '<%= item._id %>')"
-                                        class="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600">
-                                        Update
-                                      </button>
-                                    <% } %>
-                                  <% } %>
+                                  %>">
+                                              <%= item.status.charAt(0).toUpperCase() + item.status.slice(1) %>
+                                            </span>
+                                          </p>
+                                          <div class="mt-2 flex items-center">
+                                            <% if (item.status !=='cancelled' ) { %>
+                                              <select id="status-<%= order._id %>-<%= item._id %>"
+                                                class="border rounded px-2 py-1 text-sm mr-2">
+                                                <% if (item.status==='pending' ) { %>
+                                                  <option value="pending" selected>Pending</option>
+                                                  <option value="processing">Processing</option>
+                                                  <option value="shipped">Shipped</option>
+                                                  <option value="delivered">Delivered</option>
+                                                  <option value="cancelled">Cancelled</option>
+                                                  <option value="returned">Returned</option>
+                                                  <% } else if (item.status==='processing' ) { %>
+                                                    <option value="processing" selected>Processing</option>
+                                                    <option value="shipped">Shipped</option>
+                                                    <option value="delivered">Delivered</option>
+                                                    <option value="cancelled">Cancelled</option>
+                                                    <option value="returned">Returned</option>
+                                                    <% } else if (item.status==='shipped' ) { %>
+                                                      <option value="shipped" selected>Shipped</option>
+                                                      <option value="delivered">Delivered</option>
+                                                      <option value="cancelled">Cancelled</option>
+                                                      <option value="returned">Returned</option>
+                                                      <% } else if (item.status==='delivered' ) { %>
+                                                        <option value="delivered" selected>Delivered</option>
+                                                        <option value="returned">Returned</option>
+                                                        <% } else if (item.status==='returned' ) { %>
+                                                          <option value="returned" selected>Returned</option>
+                                                          <% } %>
+                                              </select>
+                                              <% if (!['cancelled', 'returned' ].includes(item.status)) { %>
+                                                <button
+                                                  onclick="updateItemStatus('<%= order._id %>', '<%= item._id %>')"
+                                                  class="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600">
+                                                  Update
+                                                </button>
+                                                <% } %>
+                                                  <% } %>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <% }); %>
+                                  </div>
                                 </div>
-                              </div>
-                            </div>
-                          <% }); %>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <% }); %>
-                  <% } %>
-            </tbody>
-          </table>
+                              </td>
+                            </tr>
+                            <% }); %>
+                              <% } %>
+                    </tbody>
+                  </table>
+
+                  <!--  pagination controls -->
+                  <% if (orders.length> 0) { %>
+                    <div class="mt-8 flex justify-center items-center space-x-4">
+                      <% if (hasPrevPage) { %>
+                        <a href="/admin/orders?page=<%= currentPage - 1 %>"
+                          class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                          Previous
+                        </a>
+                        <% } %>
+
+                          <% for(let i=1; i <=totalPages; i++) { %>
+                            <a href="/admin/orders?page=<%= i %>"
+                              class="px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
+                              <%= i %>
+                            </a>
+                            <% } %>
+
+                              <% if (hasNextPage) { %>
+                                <a href="/admin/orders?page=<%= currentPage + 1 %>"
+                                  class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                                  Next
+                                </a>
+                                <% } %>
+                    </div>
+                    <% } %>
+                </div>
+              </div>
         </div>
-      </div>
-    </div>
-  </main>
-</div>
+      </main>
+  </div>
 
-<%- include('../partials/adminfooter') %>
+  <%- include('../partials/adminfooter') %>
 
-<script type="module">
-  import { customConfirm, showAlert, closeCustomAlert } from '/js/util.js';
-  window.customConfirm = customConfirm;
-  window.showAlert = showAlert;
-  window.closeCustomAlert = closeCustomAlert;
-</script>
+    <script type="module">
+      import { customConfirm, showAlert, closeCustomAlert } from '/js/util.js';
+      window.customConfirm = customConfirm;
+      window.showAlert = showAlert;
+      window.closeCustomAlert = closeCustomAlert;
+    </script>
 
-<script>
-  // Update order status
-  async function updateOrderStatus(orderId) {
-    try {
-      const status = document.getElementById(`status-${orderId}`).value;
-      const response = await axios.post(`/admin/orders/update-status/${orderId}`, { status });
+    <script>
+      // Update order status
+      async function updateOrderStatus(orderId) {
+        try {
+          const status = document.getElementById(`status-${orderId}`).value;
+          const response = await axios.post(`/admin/orders/update-status/${orderId}`, { status });
 
-      if (response.data.success) {
-        const statusCell = document.querySelector(`tr:has(#status-${orderId}) td:nth-child(7)`);
-        const statusSpan = statusCell.querySelector('span');
+          if (response.data.success) {
+            const statusCell = document.querySelector(`tr:has(#status-${orderId}) td:nth-child(7)`);
+            const statusSpan = statusCell.querySelector('span');
 
-        // Update status class
-        statusSpan.className = `px-3 py-1 rounded-full text-sm font-medium ${status === 'delivered' ? 'bg-green-100 text-green-800' :
-            status === 'cancelled' ? 'bg-red-100 text-red-800' :
-              'bg-blue-100 text-blue-800'
-          }`;
+            // Update status class
+            statusSpan.className = `px-3 py-1 rounded-full text-sm font-medium ${status === 'delivered' ? 'bg-green-100 text-green-800' :
+              status === 'cancelled' ? 'bg-red-100 text-red-800' :
+                'bg-blue-100 text-blue-800'
+              }`;
 
-        statusSpan.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+            statusSpan.textContent = status.charAt(0).toUpperCase() + status.slice(1);
 
-        // If status is delivered or cancelled, remove the status update controls
-        if (status === 'delivered' || status === 'cancelled') {
-          const actionCell = document.querySelector(`tr:has(#status-${orderId}) td:last-child`);
-          actionCell.innerHTML = '';
+            // If status is delivered or cancelled, remove the status update controls
+            if (status === 'delivered' || status === 'cancelled') {
+              const actionCell = document.querySelector(`tr:has(#status-${orderId}) td:last-child`);
+              actionCell.innerHTML = '';
+            }
+
+            showAlert(response.data.message, 'success', 3000);
+          } else {
+            showAlert(response.data.message, 'error', 3000);
+          }
+        } catch (error) {
+          showAlert(error.response?.data?.message || 'Error updating order status', 'error', 3000);
         }
-
-        showAlert(response.data.message, 'success', 3000);
-      } else {
-        showAlert(response.data.message, 'error', 3000);
       }
-    } catch (error) {
-      showAlert(error.response?.data?.message || 'Error updating order status', 'error', 3000);
-    }
-  }
 
-  // Filter orders
-  function filterOrders() {
-    const searchText = document.getElementById('searchBox').value.toLowerCase();
-    const rows = document.querySelectorAll('#ordersTable tr');
+      // Filter orders
+      function filterOrders() {
+        const searchText = document.getElementById('searchBox').value.toLowerCase();
+        const rows = document.querySelectorAll('#ordersTable tr');
 
-    rows.forEach(row => {
-      const text = row.textContent.toLowerCase();
-      row.style.display = text.includes(searchText) ? '' : 'none';
-    });
-  }
-
-
-
-  function toggleOrderDetails(orderId) {
-    const detailsRow = document.getElementById(`details-${orderId}`);
-    const toggleButton = document.getElementById(`toggle-${orderId}`);
-    
-    if (detailsRow.classList.contains('hidden')) {
-      detailsRow.classList.remove('hidden');
-      toggleButton.textContent = 'Hide Details';
-    } else {
-      detailsRow.classList.add('hidden');
-      toggleButton.textContent = 'View Details';
-    }
-  }
-
-  document.querySelectorAll('.status-dropdown, .update-status-btn').forEach(element => {
-    const orderId = element.dataset.orderId;
-    const order = orders.find(o => o._id === orderId);
-
-    if (['Cancelled', 'Delivered'].includes(order.status)) {
-      element.disabled = true;
-    }
-  });
-
-  async function updateItemStatus(orderId, itemId) {
-    try {
-      const status = document.getElementById(`status-${orderId}-${itemId}`).value;
-      const response = await axios.post(`/admin/orders/${orderId}/items/${itemId}/update-status`, { status });
-
-      if (response.data.success) {
-        // Update the status text and color in the UI
-        const statusElement = document.querySelector(`#status-${orderId}-${itemId}`).parentElement
-          .previousElementSibling.querySelector('span');
-        const selectElement = document.getElementById(`status-${orderId}-${itemId}`);
-        
-        // Update the status text
-        statusElement.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-        
-        // Remove existing color classes
-        statusElement.className = 'font-medium ';
-        
-        // Add new color class based on status
-        const statusColors = {
-          'delivered': 'text-green-600',
-          'cancelled': 'text-red-600',
-          'returned': 'text-gray-600',
-          'shipped': 'text-blue-600',
-          'processing': 'text-yellow-600',
-          'pending': 'text-purple-600'
-        };
-        
-        statusElement.classList.add(statusColors[status] || 'text-gray-600');
-
-        // Update dropdown options based on new status
-        selectElement.innerHTML = ''; // Clear existing options
-        
-        const availableOptions = {
-          'pending': ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'returned'],
-          'processing': ['processing', 'shipped', 'delivered', 'cancelled', 'returned'],
-          'shipped': ['shipped', 'delivered', 'cancelled', 'returned'],
-          'delivered': ['delivered', 'returned'],
-          'returned': ['returned'],
-          'cancelled': ['cancelled']
-        };
-
-        const options = availableOptions[status] || [];
-        options.forEach(option => {
-          const optionElement = document.createElement('option');
-          optionElement.value = option;
-          optionElement.textContent = option.charAt(0).toUpperCase() + option.slice(1);
-          optionElement.selected = option === status;
-          selectElement.appendChild(optionElement);
+        rows.forEach(row => {
+          const text = row.textContent.toLowerCase();
+          row.style.display = text.includes(searchText) ? '' : 'none';
         });
-
-        // If status is cancelled or returned, remove the update controls
-        if (['cancelled', 'returned'].includes(status)) {
-          const controlsContainer = document.getElementById(`status-${orderId}-${itemId}`).parentElement;
-          controlsContainer.innerHTML = '';
-        }
-
-        showAlert('Item status updated successfully', 'success');
-      } else {
-        showAlert(response.data.message || 'Failed to update status', 'error');
       }
-    } catch (error) {
-      console.error('Error:', error);
-      showAlert('Failed to update status', 'error');
-    }
-  }
 
-</script>
+
+
+      function toggleOrderDetails(orderId) {
+        const detailsRow = document.getElementById(`details-${orderId}`);
+        const toggleButton = document.getElementById(`toggle-${orderId}`);
+
+        if (detailsRow.classList.contains('hidden')) {
+          detailsRow.classList.remove('hidden');
+          toggleButton.textContent = 'Hide Details';
+        } else {
+          detailsRow.classList.add('hidden');
+          toggleButton.textContent = 'View Details';
+        }
+      }
+
+      document.querySelectorAll('.status-dropdown, .update-status-btn').forEach(element => {
+        const orderId = element.dataset.orderId;
+        const order = orders.find(o => o._id === orderId);
+
+        if (['Cancelled', 'Delivered'].includes(order.status)) {
+          element.disabled = true;
+        }
+      });
+
+      async function updateItemStatus(orderId, itemId) {
+        try {
+          const status = document.getElementById(`status-${orderId}-${itemId}`).value;
+          const response = await axios.post(`/admin/orders/${orderId}/items/${itemId}/update-status`, { status });
+
+          if (response.data.success) {
+            // Update the status text and color in the UI
+            const statusElement = document.querySelector(`#status-${orderId}-${itemId}`).parentElement
+              .previousElementSibling.querySelector('span');
+            const selectElement = document.getElementById(`status-${orderId}-${itemId}`);
+
+            // Update the status text
+            statusElement.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+
+            // Remove existing color classes
+            statusElement.className = 'font-medium ';
+
+            // Add new color class based on status
+            const statusColors = {
+              'delivered': 'text-green-600',
+              'cancelled': 'text-red-600',
+              'returned': 'text-gray-600',
+              'shipped': 'text-blue-600',
+              'processing': 'text-yellow-600',
+              'pending': 'text-purple-600'
+            };
+
+            statusElement.classList.add(statusColors[status] || 'text-gray-600');
+
+            // Update dropdown options based on new status
+            selectElement.innerHTML = ''; // Clear existing options
+
+            const availableOptions = {
+              'pending': ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'returned'],
+              'processing': ['processing', 'shipped', 'delivered', 'cancelled', 'returned'],
+              'shipped': ['shipped', 'delivered', 'cancelled', 'returned'],
+              'delivered': ['delivered', 'returned'],
+              'returned': ['returned'],
+              'cancelled': ['cancelled']
+            };
+
+            const options = availableOptions[status] || [];
+            options.forEach(option => {
+              const optionElement = document.createElement('option');
+              optionElement.value = option;
+              optionElement.textContent = option.charAt(0).toUpperCase() + option.slice(1);
+              optionElement.selected = option === status;
+              selectElement.appendChild(optionElement);
+            });
+
+            // If status is cancelled or returned, remove the update controls
+            if (['cancelled', 'returned'].includes(status)) {
+              const controlsContainer = document.getElementById(`status-${orderId}-${itemId}`).parentElement;
+              controlsContainer.innerHTML = '';
+            }
+
+            showAlert('Item status updated successfully', 'success');
+          } else {
+            showAlert(response.data.message || 'Failed to update status', 'error');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          showAlert('Failed to update status', 'error');
+        }
+      }
+
+    </script>
