@@ -8,6 +8,7 @@
          class="w-full h-[200px] md:h-[250px] lg:h-[300px] rounded-lg object-cover"/>
   </section>
 
+
   <!-- New Arrival -->
   <section class="mb-6 md:mb-10">
     <div class="flex justify-between items-center mb-3 md:mb-5">
@@ -15,6 +16,7 @@
         <a href="/allproducts" class="text-sm text-primary-accent hover:text-red-700">View All →</a>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
         <% newArrivals.slice(0, 4).forEach(product => { %>
             <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 max-w-[300px] border border-gray-100">
                 <a href="/product/<%= product._id %>" class="block">
@@ -44,12 +46,23 @@
                             </svg>
                         </button>
                     <% } %>
+                 
+                    <% if(wishlistItems.some(id=> id.equals(product._id))) { %>
+                        <button onclick="removeFromWishlist('<%= product._id %>')" 
+                                class="p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
+
+                        </button>
+                    <% } else { %>
                     <button onclick="addToWishlist('<%= product._id %>')" 
-                            class="p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
+                            class="p-2 rounded-full  bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                         </svg>
                     </button>
+                    <% } %>
                 </div>
             </div>
         <% }); %>
@@ -85,20 +98,32 @@
                             </svg>
                         </button>
                     <% } %>
+                    <% if(wishlistItems.some(id=> id.equals(product._id))) { %>
+                        <button onclick="removeFromWishlist('<%= product._id %>')" 
+                                class="p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
+
+                        </button>
+                    <% } else { %>
                     <button onclick="addToWishlist('<%= product._id %>')" 
-                            class="p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
+                            class="p-2 rounded-full  bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                         </svg>
                     </button>
+                    <% } %>
                 </div>
             </div>
+            
         <% }); %>
     </div>
   </section>
 
   <!-- Browse By Category -->
   <section class="mb-6 md:mb-10">
+
     <p class="text-xl md:text-2xl mb-3 md:mb-5">Browse By Category</p>
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-5">
         <% categories.forEach(category => { %>
@@ -166,14 +191,30 @@ async function addToWishlist(productId) {
     try {
         const { data } = await axios.post('/wishlist/add', { productId });
         showAlert(data.message, data.success ? 'success' : 'error');
+        
     } catch (error) {
         console.error('Error:', error);
         showAlert(error.response?.data?.message || 'Error adding item to wishlist', 'error');
     }
 }
 
-window.addToWishlist = addToWishlist;
+async function removeFromWishlist(productId) {
+      try {
+        const response = await axios.post('/wishlist/remove', { productId });
+        if (response.data.success) {
+          showAlert('Item removed from wishlist successfully', 'success');
+        } else {
+          showAlert(response.data.message || 'Failed to remove item', 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showAlert('Error removing item from wishlist', 'error');
+      }
+    }
 
+
+window.addToWishlist = addToWishlist;
+window.removeFromWishlist = removeFromWishlist;
 window.addToCart = addToCart;
 window.addToWishlist = addToWishlist;
 window.closeCustomAlert = closeCustomAlert;

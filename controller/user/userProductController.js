@@ -21,12 +21,8 @@ const loadHome = async (req, res) => {
             .sort({ createdAt: -1 })
             .limit(4);
 
-        // const wishlist = await wishlistSchema
-        //     .findOne({ userId: req.session.user.id })
-        //     .populate({
-        //         path: 'products',
-        //         match: { status: 'Active' }
-        //     })       
+        
+            
         let fullname = req.session.user?.fullname;
         
         res.render('user/home', {

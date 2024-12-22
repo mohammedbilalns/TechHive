@@ -12,7 +12,7 @@ const fetchWishlistItems = async (req, res, next)=>{
                 path: 'products',
                 match: { status: 'Active' }
             })    
-        res.locals.wishlistItems = wishlist.products 
+        res.locals.wishlistItems = wishlist.products.map(product => product._id)
 
     }catch(error){
         log.red("FETCH_WISHLIST_ERROR")
