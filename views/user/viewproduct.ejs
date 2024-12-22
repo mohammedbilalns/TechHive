@@ -289,15 +289,12 @@
       zoomPane.style.top = `${zoomY}px`;
 
       // Calculate background position percentages
-      const paddingPercent = 10; // Padding around zoomed area
-      const xPercent = Math.max(paddingPercent, Math.min(100 - paddingPercent,
-        (x / rect.width) * 100));
-      const yPercent = Math.max(paddingPercent, Math.min(100 - paddingPercent,
-        (y / rect.height) * 100));
+      const xPercent = (x / rect.width) * 100;
+      const yPercent = (y / rect.height) * 100;
 
       // Set background image and position
       zoomPane.style.backgroundImage = `url(${mainImage.src})`;
-      zoomPane.style.backgroundSize = '250%'; // Increased zoom level
+      zoomPane.style.backgroundSize = '250%';
       zoomPane.style.backgroundPosition = `${xPercent}% ${yPercent}%`;
     });
 
