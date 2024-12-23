@@ -35,7 +35,7 @@
                     <a href="/contact" class="text-gray-600 hover:text-gray-900">Contact</a>
                     <a href="/about" class="text-gray-600 hover:text-gray-900">About</a>
                     <% if (locals.fullname) { %>
-                        <span class="text-gray-600">Hello, <%= locals.fullname %></span>
+                        <span class="text-gray-600 hidden xl:block">Hello, <%= locals.fullname %></span>
                     <% } %>
                     <a href="/logout" type="submit" class="text-gray-600 hover:text-gray-900">Logout</a>
                 </nav>

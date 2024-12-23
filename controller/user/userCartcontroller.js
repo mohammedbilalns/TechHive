@@ -162,7 +162,8 @@ const removeFromCart = async (req, res) => {
 
 const applyCoupon = async (req, res) => {
     try {
-
+        const {code} = req.body
+        
         return res.status(200).json({
             success: false,
             message: "Coupon functionality not implemented yet"

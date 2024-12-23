@@ -12,6 +12,7 @@ import userCheckController from "../controller/user/userCheckoutController.js"
 import userOrderController from "../controller/user/userOrderController.js"
 import userSearchController from "../controller/user/userSearchController.js"
 import userWishlistController from "../controller/user/userWishlistController.js"
+import userCouponsController from "../controller/user/userCouponsController.js"
 const router = Router()
 
 router.use(express.static('static'))
@@ -104,5 +105,7 @@ router.post('/profile/orders/:orderId/items/:itemId/cancel', auth.checkSession, 
 router.get('/profile/wishlist', auth.checkSession, userWishlistController.getWishlist);
 router.post('/wishlist/add', auth.checkSession, userWishlistController.addToWishlist);
 router.post('/wishlist/remove', auth.checkSession, userWishlistController.removeFromWishlist);
+
+router.get('/profile/coupons', auth.checkSession, userCouponsController.getCoupons);
 
 export default router
