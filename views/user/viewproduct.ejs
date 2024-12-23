@@ -16,9 +16,9 @@
 
     <!-- Product Details Section -->
     <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <!-- Image Gallery -->
+      <!-- Images -->
       <div>
-        <!-- Main Image with Advanced Zoom Effect -->
+       
         <div class="relative overflow-hidden rounded-lg mb-4" id="imageContainer"
           style="height: 400px; width: 400px; margin: 0 auto;">
           <img id="mainImage" src="<%= product.images[0].path %>" alt="<%= product.name %>"
@@ -54,7 +54,7 @@
           <span class="ml-2 text-gray-500">(4.0 - 125 reviews)</span>
         </div>
 
-        <!-- Price Section with Discount -->
+        <!-- Price Section -->
         <div class="mb-4">
           <% if (product.discount> 0) { %>
             <div class="flex items-center gap-2">
@@ -221,7 +221,6 @@
     <section class="mt-12">
       <h2 class="text-2xl mb-6">Customer Reviews</h2>
 
-      <!-- Sample Reviews -->
       <div class="space-y-6">
         <div class="border-b pb-4">
           <div class="flex items-center mb-2">
@@ -271,16 +270,14 @@
     });
 
     container.addEventListener('mousemove', function (e) {
-      // Get relative position
       const rect = container.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
 
-      // Calculate zoom pane position 
       let zoomX = x - zoomPane.offsetWidth / 2;
       let zoomY = y - zoomPane.offsetHeight / 2;
 
-      // Prevent zoom pane from going outside container bounds
+      
       zoomX = Math.max(0, Math.min(zoomX, rect.width - zoomPane.offsetWidth));
       zoomY = Math.max(0, Math.min(zoomY, rect.height - zoomPane.offsetHeight));
 
@@ -321,7 +318,7 @@
       try {
         const { data } = await axios.post('/wishlist/add', { productId });
         if (data.success) {
-          // Find all wishlist buttons for this product (in case it appears multiple times on page)
+          // Find all wishlist buttons for this product 
           const wishlistButtons = document.querySelectorAll(`button[onclick="addToWishlist('${productId}')"]`);
 
           wishlistButtons.forEach(button => {
@@ -330,7 +327,7 @@
             newButton.setAttribute('onclick', `removeFromWishlist('${productId}')`);
             newButton.className = 'p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300';
 
-            // Set the SVG content
+            
             newButton.innerHTML = `
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -361,7 +358,7 @@
             newButton.setAttribute('onclick', `addToWishlist('${productId}')`);
             newButton.className = 'p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300';
 
-            // Set the SVG content
+           
             newButton.innerHTML = `
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
