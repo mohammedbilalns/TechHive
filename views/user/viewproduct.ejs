@@ -18,13 +18,10 @@
     <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
       <!-- Images -->
       <div>
-       
-        <div class="relative overflow-hidden rounded-lg mb-4" id="imageContainer"
-          style="height: 300px; width: 100%; max-width: 400px; margin: 0 auto;">
+        <div class="relative overflow-hidden rounded-lg mb-4 mx-auto w-full max-w-md h-[300px] md:h-[400px] lg:h-[500px]" id="imageContainer">
           <img id="mainImage" src="<%= product.images[0].path %>" alt="<%= product.name %>"
             class="w-full h-full object-contain" />
-          <div id="zoomPane" class="hidden absolute bg-white pointer-events-none border"
-            style="width: 200px; height: 200px;">
+          <div id="zoomPane" class="hidden absolute bg-white pointer-events-none border w-[200px] h-[200px]">
           </div>
         </div>
         <!-- Thumbnail Images -->
@@ -36,6 +33,7 @@
             </div>
             <% }); %>
         </div>
+
       </div>
 
       <!-- Product Info -->
@@ -170,9 +168,10 @@
                   <p class="text-gray-500 line-through text-sm">
                     ₹<%= related.price.toFixed(2) %>
                   </p>
-                <% } else { %>
-                  <p class="text-red-600 font-semibold">₹<%= related.price.toFixed(2) %></p>
-                <% } %>
+                  <% } else { %>
+                    <p class="text-red-600 font-semibold">₹<%= related.price.toFixed(2) %>
+                    </p>
+                    <% } %>
               </div>
             </a>
 
@@ -187,33 +186,33 @@
                         d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                   </button>
-                <% } %>
-                <% if(wishlistItems.some(id=> id.equals(related._id))) { %>
-                  <button onclick="removeFromWishlist('<%= related._id %>')"
-                    class="p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                      stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                  </button>
-                <% } else { %>
-                  <button onclick="addToWishlist('<%= related._id %>')"
-                    class="p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                      stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                  </button>
-                <% } %>
+                  <% } %>
+                    <% if(wishlistItems.some(id=> id.equals(related._id))) { %>
+                      <button onclick="removeFromWishlist('<%= related._id %>')"
+                        class="p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                      </button>
+                      <% } else { %>
+                        <button onclick="addToWishlist('<%= related._id %>')"
+                          class="p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                          </svg>
+                        </button>
+                        <% } %>
               </div>
-            <% } %>
-            <% if (related.stock <= 0) { %>
-              <p class="text-red-600 text-sm mt-2">Out of Stock</p>
-            <% } %>
+              <% } %>
+                <% if (related.stock <=0) { %>
+                  <p class="text-red-600 text-sm mt-2">Out of Stock</p>
+                  <% } %>
           </div>
-        <% }); %>
+          <% }); %>
       </div>
     </section>
 
@@ -277,7 +276,7 @@
       let zoomX = x - zoomPane.offsetWidth / 2;
       let zoomY = y - zoomPane.offsetHeight / 2;
 
-      
+
       zoomX = Math.max(0, Math.min(zoomX, rect.width - zoomPane.offsetWidth));
       zoomY = Math.max(0, Math.min(zoomY, rect.height - zoomPane.offsetHeight));
 
@@ -300,7 +299,7 @@
     }
   </script>
 
-  <script >
+  <script>
 
     async function addToCart(productId) {
       try {
@@ -327,7 +326,7 @@
             newButton.setAttribute('onclick', `removeFromWishlist('${productId}')`);
             newButton.className = 'p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300';
 
-            
+
             newButton.innerHTML = `
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -358,7 +357,7 @@
             newButton.setAttribute('onclick', `addToWishlist('${productId}')`);
             newButton.className = 'p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300';
 
-           
+
             newButton.innerHTML = `
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
