@@ -138,24 +138,45 @@ const removeFromCart = async (req, res) => {
         const { productId } = req.body;
         const userId = req.session.user.id;
 
-        const cart = await cartSchema.findOne({ user: userId });
+        const cart = await cartSchema.findOne({ user: userId })
+            .populate('items.productId');
+            
         if (!cart) {
-            return res.status(404).json({ success: false, message: "Cart not found" });
+            return res.status(404).json({ 
+                success: false, 
+                message: "Cart not found" 
+            });
         }
 
         // Remove the item from cart
         cart.items = cart.items.filter(item =>
-            item.productId.toString() !== productId
+            item.productId._id.toString() !== productId
         );
 
         await cart.save();
         
-        // Calculate total quantity after removing item
+        // Calculate new totals
+        let subtotal = 0;
+        let originalPrice = 0;
+
+        cart.items.forEach(item => {
+            const itemOriginalPrice = item.productId.price * item.quantity;
+            const discountedPrice = itemOriginalPrice * (1 - item.productId.discount / 100);
+            originalPrice += itemOriginalPrice;
+            subtotal += discountedPrice;
+        });
+
+        const totalDiscount = originalPrice - subtotal;
+        const total = subtotal - (cart.discount || 0);
         const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
 
         res.status(200).json({ 
             success: true, 
             totalQuantity,
+            subtotal: subtotal.toFixed(2),
+            total: total.toFixed(2),
+            originalPrice: originalPrice.toFixed(2),
+            totalDiscount: totalDiscount.toFixed(2),
             message: "Item removed successfully" 
         });
     } catch (error) {

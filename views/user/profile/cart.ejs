@@ -244,13 +244,17 @@
             document.querySelector(`[data-product="${productId}"]`).remove();
             showAlert('Item removed from cart successfully', 'success');
             
+            // Update cart summary values
+            document.getElementById('originalPrice').textContent = `₹${response.data.originalPrice}`;
+            document.getElementById('itemDiscount').textContent = `-₹${response.data.totalDiscount}`;
+            document.getElementById('subtotal').textContent = `₹${response.data.subtotal}`;
+            document.getElementById('total').textContent = `₹${response.data.total}`;
+            
             // If cart is empty, show empty cart message
             if (document.querySelectorAll('.cart-item').length === 0) {
               showEmptyCart();
             }
             document.getElementById("cart-quantity").innerText = response.data.totalQuantity;
-
-
           } else {
             showAlert(response.data.message || 'Failed to remove item', 'error');
           }
