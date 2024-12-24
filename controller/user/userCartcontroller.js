@@ -2,6 +2,7 @@ import cartSchema from "../../model/cartModel.js"
 import userSchema from "../../model/userModel.js"
 import productSchema from "../../model/productModel.js"
 import {log} from "mercedlogger"
+import couponSchema from "../../model/couponModel.js"
 
 const getCart = async (req, res) => {
     try {
@@ -190,22 +191,125 @@ const removeFromCart = async (req, res) => {
 
 const applyCoupon = async (req, res) => {
     try {
-        const {code} = req.body
+        const { code } = req.body;
+        const userId = req.session.user.id;
         
-        return res.status(200).json({
-            success: false,
-            message: "Coupon functionality not implemented yet"
-        });
 
+        // Find the cart
+        const cart = await cartSchema.findOne({ user: userId }).populate('items.productId');
+        if (!cart) {
+            return res.status(404).json({
+                success: false,
+                message: "Cart not found"
+            });
+        }
+
+        // Find the coupon
+        const coupon = await couponSchema.findOne({ 
+            code: code.toUpperCase(),
+            isActive: true,
+            expiryDate: { $gt: new Date() }
+        });
+        
+        if (!coupon) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid or expired coupon code"
+            });
+        }
+
+        // Check if user has already used this coupon
+        const hasUsed = coupon.usageHistory.some(
+            history => history.user.toString() === userId
+        );
+
+        
+        if (hasUsed) {
+            return res.status(400).json({
+                success: false,
+                message: "You have already used this coupon"
+            });
+        }
+
+        // Calculate cart subtotal
+        let subtotal = 0;
+        cart.items.forEach(item => {
+            const itemPrice = item.productId.price * (1 - item.productId.discount/100);
+            subtotal += itemPrice * item.quantity;
+        });
+    
+        // Check minimum purchase requirement
+        if (subtotal < coupon.minPurchase) {
+            return res.status(400).json({
+                success: false,
+                message: `Minimum purchase of ₹${coupon.minPurchase} required`
+            });
+        }
+
+        // Calculate discount
+        let discountAmount;
+        if (coupon.discountType === 'PERCENTAGE') {
+            discountAmount = (subtotal * coupon.discountValue) / 100;
+            if (coupon.maxDiscount) {
+                discountAmount = Math.min(discountAmount, coupon.maxDiscount);
+            }
+        } else {
+            discountAmount = coupon.discountValue;
+        }
+    
+
+        // Update cart with discount
+        cart.discount = discountAmount;
+        await cart.save();
+    
+        // Calculate final total
+        const total = subtotal - discountAmount;
+    
+        return res.status(200).json({
+            success: true,
+            message: "Coupon applied successfully",
+            discount: discountAmount.toFixed(2),
+            total: total.toFixed(2),
+            couponCode: coupon.code
+        });
 
     } catch (error) {
         log.red("APPLY_COUPON_ERROR", error);
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
             message: "Error applying coupon"
         });
     }
-}
+};
+
+const removeCoupon = async (req, res) => {
+    try {
+        const userId = req.session.user.id;
+        const cart = await cartSchema.findOne({ user: userId });
+
+        if (!cart) {
+            return res.status(404).json({
+                success: false,
+                message: "Cart not found"
+            });
+        }
+
+        cart.discount = 0;
+        await cart.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Coupon removed successfully"
+        });
+
+    } catch (error) {
+        log.red("REMOVE_COUPON_ERROR", error);
+        return res.status(500).json({
+            success: false,
+            message: "Error removing coupon"
+        });
+    }
+};
 
 const updateQuantity = async (req, res) => {
     try {
@@ -349,5 +453,6 @@ export default {
     updateQuantity,
     removeFromCart,
     applyCoupon,
+    removeCoupon,
     clearCart
 }

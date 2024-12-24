@@ -59,9 +59,7 @@
                   <div class="flex justify-between items-start">
                     <div>
                       <h3 class="font-semibold"><%= item.productId.name %></h3>
-                      <p class="text-gray-600 text-sm item-price" 
-                         data-price="<%= item.productId.price %>"
-                         data-discount="<%= item.productId.discount %>">
+                      <p class="text-gray-600 text-sm item-price">
                         <% if (item.productId.discount > 0) { %>
                           ₹<%= (item.productId.price * (1 - item.productId.discount/100)).toFixed(2) %>
                           <span class="line-through text-gray-400">₹<%= item.productId.price.toFixed(2) %></span>
@@ -70,23 +68,9 @@
                         <% } %>
                       </p>
                     </div>
-                    <button onclick="removeFromCart('<%= item.productId._id %>')"
-                            class="text-red-600 hover:text-red-800">
-                      <i class="fas fa-trash"></i>
-                    </button>
                   </div>
                   <div class="mt-4 flex items-center">
-                    <div class="quantity-controls flex items-center border rounded">
-                      <button onclick="updateQuantity('<%= item.productId._id %>', 'decrease')"
-                              class="decrease-btn px-3 py-1 hover:bg-gray-100 <%= item.quantity <= 1 ? 'text-gray-400' : '' %>">
-                        -
-                      </button>
-                      <span class="quantity-value px-4 py-1 border-x"><%= item.quantity %></span>
-                      <button onclick="updateQuantity('<%= item.productId._id %>', 'increase')"
-                              class="increase-btn px-3 py-1 hover:bg-gray-100 <%= item.quantity >= 4 ? 'text-gray-400' : '' %>">
-                        +
-                      </button>
-                    </div>
+                    <span class="text-gray-600">Quantity: <%= item.quantity %></span>
                     <p class="ml-auto font-semibold item-total">
                       ₹<%= ((item.productId.price * (1 - item.productId.discount/100)) * item.quantity).toFixed(2) %>
                     </p>
@@ -101,23 +85,24 @@
             <h3 class="font-semibold mb-2">Price Details</h3>
             <div class="space-y-2">
               <div class="flex justify-between">
-                <span>Subtotal</span>
-                <span data-subtotal>₹<%= subtotal.toFixed(2) %></span>
+                <span>Original Price</span>
+                <span data-subtotal>₹<%= originalPrice.toFixed(2) %></span>
               </div>
               <div class="flex justify-between">
                 <span>Shipping</span>
                 <span>Free</span>
               </div>
-              <% if (cart.discount) { %>
+             
+              <div class="flex justify-between text-green-600">
+                <span>Items discount</span>
+                <span data-total-savings>₹<%= totalSavings.toFixed(2) %></span>
+              </div>
+              <% if (cart.discount > 0) { %>
                 <div class="flex justify-between text-green-600">
-                  <span>Discount</span>
+                  <span>Coupon Discount</span>
                   <span>-₹<%= cart.discount.toFixed(2) %></span>
                 </div>
               <% } %>
-              <div class="flex justify-between text-green-600">
-                <span>Total Savings</span>
-                <span data-total-savings>₹<%= totalSavings.toFixed(2) %></span>
-              </div>
               <div class="border-t pt-2 mt-2">
                 <div class="flex justify-between font-semibold">
                   <span>Total Amount</span>
@@ -519,117 +504,6 @@
       toggleEditAddress();
     }
   });
-
-  // Update items quantity in the cart 
-  function updateQuantity(productId, action) {
-    axios.post('/cart/update', { productId, action })
-      .then(response => {
-        if (response.data.success) {
-          // Get the cart item container
-          const cartItem = document.querySelector(`[data-product="${productId}"]`);
-          const quantitySpan = cartItem.querySelector('.quantity-value');
-          const currentQuantity = parseInt(quantitySpan.textContent);
-          let newQuantity = action === 'increase' ? currentQuantity + 1 : currentQuantity - 1;
-          
-          // If quantity becomes 0, remove the item and redirect if cart becomes empty
-          if (newQuantity < 1) {
-            cartItem.remove();
-            if (document.querySelectorAll('.cart-item').length === 0) {
-              window.location.href = '/profile/cart';
-              return;
-            }
-          } else if (newQuantity > 4) {
-            showAlert('Maximum quantity limit is 4', 'error');
-            return;
-          }
-
-          // Update quantity buttons state
-          const decreaseBtn = cartItem.querySelector('.decrease-btn');
-          const increaseBtn = cartItem.querySelector('.increase-btn');
-          
-          decreaseBtn.classList.toggle('text-gray-400', newQuantity <= 1);
-          increaseBtn.classList.toggle('text-gray-400', newQuantity >= 4);
-
-          // Update quantity display
-          quantitySpan.textContent = newQuantity;
-
-          // Update price displays
-          const itemPriceElement = cartItem.querySelector('.item-price');
-          const itemPrice = parseFloat(itemPriceElement.dataset.price);
-          const itemDiscount = parseFloat(itemPriceElement.dataset.discount);
-          const discountedPrice = itemPrice * (1 - itemDiscount/100);
-          const itemTotal = (discountedPrice * newQuantity).toFixed(2);
-          
-          // Update item total
-          cartItem.querySelector('.item-total').textContent = `₹${itemTotal}`;
-
-          // Update overall totals
-          document.querySelector('[data-subtotal]').textContent = `₹${response.data.subtotal}`;
-          document.querySelector('[data-total-savings]').textContent = `₹${response.data.totalSavings}`;
-          document.querySelector('[data-total]').textContent = `₹${response.data.total}`;
-          document.getElementById("cart-quantity").innerText = response.data.totalQuantity;
-
-
-        } else {
-          showAlert(response.data.message || 'Error updating quantity', 'error');
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        const errorMessage = error.response?.data?.message || 'Error updating cart quantity';
-        showAlert(errorMessage, 'error');
-      });
-  }
-
-  async function removeFromCart(productId) {
-    const confirmed = await customConfirm('Are you sure you want to remove this item?');
-    if (!confirmed) return;
-
-    axios.post('/cart/remove', { productId })
-      .then(response => {
-        if (response.data.success) {
-          document.querySelector(`[data-product="${productId}"]`).remove();
-          showAlert('Item removed from cart successfully', 'success');
-          
-          // Redirect to cart if no items left
-          if (document.querySelectorAll('.cart-item').length === 0) {
-            window.location.href = '/profile/cart';
-          }
-          document.getElementById("cart-quantity").innerText = response.data.totalQuantity;
-
-        } else {
-          showAlert(response.data.message || 'Failed to remove item', 'error');
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        showAlert('Error removing item', 'error');
-      });
-  }
-
-  // Update the cart item
-  function updateCartItemHTML() {
-    const cartItems = document.querySelectorAll('.cart-item');
-    cartItems.forEach(item => {
-      const productId = item.dataset.product;
-      const quantityControls = item.querySelector('.quantity-controls');
-      if (quantityControls) {
-        quantityControls.innerHTML = `
-          <button onclick="updateQuantity('${productId}', 'decrease')"
-                  class="decrease-btn px-3 py-1 hover:bg-gray-100 ${item.querySelector('.quantity-value').textContent <= 1 ? 'text-gray-400' : ''}">
-            -
-          </button>
-          <span class="quantity-value px-4 py-1 border-x">${item.querySelector('.quantity-value').textContent}</span>
-          <button onclick="updateQuantity('${productId}', 'increase')"
-                  class="increase-btn px-3 py-1 hover:bg-gray-100 ${item.querySelector('.quantity-value').textContent >= 4 ? 'text-gray-400' : ''}">
-            +
-          </button>
-        `;
-      }
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', updateCartItemHTML);
 </script>
 
 <%- include('../partials/footer') %>

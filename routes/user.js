@@ -88,6 +88,8 @@ router.post('/cart/update', auth.checkSession, userCartController.updateQuantity
 router.post('/cart/remove', auth.checkSession, userCartController.removeFromCart)
 router.post('/cart/apply-coupon', auth.checkSession, userCartController.applyCoupon)
 router.post('/cart/clear', auth.checkSession, userCartController.clearCart)
+router.post('/cart/apply-coupon', userCartController.applyCoupon);
+router.post('/cart/remove-coupon', userCartController.removeCoupon);
 
 //---- user checkout management ----
 router.get('/checkout', auth.checkSession, userCheckController.getCheckout);

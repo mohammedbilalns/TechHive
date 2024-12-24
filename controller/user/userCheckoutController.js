@@ -35,23 +35,23 @@ const getCheckout = async (req, res) => {
     }
 
     // Calculate totals
-    let subtotal = 0;
+    let originalPrice = 0;
     let totalSavings = 0;
 
     cart.items.forEach(item => {
-      const originalPrice = item.productId.price * item.quantity;
-      const discountedPrice = originalPrice * (1 - item.productId.discount/100);
-      subtotal += discountedPrice;
-      totalSavings += originalPrice - discountedPrice;
+      const itemOriginalPrice = item.productId.price * item.quantity;
+      const discountedPrice = itemOriginalPrice * (1 - item.productId.discount/100);
+      originalPrice += itemOriginalPrice;
+      totalSavings += itemOriginalPrice - discountedPrice;
     });
 
-    const total = subtotal - (cart.discount || 0);
+    const total = originalPrice - totalSavings - (cart.discount || 0);
 
     res.render('user/checkout', {
       user,
       cart,
       addresses,
-      subtotal,
+      originalPrice,
       total,
       totalSavings
     });
@@ -95,6 +95,16 @@ const placeOrder = async (req, res) => {
       { user: userId },
       { $set: { items: [], total: 0, discount: 0 } }
     );
+
+    // Create order with coupon information
+    const order = new Order({
+      // ... existing order fields ...
+      coupon: cart.discount > 0 ? {
+        code: cart.couponCode,
+        discount: cart.discount
+      } : undefined,
+      // ... rest of the order fields ...
+    });
 
     res.json({ success: true, orderId: order._id });
   } catch (error) {

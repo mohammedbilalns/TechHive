@@ -128,6 +128,14 @@
                             </button>
                           </div>
                         </form>
+                        <% if (cart.discount > 0) { %>
+                          <div class="mt-2 text-green-600 text-sm">
+                            Coupon applied: -₹<%= cart.discount.toFixed(2) %>
+                            <button onclick="removeCoupon()" class="ml-2 text-red-600 hover:text-red-800">
+                              <i class="fas fa-times"></i>
+                            </button>
+                          </div>
+                        <% } %>
                       </div>
 
                       <!-- Checkout Button -->
@@ -268,23 +276,96 @@
     }
 
     function applyCoupon(event) {
-      event.preventDefault();
-      const code = document.getElementById('couponCode').value;
-      
-      axios.post('/cart/apply-coupon', { code })
+        event.preventDefault();
+        
+        const code = document.getElementById('couponCode').value.trim();
+        if (!code) {
+            showAlert('Please enter a coupon code', 'error');
+            return;
+        }
+
+        // Show loading state
+        const submitButton = event.target.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+        submitButton.innerHTML = 'Applying...';
+        submitButton.disabled = true;
+
+        axios.post('/cart/apply-coupon', { code })
+            .then(response => {
+                if (response.data.success) {
+                    // Find the summary div and total element
+                    const summaryDiv = document.querySelector('.space-y-2');
+                    const totalElement = summaryDiv.querySelector('.border-t');
+
+                    if (!document.getElementById('couponDiscount')) {
+                        const couponDiv = document.createElement('div');
+                        couponDiv.className = 'flex justify-between text-green-600';
+                        couponDiv.innerHTML = `
+                            <span>Coupon Discount</span>
+                            <span id="couponDiscount">-₹${response.data.discount}</span>
+                        `;
+                        
+                        if (totalElement) {
+                            totalElement.parentNode.insertBefore(couponDiv, totalElement);
+                        } else {
+                            summaryDiv.appendChild(couponDiv);
+                        }
+                    } else {
+                        document.getElementById('couponDiscount').textContent = `-₹${response.data.discount}`;
+                    }
+
+                    // Update total
+                    document.getElementById('total').textContent = `₹${response.data.total}`;
+                    
+                    // Show success message
+                    showAlert('Coupon applied successfully!', 'success');
+                    
+                    // Update coupon display
+                    const couponForm = document.getElementById('couponForm');
+                    couponForm.classList.add('hidden');
+                    
+                    // Add applied coupon display
+                    const couponDisplay = document.createElement('div');
+                    couponDisplay.className = 'mt-2 text-green-600 text-sm';
+                    couponDisplay.innerHTML = `
+                        Coupon applied: ${response.data.couponCode}
+                        <button onclick="removeCoupon()" class="ml-2 text-red-600 hover:text-red-800">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    couponForm.parentElement.appendChild(couponDisplay);
+                    
+                    // Reload page after a delay to ensure all values are updated
+                    setTimeout(() => window.location.reload(), 1500);
+                } else {
+                    showAlert(response.data.message || 'Failed to apply coupon', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const errorMessage = error.response?.data?.message || 'Error applying coupon';
+                showAlert(errorMessage, 'error');
+            })
+            .finally(() => {
+                // Reset button state
+                submitButton.innerHTML = originalText;
+                submitButton.disabled = false;
+            });
+    }
+
+    function removeCoupon() {
+      axios.post('/cart/remove-coupon')
         .then(response => {
           if (response.data.success) {
-            // Update discount and total displays
-            document.getElementById('discount').textContent = `₹${response.data.discount}`;
-            document.getElementById('total').textContent = `₹${response.data.total}`;
-            alert('Coupon applied successfully!');
+            showAlert('Coupon removed successfully', 'success');
+            setTimeout(() => window.location.reload(), 1500);
           } else {
-            alert(response.data.message);
+            showAlert(response.data.message, 'error');
           }
         })
         .catch(error => {
           console.error('Error:', error);
-          alert('Error applying coupon');
+          showAlert('Error removing coupon', 'error');
         });
     }
 
@@ -309,8 +390,13 @@
     }
 
     function toggleCouponForm() {
-      const form = document.getElementById('couponForm');
-      form.classList.toggle('hidden');
+        const form = document.getElementById('couponForm');
+        if (form.classList.contains('hidden')) {
+            form.classList.remove('hidden');
+            document.getElementById('couponCode').focus();
+        } else {
+            form.classList.add('hidden');
+        }
     }
 
     function proceedToCheckout() {
