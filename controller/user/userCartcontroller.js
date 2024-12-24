@@ -14,30 +14,37 @@ const getCart = async (req, res) => {
                 subtotal: "0.00",
                 shipping: "0.00",
                 total: "0.00",
+                originalPrice: "0.00",
+                totalDiscount: "0.00",
                 user: req.session.user
             });
         }
 
         // Calculate cart totals
         let subtotal = 0;
+        let originalPrice = 0;
+        
         if (cart.items && cart.items.length > 0) {
-            subtotal = cart.items.reduce((total, item) => {
-                if (item.productId) {
-                    const discountedPrice = item.productId.price * (1 - item.productId.discount / 100);
-                    return total + (discountedPrice * item.quantity);
-                }
-                return total;
-            }, 0);
+            cart.items.forEach(item => {
+                const itemOriginalPrice = item.productId.price * item.quantity;
+                const discountedPrice = itemOriginalPrice * (1 - item.productId.discount / 100);
+                
+                originalPrice += itemOriginalPrice;
+                subtotal += discountedPrice;
+            });
         }
 
+        const totalDiscount = originalPrice - subtotal;
         const shipping = 0; 
-        const total = subtotal + shipping;
+        const total = subtotal - (cart.discount || 0);
 
         res.render('user/profile/cart', {
             cart,
             subtotal: subtotal.toFixed(2),
             shipping: shipping.toFixed(2),
             total: total.toFixed(2),
+            originalPrice: originalPrice.toFixed(2),
+            totalDiscount: totalDiscount.toFixed(2),
             user: req.session.user,
             page: 'cart'
         });
@@ -184,8 +191,10 @@ const updateQuantity = async (req, res) => {
         const { productId, action } = req.body;
         const userId = req.session.user.id;
 
-        // Find cart
-        const cart = await cartSchema.findOne({ user: userId });
+        // Find cart and populate product details
+        const cart = await cartSchema.findOne({ user: userId })
+            .populate('items.productId');
+            
         if (!cart) {
             return res.status(404).json({
                 success: false,
@@ -204,7 +213,7 @@ const updateQuantity = async (req, res) => {
 
         // Find item in cart
         const cartItem = cart.items.find(item => 
-            item.productId.toString() === productId
+            item.productId._id.toString() === productId
         );
 
         if (!cartItem) {
@@ -234,16 +243,15 @@ const updateQuantity = async (req, res) => {
             if (cartItem.quantity <= 1) {
                 // Remove item if quantity would be less than 1
                 cart.items = cart.items.filter(item => 
-                    item.productId.toString() !== productId
+                    item.productId._id.toString() !== productId
                 );
             } else {
                 newQuantity = cartItem.quantity - 1;
             }
-
         }
 
         // Update cart item quantity if not removed
-        if (cart.items.find(item => item.productId.toString() === productId)) {
+        if (cart.items.find(item => item.productId._id.toString() === productId)) {
             cartItem.quantity = newQuantity;
         }
 
@@ -251,29 +259,26 @@ const updateQuantity = async (req, res) => {
         await cart.save();
 
         // Calculate new totals
-        const updatedCart = await cartSchema.findOne({ user: userId })
-            .populate('items.productId');
-
         let subtotal = 0;
-        let totalSavings = 0;
+        let originalPrice = 0;
 
-        if (updatedCart.items.length > 0) {
-            updatedCart.items.forEach(item => {
-                const originalPrice = item.productId.price * item.quantity;
-                const discountedPrice = originalPrice * (1 - item.productId.discount/100);
-                subtotal += discountedPrice;
-                totalSavings += originalPrice - discountedPrice;
-            });
-        }
+        cart.items.forEach(item => {
+            const itemOriginalPrice = item.productId.price * item.quantity;
+            const discountedPrice = itemOriginalPrice * (1 - item.productId.discount / 100);
+            originalPrice += itemOriginalPrice;
+            subtotal += discountedPrice;
+        });
 
-        const total = subtotal;
-        const totalQuantity = updatedCart.items.reduce((sum, item) => sum + item.quantity, 0);
+        const totalDiscount = originalPrice - subtotal;
+        const total = subtotal - (cart.discount || 0);
+        const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
         
         return res.status(200).json({
             success: true,
             subtotal: subtotal.toFixed(2),
             total: total.toFixed(2),
-            totalSavings: totalSavings.toFixed(2),
+            originalPrice: originalPrice.toFixed(2),
+            totalDiscount: totalDiscount.toFixed(2),
             totalQuantity,
             message: "Cart updated successfully"
         });
