@@ -2,6 +2,24 @@ import Offer from '../../model/offerModel.js';
 import Category from '../../model/categoryModel.js';
 import Product from '../../model/productModel.js';
 
+const updateProductDiscounts = async (offer, remove = false) => {
+    if (!offer.isActive && !remove) return;
+
+    const discountValue = remove ? 0 : offer.offerPercentage;
+    
+    if (offer.offerType === 'product') {
+        await Product.updateMany(
+            { _id: { $in: offer.applicableProducts } },
+            { $set: { discount: discountValue } }
+        );
+    } else if (offer.offerType === 'category') {
+        await Product.updateMany(
+            { category: { $in: offer.applicableCategories } },
+            { $set: { discount: discountValue } }
+        );
+    }
+};
+
 const adminOfferController = {
     // Get all offers
     getOffers: async (req, res) => {
@@ -88,6 +106,7 @@ const adminOfferController = {
             });
 
             await newOffer.save();
+            await updateProductDiscounts(newOffer);
             res.json({ success: true, message: 'Offer added successfully' });
         } catch (error) {
             res.status(500).json({ success: false, message: 'Failed to add offer' });
@@ -97,6 +116,14 @@ const adminOfferController = {
     // Update offer
     updateOffer: async (req, res) => {
         try {
+            const oldOffer = await Offer.findById(req.params.offerId);
+            if (!oldOffer) {
+                return res.status(404).json({ success: false, message: 'Offer not found' });
+            }
+
+            // Remove old discounts
+            await updateProductDiscounts(oldOffer, true);
+
             const {
                 name,
                 offerType,
@@ -121,10 +148,8 @@ const adminOfferController = {
                 { new: true }
             );
 
-            if (!updatedOffer) {
-                return res.status(404).json({ success: false, message: 'Offer not found' });
-            }
-
+            // Apply new discounts
+            await updateProductDiscounts(updatedOffer);
             res.json({ success: true, message: 'Offer updated successfully' });
         } catch (error) {
             res.status(500).json({ success: false, message: 'Failed to update offer' });
@@ -142,6 +167,13 @@ const adminOfferController = {
             offer.isActive = !offer.isActive;
             await offer.save();
 
+            // Update product discounts based on new status
+            if (!offer.isActive) {
+                await updateProductDiscounts(offer, true);
+            } else {
+                await updateProductDiscounts(offer);
+            }
+
             res.json({ success: true, message: `Offer ${offer.isActive ? 'activated' : 'deactivated'} successfully` });
         } catch (error) {
             res.status(500).json({ success: false, message: 'Failed to toggle offer status' });
@@ -151,10 +183,15 @@ const adminOfferController = {
     // Delete offer
     deleteOffer: async (req, res) => {
         try {
-            const offer = await Offer.findByIdAndDelete(req.params.offerId);
+            const offer = await Offer.findById(req.params.offerId);
             if (!offer) {
                 return res.status(404).json({ success: false, message: 'Offer not found' });
             }
+
+            // Remove discounts before deleting
+            await updateProductDiscounts(offer, true);
+            await offer.deleteOne();
+
             res.json({ success: true, message: 'Offer deleted successfully' });
         } catch (error) {
             res.status(500).json({ success: false, message: 'Failed to delete offer' });
