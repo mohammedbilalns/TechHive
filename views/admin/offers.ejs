@@ -1,0 +1,405 @@
+<%- include('../partials/adminheader') %>
+
+<div class="flex min-h-screen">
+  <%- include('../partials/adminsidebar') %>
+
+  <main class="md:ml-64 w-full min-h-screen bg-gray-50 transition-all duration-300 ease-in-out">
+    <div class="pt-14 md:pt-0 p-4">
+      <% if (locals.message && locals.alertType) { %>
+        <div id="alertMessage" class="mb-4 p-3 rounded-md 
+         <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
+          <%= message %>
+        </div>
+      <% } %>
+
+      <div class="bg-primary-white rounded-lg shadow-lg w-full overflow-hidden">
+        <!-- Page Header -->
+        <div class="flex flex-col md:flex-row justify-between items-center bg-gray-50 px-4 md:px-6 py-4 border-b space-y-4 md:space-y-0">
+          <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Offers</h1>
+          <div class="flex gap-4">
+            <div class="relative">
+              <input type="text" id="searchBox" placeholder="Search offers..."
+                class="w-full md:w-64 border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
+                oninput="filterOffers()" />
+              <i class="fas fa-search absolute top-3 right-4 text-gray-400"></i>
+            </div>
+            <button class="flex items-center bg-blue-500 text-white px-4 py-2 rounded-md shadow w-full md:w-auto justify-center"
+              onclick="addOffer()">
+              <i class="fas fa-plus mr-2"></i> Add Offer
+            </button>
+          </div>
+        </div>
+
+        <!-- Offers Table -->
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-white">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Percentage</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200" id="offersTable">
+              <% offers.forEach((offer, index) => { %>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap"><%= (currentPage - 1) * 10 + index + 1 %></td>
+                  <td class="px-6 py-4 whitespace-nowrap"><%= offer.name %></td>
+                  <td class="px-6 py-4 whitespace-nowrap"><%= offer.offerType %></td>
+                  <td class="px-6 py-4 whitespace-nowrap"><%= offer.offerPercentage %>%</td>
+                  <td class="px-6 py-4 whitespace-nowrap"><%= new Date(offer.startDate).toLocaleDateString() %></td>
+                  <td class="px-6 py-4 whitespace-nowrap"><%= new Date(offer.endDate).toLocaleDateString() %></td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                      <%= offer.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                      <%= offer.isActive ? 'Active' : 'Inactive' %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div class="flex space-x-2">
+                      <button onclick="editOffer('<%= offer._id %>')"
+                        class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600">
+                        Edit
+                      </button>
+                      <button onclick="toggleOfferStatus('<%= offer._id %>', '<%= offer.isActive %>')"
+                        class="<%= offer.isActive ? 'bg-red-500' : 'bg-green-500' %> text-white px-3 py-1 rounded-md hover:<%= offer.isActive ? 'bg-red-600' : 'bg-green-600' %>">
+                        <%= offer.isActive ? 'Deactivate' : 'Activate' %>
+                      </button>
+                      <button onclick="deleteOffer('<%= offer._id %>')"
+                        class="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600">
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <% if (offers.length > 0) { %>
+          <div class="px-6 py-4 flex justify-center">
+            <nav class="flex space-x-2">
+              <% if (hasPrevPage) { %>
+                <a href="/admin/offers?page=<%= currentPage - 1 %>" class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300">Previous</a>
+              <% } %>
+              
+              <% for(let i = 1; i <= totalPages; i++) { %>
+                <a href="/admin/offers?page=<%= i %>" 
+                  class="px-3 py-1 rounded-md <%= currentPage === i ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300' %>">
+                  <%= i %>
+                </a>
+              <% } %>
+              
+              <% if (hasNextPage) { %>
+                <a href="/admin/offers?page=<%= currentPage + 1 %>" class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300">Next</a>
+              <% } %>
+            </nav>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Add/Edit Offer Modal -->
+<div id="offerModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+  <div class="relative mx-auto p-5 border w-[800px] shadow-lg rounded-md bg-white">
+    <div class="mt-3">
+      <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modalTitle">Add New Offer</h3>
+      <form id="offerForm" class="mt-4">
+        <input type="hidden" id="offerId">
+        
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Left Column -->
+          <div>
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
+                Offer Name <span class="text-red-500">*</span>
+              </label>
+              <input type="text" id="name" name="name" required
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="offerType">
+                Offer Type <span class="text-red-500">*</span>
+              </label>
+              <select id="offerType" name="offerType" required onchange="handleOfferTypeChange()"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <option value="category">Category</option>
+                <option value="product">Product</option>
+              </select>
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="offerPercentage">
+                Offer Percentage <span class="text-red-500">*</span>
+              </label>
+              <input type="number" id="offerPercentage" name="offerPercentage" required min="1" max="99"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div>
+            <div id="categorySelect" class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="categories">
+                Select Categories <span class="text-red-500">*</span>
+              </label>
+              <select id="categories" name="categories" multiple
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <% if (categories && categories.length > 0) { %>
+                  <% categories.forEach(category => { %>
+                    <option value="<%= category._id %>"><%= category.name %></option>
+                  <% }); %>
+                <% } else { %>
+                  <option value="" disabled>No active categories available</option>
+                <% } %>
+              </select>
+              <p class="text-sm text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple categories</p>
+            </div>
+
+            <div id="productSelect" class="mb-4 hidden">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="products">
+                Select Products <span class="text-red-500">*</span>
+              </label>
+              <select id="products" name="products" multiple
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <% if (products && products.length > 0) { %>
+                  <% products.forEach(product => { %>
+                    <option value="<%= product._id %>"><%= product.name %></option>
+                  <% }); %>
+                <% } else { %>
+                  <option value="" disabled>No active products available</option>
+                <% } %>
+              </select>
+              <p class="text-sm text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple products</p>
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="startDate">
+                Start Date <span class="text-red-500">*</span>
+              </label>
+              <input type="datetime-local" id="startDate" name="startDate" required
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="endDate">
+                End Date <span class="text-red-500">*</span>
+              </label>
+              <input type="datetime-local" id="endDate" name="endDate" required
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex items-center justify-end mt-6 gap-4">
+          <button type="button" onclick="closeModal()"
+            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            Cancel
+          </button>
+          <button type="submit"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function filterOffers() {
+    const searchValue = document.getElementById('searchBox').value.toLowerCase();
+    const rows = document.querySelectorAll('#offersTable tr');
+    rows.forEach(row => {
+      const name = row.children[1]?.textContent.toLowerCase() || '';
+      row.style.display = name.includes(searchValue) ? '' : 'none';
+    });
+  }
+
+  function handleOfferTypeChange() {
+    const offerType = document.getElementById('offerType').value;
+    const categorySelect = document.getElementById('categorySelect');
+    const productSelect = document.getElementById('productSelect');
+
+    if (offerType === 'category') {
+      categorySelect.classList.remove('hidden');
+      productSelect.classList.add('hidden');
+      document.getElementById('products').value = '';
+    } else {
+      categorySelect.classList.add('hidden');
+      productSelect.classList.remove('hidden');
+      document.getElementById('categories').value = '';
+    }
+  }
+
+  function addOffer() {
+    document.getElementById('modalTitle').textContent = 'Add New Offer';
+    document.getElementById('offerForm').reset();
+    document.getElementById('offerId').value = '';
+    handleOfferTypeChange();
+    openModal();
+  }
+
+  async function editOffer(offerId) {
+    try {
+      const response = await axios.get(`/admin/offers/${offerId}`);
+      const offer = response.data.offer;
+
+      document.getElementById('modalTitle').textContent = 'Edit Offer';
+      document.getElementById('offerId').value = offerId;
+      document.getElementById('name').value = offer.name;
+      document.getElementById('offerType').value = offer.offerType;
+      document.getElementById('offerPercentage').value = offer.offerPercentage;
+      document.getElementById('startDate').value = new Date(offer.startDate).toISOString().slice(0, 16);
+      document.getElementById('endDate').value = new Date(offer.endDate).toISOString().slice(0, 16);
+
+      // Handle multi-select values
+      if (offer.offerType === 'category') {
+        document.getElementById('categories').value = offer.applicableCategories;
+      } else {
+        document.getElementById('products').value = offer.applicableProducts;
+      }
+
+      handleOfferTypeChange();
+      openModal();
+    } catch (error) {
+      showAlert(error.response?.data?.message || 'Failed to fetch offer details', 'error');
+    }
+  }
+
+  function openModal() {
+    document.getElementById('offerModal').classList.remove('hidden');
+  }
+
+  function closeModal() {
+    document.getElementById('offerModal').classList.add('hidden');
+  }
+
+  document.getElementById('offerForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    // Validate dates
+    const startDate = new Date(document.getElementById('startDate').value);
+    const endDate = new Date(document.getElementById('endDate').value);
+    const now = new Date();
+
+    if (startDate < now) {
+      showAlert('Start date cannot be in the past', 'error');
+      return;
+    }
+
+    if (endDate <= startDate) {
+      showAlert('End date must be after start date', 'error');
+      return;
+    }
+
+    // Validate offer percentage
+    const offerPercentage = Number(document.getElementById('offerPercentage').value);
+    if (offerPercentage < 1 || offerPercentage > 99) {
+      showAlert('Offer percentage must be between 1 and 99', 'error');
+      return;
+    }
+
+    // Validate selections based on offer type
+    const offerType = document.getElementById('offerType').value;
+    const categories = Array.from(document.getElementById('categories').selectedOptions).map(opt => opt.value);
+    const products = Array.from(document.getElementById('products').selectedOptions).map(opt => opt.value);
+
+    if (offerType === 'category' && categories.length === 0) {
+      showAlert('Please select at least one category', 'error');
+      return;
+    }
+
+    if (offerType === 'product' && products.length === 0) {
+      showAlert('Please select at least one product', 'error');
+      return;
+    }
+
+    const formData = {
+      name: document.getElementById('name').value,
+      offerType: offerType,
+      offerPercentage: offerPercentage,
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+      categories: categories,
+      products: products
+    };
+
+    const offerId = document.getElementById('offerId').value;
+    const url = offerId ? `/admin/offers/${offerId}` : '/admin/offers';
+    const method = offerId ? 'put' : 'post';
+
+    try {
+      const response = await axios[method](url, formData);
+      if (response.data.success) {
+        closeModal();
+        window.location.reload();
+      }
+    } catch (error) {
+      showAlert(error.response?.data?.message || 'Failed to save offer', 'error');
+    }
+  });
+
+  async function toggleOfferStatus(offerId, currentStatus) {
+    const action = currentStatus === 'true' ? 'deactivate' : 'activate';
+    const confirmed = await customConfirm(
+      `Are you sure you want to ${action} this offer?`,
+      `${action.charAt(0).toUpperCase() + action.slice(1)} Offer`
+    );
+
+    if (confirmed) {
+      try {
+        const response = await axios.patch(`/admin/offers/${offerId}/toggle-status`);
+        if (response.data.success) {
+          window.location.reload();
+        }
+      } catch (error) {
+        showAlert(error.response?.data?.message || `Failed to ${action} offer`, 'error');
+      }
+    }
+  }
+
+  async function deleteOffer(offerId) {
+    const confirmed = await customConfirm(
+      'Are you sure you want to delete this offer?',
+      'Delete Offer'
+    );
+
+    if (confirmed) {
+      try {
+        const response = await axios.delete(`/admin/offers/${offerId}`);
+        if (response.data.success) {
+          window.location.reload();
+        }
+      } catch (error) {
+        showAlert(error.response?.data?.message || 'Failed to delete offer', 'error');
+      }
+    }
+  }
+
+  // Initialize select2 for multiple select boxes if you're using it
+  if (typeof $.fn.select2 !== 'undefined') {
+    $('#categories').select2({
+      placeholder: 'Select categories',
+      width: '100%'
+    });
+
+    $('#products').select2({
+      placeholder: 'Select products',
+      width: '100%'
+    });
+  }
+</script>
+
+<%- include('../partials/adminfooter') %>

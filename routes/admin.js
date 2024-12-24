@@ -7,6 +7,7 @@ import adminProductController from "../controller/admin/adminProductController.j
 import adminOrderController from "../controller/admin/adminOrderController.js"
 import adminCustomersController from "../controller/admin/adminCustomersController.js"
 import adminCouponsController from "../controller/admin/adminCouponsController.js"
+import adminOfferController from "../controller/admin/adminOfferController.js"
 const router = Router()
 router.use(express.static('static'));
 
@@ -58,6 +59,14 @@ router.post('/coupons', adminCouponsController.addCoupon)
 router.put('/coupons/:couponId', adminCouponsController.updateCoupon)
 router.patch('/coupons/:couponId/toggle-status', adminCouponsController.toggleCouponStatus)
 router.delete('/coupons/:couponId', adminCouponsController.deleteCoupon)
+
+//---- offers routes ----
+router.get('/offers', adminOfferController.getOffers)
+router.get('/offers/:offerId', adminOfferController.getOfferDetails)
+router.post('/offers', adminOfferController.addOffer)
+router.put('/offers/:offerId', adminOfferController.updateOffer)
+router.patch('/offers/:offerId/toggle-status', adminOfferController.toggleOfferStatus)
+router.delete('/offers/:offerId', adminOfferController.deleteOffer)
 
 export default router
 
