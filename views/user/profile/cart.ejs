@@ -119,12 +119,14 @@
                         <button onclick="toggleCouponForm()" class="text-primary-accent hover:underline text-sm">
                           Have a coupon code?
                         </button>
-                        <form id="couponForm" onsubmit="applyCoupon(event)" class="hidden mt-2 flex gap-2">
-                          <input type="text" id="couponCode" placeholder="Enter coupon code"
-                                 class="flex-grow p-2 border rounded focus:ring-2 focus:ring-primary-accent">
-                          <button type="submit" class="px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700">
-                            Apply
-                          </button>
+                        <form id="couponForm" onsubmit="applyCoupon(event)" class="hidden mt-2">
+                          <div class="flex flex-col gap-2">
+                            <input type="text" id="couponCode" placeholder="Enter coupon code"
+                                   class="w-full p-2 border rounded focus:ring-2 focus:ring-primary-accent">
+                            <button type="submit" class="w-full px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700">
+                              Apply
+                            </button>
+                          </div>
                         </form>
                       </div>
 
