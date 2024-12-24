@@ -61,9 +61,24 @@
                         <div class="flex-grow">
                           <h5 class="font-medium"><%= item.name %></h5>
                           <p class="text-sm text-gray-600">
-                            Qty: <%= item.quantity %> × ₹<%= item.price %>
+                            Qty: <%= item.quantity %> × 
                             <% if (item.discount > 0) { %>
+                              <span class="line-through text-gray-500">₹<%= item.price %></span>
+                              <span class="text-gray-900">₹<%= (item.price * (1 - item.discount/100)).toFixed(2) %></span>
                               <span class="text-green-600">(<%= item.discount %>% off)</span>
+                            <% } else { %>
+                              ₹<%= item.price %>
+                            <% } %>
+                          </p>
+                          <p class="text-sm text-gray-600 mt-1">
+                            Item Total: 
+                            <% const originalTotal = item.quantity * item.price %>
+                            <% const discountedTotal = item.quantity * (item.price * (1 - item.discount/100)) %>
+                            <% if (item.discount > 0) { %>
+                              <span class="line-through text-gray-500">₹<%= originalTotal %></span>
+                              <span class="text-gray-900">₹<%= discountedTotal.toFixed(2) %></span>
+                            <% } else { %>
+                              ₹<%= originalTotal %>
                             <% } %>
                           </p>
                           <p class="text-sm mt-1">
