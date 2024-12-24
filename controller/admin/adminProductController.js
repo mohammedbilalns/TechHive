@@ -175,7 +175,7 @@ const getAddProduct = async (req, res) => {
 
 const addProduct = async (req, res) => {
     try {
-        let { name, description, price, discount, stock, brand, category, specifications } = req.body;
+        let { name, description, price, stock, brand, category, specifications } = req.body;
 
         name = name.trim().split(' ')
             .map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
@@ -205,7 +205,6 @@ const addProduct = async (req, res) => {
             specifications: cleanedSpecs,
             price: parseFloat(price),
             stock: parseInt(stock),
-            discount: discount ? parseFloat(discount) : 0,
             images,
             status: "Active"
         });
@@ -237,7 +236,7 @@ const getEditProduct = async (req, res) => {
 const editProduct = async (req, res) => {
     try {
         const productId = req.params.productid;
-        let { name, description, price, discount, stock, brand, category, specifications } = req.body;
+        let { name, description, price, stock, brand, category, specifications } = req.body;
 
         name = name.trim().split(' ')
             .map(word => word[0].toUpperCase() + word.slice(1).toLowerCase())
@@ -299,7 +298,6 @@ const editProduct = async (req, res) => {
                 specifications: cleanedSpecs,
                 price: parseFloat(price),
                 stock: parseInt(stock),
-                discount: discount ? parseFloat(discount) : 0,
                 images
             },
             { new: true }

@@ -34,12 +34,6 @@
             <input type="number" name="price" value="<%= product.price %>" class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" placeholder="Enter product price" step="0.01">
           </div>
           
-          <!-- Discount Percentage -->
-          <div class="form-group mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Discount Percentage</label>
-            <input type="number" value="<%= product.discount %>" name="discount" class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" placeholder="Enter discount percentage" min="0" max="100" step="0.01">
-          </div>
-          
           <!-- Stock -->
           <div class="form-group mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
@@ -236,7 +230,6 @@
             const description = addProductForm.description.value.trim();
             const price = addProductForm.price.value.trim();
             const stock = addProductForm.stock.value.trim();
-            const discount = addProductForm.discount.value.trim();
             const category = addProductForm.category.value.trim();
             const specifications = Array.from(addProductForm.querySelectorAll('input[name="specifications"]')).map(input => input.value.trim());
 
@@ -314,10 +307,6 @@
                 isValid = false;
               } else if (parseInt(stock) < 0) {
                 alertText.textContent = "Stock cannot be negative.";
-                alertMessage.classList.remove('hidden');
-                isValid = false;
-              } else if (discount && (parseFloat(discount) < 0 || parseFloat(discount) > 100)) {
-                alertText.textContent = "Discount percentage must be between 0 and 100.";
                 alertMessage.classList.remove('hidden');
                 isValid = false;
               }
