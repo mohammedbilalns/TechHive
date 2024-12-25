@@ -220,7 +220,7 @@ const applyCoupon = async (req, res) => {
 
         // Check if user has already used this coupon
         const hasUsed = coupon.usageHistory.some(
-            history => history.user.toString() === userId
+            history => history.userId.toString() === userId
         );
 
         
@@ -259,6 +259,7 @@ const applyCoupon = async (req, res) => {
     
 
         // Update cart with discount
+        cart.couponCode  = code.toUpperCase()
         cart.discount = discountAmount;
         await cart.save();
     
@@ -295,6 +296,7 @@ const removeCoupon = async (req, res) => {
         }
 
         cart.discount = 0;
+        cart.couponCode = null
         await cart.save();
 
         return res.status(200).json({

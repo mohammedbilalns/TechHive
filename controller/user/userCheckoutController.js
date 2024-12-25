@@ -1,7 +1,6 @@
 import userModel from '../../model/userModel.js';
 import cartModel from '../../model/cartModel.js';
 import addressModel from '../../model/addressModel.js';
-//import Order from '../models/orderModel.js';
 
 const getCheckout = async (req, res) => {
   try {
@@ -61,60 +60,8 @@ const getCheckout = async (req, res) => {
   }
 };
 
-const placeOrder = async (req, res) => {
-  try {
-    const userId = req.session.user_id;
-    const { addressId, paymentMethod } = req.body;
-
-    const cart = await cartModel.findOne({ user: userId }).populate('items.productId');
-    if (!cart || cart.items.length === 0) {
-      return res.status(400).json({ success: false, message: 'Cart is empty' });
-    }
-
-    // Check stock availability before placing order
-    for (const item of cart.items) {
-      const product = item.productId;
-      if (product.stock < item.quantity) {
-        return res.status(400).json({
-          success: false,
-          message: `Sorry, ${product.name} only has ${product.stock} units available`
-        });
-      }
-    }
-
-    // Update product stock
-    for (const item of cart.items) {
-      await userModel.findByIdAndUpdate(
-        item.productId._id,
-        { $inc: { stock: -item.quantity } }
-      );
-    }
-
-    // Clear cart
-    await cartModel.findOneAndUpdate(
-      { user: userId },
-      { $set: { items: [], total: 0, discount: 0 } }
-    );
-
-    // Create order with coupon information
-    const order = new Order({
-      // ... existing order fields ...
-      coupon: cart.discount > 0 ? {
-        code: cart.couponCode,
-        discount: cart.discount
-      } : undefined,
-      // ... rest of the order fields ...
-    });
-
-    res.json({ success: true, orderId: order._id });
-  } catch (error) {
-    console.error('Place order error:', error);
-    res.status(500).json({ success: false, message: 'Error placing order' });
-  }
-};
 
 export default {
-  getCheckout,
-  placeOrder
+  getCheckout
 };
 

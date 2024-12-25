@@ -3,6 +3,7 @@ import cartModel from '../../model/cartModel.js';
 import productModel from '../../model/productModel.js';
 import addressModel from '../../model/addressModel.js';
 import { nanoid } from 'nanoid';
+import couponModel from '../../model/couponModel.js';
 
 const placeOrder = async (req, res) => {
   try {
@@ -27,6 +28,11 @@ const placeOrder = async (req, res) => {
       return total + (discountedPrice * item.quantity);
     }, 0);
 
+    // Handle coupon if applied in cart
+    let couponDiscount = cart.discount || 0;
+    let couponCode = cart.couponCode;
+    let finalAmount = totalAmount - couponDiscount;
+
     // Create order items array with product data 
     const orderItems = cart.items.map(item => {
       if (item.productId.stock < item.quantity) {
@@ -46,12 +52,12 @@ const placeOrder = async (req, res) => {
     // Generate unique order ID
     const orderId = 'ORD' + nanoid(10).toUpperCase();
 
-    // Create new order with address 
+    // Create new order
     const order = new orderModel({
       orderId,
       userId,
       items: orderItems,
-      totalAmount,
+      totalAmount: finalAmount,
       paymentMethod,
       shippingAddress: {
         name: shippingAddress.name,
@@ -64,26 +70,46 @@ const placeOrder = async (req, res) => {
         alternatePhone: shippingAddress.alternatePhone
       },
       orderDate: new Date(),
-      expectedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), 
+      expectedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       status: 'processing',
-      paymentStatus: paymentMethod === 'cod' ? 'unpaid' : 'paid'
+      paymentStatus: paymentMethod === 'cod' ? 'unpaid' : 'paid',
+      coupon: couponCode ? {
+        code: couponCode,
+        discount: couponDiscount
+      } : undefined
     });
 
     await order.save();
 
-    // Update product stock
-    for (const item of cart.items) {
-      await productModel.findByIdAndUpdate(
-        item.productId._id,
-        { $inc: { stock: -item.quantity } }
+    // Update coupon usage history if coupon was applied
+    if (couponCode) {
+      await couponModel.findOneAndUpdate(
+        { code: couponCode },
+        {
+          $push: {
+            usageHistory: {
+              userId,
+              orderId: order._id,
+              discountAmount: couponDiscount
+            }
+          }
+        }
       );
     }
 
-    // Clear the cart
-    await cartModel.findOneAndUpdate(
-      { user: userId },
-      { $set: { items: [] } }
-    );
+    // Update product stock and clear cart
+    await Promise.all([
+      ...cart.items.map(item => 
+        productModel.findByIdAndUpdate(
+          item.productId._id,
+          { $inc: { stock: -item.quantity } }
+        )
+      ),
+      cartModel.findOneAndUpdate(
+        { user: userId },
+        { $set: { items: [], discount: 0, couponCode: null } }
+      )
+    ]);
 
     res.json({ 
       success: true, 

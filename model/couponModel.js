@@ -47,9 +47,9 @@ const couponSchema = new Schema({
         default: 1
     },
     usageHistory: [{
-        user: {
+        userId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
+            ref: 'users',
             required: true
         },
         orderId: {
@@ -60,6 +60,10 @@ const couponSchema = new Schema({
         usedAt: {
             type: Date,
             default: Date.now
+        },
+        discountAmount: {
+            type: Number,
+            required: true
         }
     }]
 }, {
