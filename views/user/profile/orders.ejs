@@ -48,7 +48,7 @@
                 </button>
               </div>
 
-              <!-- Hidden Detailed Section -->
+              <!--  Detailed Section -->
               <div id="details-<%= order._id %>" class="hidden">
                 <div class="p-4 border-t">
                   <!-- Order Items -->
@@ -126,6 +126,17 @@
                       </div>
                     </div>
                   </div>
+
+                  <!--  Coupon Information -->
+                  <% if (order.coupon && order.coupon.code) { %>
+                    <div class="mt-4 bg-gray-50 p-4 rounded-lg">
+                      <h4 class="font-medium text-gray-700 mb-2">Applied Coupon</h4>
+                      <div class="text-sm text-gray-600">
+                        <p>Code: <span class="font-medium text-primary-accent"><%= order.coupon.code %></span></p>
+                        <p>Discount Amount: <span class="text-green-600">-₹<%= order.coupon.discount %></span></p>
+                      </div>
+                    </div>
+                  <% } %>
                 </div>
               </div>
             </div>
