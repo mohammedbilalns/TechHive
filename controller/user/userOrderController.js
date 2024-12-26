@@ -302,28 +302,33 @@ const verifyPayment = async (req, res) => {
       .digest("hex");
 
     if (razorpay_signature === expectedSign) {
+      // Find order and update payment status and details
       const order = await orderModel.findById(orderId);
       if (!order) {
         return res.json({ success: false, message: 'Order not found' });
       }
 
-      // Update order with payment details
+      // Update order status and payment details
+      order.items.forEach(item => item.status = 'processing')
       order.paymentStatus = 'paid';
-      order.paymentDetails.razorpayPaymentId = razorpay_payment_id;
-      order.paymentDetails.razorpaySignature = razorpay_signature;
+      order.paymentDetails = {
+        razorpayOrderId: razorpay_order_id,
+        razorpayPaymentId: razorpay_payment_id,
+        razorpaySignature: razorpay_signature
+      };
       await order.save();
 
-      // Now update stock and clear cart after successful payment
+      // Clear cart and update stock
       await Promise.all([
+        cartModel.findOneAndUpdate(
+          { user: order.userId },
+          { $set: { items: [], discount: 0, couponCode: null } }
+        ),
         ...order.items.map(item => 
           productModel.findOneAndUpdate(
             { name: item.name },
             { $inc: { stock: -item.quantity } }
           )
-        ),
-        cartModel.findOneAndUpdate(
-          { user: order.userId },
-          { $set: { items: [], discount: 0, couponCode: null } }
         )
       ]);
 
