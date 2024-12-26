@@ -56,13 +56,15 @@ const addCoupon = async (req, res) => {
             expiryDate
         } = req.body;
 
-        // Validate coupon code
+       
+        // Validate coupon code format and length 
         if (!/^[A-Za-z0-9]{1,10}$/.test(code)) {
             return res.status(400).json({
                 success: false,
                 message: 'Invalid coupon code format'
             });
         }
+        
 
         // Validate description length
         if (description.length < 10 || description.length > 100) {
@@ -80,7 +82,7 @@ const addCoupon = async (req, res) => {
                     message: 'Percentage discount must be between 1 and 99'
                 });
             }
-            // Validate maximum discount only for percentage type
+            // Validate maximum discount 
             if (maxDiscount < 100) {
                 return res.status(400).json({
                     success: false,
@@ -108,7 +110,7 @@ const addCoupon = async (req, res) => {
             });
         }
 
-        // Check for existing coupon code
+        // Check the coupon code already exists 
         const existingCoupon = await Coupon.findOne({ code: code.toUpperCase() });
         if (existingCoupon) {
             return res.status(400).json({

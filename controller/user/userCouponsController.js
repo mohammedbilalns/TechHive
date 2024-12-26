@@ -5,6 +5,9 @@ const getCoupons = async (req, res) => {
     try {
         const currentDate = new Date();
         const userId = req.session.user.id;
+        const page = parseInt(req.query.page) || 1;
+        const limit = 9; // Show 9 coupons per page (3x3 grid)
+        const skip = (page - 1) * limit;
 
         // Fetch all active coupons
         const allCoupons = await Coupon.find({
@@ -12,7 +15,7 @@ const getCoupons = async (req, res) => {
         }).lean();
 
         // Categorize coupons
-        const coupons = {
+        const categorizedCoupons = {
             available: [],
             used: [],
             expired: []
@@ -24,46 +27,59 @@ const getCoupons = async (req, res) => {
                 const expiryDate = new Date(coupon.expiryDate);
                 const startDate = new Date(coupon.startDate);
                 
-                // Check if coupon is used by current user
                 const userUsage = coupon.usageHistory?.find(usage => 
                     usage.userId?.toString() === userId.toString()
                 );
 
-                // Check if coupon is expired
                 if (expiryDate < currentDate) {
-                    coupons.expired.push({
+                    categorizedCoupons.expired.push({
                         ...coupon,
                         usedDate: userUsage?.usedAt
                     });
                     return;
                 }
 
-                // Check if start date is in future
                 if (startDate > currentDate) {
                     return;
                 }
 
-                // If used by user, add to used category
                 if (userUsage) {
-                    coupons.used.push({
+                    categorizedCoupons.used.push({
                         ...coupon,
                         usedDate: userUsage.usedAt
                     });
                     return;
                 }
 
-                // If not expired, not in future, and not used, coupon is available
-                coupons.available.push(coupon);
+                categorizedCoupons.available.push(coupon);
             } catch (err) {
                 log.red("COUPON_PROCESSING_ERROR", err);
             }
         });
 
+        // Combine all coupons in desired order
+        const combinedCoupons = [
+            ...categorizedCoupons.available,
+            ...categorizedCoupons.used,
+            ...categorizedCoupons.expired
+        ];
+
+        // Calculate pagination
+        const totalCoupons = combinedCoupons.length;
+        const totalPages = Math.ceil(totalCoupons / limit);
+
+        // Get paginated coupons
+        const paginatedCoupons = combinedCoupons.slice(skip, skip + limit);
+
         res.render('user/profile/coupons', {
             user: req.session.user,
-            title: 'Available Coupons',
+            title: 'My Coupons',
             page: "coupons",
-            coupons,
+            coupons: paginatedCoupons,
+            currentPage: page,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
             currentDate
         });
 

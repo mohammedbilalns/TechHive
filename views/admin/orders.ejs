@@ -333,12 +333,12 @@
             selectElement.innerHTML = ''; // Clear existing options
 
             const availableOptions = {
-              'pending': ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'returned'],
-              'processing': ['processing', 'shipped', 'delivered', 'cancelled', 'returned'],
-              'shipped': ['shipped', 'delivered', 'cancelled', 'returned'],
-              'delivered': ['delivered', 'returned'],
-              'returned': ['returned'],
-              'cancelled': ['cancelled']
+              'pending': ['processing', 'shipped', 'delivered', 'cancelled', 'returned'],
+              'processing': ['shipped', 'delivered', 'cancelled', 'returned'],
+              'shipped': ['delivered', 'cancelled', 'returned'],
+              'delivered': ['returned'],
+              'returned': [],
+              'cancelled': []
             };
 
             const options = availableOptions[status] || [];
@@ -346,7 +346,6 @@
               const optionElement = document.createElement('option');
               optionElement.value = option;
               optionElement.textContent = option.charAt(0).toUpperCase() + option.slice(1);
-              optionElement.selected = option === status;
               selectElement.appendChild(optionElement);
             });
 

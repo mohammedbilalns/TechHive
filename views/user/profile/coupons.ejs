@@ -7,198 +7,108 @@
     <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-lg">
       <!-- Page Header -->
       <div class="bg-gray-50 px-6 py-4 border-b">
-        <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Available Coupons</h1>
-      </div>
-
-      <!-- Tabs -->
-      <div class="border-b">
-        <div class="flex">
-          <button onclick="showTab('available')" id="availableTab" 
-            class="px-6 py-3 text-sm font-medium border-b-2 border-blue-500 text-blue-600">
-            Available
-          </button>
-          <button onclick="showTab('used')" id="usedTab"
-            class="px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700">
-            Used
-          </button>
-          <button onclick="showTab('expired')" id="expiredTab"
-            class="px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700">
-            Expired
-          </button>
-        </div>
+        <h1 class="text-xl md:text-2xl font-semibold text-gray-800">My Coupons</h1>
       </div>
 
       <!-- Coupons Content -->
       <div class="p-6">
-        <!-- Available Coupons -->
-        <div id="availableCoupons" class="tab-content">
-          <% if (coupons.available.length === 0) { %>
-            <div class="text-center py-8">
-              <div class="flex justify-center mb-4">
-                <i class="fas fa-ticket-alt text-4xl text-gray-400"></i>
-              </div>
-              <p class="text-gray-500">No available coupons</p>
-              <a href="/allproducts" class="inline-block mt-4 text-primary-accent hover:underline">
-                Continue Shopping
-              </a>
+        <% if (coupons.length === 0) { %>
+          <div class="text-center py-8">
+            <div class="flex justify-center mb-4">
+              <i class="fas fa-ticket-alt text-4xl text-gray-400"></i>
             </div>
-          <% } else { %>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <% coupons.available.forEach(coupon => { %>
-                <div class="bg-white rounded-lg border-2 border-green-500 p-6 hover:shadow-md transition-shadow">
-                  <div class="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 class="text-lg font-bold text-gray-800"><%= coupon.code %></h3>
-                      <p class="text-gray-600 text-sm"><%= coupon.description %></p>
-                    </div>
-                    <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                      Active
+            <p class="text-gray-500">No coupons found</p>
+            <a href="/allproducts" class="inline-block mt-4 text-primary-accent hover:underline">
+              Continue Shopping
+            </a>
+          </div>
+        <% } else { %>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <% coupons.forEach(coupon => { %>
+              <% 
+                let borderColor, statusBg, statusText, status;
+                const expiryDate = new Date(coupon.expiryDate);
+                
+                if (expiryDate < currentDate) {
+                  borderColor = 'border-gray-300';
+                  statusBg = 'bg-gray-100';
+                  statusText = 'text-gray-800';
+                  status = 'Expired';
+                } else if (coupon.usedDate) {
+                  borderColor = 'border-blue-300';
+                  statusBg = 'bg-blue-100';
+                  statusText = 'text-blue-800';
+                  status = 'Used';
+                } else {
+                  borderColor = 'border-green-500';
+                  statusBg = 'bg-green-100';
+                  statusText = 'text-green-800';
+                  status = 'Active';
+                }
+              %>
+              <div class="bg-white rounded-lg border-2 <%= borderColor %> p-6 <%= status === 'Expired' ? 'opacity-75' : '' %>">
+                <div class="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 class="text-lg font-bold text-gray-800"><%= coupon.code %></h3>
+                    <p class="text-gray-600 text-sm"><%= coupon.description %></p>
+                  </div>
+                  <span class="<%= statusBg %> <%= statusText %> text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                    <%= status %>
+                  </span>
+                </div>
+                
+                <div class="space-y-2 text-sm text-gray-600">
+                  <div class="flex justify-between">
+                    <span class="font-medium">Discount:</span>
+                    <span>
+                      <%= coupon.discountType === 'PERCENTAGE' ? `${coupon.discountValue}%` : `₹${coupon.discountValue}` %>
+                      <% if (coupon.discountType === 'PERCENTAGE' && coupon.maxDiscount) { %>
+                        (Max ₹<%= coupon.maxDiscount %>)
+                      <% } %>
                     </span>
                   </div>
-                  
-                  <div class="space-y-2 text-sm text-gray-600">
-                    <div class="flex justify-between">
-                      <span class="font-medium">Discount:</span>
-                      <span>
-                        <%= coupon.discountType === 'PERCENTAGE' ? `${coupon.discountValue}%` : `₹${coupon.discountValue}` %>
-                        <% if (coupon.discountType === 'PERCENTAGE' && coupon.maxDiscount) { %>
-                          (Max ₹<%= coupon.maxDiscount %>)
-                        <% } %>
-                      </span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="font-medium">Min Purchase:</span>
-                      <span>₹<%= coupon.minPurchase %></span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="font-medium">Valid Till:</span>
-                      <span><%= new Date(coupon.expiryDate).toLocaleDateString() %></span>
-                    </div>
+                  <div class="flex justify-between">
+                    <span class="font-medium">Min Purchase:</span>
+                    <span>₹<%= coupon.minPurchase %></span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="font-medium"><%= status === 'Used' ? 'Used On:' : 'Valid Till:' %></span>
+                    <span><%= new Date(status === 'Used' ? coupon.usedDate : coupon.expiryDate).toLocaleDateString() %></span>
                   </div>
                 </div>
-              <% }); %>
-            </div>
-          <% } %>
-        </div>
+              </div>
+            <% }); %>
+          </div>
 
-        <!-- Used Coupons -->
-        <div id="usedCoupons" class="tab-content hidden">
-          <% if (coupons.used.length === 0) { %>
-            <div class="text-center py-8">
-              <div class="flex justify-center mb-4">
-                <i class="fas fa-ticket-alt text-4xl text-gray-400"></i>
-              </div>
-              <p class="text-gray-500">No used coupons</p>
-            </div>
-          <% } else { %>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <% coupons.used.forEach(coupon => { %>
-                <div class="bg-white rounded-lg border-2 border-blue-300 p-6">
-                  <div class="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 class="text-lg font-bold text-gray-800"><%= coupon.code %></h3>
-                      <p class="text-gray-600 text-sm"><%= coupon.description %></p>
-                    </div>
-                    <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                      Used
-                    </span>
-                  </div>
-                  
-                  <div class="space-y-2 text-sm text-gray-600">
-                    <div class="flex justify-between">
-                      <span class="font-medium">Discount:</span>
-                      <span>
-                        <%= coupon.discountType === 'PERCENTAGE' ? `${coupon.discountValue}%` : `₹${coupon.discountValue}` %>
-                        <% if (coupon.discountType === 'PERCENTAGE' && coupon.maxDiscount) { %>
-                          (Max ₹<%= coupon.maxDiscount %>)
-                        <% } %>
-                      </span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="font-medium">Min Purchase:</span>
-                      <span>₹<%= coupon.minPurchase %></span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="font-medium">Used On:</span>
-                      <span><%= new Date(coupon.usedDate).toLocaleDateString() %></span>
-                    </div>
-                  </div>
-                </div>
-              <% }); %>
-            </div>
-          <% } %>
-        </div>
+          <!-- Pagination -->
+          <% if (totalPages > 1) { %>
+            <div class="mt-8 flex justify-center items-center space-x-4">
+              <% if (hasPrevPage) { %>
+                <a href="/profile/coupons?page=<%= currentPage - 1 %>" 
+                   class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                    Previous
+                  </a>
+              <% } %>
 
-        <!-- Expired Coupons -->
-        <div id="expiredCoupons" class="tab-content hidden">
-          <% if (coupons.expired.length === 0) { %>
-            <div class="text-center py-8">
-              <div class="flex justify-center mb-4">
-                <i class="fas fa-ticket-alt text-4xl text-gray-400"></i>
-              </div>
-              <p class="text-gray-500">No expired coupons</p>
-            </div>
-          <% } else { %>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <% coupons.expired.forEach(coupon => { %>
-                <div class="bg-white rounded-lg border-2 border-gray-300 p-6 opacity-75">
-                  <div class="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 class="text-lg font-bold text-gray-800"><%= coupon.code %></h3>
-                      <p class="text-gray-600 text-sm"><%= coupon.description %></p>
-                    </div>
-                    <span class="bg-gray-100 text-gray-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                      Expired
-                    </span>
-                  </div>
-                  
-                  <div class="space-y-2 text-sm text-gray-600">
-                    <div class="flex justify-between">
-                      <span class="font-medium">Discount:</span>
-                      <span>
-                        <%= coupon.discountType === 'PERCENTAGE' ? `${coupon.discountValue}%` : `₹${coupon.discountValue}` %>
-                      </span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="font-medium">Min Purchase:</span>
-                      <span>₹<%= coupon.minPurchase %></span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="font-medium">Expired On:</span>
-                      <span><%= new Date(coupon.expiryDate).toLocaleDateString() %></span>
-                    </div>
-                  </div>
-                </div>
-              <% }); %>
+              <% for(let i = 1; i <= totalPages; i++) { %>
+                <a href="/profile/coupons?page=<%= i %>"
+                   class="px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
+                    <%= i %>
+                  </a>
+              <% } %>
+
+              <% if (hasNextPage) { %>
+                <a href="/profile/coupons?page=<%= currentPage + 1 %>"
+                   class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                    Next
+                  </a>
+              <% } %>
             </div>
           <% } %>
-        </div>
+        <% } %>
       </div>
     </div>
   </main>
 </div>
-
-<script>
-function showTab(tabName) {
-  // Hide all tab contents
-  document.querySelectorAll('.tab-content').forEach(tab => {
-    tab.classList.add('hidden');
-  });
-  
-  // Show selected tab content
-  document.getElementById(`${tabName}Coupons`).classList.remove('hidden');
-  
-  // Update tab buttons
-  document.querySelectorAll('button[id$="Tab"]').forEach(button => {
-    button.classList.remove('border-blue-500', 'text-blue-600');
-    button.classList.add('border-transparent', 'text-gray-500');
-  });
-  
-  // Highlight active tab
-  const activeTab = document.getElementById(`${tabName}Tab`);
-  activeTab.classList.remove('border-transparent', 'text-gray-500');
-  activeTab.classList.add('border-blue-500', 'text-blue-600');
-}
-</script>
 
 <%- include('../../partials/footer') %>
