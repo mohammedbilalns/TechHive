@@ -52,7 +52,8 @@ const getCheckout = async (req, res) => {
       addresses,
       originalPrice,
       total,
-      totalSavings
+      totalSavings,
+      page:"cart"
     });
   } catch (error) {
     console.error('Checkout error:', error);
