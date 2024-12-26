@@ -141,9 +141,15 @@
                     (Balance: ₹<%= wallet.balance.toFixed(2) %>)
                   </span>
                   <% if (wallet.balance < total) { %>
-                    <span class="text-sm text-red-500 block">
-                      Insufficient wallet balance
-                    </span>
+                    <div class="flex items-center mt-1">
+                      <span class="text-sm text-red-500">
+                        Insufficient wallet balance
+                      </span>
+                      <a href="/profile/wallet" 
+                         class="ml-2 text-sm text-primary-accent hover:underline">
+                        Add Money to Wallet
+                      </a>
+                    </div>
                   <% } %>
                 </div>
               </label>
