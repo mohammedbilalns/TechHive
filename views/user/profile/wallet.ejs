@@ -130,7 +130,76 @@
     </div>
 </div>
 
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
+    async function initializeRazorpay(orderData) {
+        const options = {
+            key: '<%= process.env.RAZORPAY_KEY_ID %>', 
+            amount: orderData.amount,
+            currency: "INR",
+            name: "TechHive",
+            description: "Wallet Recharge",
+            order_id: orderData.razorpayOrderId,
+            handler: function (response) {
+                verifyPayment({
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_signature: response.razorpay_signature,
+                    amount: orderData.amount
+                });
+            },
+            prefill: {
+                name: "<%= user.name %>",
+                email: "<%= user.email %>",
+                contact: "<%= user.phone %>"
+            },
+            theme: {
+                color: "#DA0037"
+            }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+    }
+
+    async function addMoney(event) {
+        event.preventDefault();
+        const amount = parseFloat(document.getElementById('amount').value);
+
+        if (!amount || amount <= 0) {
+            showAlert('Please enter a valid amount', 'error');
+            return;
+        }
+
+        try {
+            const response = await axios.post('/account/wallet/add', { amount });
+            if (response.data.success) {
+                await initializeRazorpay(response.data);
+                hideAddMoneyModal();
+            } else {
+                showAlert(response.data.message || 'Error adding money', 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showAlert('Error adding money to wallet', 'error');
+        }
+    }
+
+    async function verifyPayment(paymentData) {
+        try {
+            const response = await axios.post('/account/wallet/verify-payment', paymentData);
+            if (response.data.success) {
+                showAlert('Money added successfully', 'success');
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                showAlert('Payment verification failed', 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showAlert('Payment verification failed', 'error');
+        }
+    }
+
     function showAddMoneyModal() {
         document.getElementById('addMoneyModal').classList.remove('hidden');
     }
@@ -141,24 +210,6 @@
 
     function setAmount(amount) {
         document.getElementById('amount').value = amount;
-    }
-
-    async function addMoney(event) {
-        event.preventDefault();
-        const amount = document.getElementById('amount').value;
-
-        try {
-            const response = await axios.post('/account/wallet/add', { amount });
-            if (response.data.success) {
-                showAlert('Money added successfully', 'success');
-                setTimeout(() => window.location.reload(), 1500);
-            } else {
-                showAlert(response.data.message || 'Error adding money', 'error');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showAlert('Error adding money to wallet', 'error');
-        }
     }
 
     // Close modal when clicking outside

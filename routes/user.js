@@ -116,5 +116,6 @@ router.post('/order/verify-payment', auth.checkSession, userOrderController.veri
 // Wallet routes
 router.get('/profile/wallet', auth.checkSession, userWalletController.getWallet);
 router.post('/account/wallet/add', auth.checkSession, userWalletController.addMoney);
+router.post('/account/wallet/verify-payment', auth.checkSession, userWalletController.verifyWalletPayment)
 
 export default router

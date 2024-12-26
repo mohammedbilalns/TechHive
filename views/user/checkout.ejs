@@ -359,7 +359,7 @@ async function initializeRazorpay(orderData) {
     key: '<%= process.env.RAZORPAY_KEY_ID %>', 
     amount: orderData.amount,
     currency: "INR",
-    name: "Your Store Name",
+    name: "TechHive",
     description: "Order Payment",
     order_id: orderData.razorpayOrderId,
     handler: function (response) {
@@ -377,7 +377,7 @@ async function initializeRazorpay(orderData) {
       contact: "<%= addresses[0]?.phone %>"
     },
     theme: {
-      color: "#2563EB"
+      color: "#DA0037"
     }
   };
 

@@ -5,15 +5,9 @@ import addressModel from '../../model/addressModel.js';
 import { nanoid } from 'nanoid';
 import couponModel from '../../model/couponModel.js';
 import { configDotenv } from 'dotenv';
-import Razorpay from 'razorpay';
+import razorpay from '../../utils/razorpayConfig.js';
 import crypto from 'crypto';
 configDotenv()
-
-// Initialize Razorpay
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET
-});
 
 const placeOrder = async (req, res) => {
   try {

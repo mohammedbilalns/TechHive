@@ -1,6 +1,9 @@
 import walletModel from '../../model/walletModel.js';
 import userModel from '../../model/userModel.js';
 import { nanoid } from 'nanoid';
+import razorpay from '../../utils/razorpayConfig.js';
+import crypto from 'crypto';
+import { log } from 'mercedlogger';
 
 const getWallet = async (req, res) => {
     try {
@@ -49,7 +52,7 @@ const getWallet = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Get wallet error:', error);
+        log.red('GET_WALLET_ERROR', error);
         res.status(500).json({
             success: false,
             message: 'Error fetching wallet details'
@@ -60,51 +63,102 @@ const getWallet = async (req, res) => {
 const addMoney = async (req, res) => {
     try {
         const { amount } = req.body;
+        const numAmount = parseFloat(amount);
         
-        if (!amount || amount <= 0) {
+        if (!numAmount || numAmount <= 0) {
             return res.status(400).json({
                 success: false,
                 message: 'Invalid amount'
             });
         }
 
-        const wallet = await walletModel.findOne({ userId: req.session.user.id });
-        
-        if (!wallet) {
-            return res.status(404).json({
-                success: false,
-                message: 'Wallet not found'
-            });
-        }
+        // Create Razorpay order
+        const orderOptions = {
+            amount: Math.round(numAmount * 100), // Convert to paise
+            currency: 'INR',
+            receipt: 'wallet_' + nanoid(8)
+        };
 
-        // Add transaction
-        wallet.balance += Number(amount);
-        wallet.transactions.push({
-            transactionId: 'TXN' + nanoid(8).toUpperCase(),
-            type: 'CREDIT',
-            amount: amount,
-            description: 'Added money to wallet',
-            date: new Date()
-        });
+        console.log('Creating Razorpay order with options:', orderOptions);
 
-        await wallet.save();
+        const razorpayOrder = await razorpay.orders.create(orderOptions);
+
+        console.log('Razorpay order created:', razorpayOrder);
 
         res.json({
             success: true,
-            message: 'Money added successfully',
-            newBalance: wallet.balance
+            amount: razorpayOrder.amount,
+            razorpayOrderId: razorpayOrder.id
         });
 
     } catch (error) {
-        console.error('Add money error:', error);
+        log.red('ADD_MONEY_ERROR', error);
         res.status(500).json({
             success: false,
-            message: 'Error adding money to wallet'
+            message: error.message || 'Error creating payment order'
+        });
+    }
+};
+
+const verifyWalletPayment = async (req, res) => {
+    try {
+        
+        const { 
+            razorpay_payment_id, 
+            razorpay_order_id,
+            razorpay_signature,
+            amount 
+        } = req.body;
+
+        // Verify signature
+        const sign = razorpay_order_id + "|" + razorpay_payment_id;
+        const expectedSign = crypto
+            .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+            .update(sign.toString())
+            .digest("hex");
+
+        if (razorpay_signature === expectedSign) {
+            const wallet = await walletModel.findOne({ userId: req.session.user.id });
+            
+            if (!wallet) {
+                return res.json({ success: false, message: 'Wallet not found' });
+            }
+
+            // Add money to wallet
+            const amountInRupees = amount / 100; // Convert from paise to rupees
+            wallet.balance += amountInRupees;
+            wallet.transactions.push({
+                transactionId: 'TXN' + nanoid(8).toUpperCase(),
+                type: 'CREDIT',
+                amount: amountInRupees,
+                description: 'Added money to wallet',
+                date: new Date()
+            });
+
+            await wallet.save();
+
+            res.json({ 
+                success: true,
+                message: 'Payment verified and wallet updated successfully',
+                newBalance: wallet.balance
+            });
+        } else {
+            res.json({ 
+                success: false, 
+                message: 'Payment verification failed' 
+            });
+        }
+    } catch (error) {
+        log.red('PAYMENT_VERIFICATION_ERROR', error);
+        res.json({ 
+            success: false, 
+            message: 'Payment verification failed' 
         });
     }
 };
 
 export default {
     getWallet,
-    addMoney
+    addMoney,
+    verifyWalletPayment
 };
