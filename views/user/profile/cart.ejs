@@ -7,6 +7,13 @@
     <%- include('../../partials/usersidebar') %>
     <!-- Main Content -->
     <main class="flex-grow p-4 md:py-12">
+
+      <nav class="flex mb-6 text-sm">
+        <a href="/home" class="text-gray-500 hover:text-primary-accent">Home</a>
+        <span class="mx-2 text-gray-500">/</span>
+    
+        <span class="text-gray-800">Cart</span>
+    </nav>
       <% if (locals.message && locals.alertType) { %>
         <div id="alertMessage" class="mb-4 p-3 rounded-md 
            <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
