@@ -7,7 +7,11 @@
     </div>
     
     <h1 class="text-2xl font-bold text-gray-800 mb-4">Order Placed Successfully!</h1>
-    <p class="text-gray-600 mb-8">Your order #<%= orderId %> has been placed successfully. You can track your order in the orders section.</p>
+    <p class="text-gray-600 mb-4">Thank you for your purchase!</p>
+    <p class="text-gray-600 mb-8">
+      Your order <span class="font-semibold text-gray-800"><%= orderId %></span> has been placed successfully. 
+      You can track your order in the orders section.
+    </p>
     
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
       <a href="/profile/orders" 

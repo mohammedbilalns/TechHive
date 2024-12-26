@@ -59,8 +59,12 @@ const placeOrder = async (req, res) => {
       };
     });
 
-    // Generate unique order ID
-    const orderId = 'ORD' + nanoid(10).toUpperCase();
+    // Generate order ID with date format: ORD20240318XXXXXX
+    const date = new Date();
+    const dateString = date.getFullYear().toString() +
+                      (date.getMonth() + 1).toString().padStart(2, '0') +
+                      date.getDate().toString().padStart(2, '0');
+    const orderId = 'ORD' + dateString + nanoid(6).toUpperCase();
 
     // Create new order
     const order = new orderModel({
@@ -146,7 +150,8 @@ const placeOrder = async (req, res) => {
     // For COD orders
     res.json({ 
       success: true, 
-      orderId: order._id
+      orderId: order._id,
+      displayOrderId: order.orderId
     });
 
   } catch (error) {
@@ -161,7 +166,15 @@ const placeOrder = async (req, res) => {
 const getOrderSuccess = async (req, res) => {
   try {
     const orderId = req.params.orderId;
-    res.render('user/order-success', { orderId });
+    const order = await orderModel.findById(orderId);
+    
+    if (!order) {
+      return res.redirect('/home');
+    }
+
+    res.render('user/order-success', { 
+      orderId: order.orderId
+    });
   } catch (error) {
     console.error('Get order success error:', error);
     res.redirect('/home');
