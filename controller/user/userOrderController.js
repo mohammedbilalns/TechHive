@@ -111,29 +111,30 @@ const placeOrder = async (req, res) => {
       );
     }
 
-    // Update product stock and clear cart
-    await Promise.all([
-      ...cart.items.map(item => 
-        productModel.findByIdAndUpdate(
-          item.productId._id,
-          { $inc: { stock: -item.quantity } }
+    // Update product stock and clear cart only for COD orders
+    if (paymentMethod === 'cod') {
+      await Promise.all([
+        ...cart.items.map(item => 
+          productModel.findByIdAndUpdate(
+            item.productId._id,
+            { $inc: { stock: -item.quantity } }
+          )
+        ),
+        cartModel.findOneAndUpdate(
+          { user: userId },
+          { $set: { items: [], discount: 0, couponCode: null } }
         )
-      ),
-      cartModel.findOneAndUpdate(
-        { user: userId },
-        { $set: { items: [], discount: 0, couponCode: null } }
-      )
-    ]);
+      ]);
+    }
 
     // If payment method is online, create Razorpay order
     if (paymentMethod === 'online') {
       const razorpayOrder = await razorpay.orders.create({
-        amount: Math.round(finalAmount * 100), // Convert to paise
+        amount: Math.round(finalAmount * 100),
         currency: 'INR',
         receipt: order._id.toString()
       });
 
-      // Update order with Razorpay order ID
       order.paymentDetails = {
         razorpayOrderId: razorpayOrder.id
       };
@@ -307,12 +308,30 @@ const verifyPayment = async (req, res) => {
       .digest("hex");
 
     if (razorpay_signature === expectedSign) {
+      const order = await orderModel.findById(orderId);
+      if (!order) {
+        return res.json({ success: false, message: 'Order not found' });
+      }
+
       // Update order with payment details
-      await orderModel.findByIdAndUpdate(orderId, {
-        paymentStatus: 'paid',
-        'paymentDetails.razorpayPaymentId': razorpay_payment_id,
-        'paymentDetails.razorpaySignature': razorpay_signature
-      });
+      order.paymentStatus = 'paid';
+      order.paymentDetails.razorpayPaymentId = razorpay_payment_id;
+      order.paymentDetails.razorpaySignature = razorpay_signature;
+      await order.save();
+
+      // Now update stock and clear cart after successful payment
+      await Promise.all([
+        ...order.items.map(item => 
+          productModel.findOneAndUpdate(
+            { name: item.name },
+            { $inc: { stock: -item.quantity } }
+          )
+        ),
+        cartModel.findOneAndUpdate(
+          { user: order.userId },
+          { $set: { items: [], discount: 0, couponCode: null } }
+        )
+      ]);
 
       res.json({ success: true });
     } else {
