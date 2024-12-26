@@ -7,6 +7,7 @@ import couponModel from '../../model/couponModel.js';
 import { configDotenv } from 'dotenv';
 import razorpay from '../../utils/razorpayConfig.js';
 import crypto from 'crypto';
+import walletModel from '../../model/walletModel.js';
 configDotenv()
 
 const placeOrder = async (req, res) => {
@@ -14,10 +15,11 @@ const placeOrder = async (req, res) => {
     const { addressId, paymentMethod } = req.body;
     const userId = req.session.user.id;
 
-    // Get user's cart and address
-    const [cart, shippingAddress] = await Promise.all([
+    // Get user's cart, address, and wallet
+    const [cart, shippingAddress, wallet] = await Promise.all([
       cartModel.findOne({ user: userId }).populate('items.productId'),
-      addressModel.findById(addressId)
+      addressModel.findById(addressId),
+      walletModel.findOne({ userId })
     ]);
 
     if (!cart || cart.items.length === 0) {
@@ -36,6 +38,16 @@ const placeOrder = async (req, res) => {
     let couponDiscount = cart.discount || 0;
     let couponCode = cart.couponCode;
     let finalAmount = totalAmount - couponDiscount;
+
+    // Check wallet balance if payment method is wallet
+    if (paymentMethod === 'wallet') {
+      if (!wallet || wallet.balance < finalAmount) {
+        return res.json({ 
+          success: false, 
+          message: 'Insufficient wallet balance' 
+        });
+      }
+    }
 
     // Create order items array with product data 
     const orderItems = cart.items.map(item => {
@@ -139,6 +151,51 @@ const placeOrder = async (req, res) => {
         orderId: order._id,
         amount: razorpayOrder.amount,
         razorpayOrderId: razorpayOrder.id
+      });
+    }
+
+    // Handle wallet payment
+    if (paymentMethod === 'wallet') {
+      // Deduct amount from wallet
+      const walletTransactionId = 'WTX' + nanoid(8).toUpperCase();
+      
+      await walletModel.findOneAndUpdate(
+        { userId },
+        {
+          $inc: { balance: -finalAmount },
+          $push: {
+            transactions: {
+              transactionId: walletTransactionId,
+              type: 'DEBIT',
+              amount: finalAmount,
+              description: `Payment for order ${orderId}`
+            }
+          }
+        }
+      );
+
+      // Update order payment status
+      order.paymentStatus = 'paid';
+      await order.save();
+
+      // Update product stock and clear cart
+      await Promise.all([
+        ...cart.items.map(item => 
+          productModel.findByIdAndUpdate(
+            item.productId._id,
+            { $inc: { stock: -item.quantity } }
+          )
+        ),
+        cartModel.findOneAndUpdate(
+          { user: userId },
+          { $set: { items: [], discount: 0, couponCode: null } }
+        )
+      ]);
+
+      return res.json({ 
+        success: true, 
+        orderId: order._id,
+        displayOrderId: order.orderId
       });
     }
 

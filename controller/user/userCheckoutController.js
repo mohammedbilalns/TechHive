@@ -1,13 +1,17 @@
 import userModel from '../../model/userModel.js';
 import cartModel from '../../model/cartModel.js';
 import addressModel from '../../model/addressModel.js';
+import walletModel from '../../model/walletModel.js';
 
 const getCheckout = async (req, res) => {
   try {
     const userId = req.session.user.id;
-    const user = await userModel.findById(userId);
-    const cart = await cartModel.findOne({ user: userId }).populate('items.productId');
-    const addresses = await addressModel.find({ userId: userId });
+    const [user, cart, addresses, wallet] = await Promise.all([
+      userModel.findById(userId),
+      cartModel.findOne({ user: userId }).populate('items.productId'),
+      addressModel.find({ userId: userId }),
+      walletModel.findOne({ userId })
+    ]);
     
     if (!cart || cart.items.length === 0) {
       return res.redirect('/profile/cart');
@@ -53,7 +57,8 @@ const getCheckout = async (req, res) => {
       originalPrice,
       total,
       totalSavings,
-      page:"cart"
+      wallet: wallet || { balance: 0 },
+      page: "cart"
     });
   } catch (error) {
     console.error('Checkout error:', error);

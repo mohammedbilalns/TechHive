@@ -127,11 +127,35 @@
         <div class="mb-8">
           <h2 class="text-xl font-semibold mb-4">Payment Method</h2>
           <div class="space-y-3">
+            <!-- Add Wallet Option -->
             <div class="border rounded-lg p-4">
               <label class="flex items-center">
-                <input type="radio" name="paymentMethod" value="cod" checked 
+                <input type="radio" name="paymentMethod" value="wallet" 
                        class="form-radio text-primary-accent"
-                       onchange="handlePaymentMethodChange(this)">
+                       onchange="handlePaymentMethodChange(this)"
+                       <%= wallet.balance < total ? 'disabled' : '' %>
+                       <%= wallet.balance >= total ? 'checked' : '' %>>
+                <div class="ml-2 flex-grow">
+                  <span>Pay using Wallet</span>
+                  <span class="ml-2 text-sm text-gray-600">
+                    (Balance: ₹<%= wallet.balance.toFixed(2) %>)
+                  </span>
+                  <% if (wallet.balance < total) { %>
+                    <span class="text-sm text-red-500 block">
+                      Insufficient wallet balance
+                    </span>
+                  <% } %>
+                </div>
+              </label>
+            </div>
+            
+            <!-- Existing payment options -->
+            <div class="border rounded-lg p-4">
+              <label class="flex items-center">
+                <input type="radio" name="paymentMethod" value="cod" 
+                       class="form-radio text-primary-accent"
+                       onchange="handlePaymentMethodChange(this)"
+                       <%= wallet.balance >= total ? '' : 'checked' %>>
                 <span class="ml-2">Cash on Delivery</span>
               </label>
             </div>
