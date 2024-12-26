@@ -1,0 +1,182 @@
+<%- include('../partials/adminheader') %>
+
+<div class="flex min-h-screen">
+  <%- include('../partials/adminsidebar') %>
+
+  <main class="md:ml-64 w-full min-h-screen bg-gray-50 transition-all duration-300 ease-in-out">
+    <div class="pt-14 md:pt-0 p-4">
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+          <h1 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Sales Report</h1>
+          
+          <!-- Filter Controls -->
+          <div class="flex flex-wrap gap-4">
+            <select id="filterType" class="border rounded-md px-3 py-2">
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+              <option value="custom">Custom Range</option>
+            </select>
+
+            <div id="customDateRange" class="hidden flex gap-2 items-center">
+              <input type="date" id="startDate" class="border rounded-md px-3 py-2">
+              <span>to</span>
+              <input type="date" id="endDate" class="border rounded-md px-3 py-2">
+            </div>
+
+            <button onclick="applyFilter()" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+              Apply Filter
+            </button>
+          </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div class="bg-blue-50 p-4 rounded-lg">
+            <h3 class="text-blue-800 text-sm font-semibold">Total Orders</h3>
+            <p class="text-2xl font-bold text-blue-900" id="totalOrders">0</p>
+          </div>
+          <div class="bg-green-50 p-4 rounded-lg">
+            <h3 class="text-green-800 text-sm font-semibold">Total Sales Amount</h3>
+            <p class="text-2xl font-bold text-green-900" id="totalSales">₹0</p>
+          </div>
+          <div class="bg-purple-50 p-4 rounded-lg">
+            <h3 class="text-purple-800 text-sm font-semibold">Total Discounts</h3>
+            <p class="text-2xl font-bold text-purple-900" id="totalDiscounts">₹0</p>
+          </div>
+          <div class="bg-yellow-50 p-4 rounded-lg">
+            <h3 class="text-yellow-800 text-sm font-semibold">Net Revenue</h3>
+            <p class="text-2xl font-bold text-yellow-900" id="netRevenue">₹0</p>
+          </div>
+        </div>
+
+        <!-- Download Buttons -->
+        <div class="flex gap-4 mb-6">
+          <button onclick="downloadReport('pdf')" class="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">
+            <i class="fas fa-file-pdf"></i> Download PDF
+          </button>
+          <button onclick="downloadReport('excel')" class="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">
+            <i class="fas fa-file-excel"></i> Download Excel
+          </button>
+        </div>
+
+        <!-- Sales Table -->
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-white border">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Amount</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Discount</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Net Amount</th>
+              </tr>
+            </thead>
+            <tbody id="salesTableBody" class="divide-y divide-gray-200">
+              <!-- Data will be populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  // Show/hide custom date range based on filter type
+  document.getElementById('filterType').addEventListener('change', function() {
+    const customDateRange = document.getElementById('customDateRange');
+    customDateRange.classList.toggle('hidden', this.value !== 'custom');
+  });
+
+  async function applyFilter() {
+    const filterType = document.getElementById('filterType').value;
+    let startDate, endDate;
+
+    if (filterType === 'custom') {
+      startDate = document.getElementById('startDate').value;
+      endDate = document.getElementById('endDate').value;
+    }
+
+    try {
+      const response = await axios.get('/admin/sales-report/data', {
+        params: {
+          filterType,
+          startDate,
+          endDate
+        }
+      });
+
+      updateDashboard(response.data);
+    } catch (error) {
+      showAlert('Failed to fetch sales report', 'error');
+    }
+  }
+
+  function updateDashboard(data) {
+    // Update summary cards
+    document.getElementById('totalOrders').textContent = data.totalOrders;
+    document.getElementById('totalSales').textContent = `₹${data.totalSales.toFixed(2)}`;
+    document.getElementById('totalDiscounts').textContent = `₹${data.totalDiscounts.toFixed(2)}`;
+    document.getElementById('netRevenue').textContent = `₹${data.netRevenue.toFixed(2)}`;
+
+    // Update table
+    const tableBody = document.getElementById('salesTableBody');
+    tableBody.innerHTML = '';
+
+    data.orders.forEach(order => {
+      const row = `
+        <tr>
+          <td class="px-6 py-4 whitespace-nowrap">${order.orderId}</td>
+          <td class="px-6 py-4 whitespace-nowrap">${new Date(order.orderDate).toLocaleDateString()}</td>
+          <td class="px-6 py-4 whitespace-nowrap">${order.customer}</td>
+          <td class="px-6 py-4 whitespace-nowrap">${order.itemCount}</td>
+          <td class="px-6 py-4 whitespace-nowrap">₹${order.totalAmount.toFixed(2)}</td>
+          <td class="px-6 py-4 whitespace-nowrap">₹${order.discount.toFixed(2)}</td>
+          <td class="px-6 py-4 whitespace-nowrap">₹${order.netAmount.toFixed(2)}</td>
+        </tr>
+      `;
+      tableBody.innerHTML += row;
+    });
+  }
+
+  async function downloadReport(format) {
+    const filterType = document.getElementById('filterType').value;
+    let startDate = document.getElementById('startDate').value;
+    let endDate = document.getElementById('endDate').value;
+
+    try {
+      const response = await axios.get(`/admin/sales-report/download`, {
+        params: {
+          format,
+          filterType,
+          startDate,
+          endDate
+        },
+        responseType: 'blob'
+      });
+
+      const blob = new Blob([response.data], {
+        type: format === 'pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `sales-report.${format}`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      showAlert(`Failed to download ${format.toUpperCase()} report`, 'error');
+    }
+  }
+
+  // Load initial data
+  window.addEventListener('load', () => applyFilter());
+</script>
+
+<%- include('../partials/adminfooter') %>
