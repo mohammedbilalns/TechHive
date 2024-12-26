@@ -29,12 +29,12 @@ const orderSchema = new mongoose.Schema({
   totalAmount: { type: Number, required: true },
   paymentMethod: { 
     type: String, 
-    enum: ['cod', 'card', 'bank_transfer', 'upi'], 
+    enum: ['cod', 'card', 'bank_transfer', 'upi', 'online'], 
     required: true 
   },
   paymentStatus: { 
     type: String, 
-    enum: ['paid', 'unpaid'], 
+    enum: ['paid', 'unpaid', 'pending'], 
     default: 'unpaid' 
   },
   shippingAddress: {
@@ -60,6 +60,11 @@ const orderSchema = new mongoose.Schema({
   coupon: {
     code: { type: String },
     discount: { type: Number, default: 0 }
+  },
+  paymentDetails: {
+    razorpayOrderId: { type: String },
+    razorpayPaymentId: { type: String },
+    razorpaySignature: { type: String }
   }
 }, { 
   timestamps: true 

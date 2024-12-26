@@ -120,15 +120,17 @@
             <div class="border rounded-lg p-4">
               <label class="flex items-center">
                 <input type="radio" name="paymentMethod" value="cod" checked 
-                       class="form-radio text-primary-accent">
+                       class="form-radio text-primary-accent"
+                       onchange="handlePaymentMethodChange(this)">
                 <span class="ml-2">Cash on Delivery</span>
               </label>
             </div>
             <div class="border rounded-lg p-4">
               <label class="flex items-center">
                 <input type="radio" name="paymentMethod" value="online" 
-                       class="form-radio text-primary-accent">
-                <span class="ml-2">Online Payment </span>
+                       class="form-radio text-primary-accent"
+                       onchange="handlePaymentMethodChange(this)">
+                <span class="ml-2">Pay Online (UPI/Card/NetBanking)</span>
               </label>
             </div>
           </div>
@@ -331,38 +333,95 @@
   </div>
 </div>
 
-
-
+<!-- Add Razorpay Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
-    // place order button handler
-  function placeOrder() {
-    const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
-    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+let razorpayInstance = null;
 
-    if (!selectedAddress) {
-      showAlert('Please select a delivery address', 'error');
-      return;
-    }
+function handlePaymentMethodChange(radio) {
+  const placeOrderBtn = document.querySelector('button[onclick="placeOrder()"]');
+  placeOrderBtn.textContent = radio.value === 'cod' ? 'Place Order' : 'Proceed to Payment';
+}
 
-    const orderData = {
-      addressId: selectedAddress.value,
-      paymentMethod: paymentMethod.value
-    };
-
-    axios.post('/order/place', orderData)
-      .then(response => {
-        if (response.data.success) {
-          window.location.href = `/order/success/${response.data.orderId}`;
-        } else {
-          showAlert(response.data.message || 'Failed to place order', 'error');
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        showAlert('Error placing order', 'error');
+async function initializeRazorpay(orderData) {
+  const options = {
+    key: '<%= process.env.RAZORPAY_KEY_ID %>', 
+    amount: orderData.amount,
+    currency: "INR",
+    name: "Your Store Name",
+    description: "Order Payment",
+    order_id: orderData.razorpayOrderId,
+    handler: function (response) {
+      // Handle successful payment
+      verifyPayment({
+        razorpay_payment_id: response.razorpay_payment_id,
+        razorpay_order_id: response.razorpay_order_id,
+        razorpay_signature: response.razorpay_signature,
+        orderId: orderData.orderId
       });
+    },
+    prefill: {
+      name: "<%= user.name %>",
+      email: "<%= user.email %>",
+      contact: "<%= addresses[0]?.phone %>"
+    },
+    theme: {
+      color: "#2563EB"
+    }
+  };
+
+  razorpayInstance = new Razorpay(options);
+  razorpayInstance.open();
+}
+
+async function placeOrder() {
+  const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
+  const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+
+  if (!selectedAddress) {
+    showAlert('Please select a delivery address', 'error');
+    return;
   }
+
+  const orderData = {
+    addressId: selectedAddress.value,
+    paymentMethod: paymentMethod.value
+  };
+
+  try {
+    const response = await axios.post('/order/place', orderData);
+    
+    if (response.data.success) {
+      if (paymentMethod.value === 'online') {
+        // Initialize Razorpay for online payment
+        await initializeRazorpay(response.data);
+      } else {
+        // Redirect for COD orders
+        window.location.href = `/order/success/${response.data.orderId}`;
+      }
+    } else {
+      showAlert(response.data.message || 'Failed to place order', 'error');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    showAlert('Error placing order', 'error');
+  }
+}
+
+async function verifyPayment(paymentData) {
+  try {
+    const response = await axios.post('/order/verify-payment', paymentData);
+    if (response.data.success) {
+      window.location.href = `/order/success/${paymentData.orderId}`;
+    } else {
+      showAlert('Payment verification failed', 'error');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    showAlert('Payment verification failed', 'error');
+  }
+}
 
 // toggle add address modal
   function toggleAddAddress() {

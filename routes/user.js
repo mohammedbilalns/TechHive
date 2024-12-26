@@ -110,4 +110,6 @@ router.post('/wishlist/remove', auth.checkSession, userWishlistController.remove
 
 router.get('/profile/coupons', auth.checkSession, userCouponsController.getCoupons);
 
+router.post('/order/verify-payment', auth.checkSession, userOrderController.verifyPayment);
+
 export default router

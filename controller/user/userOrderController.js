@@ -4,6 +4,16 @@ import productModel from '../../model/productModel.js';
 import addressModel from '../../model/addressModel.js';
 import { nanoid } from 'nanoid';
 import couponModel from '../../model/couponModel.js';
+import { configDotenv } from 'dotenv';
+import Razorpay from 'razorpay';
+import crypto from 'crypto';
+configDotenv()
+
+// Initialize Razorpay
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET
+});
 
 const placeOrder = async (req, res) => {
   try {
@@ -72,7 +82,7 @@ const placeOrder = async (req, res) => {
       orderDate: new Date(),
       expectedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       status: 'processing',
-      paymentStatus: paymentMethod === 'cod' ? 'unpaid' : 'paid',
+      paymentStatus: paymentMethod === 'cod' ? 'unpaid' : 'pending',
       coupon: couponCode ? {
         code: couponCode,
         discount: couponDiscount
@@ -111,10 +121,32 @@ const placeOrder = async (req, res) => {
       )
     ]);
 
+    // If payment method is online, create Razorpay order
+    if (paymentMethod === 'online') {
+      const razorpayOrder = await razorpay.orders.create({
+        amount: Math.round(finalAmount * 100), // Convert to paise
+        currency: 'INR',
+        receipt: order._id.toString()
+      });
+
+      // Update order with Razorpay order ID
+      order.paymentDetails = {
+        razorpayOrderId: razorpayOrder.id
+      };
+      await order.save();
+
+      return res.json({
+        success: true,
+        orderId: order._id,
+        amount: razorpayOrder.amount,
+        razorpayOrderId: razorpayOrder.id
+      });
+    }
+
+    // For COD orders
     res.json({ 
       success: true, 
-      orderId: order._id,
-      message: 'Order placed successfully' 
+      orderId: order._id
     });
 
   } catch (error) {
@@ -245,10 +277,51 @@ const cancelOrderItem = async (req, res) => {
   }
 };
 
+const verifyPayment = async (req, res) => {
+  try {
+    const { 
+      razorpay_payment_id, 
+      razorpay_order_id,
+      razorpay_signature,
+      orderId 
+    } = req.body;
+
+    // Verify signature
+    const sign = razorpay_order_id + "|" + razorpay_payment_id;
+    const expectedSign = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(sign.toString())
+      .digest("hex");
+
+    if (razorpay_signature === expectedSign) {
+      // Update order with payment details
+      await orderModel.findByIdAndUpdate(orderId, {
+        paymentStatus: 'paid',
+        'paymentDetails.razorpayPaymentId': razorpay_payment_id,
+        'paymentDetails.razorpaySignature': razorpay_signature
+      });
+
+      res.json({ success: true });
+    } else {
+      res.json({ 
+        success: false, 
+        message: 'Payment verification failed' 
+      });
+    }
+  } catch (error) {
+    console.error('Payment verification error:', error);
+    res.json({ 
+      success: false, 
+      message: 'Payment verification failed' 
+    });
+  }
+};
+
 export default {
   placeOrder,
   getOrderSuccess,
   getOrders,
   getOrderDetails,
-  cancelOrderItem
+  cancelOrderItem,
+  verifyPayment
 };
