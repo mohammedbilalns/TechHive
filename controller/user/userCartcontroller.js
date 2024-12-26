@@ -193,7 +193,6 @@ const applyCoupon = async (req, res) => {
     try {
         const { code } = req.body;
         const userId = req.session.user.id;
-        
 
         // Find the cart
         const cart = await cartSchema.findOne({ user: userId }).populate('items.productId');
@@ -218,16 +217,15 @@ const applyCoupon = async (req, res) => {
             });
         }
 
-        // Check if user has already used this coupon
-        const hasUsed = coupon.usageHistory.some(
-            history => history.userId.toString() === userId
-        );
+        // Check user's usage count of this coupon
+        const userUsageCount = coupon.usageHistory?.filter(usage => 
+            usage.userId.toString() === userId.toString()
+        ).length || 0;
 
-        
-        if (hasUsed) {
+        if (userUsageCount >= coupon.usageLimit) {
             return res.status(400).json({
                 success: false,
-                message: "You have already used this coupon"
+                message: "You have reached the usage limit for this coupon"
             });
         }
 
@@ -256,10 +254,9 @@ const applyCoupon = async (req, res) => {
         } else {
             discountAmount = coupon.discountValue;
         }
-    
 
         // Update cart with discount
-        cart.couponCode  = code.toUpperCase()
+        cart.couponCode = code.toUpperCase();
         cart.discount = discountAmount;
         await cart.save();
     

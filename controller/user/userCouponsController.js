@@ -6,35 +6,39 @@ const getCoupons = async (req, res) => {
         const currentDate = new Date();
         const userId = req.session.user.id;
         const page = parseInt(req.query.page) || 1;
-        const limit = 9; // Show 9 coupons per page (3x3 grid)
+        const limit = 9;
         const skip = (page - 1) * limit;
 
-        // Fetch all active coupons
         const allCoupons = await Coupon.find({
             isActive: true
         }).lean();
 
-        // Categorize coupons
         const categorizedCoupons = {
             available: [],
             used: [],
             expired: []
         };
 
-        // Process each coupon
         allCoupons.forEach(coupon => {
             try {
                 const expiryDate = new Date(coupon.expiryDate);
                 const startDate = new Date(coupon.startDate);
                 
-                const userUsage = coupon.usageHistory?.find(usage => 
+                // Count how many times this user has used the coupon
+                const userUsageCount = coupon.usageHistory?.filter(usage => 
                     usage.userId?.toString() === userId.toString()
-                );
+                ).length || 0;
+
+                // Calculate remaining uses for this user
+                const remainingUses = coupon.usageLimit - userUsageCount;
 
                 if (expiryDate < currentDate) {
                     categorizedCoupons.expired.push({
                         ...coupon,
-                        usedDate: userUsage?.usedAt
+                        usedDate: coupon.usageHistory?.find(usage => 
+                            usage.userId?.toString() === userId.toString()
+                        )?.usedAt,
+                        remainingUses
                     });
                     return;
                 }
@@ -43,15 +47,26 @@ const getCoupons = async (req, res) => {
                     return;
                 }
 
-                if (userUsage) {
+                // Only consider a coupon "used" if this user has no remaining uses
+                if (remainingUses <= 0) {
                     categorizedCoupons.used.push({
                         ...coupon,
-                        usedDate: userUsage.usedAt
+                        usedDate: coupon.usageHistory?.find(usage => 
+                            usage.userId?.toString() === userId.toString()
+                        )?.usedAt,
+                        remainingUses: 0
                     });
                     return;
                 }
 
-                categorizedCoupons.available.push(coupon);
+                // If there are remaining uses for this user, show as available
+                categorizedCoupons.available.push({
+                    ...coupon,
+                    remainingUses,
+                    userUsedDate: coupon.usageHistory?.find(usage => 
+                        usage.userId?.toString() === userId.toString()
+                    )?.usedAt
+                });
             } catch (err) {
                 log.red("COUPON_PROCESSING_ERROR", err);
             }
