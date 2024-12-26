@@ -14,7 +14,11 @@ const walletSchema = new mongoose.Schema({
     },
     transactions: [
         {
-            transactionType: {
+            transactionId: {
+                type: String,
+                required: true
+            },
+            type: {
                 type: String,
                 enum: ["DEBIT", "CREDIT"],
                 required: true
@@ -23,14 +27,16 @@ const walletSchema = new mongoose.Schema({
                 type: Number,
                 required: true
             },
-            transactionDate: {
+            description: {
+                type: String,
+                required: true
+            },
+            date: {
                 type: Date,
-                default: Date.now(),
+                default: Date.now,
                 required: true
             }
-
         }
-
     ]
 }, { timestamps: true })
 

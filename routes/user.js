@@ -13,6 +13,7 @@ import userOrderController from "../controller/user/userOrderController.js"
 import userSearchController from "../controller/user/userSearchController.js"
 import userWishlistController from "../controller/user/userWishlistController.js"
 import userCouponsController from "../controller/user/userCouponsController.js"
+import userWalletController from "../controller/user/userWalletController.js"
 const router = Router()
 
 router.use(express.static('static'))
@@ -62,7 +63,7 @@ router.get('/search',  wishlistItems.fetchWishlistItems, userSearchController.se
 router.get('profile/dashboard', auth.checkSession, userAuthController.getDashboard)
 router.get('/profile/account', auth.checkSession, useraccountController.getAccountDetails) 
 router.get('/profile/orders', auth.checkSession, userOrderController.getOrders);
-router.get('/profile/wallet', auth.checkSession, userAuthController.getWallet)  
+router.get('/profile/wallet', auth.checkSession, userWalletController.getWallet)  
 router.get('/profile/addresses', auth.checkSession, useraddressController.getAddresses)
 
 
@@ -111,5 +112,9 @@ router.post('/wishlist/remove', auth.checkSession, userWishlistController.remove
 router.get('/profile/coupons', auth.checkSession, userCouponsController.getCoupons);
 
 router.post('/order/verify-payment', auth.checkSession, userOrderController.verifyPayment);
+
+// Wallet routes
+router.get('/profile/wallet', auth.checkSession, userWalletController.getWallet);
+router.post('/account/wallet/add', auth.checkSession, userWalletController.addMoney);
 
 export default router

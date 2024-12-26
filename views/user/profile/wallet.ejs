@@ -1,153 +1,172 @@
-<%- include('../partials/header') %>
+<%- include('../../partials/header') %>
 
-  <!-- Mobile Menu Button -->
-  <div class="md:hidden p-4 bg-gray-100 flex justify-between items-center">
-    <h1 class="text-xl font-semibold text-gray-800">My Wallet</h1>
-    <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900">
-      <i class="fas fa-bars text-xl"></i>
-    </button>
-  </div>
-
-  <div class="flex flex-col md:flex-row">
-    <%- include('../partials/usersidebar') %>
+<div class="flex flex-col md:flex-row">
+    <%- include('../../partials/usersidebar') %>
+    
     <!-- Main Content -->
     <main class="flex-grow p-4 md:py-12">
-      <% if (locals.message && locals.alertType) { %>
-        <div id="alertMessage" class="mb-4 p-3 rounded-md 
-           <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
-          <%= message %>
-        </div>
-        <% } %>
+        <!-- Breadcrumbs -->
+        <nav class="flex mb-6 text-sm">
+            <a href="/home" class="text-gray-500 hover:text-primary-accent">Home</a>
+            <span class="mx-2 text-gray-500">/</span>
+            <a href="/profile" class="text-gray-500 hover:text-primary-accent">Profile</a>
+            <span class="mx-2 text-gray-500">/</span>
+            <span class="text-gray-800">Wallet</span>
+        </nav>
 
-          <div class="bg-white rounded-lg shadow-lg p-6">
+        <div class="bg-white rounded-lg shadow-lg p-6">
             <!-- Wallet Balance Card -->
             <div class="bg-primary-accent text-white rounded-lg p-6 mb-8">
-              <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold">Wallet Balance</h2>
-                <i class="fas fa-wallet text-2xl"></i>
-              </div>
-              <p class="text-3xl font-bold">₹<%= wallet.balance %>
-              </p>
-              <button onclick="showAddMoneyModal()"
-                class="mt-4 bg-white text-primary-accent px-6 py-2 rounded-lg hover:bg-gray-100">
-                Add Money
-              </button>
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">Wallet Balance</h2>
+                    <i class="fas fa-wallet text-2xl"></i>
+                </div>
+                <p class="text-3xl font-bold">₹<%= wallet.balance.toFixed(2) %></p>
+                <button onclick="showAddMoneyModal()" 
+                        class="mt-4 bg-white text-primary-accent px-6 py-2 rounded-lg hover:bg-gray-100">
+                    Add Money
+                </button>
             </div>
 
             <!-- Transaction History -->
             <div>
-              <h2 class="text-xl font-semibold text-gray-800 mb-4">Transaction History</h2>
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Transaction History</h2>
 
-              <% if (wallet.transactions && wallet.transactions.length> 0) { %>
-                <div class="space-y-4">
-                  <% wallet.transactions.forEach(transaction=> { %>
-                    <div class="flex items-center justify-between border-b pb-4">
-                      <div class="flex items-center">
-                        <div
-                          class="w-10 h-10 rounded-full flex items-center justify-center
-                              <%= transaction.type === 'credit' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600' %>">
-                          <i class="fas <%= transaction.type === 'credit' ? 'fa-arrow-down' : 'fa-arrow-up' %>"></i>
-                        </div>
-                        <div class="ml-4">
-                          <p class="font-semibold">
-                            <%= transaction.description %>
-                          </p>
-                          <p class="text-sm text-gray-600">
-                            <%= new Date(transaction.date).toLocaleDateString() %>
-                          </p>
-                        </div>
-                      </div>
-                      <p class="font-semibold <%= transaction.type === 'credit' ? 'text-green-600' : 'text-red-600' %>">
-                        <%= transaction.type==='credit' ? '+' : '-' %>₹<%= transaction.amount %>
-                      </p>
+                <% if (wallet.transactions && wallet.transactions.length > 0) { %>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Transaction ID
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Description
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Date
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Amount
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <% wallet.transactions.forEach(transaction => { %>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <%= transaction.transactionId %>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            <%= transaction.description %>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <%= new Date(transaction.date).toLocaleDateString() %>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium
+                                            <%= transaction.type === 'CREDIT' ? 'text-green-600' : 'text-red-600' %>">
+                                            <%= transaction.type === 'CREDIT' ? '+' : '-' %>₹<%= transaction.amount.toFixed(2) %>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
                     </div>
-                    <% }) %>
-                </div>
+
+                    <!-- Pagination -->
+                    <% if (totalPages > 1) { %>
+                        <div class="flex justify-center mt-6 gap-2">
+                            <% for(let i = 1; i <= totalPages; i++) { %>
+                                <a href="?page=<%= i %>" 
+                                   class="px-3 py-1 rounded <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' %>">
+                                    <%= i %>
+                                </a>
+                            <% } %>
+                        </div>
+                    <% } %>
                 <% } else { %>
-                  <div class="text-center py-8">
-                    <i class="fas fa-receipt text-gray-400 text-4xl mb-4"></i>
-                    <p class="text-gray-600">No transactions yet</p>
-                  </div>
-                  <% } %>
+                    <div class="text-center py-8">
+                        <i class="fas fa-receipt text-gray-400 text-4xl mb-4"></i>
+                        <p class="text-gray-600">No transactions yet</p>
+                    </div>
+                <% } %>
             </div>
-          </div>
+        </div>
     </main>
-  </div>
+</div>
 
-  <!-- Add Money Modal -->
-  <div id="addMoneyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+<!-- Add Money Modal -->
+<div id="addMoneyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
     <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-xl font-semibold">Add Money to Wallet</h3>
-        <button onclick="hideAddMoneyModal()" class="text-gray-600 hover:text-gray-800">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-
-      <form onsubmit="addMoney(event)" class="space-y-4">
-        <div>
-          <label class="block text-gray-600 mb-2">Amount (₹)</label>
-          <input type="number" id="amount" min="1" step="1" required
-            class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold">Add Money to Wallet</h3>
+            <button onclick="hideAddMoneyModal()" class="text-gray-600 hover:text-gray-800">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
 
-        <!-- Preset Amounts -->
-        <div class="grid grid-cols-3 gap-2">
-          <button type="button" onclick="setAmount(500)" class="p-2 border rounded-lg hover:bg-gray-50">₹500</button>
-          <button type="button" onclick="setAmount(1000)" class="p-2 border rounded-lg hover:bg-gray-50">₹1000</button>
-          <button type="button" onclick="setAmount(2000)" class="p-2 border rounded-lg hover:bg-gray-50">₹2000</button>
-        </div>
+        <form onsubmit="addMoney(event)" class="space-y-4">
+            <div>
+                <label class="block text-gray-600 mb-2">Amount (₹)</label>
+                <input type="number" id="amount" min="1" step="1" required
+                       class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            </div>
 
-        <button type="submit"
-          class="w-full bg-primary-accent text-white px-6 py-3 rounded-lg hover:bg-primary-accent/90">
-          Proceed to Add Money
-        </button>
-      </form>
+            <!-- Preset Amounts -->
+            <div class="grid grid-cols-3 gap-2">
+                <button type="button" onclick="setAmount(500)" 
+                        class="p-2 border rounded-lg hover:bg-gray-50">₹500</button>
+                <button type="button" onclick="setAmount(1000)" 
+                        class="p-2 border rounded-lg hover:bg-gray-50">₹1000</button>
+                <button type="button" onclick="setAmount(2000)" 
+                        class="p-2 border rounded-lg hover:bg-gray-50">₹2000</button>
+            </div>
+
+            <button type="submit" 
+                    class="w-full bg-primary-accent text-white px-6 py-3 rounded-lg hover:bg-primary-accent/90">
+                Add Money
+            </button>
+        </form>
     </div>
-  </div>
+</div>
 
-  <script>
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      sidebar.classList.toggle('hidden');
-      sidebar.classList.toggle('fixed');
-      sidebar.classList.toggle('top-0');
-      sidebar.classList.toggle('left-0');
-      sidebar.classList.toggle('z-50');
-      sidebar.classList.toggle('h-full');
-    }
-
+<script>
     function showAddMoneyModal() {
-      document.getElementById('addMoneyModal').classList.remove('hidden');
+        document.getElementById('addMoneyModal').classList.remove('hidden');
     }
 
     function hideAddMoneyModal() {
-      document.getElementById('addMoneyModal').classList.add('hidden');
+        document.getElementById('addMoneyModal').classList.add('hidden');
     }
 
     function setAmount(amount) {
-      document.getElementById('amount').value = amount;
+        document.getElementById('amount').value = amount;
     }
 
-    function addMoney(event) {
-      event.preventDefault();
-      const amount = document.getElementById('amount').value;
+    async function addMoney(event) {
+        event.preventDefault();
+        const amount = document.getElementById('amount').value;
 
-      fetch('/account/wallet/add', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ amount })
-      }).then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            window.location.reload();
-          } else {
-            alert(data.message || 'Error adding money to wallet');
-          }
-        });
+        try {
+            const response = await axios.post('/account/wallet/add', { amount });
+            if (response.data.success) {
+                showAlert('Money added successfully', 'success');
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                showAlert(response.data.message || 'Error adding money', 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showAlert('Error adding money to wallet', 'error');
+        }
     }
-  </script>
 
-  <%- include('../partials/footer') %>
+    // Close modal when clicking outside
+    document.getElementById('addMoneyModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            hideAddMoneyModal();
+        }
+    });
+</script>
+
+<%- include('../../partials/footer') %>
