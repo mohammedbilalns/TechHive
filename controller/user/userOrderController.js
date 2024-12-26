@@ -326,7 +326,53 @@ const cancelOrderItem = async (req, res) => {
 
     // Update item status
     orderItem.status = 'cancelled';
+
+    // Handle refund if payment was made
+    if (order.paymentStatus === 'paid') {
+      // Calculate refund amount for this item
+      const itemPrice = orderItem.price;
+      const itemDiscount = orderItem.discount;
+      const quantity = orderItem.quantity;
+      const refundAmount = (itemPrice * (1 - itemDiscount/100)) * quantity;
+
+      // Create wallet transaction ID
+      const walletTransactionId = 'WTX' + nanoid(8).toUpperCase();
+
+      // Add refund to user's wallet
+      await walletModel.findOneAndUpdate(
+        { userId },
+        {
+          $inc: { balance: refundAmount },
+          $push: {
+            transactions: {
+              transactionId: walletTransactionId,
+              type: 'CREDIT',
+              amount: refundAmount,
+              description: `Refund for cancelled item in order ${order.orderId}`
+            }
+          }
+        },
+        { upsert: true }
+      );
+
+      // Set payment status to refunded for this item
+      orderItem.paymentStatus = 'refunded';
+
+  
+    }
+
     await order.save();
+
+    // Check if all items are cancelled/returned
+    const allItemsCancelledOrReturned = order.items.every(item => 
+      ['cancelled', 'returned'].includes(item.status)
+    );
+
+    // Update order payment status if all items are cancelled/returned
+    if (allItemsCancelledOrReturned && order.paymentStatus === 'paid') {
+      order.paymentStatus = 'refunded';
+      await order.save();
+    }
 
     // Restore stock for the cancelled item
     await productModel.findOneAndUpdate(

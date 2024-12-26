@@ -1,5 +1,7 @@
 import orderModel from '../../model/orderModel.js';
 import productModel from '../../model/productModel.js';
+import walletModel from '../../model/walletModel.js';
+import { nanoid } from 'nanoid';
 // Get all orders
 const getOrders = async (req, res) => {
   try {
@@ -63,6 +65,39 @@ const updateOrderItemStatus = async (req, res) => {
 
     orderItem.status = status;
 
+    // Handle refund for cancelled/returned items if payment was made
+    if (['cancelled', 'returned'].includes(status) && order.paymentStatus === 'paid') {
+      // Calculate refund amount for this item
+      const itemPrice = orderItem.price;
+      const itemDiscount = orderItem.discount;
+      const quantity = orderItem.quantity;
+      const refundAmount = (itemPrice * (1 - itemDiscount/100)) * quantity;
+
+      // Create wallet transaction ID
+      const walletTransactionId = 'WTX' + nanoid(8).toUpperCase();
+
+      // Add refund to user's wallet
+      await walletModel.findOneAndUpdate(
+        { userId: order.userId },
+        {
+          $inc: { balance: refundAmount },
+          $push: {
+            transactions: {
+              transactionId: walletTransactionId,
+              type: 'CREDIT',
+              amount: refundAmount,
+              description: `Refund for cancelled item in order ${order.orderId}`
+            }
+          }
+        },
+        { upsert: true }
+      );
+
+      // Set payment status to refunded for this item
+      orderItem.paymentStatus = 'refunded';
+
+    }
+
     // Handle stock restoration for cancelled/returned items
     if (['cancelled', 'returned'].includes(status)) {
       await productModel.findOneAndUpdate(
@@ -72,6 +107,17 @@ const updateOrderItemStatus = async (req, res) => {
     }
 
     await order.save();
+
+    // Check if all items are cancelled/returned
+    const allItemsCancelledOrReturned = order.items.every(item => 
+      ['cancelled', 'returned'].includes(item.status)
+    );
+
+    // Update order payment status if all items are cancelled/returned
+    if (allItemsCancelledOrReturned && order.paymentStatus === 'paid') {
+      order.paymentStatus = 'refunded';
+      await order.save();
+    }
 
     res.json({ success: true, message: 'Item status updated successfully' });
   } catch (error) {
