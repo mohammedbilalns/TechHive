@@ -20,7 +20,7 @@
                     <h2 class="text-xl font-semibold">Wallet Balance</h2>
                     <i class="fas fa-wallet text-2xl"></i>
                 </div>
-                <p class="text-3xl font-bold">₹<%= wallet.balance.toFixed(2) %></p>
+                <p class="text-3xl font-bold" id="walletBalance">₹<%= wallet.balance.toFixed(2) %></p>
                 <button onclick="showAddMoneyModal()" 
                         class="mt-4 bg-white text-primary-accent px-6 py-2 rounded-lg hover:bg-gray-100">
                     Add Money
@@ -188,14 +188,58 @@
         try {
             const response = await axios.post('/account/wallet/verify-payment', paymentData);
             if (response.data.success) {
+                // Update wallet balance
+                document.getElementById('walletBalance').textContent = `₹${response.data.newBalance.toFixed(2)}`;
+                
+                // Create and prepend new transaction row
+                const newTransaction = {
+                    transactionId: 'TXN' + Date.now(),
+                    description: 'Added money to wallet',
+                    date: new Date(),
+                    type: 'CREDIT',
+                    amount: paymentData.amount / 100
+                };
+                
+                prependTransaction(newTransaction);
                 showAlert('Money added successfully', 'success');
-                setTimeout(() => window.location.reload(), 1500);
+                hideAddMoneyModal();
             } else {
                 showAlert('Payment verification failed', 'error');
             }
         } catch (error) {
             console.error('Error:', error);
             showAlert('Payment verification failed', 'error');
+        }
+    }
+
+    // New helper function to prepend transaction
+    function prependTransaction(transaction) {
+        const tbody = document.querySelector('tbody');
+        if (!tbody) return;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                ${transaction.transactionId}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                ${transaction.description}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                ${new Date(transaction.date).toLocaleDateString()}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
+                +₹${transaction.amount.toFixed(2)}
+            </td>
+        `;
+
+        // Insert at the beginning of the table
+        tbody.insertBefore(tr, tbody.firstChild);
+
+        // If there was a "No transactions yet" message, remove it
+        const noTransactionsDiv = document.querySelector('.text-center.py-8');
+        if (noTransactionsDiv) {
+            noTransactionsDiv.remove();
         }
     }
 
