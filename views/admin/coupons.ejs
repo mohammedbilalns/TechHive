@@ -67,15 +67,15 @@
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div class="flex space-x-2">
                       <button onclick="editCoupon('<%= coupon._id %>')"
-                        class="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600">
+                        class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">
                         Edit
                       </button>
                       <button onclick="toggleCouponStatus('<%= coupon._id %>', '<%= coupon.isActive %>')"
-                        class="<%= coupon.isActive ? 'bg-red-500' : 'bg-green-500' %> text-white px-3 py-1 rounded-md hover:<%= coupon.isActive ? 'bg-red-600' : 'bg-green-600' %>">
+                        class="<%= coupon.isActive ? 'bg-primary-accent' : 'bg-green-700' %> text-white px-3 py-2 rounded-md hover:<%= coupon.isActive ? 'bg-red-600' : 'bg-green-800' %>">
                         <%= coupon.isActive ? 'Deactivate' : 'Activate' %>
                       </button>
                       <button onclick="deleteCoupon('<%= coupon._id %>')"
-                        class="bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600">
+                        class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">
                         Delete
                       </button>
                     </div>
