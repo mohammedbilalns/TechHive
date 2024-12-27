@@ -118,4 +118,6 @@ router.get('/profile/wallet', auth.checkSession, userWalletController.getWallet)
 router.post('/account/wallet/add', auth.checkSession, userWalletController.addMoney);
 router.post('/account/wallet/verify-payment', auth.checkSession, userWalletController.verifyWalletPayment)
 
+router.post('/profile/orders/:orderId/items/:itemId/return', userOrderController.returnOrderItem);
+
 export default router

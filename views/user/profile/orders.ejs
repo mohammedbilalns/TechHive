@@ -99,7 +99,10 @@
                               </button>
                             <% } %>
                             <% if (item.status === 'delivered') { %>
-                              <button onclick="returnOrderItem('<%= order._id %>', '<%= item._id %>')" class="text-blue-600 text-sm hover:underline ml-2">
+                              <button 
+                                onclick="openReturnModal('<%= order._id %>', '<%= item._id %>')" 
+                                class="text-blue-600 text-sm hover:underline ml-2"
+                              >
                                 Return Item
                               </button>
                             <% } %>
@@ -179,6 +182,47 @@
   </main>
 </div>
 
+<!-- Return Modal -->
+<div id="returnModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
+  <div class="bg-white p-6 rounded-lg shadow-xl w-96">
+    <h3 class="text-lg font-semibold mb-4">Return Item</h3>
+    <form id="returnForm" class="space-y-4">
+      <input type="hidden" id="returnOrderId">
+      <input type="hidden" id="returnItemId">
+      <div>
+        <label for="returnReason" class="block text-sm font-medium text-gray-700 mb-1">
+          Reason for Return
+        </label>
+        <textarea 
+          id="returnReason" 
+          class="w-full border rounded-lg p-2 focus:ring-primary-accent focus:border-primary-accent"
+          rows="3"
+          minlength="10"
+          maxlength="300"
+          required
+        ></textarea>
+        <p class="text-sm text-gray-500 mt-1">
+          <span id="charCount">0</span>/300 characters (minimum 10)
+        </p>
+      </div>
+      <div class="flex justify-end space-x-3">
+        <button 
+          type="button" 
+          onclick="closeReturnModal()"
+          class="px-4 py-2 text-gray-600 hover:text-gray-800"
+        >
+          Cancel
+        </button>
+        <button 
+          type="submit"
+          class="px-4 py-2 bg-primary-accent text-white rounded-lg hover:bg-primary-accent/90"
+        >
+          Submit Return
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <script>
   function toggleOrderDetails(orderId) {
@@ -225,6 +269,55 @@
       showAlert('Failed to submit return request', 'error');
     }
   }
+
+  function openReturnModal(orderId, itemId) {
+    document.getElementById('returnModal').classList.remove('hidden');
+    document.getElementById('returnModal').classList.add('flex');
+    document.getElementById('returnOrderId').value = orderId;
+    document.getElementById('returnItemId').value = itemId;
+  }
+
+  function closeReturnModal() {
+    document.getElementById('returnModal').classList.add('hidden');
+    document.getElementById('returnModal').classList.remove('flex');
+    document.getElementById('returnForm').reset();
+  }
+
+  // Character count for return reason
+  document.getElementById('returnReason').addEventListener('input', function(e) {
+    document.getElementById('charCount').textContent = e.target.value.length;
+  });
+
+  // Handle return form submission
+  document.getElementById('returnForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const orderId = document.getElementById('returnOrderId').value;
+    const itemId = document.getElementById('returnItemId').value;
+    const reason = document.getElementById('returnReason').value;
+
+    if (reason.length < 10) {
+      showAlert('Return reason must be at least 10 characters long', 'error');
+      return;
+    }
+
+    try {
+      const response = await axios.post(`/profile/orders/${orderId}/items/${itemId}/return`, {
+        reason: reason
+      });
+
+      if (response.data.success) {
+        showAlert('Return request submitted successfully', 'success');
+        closeReturnModal();
+        setTimeout(() => window.location.reload(), 1500);
+      } else {
+        showAlert(response.data.message || 'Failed to submit return request', 'error');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showAlert('Failed to submit return request', 'error');
+    }
+  });
 </script>
 
 <%- include('../../partials/footer') %>
