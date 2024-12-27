@@ -39,9 +39,9 @@
             <h1 class="text-2xl font-semibold text-gray-800 mb-6">My Wishlist</h1>
 
             <% if (wishlist && wishlist?.products?.length> 0) { %>
-              <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4" id="wishlist-grid">
                 <% wishlist.products.forEach(item=> { %>
-                  <div class="border rounded-lg overflow-hidden max-w-[300px]">
+                  <div class="border rounded-lg overflow-hidden max-w-[300px]" data-product-id="<%= item._id %>">
                     <!-- Product Image -->
                     <div class="relative aspect-square w-full">
                       <img src="<%= item.images[0].path %>" alt="<%= item.name %>"
@@ -119,8 +119,26 @@
       try {
         const response = await axios.post('/wishlist/remove', { productId });
         if (response.data.success) {
+          // Remove the product element from DOM
+          const productElement = document.querySelector(`[data-product-id="${productId}"]`);
+          productElement.remove();
+
+          // Check if wishlist is empty after removal
+          const wishlistGrid = document.getElementById('wishlist-grid');
+          if (wishlistGrid.children.length === 0) {
+            const emptyWishlist = `
+              <div class="text-center py-8">
+                <i class="fas fa-heart text-gray-400 text-4xl mb-4"></i>
+                <p class="text-gray-600">Your wishlist is empty</p>
+                <a href="/home" class="inline-block mt-4 bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-primary-accent/90">
+                  Continue Shopping
+                </a>
+              </div>
+            `;
+            wishlistGrid.parentElement.innerHTML = emptyWishlist;
+          }
+
           showAlert('Item removed from wishlist successfully', 'success');
-          window.location.reload();
         } else {
           showAlert(response.data.message || 'Failed to remove item', 'error');
         }
