@@ -88,13 +88,46 @@ const getOffers = async (req, res) => {
 // Get offer details
 const getOfferDetails = async (req, res) => {
     try {
-        const offer = await Offer.findById(req.params.offerId);
+        console.log('Fetching offer details for ID:', req.params.offerId);
+        
+        if (!req.params.offerId) {
+            return res.status(400).json({ success: false, message: 'Offer ID is required' });
+        }
+
+        const offer = await Offer.findById(req.params.offerId)
+            .populate('applicableCategories', '_id name')
+            .populate('applicableProducts', '_id name');
+
+        console.log('Found offer:', offer);
+
         if (!offer) {
             return res.status(404).json({ success: false, message: 'Offer not found' });
         }
-        res.json({ success: true, offer });
+
+        const response = { 
+            success: true, 
+            offer: {
+                _id: offer._id,
+                name: offer.name,
+                offerType: offer.offerType,
+                offerPercentage: offer.offerPercentage,
+                startDate: offer.startDate,
+                endDate: offer.endDate,
+                isActive: offer.isActive,
+                applicableCategories: offer.applicableCategories.map(cat => cat._id),
+                applicableProducts: offer.applicableProducts.map(prod => prod._id)
+            }
+        };
+
+        console.log('Sending response:', response);
+        res.json(response);
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Internal server error' });
+        console.error('Error fetching offer details:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Failed to fetch offer details',
+            error: error.message 
+        });
     }
 }
 

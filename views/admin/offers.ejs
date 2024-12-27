@@ -253,28 +253,56 @@
 
   async function editOffer(offerId) {
     try {
-      const response = await axios.get(`/admin/offers/${offerId}`);
-      const offer = response.data.offer;
+        console.log('Fetching offer details for ID:', offerId);
+        const response = await axios.get(`/admin/offers/${offerId}`);
+        console.log('Received response:', response.data);
 
-      document.getElementById('modalTitle').textContent = 'Edit Offer';
-      document.getElementById('offerId').value = offerId;
-      document.getElementById('name').value = offer.name;
-      document.getElementById('offerType').value = offer.offerType;
-      document.getElementById('offerPercentage').value = offer.offerPercentage;
-      document.getElementById('startDate').value = new Date(offer.startDate).toISOString().slice(0, 16);
-      document.getElementById('endDate').value = new Date(offer.endDate).toISOString().slice(0, 16);
+        if (!response.data.success) {
+            throw new Error(response.data.message || 'Failed to fetch offer details');
+        }
 
-      // Handle multi-select values
-      if (offer.offerType === 'category') {
-        document.getElementById('categories').value = offer.applicableCategories;
-      } else {
-        document.getElementById('products').value = offer.applicableProducts;
-      }
+        const offer = response.data.offer;
+        if (!offer) {
+            throw new Error('No offer data received');
+        }
 
-      handleOfferTypeChange();
-      openModal();
+        document.getElementById('modalTitle').textContent = 'Edit Offer';
+        document.getElementById('offerId').value = offerId;
+        document.getElementById('name').value = offer.name;
+        document.getElementById('offerType').value = offer.offerType;
+        document.getElementById('offerPercentage').value = offer.offerPercentage;
+        document.getElementById('startDate').value = new Date(offer.startDate).toISOString().slice(0, 16);
+        document.getElementById('endDate').value = new Date(offer.endDate).toISOString().slice(0, 16);
+
+        handleOfferTypeChange();
+
+        // Handle multi-select values
+        if (offer.offerType === 'category') {
+            const categorySelect = document.getElementById('categories');
+            Array.from(categorySelect.options).forEach(option => option.selected = false);
+            offer.applicableCategories.forEach(categoryId => {
+                const option = categorySelect.querySelector(`option[value="${categoryId}"]`);
+                if (option) {
+                    option.selected = true;
+                    console.log('Selected category:', categoryId);
+                }
+            });
+        } else {
+            const productSelect = document.getElementById('products');
+            Array.from(productSelect.options).forEach(option => option.selected = false);
+            offer.applicableProducts.forEach(productId => {
+                const option = productSelect.querySelector(`option[value="${productId}"]`);
+                if (option) {
+                    option.selected = true;
+                    console.log('Selected product:', productId);
+                }
+            });
+        }
+
+        openModal();
     } catch (error) {
-      showAlert(error.response?.data?.message || 'Failed to fetch offer details', 'error');
+        console.error('Error in editOffer:', error);
+        showAlert(error.response?.data?.message || error.message || 'Failed to fetch offer details', 'error');
     }
   }
 
@@ -388,18 +416,9 @@
     }
   }
 
-  // Initialize select2 for multiple select boxes if you're using it
-  if (typeof $.fn.select2 !== 'undefined') {
-    $('#categories').select2({
-      placeholder: 'Select categories',
-      width: '100%'
-    });
-
-    $('#products').select2({
-      placeholder: 'Select products',
-      width: '100%'
-    });
-  }
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add any necessary initialization here
+  });
 </script>
 
 <%- include('../partials/adminfooter') %>
