@@ -476,63 +476,21 @@ const returnOrderItem = async (req, res) => {
       return res.json({ success: false, message: 'Order item not found' });
     }
 
-    // Check if item can be returned (must be delivered and within return window)
+    // Check if item can be returned
     if (orderItem.status !== 'delivered') {
       return res.json({ success: false, message: 'Item cannot be returned' });
     }
 
-    // Optional: Add a return window check (e.g., 7 days)
-    const deliveryDate = new Date(order.deliveryDate);
-    const returnWindow = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
-    if (Date.now() - deliveryDate > returnWindow) {
-      return res.json({ success: false, message: 'Return window has expired' });
-    }
-
-    // Update item status and add return information
-    orderItem.status = 'returned';
+    // Update item status to return_requested and add return information
+    orderItem.status = 'return_requested';
     orderItem.return = {
       reason: reason,
       requestedAt: new Date()
     };
 
-    // Handle refund if payment was made
-    if (order.paymentStatus === 'paid') {
-      const itemPrice = orderItem.price;
-      const itemDiscount = orderItem.discount;
-      const quantity = orderItem.quantity;
-      const refundAmount = (itemPrice * (1 - itemDiscount/100)) * quantity;
-
-      const walletTransactionId = 'WTX' + nanoid(8).toUpperCase();
-
-      // Add refund to user's wallet
-      await walletModel.findOneAndUpdate(
-        { userId },
-        {
-          $inc: { balance: refundAmount },
-          $push: {
-            transactions: {
-              transactionId: walletTransactionId,
-              type: 'CREDIT',
-              amount: refundAmount,
-              description: `Refund for returned item in order ${order.orderId}`
-            }
-          }
-        },
-        { upsert: true }
-      );
-
-      orderItem.paymentStatus = 'refunded';
-    }
-
     await order.save();
 
-    // Restore stock for the returned item
-    await productModel.findOneAndUpdate(
-      { name: orderItem.name },
-      { $inc: { stock: orderItem.quantity } }
-    );
-
-    res.json({ success: true, message: 'Return request processed successfully' });
+    res.json({ success: true, message: 'Return request submitted successfully' });
 
   } catch (error) {
     console.error('Return order item error:', error);

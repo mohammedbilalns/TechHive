@@ -56,18 +56,20 @@ const updateOrderItemStatus = async (req, res) => {
     const validTransitions = {
       'pending': ['processing', 'shipped', 'delivered', 'cancelled'],
       'processing': ['shipped', 'delivered', 'cancelled'],
-      'shipped': ['delivered', 'cancelled', 'returned']
+      'shipped': ['delivered', 'cancelled'],
+      'delivered': ['return_requested'],
+      'return_requested': ['returned', 'delivered'], // Can either approve or reject return
+      'returned': [],
+      'cancelled': []
     };
 
     if (!validTransitions[orderItem.status]?.includes(status)) {
       return res.status(400).json({ success: false, message: 'Invalid status transition' });
     }
 
-    orderItem.status = status;
-
-    // Handle refund for cancelled/returned items if payment was made
-    if (['cancelled', 'returned'].includes(status) && order.paymentStatus === 'paid') {
-      // Calculate refund amount for this item
+    // Handle return approval
+    if (status === 'returned' && orderItem.status === 'return_requested') {
+      // Calculate refund amount
       const itemPrice = orderItem.price;
       const itemDiscount = orderItem.discount;
       const quantity = orderItem.quantity;
@@ -86,35 +88,31 @@ const updateOrderItemStatus = async (req, res) => {
               transactionId: walletTransactionId,
               type: 'CREDIT',
               amount: refundAmount,
-              description: `Refund for cancelled item in order ${order.orderId}`
+              description: `Refund for returned item in order ${order.orderId}`
             }
           }
         },
         { upsert: true }
       );
 
-      // Set payment status to refunded for this item
-      orderItem.paymentStatus = 'refunded';
-
-    }
-
-    // Handle stock restoration for cancelled/returned items
-    if (['cancelled', 'returned'].includes(status)) {
+      // Update product stock
       await productModel.findOneAndUpdate(
         { name: orderItem.name },
         { $inc: { stock: orderItem.quantity } }
       );
+
+      orderItem.paymentStatus = 'refunded';
     }
 
+    orderItem.status = status;
     await order.save();
 
-    // Check if all items are cancelled/returned
-    const allItemsCancelledOrReturned = order.items.every(item => 
+    // Check if all items are returned/cancelled and update order payment status
+    const allItemsReturnedOrCancelled = order.items.every(item => 
       ['cancelled', 'returned'].includes(item.status)
     );
 
-    // Update order payment status if all items are cancelled/returned
-    if (allItemsCancelledOrReturned && order.paymentStatus === 'paid') {
+    if (allItemsReturnedOrCancelled && order.paymentStatus === 'paid') {
       order.paymentStatus = 'refunded';
       await order.save();
     }
@@ -130,3 +128,4 @@ export default {
   getOrders,
   updateOrderItemStatus
 };
+

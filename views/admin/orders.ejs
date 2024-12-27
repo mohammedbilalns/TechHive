@@ -142,42 +142,30 @@
                                             </span>
                                           </p>
                                           <div class="mt-2 flex items-center">
-                                            <% if (item.status !=='cancelled' ) { %>
+                                            <% if (!['delivered', 'cancelled', 'returned'].includes(item.status)) { %>
                                               <select id="status-<%= order._id %>-<%= item._id %>"
                                                 class="border rounded px-2 py-1 text-sm mr-2">
-                                                <% if (item.status==='pending' ) { %>
-                                                  <option value="pending" selected>Pending</option>
-                                                  <option value="processing">Processing</option>
+                                                <% if (item.status === 'pending') { %>
                                                   <option value="shipped">Shipped</option>
                                                   <option value="delivered">Delivered</option>
                                                   <option value="cancelled">Cancelled</option>
+                                                <% } else if (item.status === 'processing') { %>
+                                                  <option value="shipped">Shipped</option>
+                                                  <option value="delivered">Delivered</option>
+                                                  <option value="cancelled">Cancelled</option>
+                                                <% } else if (item.status === 'shipped') { %>
+                                                  <option value="delivered">Delivered</option>
+                                                  <option value="cancelled">Cancelled</option>
+                                                <% } else if (item.status === 'return_requested') { %>
                                                   <option value="returned">Returned</option>
-                                                  <% } else if (item.status==='processing' ) { %>
-                                                    <option value="processing" selected>Processing</option>
-                                                    <option value="shipped">Shipped</option>
-                                                    <option value="delivered">Delivered</option>
-                                                    <option value="cancelled">Cancelled</option>
-                                                    <option value="returned">Returned</option>
-                                                    <% } else if (item.status==='shipped' ) { %>
-                                                      <option value="shipped" selected>Shipped</option>
-                                                      <option value="delivered">Delivered</option>
-                                                      <option value="cancelled">Cancelled</option>
-                                                      <option value="returned">Returned</option>
-                                                      <% } else if (item.status==='delivered' ) { %>
-                                                        <option value="delivered" selected>Delivered</option>
-                                                        <option value="returned">Returned</option>
-                                                        <% } else if (item.status==='returned' ) { %>
-                                                          <option value="returned" selected>Returned</option>
-                                                          <% } %>
-                                              </select>
-                                              <% if (!['cancelled', 'returned' ].includes(item.status)) { %>
-                                                <button
-                                                  onclick="updateItemStatus('<%= order._id %>', '<%= item._id %>')"
-                                                  class="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600">
-                                                  Update
-                                                </button>
                                                 <% } %>
-                                                  <% } %>
+                                              </select>
+                                              <button
+                                                onclick="updateItemStatus('<%= order._id %>', '<%= item._id %>')"
+                                                class="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600">
+                                                Update
+                                              </button>
+                                            <% } %>
                                           </div>
                                         </div>
                                       </div>
@@ -306,10 +294,9 @@
           const response = await axios.post(`/admin/orders/${orderId}/items/${itemId}/update-status`, { status });
 
           if (response.data.success) {
-            // Update the status text and color in the UI
             const statusElement = document.querySelector(`#status-${orderId}-${itemId}`).parentElement
               .previousElementSibling.querySelector('span');
-            const selectElement = document.getElementById(`status-${orderId}-${itemId}`);
+            const controlsContainer = document.getElementById(`status-${orderId}-${itemId}`).parentElement;
 
             // Update the status text
             statusElement.textContent = status.charAt(0).toUpperCase() + status.slice(1);
@@ -324,34 +311,34 @@
               'returned': 'text-gray-600',
               'shipped': 'text-blue-600',
               'processing': 'text-yellow-600',
-              'pending': 'text-purple-600'
+              'pending': 'text-purple-600',
+              'return_requested': 'text-orange-600'
             };
 
             statusElement.classList.add(statusColors[status] || 'text-gray-600');
 
-            // Update dropdown options based on new status
-            selectElement.innerHTML = ''; // Clear existing options
-
+            // Define available options for each new status
             const availableOptions = {
-              'pending': ['processing', 'shipped', 'delivered', 'cancelled', 'returned'],
-              'processing': ['shipped', 'delivered', 'cancelled', 'returned'],
-              'shipped': ['delivered', 'cancelled', 'returned'],
-              'delivered': ['returned'],
-              'returned': [],
-              'cancelled': []
+              'pending': ['shipped', 'delivered', 'cancelled'],
+              'processing': ['shipped', 'delivered', 'cancelled'],
+              'shipped': ['delivered', 'cancelled'],
+              'return_requested': ['returned']
             };
 
-            const options = availableOptions[status] || [];
-            options.forEach(option => {
-              const optionElement = document.createElement('option');
-              optionElement.value = option;
-              optionElement.textContent = option.charAt(0).toUpperCase() + option.slice(1);
-              selectElement.appendChild(optionElement);
-            });
-
-            // If status is cancelled or returned, remove the update controls
-            if (['cancelled', 'returned'].includes(status)) {
-              const controlsContainer = document.getElementById(`status-${orderId}-${itemId}`).parentElement;
+            // If the new status has available next options, update the dropdown
+            if (availableOptions[status]) {
+              const selectElement = document.getElementById(`status-${orderId}-${itemId}`);
+              selectElement.innerHTML = ''; // Clear existing options
+              
+              availableOptions[status].forEach(option => {
+                const optionElement = document.createElement('option');
+                optionElement.value = option;
+                optionElement.textContent = option === 'returned' ? 'Approve Return' : 
+                  option.charAt(0).toUpperCase() + option.slice(1);
+                selectElement.appendChild(optionElement);
+              });
+            } else {
+              // If status is delivered, cancelled, or returned, remove the controls
               controlsContainer.innerHTML = '';
             }
 
