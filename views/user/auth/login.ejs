@@ -76,24 +76,7 @@
     
     const email = document.querySelector('input[name="email"]');
     const password = document.querySelector('input[name="password"]');
-    let isValid = true;
-
-    // Email validation
-    if (!email.value.trim()) {
-      showAlert('Email is required.', 'error');
-      isValid = false;
-    } else if (!/^\S+@\S+\.\S+$/.test(email.value)) {
-      showAlert('Enter a valid email address.', 'error');
-      isValid = false;
-    }
-
-    // Password validation
-    if (!password.value.trim()) {
-      showAlert('Password is required.', 'error');
-      isValid = false;
-    }
-
-    if (!isValid) return;
+    
 
     try {
       const response = await axios.post('/login', {
@@ -112,11 +95,11 @@
     }
   });
 
+  // toggle password visibility
   document.getElementById('togglePassword').addEventListener('click', function() {
     const passwordInput = document.querySelector('input[name="password"]');
     const eyeIcon = this.querySelector('i');
     
-    // Toggle password visibility
     if (passwordInput.type === 'password') {
       passwordInput.type = 'text';
       eyeIcon.classList.remove('fa-eye');

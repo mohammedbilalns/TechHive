@@ -9,7 +9,10 @@
  const isValidPincode = (pincode) => {
     return /^\d{6}$/.test(pincode);
 };
+const isValidEmail = (email) => {
+    return  /^\S+@\S+\.\S+$/.test(email)
+}
 
 
 
-export default { isValidName, isValidPhone, isValidPincode}
+export default { isValidName, isValidPhone, isValidPincode, isValidEmail}

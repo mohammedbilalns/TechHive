@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import authUtils from "../../utils/authUtils.js";
 import { config } from "dotenv";
 import passport from "passport";
+import validation from "../../utils/validations.js"
 config();
 
 // ---- User Login ----  
@@ -18,16 +19,30 @@ const loadLogin = (req, res) => {
 const verifyLogin = async (req, res) => {
     try {
         let { email, password } = req.body;
-        email = email.trim()
-        password = password.trim()
-        const user = await userSchema.findOne({ email });
+
+       
+        const user = await userSchema.findOne({ email });// find the user 
+
+        if(!email || !password){
+            return res.status(401).json({
+                success: false , 
+                message : "Fill all the required fields"
+            })
+        } // check all fields are filled 
+
+        if(! validation.isValidEmail(email)){
+            return res.status(401).json({
+                success: false , 
+                message : "Enter a valid email address"
+            })
+        } // check the email is in vaid format 
 
         if (!user) {
             return res.status(401).json({
                 success: false,
                 message: 'Email or password is incorrect. Please try again.'
             });
-        }
+        } 
 
         // Check if user's status is pending and delete if found
         if (user.status === "Pending") {
