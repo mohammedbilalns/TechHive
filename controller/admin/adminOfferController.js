@@ -20,6 +20,23 @@ const updateProductDiscounts = async (offer, remove = false) => {
     }
 };
 
+const checkExistingOffers = async (offerType, items, startDate, endDate, excludeOfferId = null) => {
+    const query = {
+        isActive: true,
+        _id: { $ne: excludeOfferId },
+        startDate: { $lte: endDate },
+        endDate: { $gte: startDate }
+    };
+
+    if (offerType === 'product') {
+        query.applicableProducts = { $in: items };
+    } else {
+        query.applicableCategories = { $in: items };
+    }
+
+    const existingOffer = await Offer.findOne(query);
+    return existingOffer;
+};
 
 const getOffers = async (req, res) => {
     try {
@@ -94,6 +111,17 @@ const addOffer = async (req, res) => {
             products
         } = req.body;
 
+        // Check for existing active offers
+        const items = offerType === 'category' ? categories : products;
+        const existingOffer = await checkExistingOffers(offerType, items, startDate, endDate);
+
+        if (existingOffer) {
+            return res.status(400).json({
+                success: false,
+                message: `An active offer is already exists for some of the selected ${offerType}s`
+            });
+        }
+
         const newOffer = new Offer({
             name,
             offerType,
@@ -161,6 +189,28 @@ const toggleOfferStatus = async (req, res) => {
         const offer = await Offer.findById(req.params.offerId);
         if (!offer) {
             return res.status(404).json({ success: false, message: 'Offer not found' });
+        }
+
+        // Only check for conflicts when activating
+        if (!offer.isActive) {
+            const items = offer.offerType === 'category' ? 
+                offer.applicableCategories : 
+                offer.applicableProducts;
+
+            const existingOffer = await checkExistingOffers(
+                offer.offerType,
+                items,
+                offer.startDate,
+                offer.endDate,
+                offer._id
+            );
+
+            if (existingOffer) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Cannot activate: Offer is already active for some of the selected ${offer.offerType}s`
+                });
+            }
         }
 
         offer.isActive = !offer.isActive;
