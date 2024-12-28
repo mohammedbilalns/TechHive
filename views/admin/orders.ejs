@@ -342,6 +342,20 @@
               controlsContainer.innerHTML = '';
             }
 
+            // Check if all items in this order are delivered
+            const orderContainer = document.getElementById(`details-${orderId}`);
+            const allStatusSpans = orderContainer.querySelectorAll('.font-medium');
+            const allDelivered = Array.from(allStatusSpans).every(span => 
+              span.textContent.trim().toLowerCase() === 'delivered'
+            );
+
+            // If all items are delivered, update the order payment status
+            if (allDelivered) {
+              const paymentStatusCell = document.querySelector(`tr:has(#toggle-${orderId}) td:nth-child(6) span`);
+              paymentStatusCell.textContent = 'paid';
+              paymentStatusCell.className = 'px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800';
+            }
+
             showAlert('Item status updated successfully', 'success');
           } else {
             showAlert(response.data.message || 'Failed to update status', 'error');

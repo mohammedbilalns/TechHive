@@ -79,7 +79,10 @@ const placeOrder = async (req, res) => {
     const order = new orderModel({
       orderId,
       userId,
-      items: orderItems,
+      items: orderItems.map(item => ({
+        ...item,
+        status: (paymentMethod === 'cod' || paymentMethod === 'wallet') ? 'processing' : 'pending'
+      })),
       totalAmount: finalAmount,
       paymentMethod,
       shippingAddress: {

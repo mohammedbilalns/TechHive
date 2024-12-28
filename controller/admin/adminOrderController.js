@@ -119,6 +119,16 @@ const updateOrderItemStatus = async (req, res) => {
     orderItem.status = status;
     await order.save();
 
+    // Check if all items are delivered and update order payment status
+    const allItemsDelivered = order.items.every(item => 
+      item.status === 'delivered'
+    );
+
+    if (allItemsDelivered) {
+      order.paymentStatus = 'paid';
+      await order.save();
+    }
+
     // Check if all items are returned/cancelled and update order payment status
     const allItemsReturnedOrCancelled = order.items.every(item => 
       ['cancelled', 'returned'].includes(item.status)

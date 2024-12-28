@@ -91,18 +91,18 @@
           <div class="px-6 py-4 flex justify-center">
             <nav class="flex space-x-2">
               <% if (hasPrevPage) { %>
-                <a href="/admin/coupons?page=<%= currentPage - 1 %>" class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300">Previous</a>
+                <a href="/admin/coupons?page=<%= currentPage - 1 %>" class="px-3 py-1 rounded-md bg-primary-accent text-white hover:bg-red-600">Previous</a>
               <% } %>
               
               <% for(let i = 1; i <= totalPages; i++) { %>
                 <a href="/admin/coupons?page=<%= i %>" 
-                  class="px-3 py-1 rounded-md <%= currentPage === i ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300' %>">
+                  class="px-3 py-1 rounded-md <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-primary-accent text-white hover:bg-red-600' %>">
                   <%= i %>
                 </a>
               <% } %>
               
               <% if (hasNextPage) { %>
-                <a href="/admin/coupons?page=<%= currentPage + 1 %>" class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300">Next</a>
+                <a href="/admin/coupons?page=<%= currentPage + 1 %>" class="px-3 py-1 rounded-md bg-primary-accent text-white hover:bg-red-600">Next</a>
               <% } %>
             </nav>
           </div>
