@@ -4,246 +4,244 @@ import ExcelJS from 'exceljs';
 import PDFDocument from 'pdfkit';
 import {log} from "mercedlogger"
 
-const adminSalesreportController = {
-  async renderSalesReport(req, res) {
-    try {
-      res.render('admin/salesreport', {
-        page: "salesreport"  // For active sidebar menu highlighting
-      });
-    } catch (error) {
-      log.red('ERROR_RENDERING_SALES_REPORT_PAGE', error);
-      res.status(500).send('Error loading sales report page');
-    }
-  },
-
-  async getSalesReportData(req, res) {
-    try {
-      const { filterType, startDate, endDate } = req.query;
-      let dateFilter = {};
-
-      // Set date filter based on filter type
-      switch (filterType) {
-        case 'daily':
-          dateFilter = {
-            orderDate: {
-              $gte: new Date(new Date().setHours(0, 0, 0)),
-              $lt: new Date(new Date().setHours(23, 59, 59))
-            }
-          };
-          break;
-        case 'weekly':
-          const weekStart = new Date();
-          weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-          dateFilter = {
-            orderDate: {
-              $gte: new Date(weekStart.setHours(0, 0, 0)),
-              $lt: new Date()
-            }
-          };
-          break;
-        case 'monthly':
-          const monthStart = new Date();
-          monthStart.setDate(1);
-          dateFilter = {
-            orderDate: {
-              $gte: new Date(monthStart.setHours(0, 0, 0)),
-              $lt: new Date()
-            }
-          };
-          break;
-        case 'yearly':
-          const yearStart = new Date(new Date().getFullYear(), 0, 1);
-          dateFilter = {
-            orderDate: {
-              $gte: new Date(yearStart.setHours(0, 0, 0)),
-              $lt: new Date()
-            }
-          };
-          break;
-        case 'custom':
-          if (startDate && endDate) {
-            dateFilter = {
-              orderDate: {
-                $gte: new Date(startDate),
-                $lt: new Date(new Date(endDate).setHours(23, 59, 59))
-              }
-            };
-          }
-          break;
-      }
-
-      // Fetch orders with date filter
-      const orders = await Order.find(dateFilter)
-        .populate('userId', 'fullname')
-        .sort({ orderDate: -1 });
-
-      // Calculate summary
-      let totalSales = 0;
-      let totalDiscounts = 0;
-
-      const formattedOrders = await Promise.all(orders.map(order => {
-        // Calculate coupon discount
-        const couponDiscount = order.coupon?.discount || 0;
-        
-        // Calculate total offer discount from all items
-        const offerDiscount = order.items.reduce((total, item) => {
-          // Calculate discount amount for each item based on percentage
-          const itemDiscountAmount = (item.price * (item.discount/100)) * item.quantity;
-          return total + itemDiscountAmount;
-        }, 0);
-
-        // Calculate total discount
-        const totalDiscount = couponDiscount + offerDiscount;
-        
-        // Calculate original amount (before discounts)
-        const originalAmount = order.totalAmount + totalDiscount;
-        
-        totalSales += order.totalAmount;
-        totalDiscounts += totalDiscount;
-
-        return {
-          orderId: order.orderId,
-          orderDate: order.orderDate,
-          customer: order.userId.fullname,
-          itemCount: order.items.length,
-          totalAmount: originalAmount,
-          discount: {
-            coupon: couponDiscount,
-            offer: offerDiscount,
-            total: totalDiscount
-          },
-          netAmount: order.totalAmount
-        };
-      }));
-
-      res.json({
-        totalOrders: orders.length,
-        totalSales: totalSales + totalDiscounts,
-        totalDiscounts,
-        netRevenue: totalSales,
-        orders: formattedOrders
-      });
-
-    } catch (error) {
-      log.red('Sales report error:', error);
-      res.status(500).json({ message: 'Failed to generate sales report' });
-    }
-  },
-
-  async downloadReport(req, res) {
-    try {
-      const { format, filterType, startDate, endDate } = req.query;
-      let dateFilter = {};
-
-      // Set date filter based on filter type (same logic as getSalesReportData)
-      switch (filterType) {
-        case 'daily':
-          dateFilter = {
-            orderDate: {
-              $gte: new Date(new Date().setHours(0, 0, 0)),
-              $lt: new Date(new Date().setHours(23, 59, 59))
-            }
-          };
-          break;
-        case 'weekly':
-          const weekStart = new Date();
-          weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-          dateFilter = {
-            orderDate: {
-              $gte: new Date(weekStart.setHours(0, 0, 0)),
-              $lt: new Date()
-            }
-          };
-          break;
-        case 'monthly':
-          const monthStart = new Date();
-          monthStart.setDate(1);
-          dateFilter = {
-            orderDate: {
-              $gte: new Date(monthStart.setHours(0, 0, 0)),
-              $lt: new Date()
-            }
-          };
-          break;
-        case 'yearly':
-          const yearStart = new Date(new Date().getFullYear(), 0, 1);
-          dateFilter = {
-            orderDate: {
-              $gte: new Date(yearStart.setHours(0, 0, 0)),
-              $lt: new Date()
-            }
-          };
-          break;
-        case 'custom':
-          if (startDate && endDate) {
-            dateFilter = {
-              orderDate: {
-                $gte: new Date(startDate),
-                $lt: new Date(new Date(endDate).setHours(23, 59, 59))
-              }
-            };
-          }
-          break;
-      }
-
-      // Fetch orders
-      const orders = await Order.find(dateFilter)
-        .populate('userId', 'fullname')
-        .sort({ orderDate: -1 });
-
-      const formattedOrders = orders.map(order => {
-        const couponDiscount = order.coupon?.discount || 0;
-        const offerDiscount = order.items.reduce((total, item) => {
-          // Calculate discount amount for each item based on percentage
-          const itemDiscountAmount = (item.price * (item.discount/100)) * item.quantity;
-          return total + itemDiscountAmount;
-        }, 0);
-        const totalDiscount = couponDiscount + offerDiscount;
-
-        return {
-          orderId: order.orderId,
-          orderDate: order.orderDate,
-          customer: order.userId.fullname,
-          itemCount: order.items.length,
-          totalAmount: order.totalAmount + totalDiscount,
-          couponDiscount: couponDiscount,
-          offerDiscount: offerDiscount,
-          totalDiscount: totalDiscount,
-          netAmount: order.totalAmount
-        };
-      });
-
-      // Calculate totals
-      const totals = formattedOrders.reduce((acc, order) => ({
-        totalOrders: acc.totalOrders + 1,
-        totalAmount: acc.totalAmount + order.totalAmount,
-        totalCouponDiscounts: acc.totalCouponDiscounts + order.couponDiscount,
-        totalOfferDiscounts: acc.totalOfferDiscounts + order.offerDiscount,
-        totalDiscounts: acc.totalDiscounts + order.totalDiscount,
-        netAmount: acc.netAmount + order.netAmount
-      }), { 
-        totalOrders: 0, 
-        totalAmount: 0, 
-        totalCouponDiscounts: 0,
-        totalOfferDiscounts: 0,
-        totalDiscounts: 0, 
-        netAmount: 0 
-      });
-
-      if (format === 'excel') {
-        await generateExcelReport(res, formattedOrders, totals, filterType);
-      } else if (format === 'pdf') {
-        await generatePDFReport(res, formattedOrders, totals, filterType);
-      }
-
-    } catch (error) {
-      log.red('DOWNLOAD_REPORT_ERROR', error);
-      res.status(500).json({ message: 'Failed to download report' });
-    }
+const renderSalesReport = async (req, res) => {
+  try {
+    res.render('admin/salesreport', {
+      page: "salesreport"
+    });
+  } catch (error) {
+    log.red('ERROR_RENDERING_SALES_REPORT_PAGE', error);
+    res.status(500).send('Error loading sales report page');
   }
 };
 
-async function generateExcelReport(res, orders, totals, filterType) {
+const getSalesReportData = async (req, res) => {
+  try {
+    const { filterType, startDate, endDate } = req.query;
+    let dateFilter = {};
+
+    // Set date filter based on filter type
+    switch (filterType) {
+      case 'daily':
+        dateFilter = {
+          orderDate: {
+            $gte: new Date(new Date().setHours(0, 0, 0)),
+            $lt: new Date(new Date().setHours(23, 59, 59))
+          }
+        };
+        break;
+      case 'weekly':
+        const weekStart = new Date();
+        weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+        dateFilter = {
+          orderDate: {
+            $gte: new Date(weekStart.setHours(0, 0, 0)),
+            $lt: new Date()
+          }
+        };
+        break;
+      case 'monthly':
+        const monthStart = new Date();
+        monthStart.setDate(1);
+        dateFilter = {
+          orderDate: {
+            $gte: new Date(monthStart.setHours(0, 0, 0)),
+            $lt: new Date()
+          }
+        };
+        break;
+      case 'yearly':
+        const yearStart = new Date(new Date().getFullYear(), 0, 1);
+        dateFilter = {
+          orderDate: {
+            $gte: new Date(yearStart.setHours(0, 0, 0)),
+            $lt: new Date()
+          }
+        };
+        break;
+      case 'custom':
+        if (startDate && endDate) {
+          dateFilter = {
+            orderDate: {
+              $gte: new Date(startDate),
+              $lt: new Date(new Date(endDate).setHours(23, 59, 59))
+            }
+          };
+        }
+        break;
+    }
+
+    // Fetch orders with date filter
+    const orders = await Order.find(dateFilter)
+      .populate('userId', 'fullname')
+      .sort({ orderDate: -1 });
+
+    // Calculate summary
+    let totalSales = 0;
+    let totalDiscounts = 0;
+
+    const formattedOrders = await Promise.all(orders.map(order => {
+      // Calculate coupon discount
+      const couponDiscount = order.coupon?.discount || 0;
+      
+      // Calculate total offer discount from all items
+      const offerDiscount = order.items.reduce((total, item) => {
+        // Calculate discount amount for each item based on percentage
+        const itemDiscountAmount = (item.price * (item.discount/100)) * item.quantity;
+        return total + itemDiscountAmount;
+      }, 0);
+
+      // Calculate total discount
+      const totalDiscount = couponDiscount + offerDiscount;
+      
+      // Calculate original amount (before discounts)
+      const originalAmount = order.totalAmount + totalDiscount;
+      
+      totalSales += order.totalAmount;
+      totalDiscounts += totalDiscount;
+
+      return {
+        orderId: order.orderId,
+        orderDate: order.orderDate,
+        customer: order.userId.fullname,
+        itemCount: order.items.length,
+        totalAmount: originalAmount,
+        discount: {
+          coupon: couponDiscount,
+          offer: offerDiscount,
+          total: totalDiscount
+        },
+        netAmount: order.totalAmount
+      };
+    }));
+
+    res.json({
+      totalOrders: orders.length,
+      totalSales: totalSales + totalDiscounts,
+      totalDiscounts,
+      netRevenue: totalSales,
+      orders: formattedOrders
+    });
+
+  } catch (error) {
+    log.red('Sales report error:', error);
+    res.status(500).json({ message: 'Failed to generate sales report' });
+  }
+};
+
+const downloadReport = async (req, res) => {
+  try {
+    const { format, filterType, startDate, endDate } = req.query;
+    let dateFilter = {};
+
+    // Set date filter based on filter type (same logic as getSalesReportData)
+    switch (filterType) {
+      case 'daily':
+        dateFilter = {
+          orderDate: {
+            $gte: new Date(new Date().setHours(0, 0, 0)),
+            $lt: new Date(new Date().setHours(23, 59, 59))
+          }
+        };
+        break;
+      case 'weekly':
+        const weekStart = new Date();
+        weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+        dateFilter = {
+          orderDate: {
+            $gte: new Date(weekStart.setHours(0, 0, 0)),
+            $lt: new Date()
+          }
+        };
+        break;
+      case 'monthly':
+        const monthStart = new Date();
+        monthStart.setDate(1);
+        dateFilter = {
+          orderDate: {
+            $gte: new Date(monthStart.setHours(0, 0, 0)),
+            $lt: new Date()
+          }
+        };
+        break;
+      case 'yearly':
+        const yearStart = new Date(new Date().getFullYear(), 0, 1);
+        dateFilter = {
+          orderDate: {
+            $gte: new Date(yearStart.setHours(0, 0, 0)),
+            $lt: new Date()
+          }
+        };
+        break;
+      case 'custom':
+        if (startDate && endDate) {
+          dateFilter = {
+            orderDate: {
+              $gte: new Date(startDate),
+              $lt: new Date(new Date(endDate).setHours(23, 59, 59))
+            }
+          };
+        }
+        break;
+    }
+
+    // Fetch orders
+    const orders = await Order.find(dateFilter)
+      .populate('userId', 'fullname')
+      .sort({ orderDate: -1 });
+
+    const formattedOrders = orders.map(order => {
+      const couponDiscount = order.coupon?.discount || 0;
+      const offerDiscount = order.items.reduce((total, item) => {
+        // Calculate discount amount for each item based on percentage
+        const itemDiscountAmount = (item.price * (item.discount/100)) * item.quantity;
+        return total + itemDiscountAmount;
+      }, 0);
+      const totalDiscount = couponDiscount + offerDiscount;
+
+      return {
+        orderId: order.orderId,
+        orderDate: order.orderDate,
+        customer: order.userId.fullname,
+        itemCount: order.items.length,
+        totalAmount: order.totalAmount + totalDiscount,
+        couponDiscount: couponDiscount,
+        offerDiscount: offerDiscount,
+        totalDiscount: totalDiscount,
+        netAmount: order.totalAmount
+      };
+    });
+
+    // Calculate totals
+    const totals = formattedOrders.reduce((acc, order) => ({
+      totalOrders: acc.totalOrders + 1,
+      totalAmount: acc.totalAmount + order.totalAmount,
+      totalCouponDiscounts: acc.totalCouponDiscounts + order.couponDiscount,
+      totalOfferDiscounts: acc.totalOfferDiscounts + order.offerDiscount,
+      totalDiscounts: acc.totalDiscounts + order.totalDiscount,
+      netAmount: acc.netAmount + order.netAmount
+    }), { 
+      totalOrders: 0, 
+      totalAmount: 0, 
+      totalCouponDiscounts: 0,
+      totalOfferDiscounts: 0,
+      totalDiscounts: 0, 
+      netAmount: 0 
+    });
+
+    if (format === 'excel') {
+      await generateExcelReport(res, formattedOrders, totals, filterType);
+    } else if (format === 'pdf') {
+      await generatePDFReport(res, formattedOrders, totals, filterType);
+    }
+
+  } catch (error) {
+    log.red('DOWNLOAD_REPORT_ERROR', error);
+    res.status(500).json({ message: 'Failed to download report' });
+  }
+};
+
+const generateExcelReport = async (res, orders, totals, filterType) => {
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet('Sales Report');
 
@@ -313,9 +311,9 @@ async function generateExcelReport(res, orders, totals, filterType) {
 
   // Write to response
   await workbook.xlsx.write(res);
-}
+};
 
-async function generatePDFReport(res, orders, totals, filterType) {
+const generatePDFReport = async (res, orders, totals, filterType) => {
   const doc = new PDFDocument({ margin: 30, size: 'A4' });
   
   // Set response headers
@@ -391,6 +389,12 @@ async function generatePDFReport(res, orders, totals, filterType) {
 
   // Finalize PDF
   doc.end();
-}
+};
 
-export default adminSalesreportController;
+export  default {
+  renderSalesReport,
+  getSalesReportData,
+  downloadReport,
+  generateExcelReport,
+  generatePDFReport
+};

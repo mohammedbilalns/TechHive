@@ -7,7 +7,7 @@ const fetchCartQuantity = async (req,res, next)=>{
         if(req.session.user){
             const userid = req.session.user.id 
             const cart = await cartSchema.findOne({user: userid})
-            const totalQuantity = cart.items.reduce((sum , item)=> sum+ item.quantity,0)
+            const totalQuantity = cart?.items.reduce((sum , item)=> sum+ item.quantity,0)
             res.locals.cartQuantity = totalQuantity
         }else {
             res.locals.cartQuantity = 0 
