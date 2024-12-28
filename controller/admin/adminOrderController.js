@@ -69,11 +69,22 @@ const updateOrderItemStatus = async (req, res) => {
 
     // Handle return approval
     if (status === 'returned' && orderItem.status === 'return_requested') {
-      // Calculate refund amount
+      // Calculate base refund amount for this item
       const itemPrice = orderItem.price;
       const itemDiscount = orderItem.discount;
       const quantity = orderItem.quantity;
-      const refundAmount = (itemPrice * (1 - itemDiscount/100)) * quantity;
+      const baseRefundAmount = (itemPrice * (1 - itemDiscount/100)) * quantity;
+
+      // Calculate coupon discount per item if coupon was applied
+      let couponDiscountPerItem = 0;
+      if (order.coupon && order.coupon.discount > 0) {
+        // Distribute coupon discount equally among all items
+        const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
+        couponDiscountPerItem = (order.coupon.discount / totalItems) * quantity;
+      }
+
+      // Final refund amount after deducting proportional coupon discount
+      const refundAmount = baseRefundAmount - couponDiscountPerItem;
 
       // Create wallet transaction ID
       const walletTransactionId = 'WTX' + nanoid(8).toUpperCase();

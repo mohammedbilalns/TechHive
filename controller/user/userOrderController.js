@@ -15,7 +15,7 @@ const placeOrder = async (req, res) => {
     const { addressId, paymentMethod } = req.body;
     const userId = req.session.user.id;
 
-    // Get user's cart, address, and wallet
+    // Get  cart, address, and wallet
     const [cart, shippingAddress, wallet] = await Promise.all([
       cartModel.findOne({ user: userId }).populate('items.productId'),
       addressModel.findById(addressId),
@@ -26,7 +26,7 @@ const placeOrder = async (req, res) => {
       return res.json({ success: false, message: 'Cart is empty' });
     }
 
-    // Calculate totals
+    // Calculate totals after applying offers 
     const totalAmount = cart.items.reduce((total, item) => {
       const price = item.productId.price;
       const discount = item.productId.discount;
@@ -34,7 +34,7 @@ const placeOrder = async (req, res) => {
       return total + (discountedPrice * item.quantity);
     }, 0);
 
-    // Handle coupon if applied in cart
+    // Calculate totals after applying coupon 
     let couponDiscount = cart.discount || 0;
     let couponCode = cart.couponCode;
     let finalAmount = totalAmount - couponDiscount;
@@ -52,7 +52,10 @@ const placeOrder = async (req, res) => {
     // Create order items array with product data 
     const orderItems = cart.items.map(item => {
       if (item.productId.stock < item.quantity) {
-        throw new Error(`Insufficient stock for product: ${item.productId.name}`);
+        return res.json({
+          success:false ,
+          message: 'Insufficient stock for some product'
+        })
       }
       
       return {
@@ -65,7 +68,7 @@ const placeOrder = async (req, res) => {
       };
     });
 
-    // Generate order ID with date format: ORD20240318XXXXXX
+    // Generate order ID 
     const date = new Date();
     const dateString = date.getFullYear().toString() +
                       (date.getMonth() + 1).toString().padStart(2, '0') +
@@ -117,8 +120,8 @@ const placeOrder = async (req, res) => {
       );
     }
 
-    // Update product stock and clear cart only for COD orders
-    if (paymentMethod === 'cod') {
+    // Update product stock and clear cart 
+    if (paymentMethod === 'cod' || "wallet") {
       await Promise.all([
         ...cart.items.map(item => 
           productModel.findByIdAndUpdate(
@@ -178,19 +181,6 @@ const placeOrder = async (req, res) => {
       order.paymentStatus = 'paid';
       await order.save();
 
-      // Update product stock and clear cart
-      await Promise.all([
-        ...cart.items.map(item => 
-          productModel.findByIdAndUpdate(
-            item.productId._id,
-            { $inc: { stock: -item.quantity } }
-          )
-        ),
-        cartModel.findOneAndUpdate(
-          { user: userId },
-          { $set: { items: [], discount: 0, couponCode: null } }
-        )
-      ]);
 
       return res.json({ 
         success: true, 
@@ -199,7 +189,7 @@ const placeOrder = async (req, res) => {
       });
     }
 
-    // For COD orders
+    
     res.json({ 
       success: true, 
       orderId: order._id,
@@ -329,11 +319,22 @@ const cancelOrderItem = async (req, res) => {
 
     // Handle refund if payment was made
     if (order.paymentStatus === 'paid') {
-      // Calculate refund amount for this item
+      // Calculate base refund amount for this item
       const itemPrice = orderItem.price;
       const itemDiscount = orderItem.discount;
       const quantity = orderItem.quantity;
-      const refundAmount = (itemPrice * (1 - itemDiscount/100)) * quantity;
+      const baseRefundAmount = (itemPrice * (1 - itemDiscount/100)) * quantity;
+
+      // Calculate coupon discount per item if coupon was applied
+      let couponDiscountPerItem = 0;
+      if (order.coupon && order.coupon.discount > 0) {
+        // Distribute coupon discount equally among all items
+        const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
+        couponDiscountPerItem = (order.coupon.discount / totalItems) * quantity;
+      }
+
+      // Final refund amount after deducting proportional coupon discount
+      const refundAmount = baseRefundAmount - couponDiscountPerItem;
 
       // Create wallet transaction ID
       const walletTransactionId = 'WTX' + nanoid(8).toUpperCase();
@@ -357,8 +358,6 @@ const cancelOrderItem = async (req, res) => {
 
       // Set payment status to refunded for this item
       orderItem.paymentStatus = 'refunded';
-
-  
     }
 
     await order.save();
@@ -482,7 +481,7 @@ const returnOrderItem = async (req, res) => {
     }
 
     // Update item status to return_requested and add return information
-    orderItem.status = 'return_requested';
+    orderItem.status = 'return requested';
     orderItem.return = {
       reason: reason,
       requestedAt: new Date()

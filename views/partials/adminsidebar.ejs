@@ -63,41 +63,10 @@
             <span>Sales Report</span>
           </a>
         </li>
-      </ul>
-    </div>
-    <div class="px-4 md:px-6 mt-8">
-      <h2 class="text-sm font-semibold text-gray-600 uppercase">User Management</h2>
-      <ul class="mt-4 space-y-2">
-        <li>
-          <a href="/admin/admins" onclick="return false"
-            class="flex items-center px-4 py-2 <%= locals.page == "admins" ? "bg-primary-accent text-gray-200 hover:bg-primary-hover" : "text-gray-800 hover:bg-gray-200" %> rounded-lg">
-            <i class="fas fa-user-shield mr-3"></i>
-            <span>Manage Admins</span>
-          </a>
-        </li>
         <li>
           <a href="/admin/customers" class="flex items-center px-4 py-2 <%= locals.page == "customers" ? "bg-primary-accent text-gray-200 hover:bg-primary-hover" : "text-gray-800 hover:bg-gray-200" %> rounded-lg">
             <i class="fas fa-users mr-3"></i>
             <span>Customers</span>
-          </a>
-        </li>
-      </ul>
-    </div>
-    <div class="px-4 md:px-6 mt-8">
-      <h2 class="text-sm font-semibold text-gray-600 uppercase">Others</h2>
-      <ul class="mt-4 space-y-2">
-        <li>
-          <a href="/admin/settings" onclick="return false"
-            class="flex items-center px-4 py-2 <%= locals.page == "settings" ? "bg-primary-accent text-gray-200 hover:bg-primary-hover" : "text-gray-800 hover:bg-gray-200" %> rounded-lg">
-            <i class="fas fa-cogs mr-3"></i>
-            <span>Settings</span>
-          </a>
-        </li>
-        <li>
-          <a href="/admin/help" onclick="return false"
-            class="flex items-center px-4 py-2 <%= locals.page == "help" ? "bg-primary-accent text-gray-200 hover:bg-primary-hover" : "text-gray-800 hover:bg-gray-200" %> rounded-lg">
-            <i class="fas fa-question-circle mr-3"></i>
-            <span>Help</span>
           </a>
         </li>
         <li>
@@ -108,6 +77,8 @@
         </li>
       </ul>
     </div>
+   
+  
   </nav>
 </aside>
 
