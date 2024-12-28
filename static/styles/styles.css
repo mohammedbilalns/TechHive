@@ -5,7 +5,6 @@
 :root {
     --color-primary-dark: #384B70; /* Navbar background */
     --color-primary-light: #507687; /* Links, focus borders */
-
     --color-primary-white: #EDEDED;
     --color-primary-accent: #DA0037;
     --color-primary-hover: #E63456;
@@ -14,26 +13,49 @@
     --color-background-green: #00B087;
     --color-background: #F4F6FF; /* Page background */
     --color-button: #10375C; /* Button background */
-  }
+}
 
-  .bg-primary-white{
+/* Typography */
+@layer base {
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+
+    h1, h2, h3, h4, h5, h6, .logo-text {
+        font-family: 'Poppins', sans-serif;
+    }
+}
+
+@layer components {
+    .nav-link {
+        @apply font-medium tracking-tight;
+    }
+
+    input::placeholder {
+        font-family: 'Inter', sans-serif;
+        font-weight: 400;
+    }
+}
+
+/* Custom Colors */
+.bg-primary-white {
     background-color: var(--color-background);
-  }
-  .bg-primary-accent{
+}
+.bg-primary-accent {
     background-color: var(--color-primary-accent);
-  }
-  .bg-primary-hover{
+}
+.bg-primary-hover {
     background-color: var(--color-primary-hover);
-  }
-  .bg-primary-green{
+}
+.bg-primary-green {
     background-color: var(--color-background-green);
-  }
-  .text-primary-accent{
+}
+.text-primary-accent {
     color: var(--color-primary-accent);
-  }
-  .text-primary-green{
+}
+.text-primary-green {
     background-color: var(--color-background-green);
-  }
-  .bg-primary-dark{
+}
+.bg-primary-dark {
     background-color: var(--color-primary-black);
-  }
+}

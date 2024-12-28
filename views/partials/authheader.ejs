@@ -4,12 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TechHive</title>
+    <!-- Add Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Existing stylesheets -->
     <link rel="stylesheet" href="/tailwind/output.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
-    <!-- <link rel="manifest" href="/images/site.webmanifest">    -->
+    
+    
+
+    <!-- Existing scripts -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
         function toggleMenu() {
@@ -18,31 +27,37 @@
         }
     </script>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col antialiased">
     <header class="bg-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <div class="flex-shrink-0">
-                    <div class="text-xl font-bold">TechHive</div>
+                    <div class="text-xl font-bold logo-text tracking-tight">TechHive</div>
                 </div>
 
                 <!-- Desktop Navigation -->
                 <nav class="hidden md:flex items-center space-x-8">
-                    <a href="#" class="text-black hover:text-gray-700 font-semibold transition duration-150">Home</a>
-                    <a href="/login" class="text-gray-600 hover:text-gray-900 transition duration-150">Log In</a>
+                    <a href="#" class="nav-link text-black hover:text-gray-700 transition duration-150">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                        </svg>
+                    </a>
+                    <a href="/login" class="nav-link text-gray-600 hover:text-gray-900 transition duration-150">
+                        Login
+                    </a>
                 </nav>
 
-                <!--  Desktop Search -->
+                <!-- Desktop Search -->
                 <div class="hidden md:flex items-center space-x-4">
                     <div class="relative">
                         <form action="/search" method="GET" class="flex">
                             <input type="text" 
                                    name="q"
                                    placeholder="What are you looking for?" 
-                                   class="border rounded-md px-4 py-2 w-64"
+                                   class="border rounded-md px-4 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-primary-accent focus:border-transparent"
                                    required
                             />
-                            <button type="submit" class="ml-2 bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-900">
+                            <button type="submit" class="ml-2 bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-900 transition duration-150">
                                 <i class="fas fa-search"></i>
                             </button>
                         </form>
@@ -74,18 +89,25 @@
         <!-- Mobile menu -->
         <div class="hidden md:hidden" id="mobile-menu">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-black hover:bg-gray-50">Home</a>
-                <a href="/login" class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-50">Log In</a>
+                <a href="#" class="flex items-center px-3 py-2 rounded-md text-base nav-link text-black hover:bg-gray-50">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    Home
+                </a>
+                <a href="/login" class="flex items-center px-3 py-2 rounded-md text-base nav-link text-gray-600 hover:bg-gray-50">
+                    Login
+                </a>
                 <!--  Mobile Search -->
                 <div class="px-3 py-2">
                     <form action="/search" method="GET" class="flex">
                         <input type="text" 
                                name="q"
                                placeholder="What are you looking for?" 
-                               class="w-full border rounded-md px-4 py-2"
+                               class="w-full border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-accent focus:border-transparent"
                                required
                         />
-                        <button type="submit" class="ml-2 bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-900">
+                        <button type="submit" class="ml-2 bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-900 transition duration-150">
                             <i class="fas fa-search"></i>
                         </button>
                     </form>

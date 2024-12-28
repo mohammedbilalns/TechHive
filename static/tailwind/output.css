@@ -554,6 +554,14 @@ video {
   display: none;
 }
 
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6, .logo-text {
+  font-family: 'Poppins', sans-serif;
+}
+
 .container {
   width: 100%;
 }
@@ -586,6 +594,21 @@ video {
   .container {
     max-width: 1536px;
   }
+}
+
+.nav-link {
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+
+input::-moz-placeholder {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+}
+
+input::placeholder {
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
 }
 
 .pointer-events-none {
@@ -1297,11 +1320,6 @@ video {
   border-color: rgb(209 213 219 / var(--tw-border-opacity, 1));
 }
 
-.border-gray-700 {
-  --tw-border-opacity: 1;
-  border-color: rgb(55 65 81 / var(--tw-border-opacity, 1));
-}
-
 .border-gray-800 {
   --tw-border-opacity: 1;
   border-color: rgb(31 41 55 / var(--tw-border-opacity, 1));
@@ -1720,6 +1738,10 @@ video {
   line-height: 1.25;
 }
 
+.tracking-tight {
+  letter-spacing: -0.025em;
+}
+
 .tracking-wider {
   letter-spacing: 0.05em;
 }
@@ -1883,6 +1905,11 @@ video {
   text-decoration-line: line-through;
 }
 
+.antialiased {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 .opacity-50 {
   opacity: 0.5;
 }
@@ -2002,31 +2029,35 @@ video {
   /* Button background */
 }
 
-.bg-primary-white{
+/* Typography */
+
+/* Custom Colors */
+
+.bg-primary-white {
   background-color: var(--color-background);
 }
 
-.bg-primary-accent{
+.bg-primary-accent {
   background-color: var(--color-primary-accent);
 }
 
-.bg-primary-hover{
+.bg-primary-hover {
   background-color: var(--color-primary-hover);
 }
 
-.bg-primary-green{
+.bg-primary-green {
   background-color: var(--color-background-green);
 }
 
-.text-primary-accent{
+.text-primary-accent {
   color: var(--color-primary-accent);
 }
 
-.text-primary-green{
+.text-primary-green {
   background-color: var(--color-background-green);
 }
 
-.bg-primary-dark{
+.bg-primary-dark {
   background-color: var(--color-primary-black);
 }
 
@@ -2166,6 +2197,10 @@ video {
 .focus\:border-blue-500:focus {
   --tw-border-opacity: 1;
   border-color: rgb(59 130 246 / var(--tw-border-opacity, 1));
+}
+
+.focus\:border-transparent:focus {
+  border-color: transparent;
 }
 
 .focus\:outline-none:focus {
@@ -2381,10 +2416,6 @@ video {
 
   .lg\:grid-cols-4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .lg\:grid-cols-5 {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
   .lg\:grid-cols-6 {
