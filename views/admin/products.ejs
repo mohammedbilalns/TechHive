@@ -187,21 +187,34 @@
 
             if (response.data.success) {
               const row = document.querySelector(`button[onclick="toggleProductStatus('${productId}', '${action}')"]`).closest('tr');
-              const statusCell = row.querySelector('td:nth-child(8) span');
+              const statusCell = row.querySelector('td:nth-child(7) span');
               const actionCell = row.querySelector('td:last-child div');
 
               // Update status cell
-              statusCell.textContent = action === 'activate' ? 'Active' : 'Inactive';
-              statusCell.className = `px-3 py-1 rounded-full text-sm font-medium ${action === 'activate' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                }`;
+              const newStatus = action === 'activate' ? 'Active' : 'Inactive';
+              statusCell.textContent = newStatus;
+              statusCell.className = `px-3 py-1 rounded-full text-sm font-medium ${
+                newStatus === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+              }`;
 
-              // Update action buttons
-              const newButton = action === 'activate' ?
-                `<button onclick="toggleProductStatus('${productId}', 'deactivate')" class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">Deactivate</button>` :
-                `<button onclick="toggleProductStatus('${productId}', 'activate')" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Activate</button>`;
-
-              actionCell.innerHTML = newButton + actionCell.innerHTML.split('</button>').slice(1).join('</button>');
-
+              // Create new action buttons HTML
+              const newActionButtons = `
+                <button onclick="toggleProductStatus('${productId}', '${newStatus === 'Active' ? 'deactivate' : 'activate'}')" 
+                  class="${newStatus === 'Active' ? 'bg-primary-accent hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'} text-white px-4 py-2 rounded-md">
+                  ${newStatus === 'Active' ? 'Deactivate' : 'Activate'}
+                </button>
+                <form action="/admin/products/edit/${productId}">
+                  <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                    Edit
+                  </button>
+                </form>
+                <button onclick="deleteProduct('${productId}')" 
+                  class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">
+                  Delete
+                </button>
+              `;
+              
+              actionCell.innerHTML = newActionButtons;
               showAlert(`Product ${action}d successfully`, 'success');
             }
           } catch (error) {
