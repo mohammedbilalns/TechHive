@@ -4,16 +4,36 @@ import { log } from "mercedlogger";
 
 const getWishlist = async (req, res) => {
     try {
-        const wishlist = await wishlistSchema.findOne({ userId: req.session.user.id })
+        const page = parseInt(req.query.page) || 1;
+        const limit = 8; 
+        const skip = (page - 1) * limit;
+
+        const userId = req.session.user.id;
+
+        // Get total count for pagination
+        const wishlist = await wishlistSchema.findOne({ userId });
+        const totalProducts = wishlist ? wishlist.products.length : 0;
+        const totalPages = Math.ceil(totalProducts / limit);
+
+        // Get paginated wishlist
+        const paginatedWishlist = await wishlistSchema.findOne({ userId })
             .populate({
                 path: 'products',
-                match: { status: 'Active' }
+                match: { status: 'Active' },
+                options: {
+                    skip: skip,
+                    limit: limit
+                }
             });
 
         res.render('user/profile/wishlist', { 
-            wishlist: wishlist ? wishlist: [],
+            wishlist: paginatedWishlist ? paginatedWishlist : [],
             page: "wishlist", 
-            user: req.session.user
+            user: req.session.user,
+            currentPage: page,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1
         });
     } catch (error) {
         log.red("FETCH_WISHLIST_ERROR", error);
