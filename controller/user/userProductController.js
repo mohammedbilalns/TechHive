@@ -2,6 +2,7 @@ import { log } from "mercedlogger";
 import productSchema from "../../model/productModel.js";
 import categorySchema from "../../model/categoryModel.js";
 import wishlistSchema from "../../model/wishlistModel.js"
+import reviewModel from '../../model/reviewModel.js';
 
 
 // ---- load home ---- homepage 
@@ -100,33 +101,45 @@ const loadAllProducts = async (req, res) => {
 
 const viewProduct = async (req, res) => {
     try {
-        const product = await productSchema.findOne({
-            _id: req.params.id,
-            status: "Active"
-        });
+        const productId = req.params.id;
+        
+        // First fetch the product
+        const product = await productSchema.findById(productId);
         
         if (!product) {
-            return res.status(404).render('notfound', {
-                message: "Product not found",
-                alertType: "error"
-            });
+            return res.redirect('/allproducts');
         }
 
-        // Fetch related products from the same category
-        const relatedProducts = await productSchema.find({
-            category: product.category,
-            _id: { $ne: product._id },
-            status: "Active"
-        }).limit(4);
+        // Then fetch related products and reviews in parallel
+        const [relatedProducts, reviews] = await Promise.all([
+            productSchema.find({
+                category: product.category,
+                _id: { $ne: product._id },
+                status: "Active"
+            }).limit(4),
+            reviewModel.find({ product: productId })
+                .populate('user', 'fullname')
+                .sort({ createdAt: -1 })
+        ]);
 
-        res.render('user/viewproduct', { 
+        // Calculate average rating
+        let averageRating = 0;
+        if (reviews && reviews.length > 0) {
+            averageRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
+        }
+
+        res.render('user/viewproduct', {
             product,
             relatedProducts,
+            reviews: reviews || [], // Ensure reviews is always an array
+            averageRating,
+            reviewCount: reviews ? reviews.length : 0,
             fullname: req.session.user?.fullname
         });
+
     } catch (error) {
-        log.red("ERROR", error);
-        res.status(500).render('notfound');
+        console.error('View product error:', error);
+        res.redirect('/allproducts');
     }
 };
 
