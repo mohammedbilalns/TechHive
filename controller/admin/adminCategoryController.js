@@ -1,5 +1,6 @@
 import { log } from "mercedlogger";
 import categorySchema from "../../model/categoryModel.js"
+import productSchema from "../../model/productModel.js"
 
 // Fetch the categories page
 const getCategories = async (req, res)=>{
@@ -53,10 +54,18 @@ const deleteCategory = async (req,res) => {
 // Hide a category
 const hideCategory = async (req,res) => {
     try {
+        // Update category status
         await categorySchema.findByIdAndUpdate(req.params.categoryid, {status:"Inactive"})
+        
+        // Update all products in this category to Inactive
+        await productSchema.updateMany(
+            { category: req.params.categoryid },
+            { status: "Inactive" }
+        );
+
         res.json({
             success: true,
-            message: 'Category hidden successfully'
+            message: 'Category and associated products hidden successfully'
         });
     } catch(error) {
         log.red('HIDE_CATEGORY_ERROR', error)
@@ -70,10 +79,18 @@ const hideCategory = async (req,res) => {
 // Unhide a category
 const unhideCategory = async (req,res) => {
     try {
+        // Update category status
         await categorySchema.findByIdAndUpdate(req.params.categoryid, {status:"Active"})
+        
+        // Update all products in this category to Active
+        await productSchema.updateMany(
+            { category: req.params.categoryid },
+            { status: "Active" }
+        );
+
         res.json({
             success: true,
-            message: 'Category unhidden successfully'
+            message: 'Category and associated products unhidden successfully'
         });
     } catch(error) {
         log.red('HIDE_CATEGORY_ERROR', error)

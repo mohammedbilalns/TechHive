@@ -1,5 +1,4 @@
 import cartSchema from "../../model/cartModel.js"
-import userSchema from "../../model/userModel.js"
 import productSchema from "../../model/productModel.js"
 import {log} from "mercedlogger"
 import couponSchema from "../../model/couponModel.js"
@@ -68,12 +67,14 @@ const addToCart = async (req, res) => {
         const { productId } = req.body;
         const userId = req.session.user.id;
 
-        // Check if product exists and has stock
+        // Check if product exists, has stock, and is active
         const product = await productSchema.findById(productId);
-        if (!product || product.stock <= 0) {
+        if (!product || product.stock <= 0 || product.status !== 'Active') {
             return res.status(400).json({
                 success: false,
-                message: product ? "Product is out of stock" : "Product not found"
+                message: !product ? "Product not found" : 
+                         product.status !== 'Active' ? "Product is not available" :
+                         "Product is out of stock"
             });
         }
 

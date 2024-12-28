@@ -1,10 +1,14 @@
 import wishlistSchema from "../../model/wishlistModel.js";
+import productModel from "../../model/productModel.js";
 import { log } from "mercedlogger";
 
 const getWishlist = async (req, res) => {
     try {
         const wishlist = await wishlistSchema.findOne({ userId: req.session.user.id })
-            .populate('products');
+            .populate({
+                path: 'products',
+                match: { status: 'Active' }
+            });
 
         res.render('user/profile/wishlist', { 
             wishlist: wishlist ? wishlist: [],
@@ -21,6 +25,19 @@ const addToWishlist = async (req, res) => {
     try {
         const { productId } = req.body;
         const userId = req.session.user.id;
+
+        // Check if product is active
+        const product = await productModel.findOne({ 
+            _id: productId,
+            status: 'Active'
+        });
+
+        if (!product) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Product is not available" 
+            });
+        }
 
         let wishlist = await wishlistSchema.findOne({ userId });
 
