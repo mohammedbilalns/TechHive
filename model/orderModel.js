@@ -12,6 +12,7 @@ const orderItemSchema = new mongoose.Schema({
     enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'return requested', 'returned'], 
     default: 'pending' 
   },
+  deliveredDate: { type: Date },
   return: {
     reason: { type: String },
     requestedAt: { type: Date }

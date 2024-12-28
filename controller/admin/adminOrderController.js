@@ -2,6 +2,7 @@ import orderModel from '../../model/orderModel.js';
 import productModel from '../../model/productModel.js';
 import walletModel from '../../model/walletModel.js';
 import { nanoid } from 'nanoid';
+
 // Get all orders
 const getOrders = async (req, res) => {
   try {
@@ -57,8 +58,8 @@ const updateOrderItemStatus = async (req, res) => {
       'pending': ['processing', 'shipped', 'delivered', 'cancelled'],
       'processing': ['shipped', 'delivered', 'cancelled'],
       'shipped': ['delivered', 'cancelled'],
-      'delivered': ['return_requested'],
-      'return_requested': ['returned', 'delivered'], // Can either approve or reject return
+      'delivered': ['return requested'],
+      'return requested': ['returned', 'delivered'], 
       'returned': [],
       'cancelled': []
     };
@@ -68,7 +69,7 @@ const updateOrderItemStatus = async (req, res) => {
     }
 
     // Handle return approval or cancellation refund
-    if ((status === 'returned' && orderItem.status === 'return_requested') || 
+    if ((status === 'returned' && orderItem.status === 'return requested') || 
         (status === 'cancelled' && order.paymentStatus === 'paid')) {
       // Calculate base refund amount for this item
       const itemPrice = orderItem.price;
@@ -114,6 +115,11 @@ const updateOrderItemStatus = async (req, res) => {
       );
 
       orderItem.paymentStatus = 'refunded';
+    }
+
+    // Update deliveredDate when status changes to delivered
+    if (status === 'delivered') {
+      orderItem.deliveredDate = new Date();
     }
 
     orderItem.status = status;

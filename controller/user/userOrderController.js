@@ -124,7 +124,7 @@ const placeOrder = async (req, res) => {
     }
 
     // Update product stock and clear cart 
-    if (paymentMethod === 'cod' || "wallet") {
+    if (paymentMethod === 'cod' || paymentMethod === 'wallet') {
       await Promise.all([
         ...cart.items.map(item => 
           productModel.findByIdAndUpdate(

@@ -287,8 +287,8 @@
     e.preventDefault();
 
     // Validate coupon code
-    const code = document.getElementById('code').value;
-    if (!/^[A-Za-z0-9]+$/.test(code)) {
+    const code = document.getElementById('code').value.toUpperCase();
+    if (!/^[A-Z0-9]+$/.test(code)) {
       showAlert('Coupon code can only contain letters and numbers', 'error');
       return;
     }

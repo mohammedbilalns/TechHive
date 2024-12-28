@@ -156,7 +156,7 @@
                                                 <% } else if (item.status === 'shipped') { %>
                                                   <option value="delivered">Delivered</option>
                                                   <option value="cancelled">Cancelled</option>
-                                                <% } else if (item.status === 'return_requested') { %>
+                                                <% } else if (item.status === 'return requested') { %>
                                                   <option value="returned">Returned</option>
                                                 <% } %>
                                               </select>
@@ -312,7 +312,7 @@
               'shipped': 'text-blue-600',
               'processing': 'text-yellow-600',
               'pending': 'text-purple-600',
-              'return_requested': 'text-orange-600'
+              'return requested': 'text-orange-600'
             };
 
             statusElement.classList.add(statusColors[status] || 'text-gray-600');
@@ -322,7 +322,7 @@
               'pending': ['shipped', 'delivered', 'cancelled'],
               'processing': ['shipped', 'delivered', 'cancelled'],
               'shipped': ['delivered', 'cancelled'],
-              'return_requested': ['returned']
+              'return requested': ['returned']
             };
 
             // If the new status has available next options, update the dropdown
@@ -358,6 +358,7 @@
 
             showAlert('Item status updated successfully', 'success');
           } else {
+            
             showAlert(response.data.message || 'Failed to update status', 'error');
           }
         } catch (error) {
