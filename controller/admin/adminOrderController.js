@@ -67,8 +67,9 @@ const updateOrderItemStatus = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid status transition' });
     }
 
-    // Handle return approval
-    if (status === 'returned' && orderItem.status === 'return_requested') {
+    // Handle return approval or cancellation refund
+    if ((status === 'returned' && orderItem.status === 'return_requested') || 
+        (status === 'cancelled' && order.paymentStatus === 'paid')) {
       // Calculate base refund amount for this item
       const itemPrice = orderItem.price;
       const itemDiscount = orderItem.discount;
@@ -99,7 +100,7 @@ const updateOrderItemStatus = async (req, res) => {
               transactionId: walletTransactionId,
               type: 'CREDIT',
               amount: refundAmount,
-              description: `Refund for returned item in order ${order.orderId}`
+              description: `Refund for ${status === 'cancelled' ? 'cancelled' : 'returned'} item in order ${order.orderId}`
             }
           }
         },
