@@ -117,9 +117,20 @@ const updateOrderItemStatus = async (req, res) => {
       orderItem.paymentStatus = 'refunded';
     }
 
-    // Update deliveredDate when status changes to delivered
-    if (status === 'delivered') {
+    // Update status-specific dates
+    if (status === 'shipped') {
+      orderItem.shippedDate = new Date();
+    } else if (status === 'delivered') {
       orderItem.deliveredDate = new Date();
+    } else if (status === 'cancelled') {
+      orderItem.cancelledDate = new Date();
+    } else if (status === 'returned') {
+      orderItem.returnedDate = new Date();
+    } else if (status === 'return requested') {
+      orderItem.return = {
+        reason: req.body.reason || 'No reason provided',
+        requestedAt: new Date()
+      };
     }
 
     orderItem.status = status;

@@ -91,9 +91,24 @@
                             Status: <span class="<%= item.status === 'delivered' ? 'text-green-600' : item.status === 'cancelled' ? 'text-red-600' : 'text-blue-600' %>">
                               <%= item.status %>
                             </span>
-                            <% if (item.status === 'delivered' && item.deliveredDate) { %>
+                            <% if (item.deliveredDate) { %>
                               <span class="text-gray-600 ml-2">
                                 (Delivered on <%= new Date(item.deliveredDate).toLocaleDateString() %>)
+                              </span>
+                            <% } %>
+                            <% if (item.shippedDate) { %>
+                              <span class="text-gray-600 ml-2">
+                                (Shipped on <%= new Date(item.shippedDate).toLocaleDateString() %>)
+                              </span>
+                            <% } %>
+                            <% if (item.cancelledDate) { %>
+                              <span class="text-gray-600 ml-2">
+                                (Cancelled on <%= new Date(item.cancelledDate).toLocaleDateString() %>)
+                              </span>
+                            <% } %>
+                            <% if (item.returnedDate) { %>
+                              <span class="text-gray-600 ml-2">
+                                (Returned on <%= new Date(item.returnedDate).toLocaleDateString() %>)
                               </span>
                             <% } %>
                           </p>
