@@ -126,6 +126,14 @@
                                 Return Item
                               </button>
                             <% } %>
+                            <% if (['delivered', 'return requested', 'returned'].includes(item.status)) { %>
+                              <button 
+                                onclick="handleReviewClick('<%= item.name %>')" 
+                                class="text-blue-600 text-sm hover:underline ml-2"
+                              >
+                                Add/Edit Review
+                              </button>
+                            <% } %>
                           </div>
                         </div>
                       </div>
@@ -244,6 +252,65 @@
   </div>
 </div>
 
+<!-- Review Modal -->
+<div id="reviewModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
+  <div class="bg-white p-6 rounded-lg shadow-xl w-96">
+    <h3 class="text-lg font-semibold mb-4" id="reviewModalTitle">Add Review</h3>
+    <form id="reviewForm" class="space-y-4">
+      <input type="hidden" id="reviewProductId">
+      
+      <!-- Rating Stars -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Rating</label>
+        <div class="flex space-x-2">
+          <% for(let i = 1; i <= 5; i++) { %>
+            <button type="button" 
+                    class="rating-star text-2xl text-gray-300 hover:text-yellow-400"
+                    data-rating="<%= i %>"
+                    onclick="setRating('<%= i %>')">
+              ★
+            </button>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Review Text -->
+      <div>
+        <label for="reviewComment" class="block text-sm font-medium text-gray-700 mb-1">
+          Your Review
+        </label>
+        <textarea 
+          id="reviewComment" 
+          class="w-full border rounded-lg p-2 focus:ring-primary-accent focus:border-primary-accent"
+          rows="3"
+          minlength="10"
+          maxlength="100"
+          required
+        ></textarea>
+        <p class="text-sm text-gray-500 mt-1">
+          <span id="charCount">0</span>/100 characters (minimum 10)
+        </p>
+      </div>
+
+      <div class="flex justify-end space-x-3">
+        <button 
+          type="button" 
+          onclick="closeReviewModal()"
+          class="px-4 py-2 text-gray-600 hover:text-gray-800"
+        >
+          Cancel
+        </button>
+        <button 
+          type="submit"
+          class="px-4 py-2 bg-primary-accent text-white rounded-lg hover:bg-primary-accent/90"
+        >
+          Submit Review
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
   function toggleOrderDetails(orderId) {
     const detailsElement = document.getElementById(`details-${orderId}`);
@@ -336,6 +403,118 @@
     } catch (error) {
       console.error('Error:', error);
       showAlert('Failed to submit return request', 'error');
+    }
+  });
+
+  let selectedRating = 0;
+
+  async function handleReviewClick(productName) {
+    try {
+      const response = await axios.get(`/review/get?productName=${encodeURIComponent(productName)}`);
+      if (response.data.success) {
+        // Review exists, open modal in edit mode
+        openReviewModal(productName, response.data.review);
+        document.getElementById('reviewModalTitle').textContent = 'Edit Review';
+      }
+    } catch (error) {
+      if (error.response?.status === 404) {
+        // No existing review, open modal in add mode
+        openReviewModal(productName);
+        document.getElementById('reviewModalTitle').textContent = 'Add Review';
+      } else {
+        showAlert('Error fetching review details', 'error');
+      }
+    }
+  }
+
+  function openReviewModal(productName, existingReview = null) {
+    const modal = document.getElementById('reviewModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.getElementById('reviewProductId').value = productName;
+    
+    if (existingReview) {
+      // Set existing rating and comment
+      selectedRating = existingReview.rating;
+      setRating(existingReview.rating);
+      const commentElement = document.getElementById('reviewComment');
+      commentElement.value = existingReview.comment;
+      document.getElementById('charCount').textContent = existingReview.comment.length;
+    } else {
+      // Reset form for new review
+      selectedRating = 0;
+      document.getElementById('reviewComment').value = '';
+      document.getElementById('charCount').textContent = '0';
+      document.querySelectorAll('.rating-star').forEach(star => {
+        star.classList.remove('text-yellow-400');
+        star.classList.add('text-gray-300');
+      });
+    }
+  }
+
+  function closeReviewModal() {
+    const modal = document.getElementById('reviewModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.getElementById('reviewForm').reset();
+    selectedRating = 0;
+    document.querySelectorAll('.rating-star').forEach(star => {
+      star.classList.remove('text-yellow-400');
+      star.classList.add('text-gray-300');
+    });
+  }
+
+  function setRating(rating) {
+    selectedRating = rating;
+    document.querySelectorAll('.rating-star').forEach((star, index) => {
+      if (index < rating) {
+        star.classList.remove('text-gray-300');
+        star.classList.add('text-yellow-400');
+      } else {
+        star.classList.remove('text-yellow-400');
+        star.classList.add('text-gray-300');
+      }
+    });
+  }
+
+  // Character count for review
+  document.getElementById('reviewComment').addEventListener('input', function(e) {
+    document.getElementById('charCount').textContent = e.target.value.length;
+  });
+
+  // Handle review form submission
+  document.getElementById('reviewForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const productName = document.getElementById('reviewProductId').value;
+    const comment = document.getElementById('reviewComment').value;
+
+    if (!selectedRating) {
+      showAlert('Please select a rating', 'error');
+      return;
+    }
+
+    if (comment.length < 10) {
+      showAlert('Review must be at least 10 characters long', 'error');
+      return;
+    }
+
+    try {
+      const response = await axios.post('/review/add', {
+        productName,
+        rating: selectedRating,
+        comment
+      });
+
+      if (response.data.success) {
+        showAlert(response.data.message, 'success');
+        closeReviewModal();
+      } else {
+        showAlert(response.data.message || 'Failed to submit review', 'error');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      showAlert(error.response?.data?.message || 'Failed to submit review', 'error');
     }
   });
 </script>

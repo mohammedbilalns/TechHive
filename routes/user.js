@@ -14,6 +14,7 @@ import userSearchController from "../controller/user/userSearchController.js"
 import userWishlistController from "../controller/user/userWishlistController.js"
 import userCouponsController from "../controller/user/userCouponsController.js"
 import userWalletController from "../controller/user/userWalletController.js"
+import userReviewController from "../controller/user/userReviewController.js"
 const router = Router()
 
 router.use(express.static('static'))
@@ -119,5 +120,9 @@ router.post('/account/wallet/add', auth.checkSession, userWalletController.addMo
 router.post('/account/wallet/verify-payment', auth.checkSession, userWalletController.verifyWalletPayment)
 
 router.post('/profile/orders/:orderId/items/:itemId/return', userOrderController.returnOrderItem);
+
+// Add review route
+router.post('/review/add', auth.checkSession, userReviewController.addReview);
+router.get('/review/get', auth.checkSession, userReviewController.getReview);
 
 export default router
