@@ -86,7 +86,14 @@
                     </div>
                     <div class="flex flex-col h-[70px]">
                         <p class="text-black text-sm mt-2 truncate"><%= product.name %></p>
-                        <p class="text-primary-accent mt-1">₹<%= product.price.toFixed(2) %></p>
+                        <% if (product.discount > 0) { %>
+                            <div class="flex items-center gap-2 mt-1">
+                                <p class="text-primary-accent">₹<%= (product.price * (1 - product.discount/100)).toFixed(2) %></p>
+                                <p class="text-gray-400 line-through text-xs">₹<%= product.price.toFixed(2) %></p>
+                            </div>
+                        <% } else { %>
+                            <p class="text-primary-accent mt-1">₹<%= product.price.toFixed(2) %></p>
+                        <% } %>
                     </div>
                 </a>
                 <div class="flex justify-center gap-2 mt-2">
