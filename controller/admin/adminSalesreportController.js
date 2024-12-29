@@ -252,7 +252,7 @@ const generateExcelReport = async (res, orders, totals, filterType, startDate, e
 };
 
 const generatePDFReport = async (res, orders, totals, filterType, startDate, endDate) => {
-  const doc = new PDFDocument({ margin: 30, size: 'A4' });
+  const doc = new PDFDocument({ margin: 40, size: 'A4' });
   
   // Set response headers
   res.setHeader('Content-Type', 'application/pdf');
@@ -263,78 +263,234 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
 
   doc.pipe(res);
 
-  // Add title
-  doc.fontSize(20)
-     .text('Sales Report', { align: 'center' })
+  // Title Section
+  doc.fontSize(24)
+     .font('Helvetica-Bold')
+     .text('Sales Report - TechHive', 40, 40, { align: 'center' })
      .moveDown(0.5);
 
-  // Add date range
+  // Date Range Section
   doc.fontSize(14)
+     .font('Helvetica')
      .text(getFormattedDateRange(filterType, startDate, endDate), { align: 'center' })
      .moveDown(0.5);
 
-  // Add generated date
+  // Generated Date
   doc.fontSize(10)
+     .font('Helvetica-Oblique')
      .text(`Generated on: ${new Date().toLocaleString()}`, { align: 'center' })
      .moveDown(2);
 
-  // Define table layout
-  const tableTop = 150;
-  const columnSpacing = 70;
-  const headers = ['Order ID', 'Date', 'Customer', 'Items', 'Total', 'Coupon Disc.', 'Offer Disc.', 'Net'];
+  // Summary Cards Section - Adjusted widths and spacing
+  const summaryStartY = doc.y;
+  const cardWidth = 120;  // Reduced from 130
+  const cardSpacing = 10; // Reduced from 15
+  const cardHeight = 70;
 
-  // Add headers
-  headers.forEach((header, i) => {
+  // Helper function to draw a card with text truncation
+  const drawCard = (x, y, title, value, color) => {
+    doc.roundedRect(x, y, cardWidth, cardHeight, 5)
+       .fill(color)
+       .fillColor('#000000');
+    
     doc.fontSize(10)
-       .text(header, 30 + (i * columnSpacing), tableTop, { width: columnSpacing, align: 'left' });
+       .font('Helvetica')
+       .text(title, x + 10, y + 10, { 
+         width: cardWidth - 20,
+         ellipsis: true  // Add ellipsis for overflow
+       });
+    
+    doc.fontSize(16)
+       .font('Helvetica-Bold')
+       .text(value, x + 10, y + 35, { 
+         width: cardWidth - 20,
+         ellipsis: true  // Add ellipsis for overflow
+       });
+  };
+
+  // Draw summary cards with adjusted spacing
+  drawCard(40, summaryStartY, 'Total Orders', totals.totalOrders.toString(), '#EBF5FF');
+  drawCard(40 + cardWidth + cardSpacing, summaryStartY, 'Total Sales', `₹${totals.totalAmount.toFixed(2)}`, '#F0FDF4');
+  drawCard(40 + (cardWidth + cardSpacing) * 2, summaryStartY, 'Total Discounts', `₹${totals.totalDiscounts.toFixed(2)}`, '#F5F3FF');
+  drawCard(40 + (cardWidth + cardSpacing) * 3, summaryStartY, 'Net Revenue', `₹${totals.netAmount.toFixed(2)}`, '#FEF9C3');
+
+  doc.moveDown(4);
+
+  // Table Headers
+  const tableTop = doc.y + 20;
+  const tableLeftMargin = 50;  // Increased from 40 to move table right
+  
+  const columns = [
+    { header: 'Order ID', width: 62 },
+    { header: 'Date', width: 62 },
+    { header: 'Customer', width: 85 },
+    { header: 'Items', width: 35 },
+    { header: 'Total', width: 55 },
+    { header: 'Coupon', width: 50 },
+    { header: 'Offer', width: 50 },
+    { header: 'Net', width: 50 }
+  ];
+
+  // Calculate total width
+  const totalWidth = columns.reduce((sum, col) => sum + col.width, 0);
+
+  // Draw table border - using new tableLeftMargin
+  doc.rect(tableLeftMargin, tableTop - 10, totalWidth, 40).fill('#F3F4F6');
+
+  // Draw table header - using new tableLeftMargin
+  let xPos = tableLeftMargin;
+  doc.font('Helvetica-Bold')
+     .fontSize(9)
+     .fillColor('#1F2937');
+
+  columns.forEach(column => {
+    doc.text(column.header, xPos, tableTop, { 
+      width: column.width,
+      align: 'center'
+    });
+    xPos += column.width;
   });
 
-  // Add rows
-  let yPosition = tableTop + 25;
+  // Draw header bottom border - using new tableLeftMargin
+  doc.moveTo(tableLeftMargin, tableTop + 25)
+     .lineTo(tableLeftMargin + totalWidth, tableTop + 25)
+     .strokeColor('#D1D5DB')
+     .lineWidth(1.5)
+     .stroke();
+
+  // Table Rows
+  let yPos = tableTop + 35;
+  doc.font('Helvetica').fontSize(8);
+
   orders.forEach((order, index) => {
-    if (yPosition > 700) {  // New page check
+    // Add new page if needed
+    if (yPos > 680) {
       doc.addPage();
-      yPosition = 50;
-      headers.forEach((header, i) => {
-        doc.fontSize(10)
-           .text(header, 30 + (i * columnSpacing), yPosition, { width: columnSpacing, align: 'left' });
+      yPos = 50;
+      
+      // Redraw headers on new page - using new tableLeftMargin
+      doc.rect(tableLeftMargin, yPos - 10, totalWidth, 40).fill('#F3F4F6');
+      
+      xPos = tableLeftMargin;
+      doc.font('Helvetica-Bold')
+         .fontSize(9)
+         .fillColor('#1F2937');
+      
+      columns.forEach(column => {
+        doc.text(column.header, xPos, yPos, { 
+          width: column.width,
+          align: 'center'
+        });
+        xPos += column.width;
       });
-      yPosition += 25;
+      
+      doc.moveTo(tableLeftMargin, yPos + 25)
+         .lineTo(tableLeftMargin + totalWidth, yPos + 25)
+         .strokeColor('#D1D5DB')
+         .lineWidth(1.5)
+         .stroke();
+      
+      yPos += 35;
+      doc.font('Helvetica').fontSize(8);
     }
 
-    const row = [
-      order.orderId,
-      new Date(order.orderDate).toLocaleDateString(),
-      order.customer,
-      order.itemCount,
-      `₹${order.totalAmount.toFixed(2)}`,
-      `₹${order.couponDiscount.toFixed(2)}`,
-      `₹${order.offerDiscount.toFixed(2)}`,
-      `₹${order.netAmount.toFixed(2)}`
+    // Alternate row background with border - using new tableLeftMargin
+    doc.rect(tableLeftMargin, yPos - 5, totalWidth, 30)
+       .fill(index % 2 === 0 ? '#FFFFFF' : '#F9FAFB');
+    
+    // Draw light vertical lines for columns - using new tableLeftMargin
+    xPos = tableLeftMargin;
+    columns.forEach(column => {
+      doc.moveTo(xPos, yPos - 5)
+         .lineTo(xPos, yPos + 25)
+         .strokeColor('#E5E7EB')
+         .lineWidth(0.5)
+         .stroke();
+      xPos += column.width;
+    });
+    
+    // Draw last vertical line - using new tableLeftMargin
+    doc.moveTo(tableLeftMargin + totalWidth, yPos - 5)
+       .lineTo(tableLeftMargin + totalWidth, yPos + 25)
+       .stroke();
+
+    // Draw row data - using new tableLeftMargin
+    xPos = tableLeftMargin;
+    doc.fillColor('#000000');
+    
+    const rowData = [
+      { text: order.orderId, align: 'left' },
+      { text: new Date(order.orderDate).toLocaleDateString(), align: 'left' },
+      { text: order.customer, align: 'left' },
+      { text: order.itemCount.toString(), align: 'center' },
+      { text: `₹${order.totalAmount.toFixed(2)}`, align: 'right' },
+      { text: `₹${order.couponDiscount.toFixed(2)}`, align: 'right' },
+      { text: `₹${order.offerDiscount.toFixed(2)}`, align: 'right' },
+      { text: `₹${order.netAmount.toFixed(2)}`, align: 'right' }
     ];
 
-    row.forEach((text, i) => {
-      doc.fontSize(8)
-         .text(text.toString(), 30 + (i * columnSpacing), yPosition, { 
-           width: columnSpacing, 
-           align: 'left' 
-         });
+    rowData.forEach((data, i) => {
+      const column = columns[i];
+      const textOptions = {
+        width: column.width - 8,
+        height: 30,
+        align: data.align,
+        ellipsis: true,
+        lineGap: 2
+      };
+
+      const textX = xPos + (data.align === 'right' ? 4 : 4);
+      doc.text(data.text, textX, yPos, textOptions);
+      xPos += column.width;
     });
 
-    yPosition += 20;
+    yPos += 30;
   });
 
-  // Add totals
-  yPosition += 20;
-  doc.fontSize(10)
-     .text('TOTALS', 30, yPosition)
-     .text(`Orders: ${totals.totalOrders}`, 30 + (3 * columnSpacing), yPosition)
-     .text(`₹${totals.totalAmount.toFixed(2)}`, 30 + (4 * columnSpacing), yPosition)
-     .text(`₹${totals.totalCouponDiscounts.toFixed(2)}`, 30 + (5 * columnSpacing), yPosition)
-     .text(`₹${totals.totalOfferDiscounts.toFixed(2)}`, 30 + (6 * columnSpacing), yPosition)
-     .text(`₹${totals.netAmount.toFixed(2)}`, 30 + (7 * columnSpacing), yPosition);
+  // Draw bottom border of the table - using new tableLeftMargin
+  doc.moveTo(tableLeftMargin, yPos - 5)
+     .lineTo(tableLeftMargin + totalWidth, yPos - 5)
+     .strokeColor('#D1D5DB')
+     .lineWidth(1.5)
+     .stroke();
 
-  // Finalize PDF
+  // Totals section with improved design and adjusted positioning
+  const totalsY = yPos + 10;
+  
+  // Draw totals box with adjusted width
+  const totalsBoxWidth = 490; // Reduced from 510
+  doc.rect(40, totalsY, totalsBoxWidth, 120)
+     .fill('#F8FAFC');
+
+  // Add totals with adjusted positioning and width
+  const addTotalLine = (label, value, lineY) => {
+    doc.font('Helvetica-Bold')
+       .fontSize(10)
+       .fillColor('#1F2937')
+       .text(label, 60, lineY, { width: 180, align: 'left' })
+       .text(value, 240, lineY, { width: 250, align: 'right' });
+  };
+
+  addTotalLine('Total Number of Orders:', totals.totalOrders.toString(), totalsY + 15);
+  addTotalLine('Total Sales Amount:', `₹${totals.totalAmount.toFixed(2)}`, totalsY + 40);
+  addTotalLine('Total Discounts Applied:', `₹${totals.totalDiscounts.toFixed(2)}`, totalsY + 65);
+  
+  // Net Revenue with highlighted background and adjusted width
+  doc.rect(40, totalsY + 90, totalsBoxWidth, 30)
+     .fill('#E0E7FF');
+  addTotalLine('Net Revenue:', `₹${totals.netAmount.toFixed(2)}`, totalsY + 95);
+
+  // Footer
+  doc.fontSize(8)
+     .font('Helvetica-Oblique')
+     .fillColor('#6B7280')
+     .text(
+       'This is a computer generated report.',
+       40,
+       doc.page.height - 40,
+       { align: 'center' }
+     );
+
   doc.end();
 };
 
