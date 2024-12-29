@@ -328,7 +328,6 @@ const cancelOrderItem = async (req, res) => {
       const quantity = orderItem.quantity;
       const baseRefundAmount = (itemPrice * (1 - itemDiscount/100)) * quantity;
 
-      // Calculate coupon discount per item if coupon was applied
       let couponDiscountPerItem = 0;
       if (order.coupon && order.coupon.discount > 0) {
         // Distribute coupon discount equally among all items
@@ -339,7 +338,6 @@ const cancelOrderItem = async (req, res) => {
       // Final refund amount after deducting proportional coupon discount
       const refundAmount = baseRefundAmount - couponDiscountPerItem;
 
-      // Create wallet transaction ID
       const walletTransactionId = 'WTX' + nanoid(8).toUpperCase();
 
       // Add refund to user's wallet
@@ -399,7 +397,7 @@ const verifyPayment = async (req, res) => {
       orderId 
     } = req.body;
 
-    // Verify signature
+    // Verify payment signature
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSign = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
@@ -459,7 +457,7 @@ const returnOrderItem = async (req, res) => {
     const { reason } = req.body;
     const userId = req.session.user.id;
 
-    // Validate reason length
+    // Validate return reason length
     if (!reason || reason.length < 10 || reason.length > 300) {
       return res.json({ 
         success: false, 
