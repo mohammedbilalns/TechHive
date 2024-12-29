@@ -232,36 +232,47 @@ const getOrders = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 10;
     const skip = (page - 1) * limit;
+    const search = req.query.search || '';
+
+    // Create search query
+    const searchQuery = {
+      userId,
+      $or: [
+        { orderId: { $regex: search, $options: 'i' } },
+        { 'items.name': { $regex: search, $options: 'i' } }
+      ]
+    };
 
     // Get total count for pagination
-    const totalOrders = await orderModel.countDocuments({ userId });
+    const totalOrders = await orderModel.countDocuments(searchQuery);
     const totalPages = Math.ceil(totalOrders / limit);
 
     // Get paginated orders
-    const orders = await orderModel.find({ userId })
+    const orders = await orderModel
+      .find(searchQuery)
       .sort({ orderDate: -1 })
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .populate('userId', 'fullname email');
 
-    res.render('user/profile/orders', { 
+    res.render('user/profile/orders', {
+      user: req.session.user,
       orders,
-      user: req.session.user, 
-      page: 'orders',
       currentPage: page,
       totalPages,
       hasNextPage: page < totalPages,
-      hasPrevPage: page > 1
+      hasPrevPage: page > 1,
+      search,
+      page: 'orders'
     });
+
   } catch (error) {
     console.error('Get orders error:', error);
     res.render('user/profile/orders', { 
+      orders: [],
       message: 'Failed to load orders',
       alertType: 'error',
-      orders: [],
-      currentPage: 1,
-      totalPages: 1,
-      hasNextPage: false,
-      hasPrevPage: false
+      page: 'orders'
     });
   }
 };

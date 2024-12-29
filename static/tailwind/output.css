@@ -2364,6 +2364,10 @@ input::placeholder {
     margin-left: 16rem;
   }
 
+  .md\:mt-0 {
+    margin-top: 0px;
+  }
+
   .md\:block {
     display: block;
   }

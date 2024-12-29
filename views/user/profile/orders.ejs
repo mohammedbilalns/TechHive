@@ -11,13 +11,27 @@
       <span class="text-gray-800">Orders</span>
   </nav>
     <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-6">
-      <h1 class="text-2xl font-semibold text-gray-800 mb-6">My Orders</h1>
+      <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+        <h1 class="text-2xl font-semibold text-gray-800">My Orders</h1>
+        <div class="relative mt-4 md:mt-0">
+          <form action="/profile/orders" method="GET">
+            <input type="text" 
+                name="search" 
+                value="<%= locals.search || '' %>"
+                placeholder="Search by Order ID or Product"
+                onblur="this.form.submit()"
+                class="w-full md:w-64 border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-primary-accent focus:border-primary-accent">
+          </form>
+        </div>
+      </div>
 
       <% if (orders.length === 0) { %>
         <div class="text-center py-8">
           <i class="fas fa-shopping-bag text-gray-400 text-4xl mb-4"></i>
-          <p class="text-gray-600">No orders found</p>
-          <a href="/allproducts" class="inline-block mt-4 bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-primary-accent/90">
+          <p class="text-gray-600">
+            <%= search ? `No orders found for "${search}"` : 'No orders found' %>
+          </p>
+          <a href="/shop" class="inline-block mt-4 bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-primary-accent/90">
             Start Shopping
           </a>
         </div>
@@ -181,24 +195,24 @@
         </div>
 
         <!--  pagination controls -->
-        <% if (orders.length > 0) { %>
+        <% if (orders.length > 0 && totalPages > 1) { %>
           <div class="mt-8 flex justify-center items-center space-x-4">
             <% if (hasPrevPage) { %>
-              <a href="/profile/orders?page=<%= currentPage - 1 %>" 
+              <a href="/profile/orders?page=<%= currentPage - 1 %><%= search ? `&search=${search}` : '' %>" 
                  class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
                 Previous
               </a>
             <% } %>
 
             <% for(let i = 1; i <= totalPages; i++) { %>
-              <a href="/profile/orders?page=<%= i %>"
+              <a href="/profile/orders?page=<%= i %><%= search ? `&search=${search}` : '' %>"
                  class="px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
                 <%= i %>
               </a>
             <% } %>
 
             <% if (hasNextPage) { %>
-              <a href="/profile/orders?page=<%= currentPage + 1 %>"
+              <a href="/profile/orders?page=<%= currentPage + 1 %><%= search ? `&search=${search}` : '' %>"
                  class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
                 Next
               </a>
