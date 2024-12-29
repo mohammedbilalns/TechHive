@@ -34,21 +34,29 @@ const productUpload = multer({
 
 const getProducts = async (req, res) => {
     try {
-        let message = req.query.message;
-        let alertType = req.query.alertType;
+        let message = req.query.message
+        let alertType = req.query.alertType
         const page = parseInt(req.query.page) || 1
         const limit = 10
+        const search = req.query.search || ''
+        
+        // Create search query
+        const searchQuery = {
+            $or: [
+                { name: { $regex: search, $options: 'i' } },
+                { brand: { $regex: search, $options: 'i' } }
+            ]
+        }
+
+        const totalProducts = await productSchema.countDocuments(searchQuery)
+        const totalPages = Math.ceil(totalProducts / limit)
         const skip = (page - 1) * limit
 
-        const totalProducts = await productSchema.countDocuments()
-        const totalPages = Math.ceil(totalProducts / limit)
-
-
-        const products = await productSchema.find()
-        .populate('category')
-        .sort({createdAt: 1})
-        .skip(skip)
-        .limit(limit)
+        const products = await productSchema.find(searchQuery)
+            .populate('category')
+            .sort({createdAt: 1})
+            .skip(skip)
+            .limit(limit)
         
         res.render("admin/products", {
             products,
@@ -58,7 +66,8 @@ const getProducts = async (req, res) => {
             currentPage: page,
             totalPages,
             hasNextPage: page < totalPages,
-            hasPrevPage: page > 1
+            hasPrevPage: page > 1,
+            search
         });
     } catch (error) {
         log.red("PRODUCT_FETCH_ERROR", error);

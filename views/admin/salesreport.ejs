@@ -15,7 +15,7 @@
             <select id="filterType" class="border rounded-md px-3 py-2">
               <option value="daily">Daily</option>
               <option value="weekly">Weekly</option>
-              <option value="monthly">Monthly</option>
+              <option value="monthly" selected>Monthly</option>
               <option value="yearly">Yearly</option>
               <option value="custom">Custom Range</option>
             </select>
@@ -144,6 +144,23 @@
     const tableBody = document.getElementById('salesTableBody');
     tableBody.innerHTML = '';
 
+    if (data.orders.length === 0) {
+      // Show no orders message
+      const noOrdersRow = `
+        <tr>
+          <td colspan="8" class="px-6 py-8 text-center text-gray-500">
+            <div class="flex flex-col items-center">
+              <i class="fas fa-box-open text-4xl mb-3"></i>
+              <p class="text-lg font-semibold">No orders found for the selected period</p>
+              <p class="text-sm">Try selecting a different date range</p>
+            </div>
+          </td>
+        </tr>
+      `;
+      tableBody.innerHTML = noOrdersRow;
+      return;
+    }
+
     data.orders.forEach(order => {
       const row = `
         <tr>
@@ -196,8 +213,11 @@
     }
   }
 
-  // Load initial data
-  window.addEventListener('load', () => applyFilter());
+  // Load initial data with monthly filter
+  window.addEventListener('load', () => {
+    document.getElementById('filterType').value = 'monthly'; // Ensure monthly is selected
+    applyFilter();
+  });
 </script>
 
 <%- include('../partials/adminfooter') %>

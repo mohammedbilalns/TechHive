@@ -9,15 +9,21 @@ const getCategories = async (req, res)=>{
         let alertType = req.query.alertType
         const page = parseInt(req.query.page) || 1
         const limit = 10
+        const search = req.query.search || ''
+        
+        // Create search query
+        const searchQuery = {
+            name: { $regex: search, $options: 'i' }
+        }
+
+        const totalCategories = await categorySchema.countDocuments(searchQuery)
+        const totalPages = Math.ceil(totalCategories / limit)
         const skip = (page - 1) * limit
 
-        const totalCategories = await categorySchema.countDocuments()
-        const totalPages = Math.ceil(totalCategories / limit)
-
-        const categories = await categorySchema.find()
-        .sort({createdAt: 1})
-        .skip(skip)
-        .limit(limit)
+        const categories = await categorySchema.find(searchQuery)
+            .sort({createdAt: 1})
+            .skip(skip)
+            .limit(limit)
 
         res.render('admin/categories', {
             categories,
@@ -27,7 +33,8 @@ const getCategories = async (req, res)=>{
             currentPage: page,
             totalPages,
             hasNextPage: page < totalPages,
-            hasPrevPage: page > 1
+            hasPrevPage: page > 1,
+            search
         });
     }catch(error){
         log.red('FETCH_CATEGORIES_ERROR',error)

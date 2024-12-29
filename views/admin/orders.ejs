@@ -23,16 +23,16 @@
                   <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Orders Dashboard</h1>
                   <div class="flex gap-4">
                     <div class="relative">
-                      <input type="text" id="searchBox" placeholder="Search orders..."
-                        class="w-full md:w-64 border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-                        oninput="filterOrders()" />
-                      <i class="fas fa-search absolute top-3 right-4 text-gray-400"></i>
+                      <form action="/admin/orders" method="GET">
+                        <input type="text" 
+                            name="search" 
+                            value="<%= locals.search || '' %>"
+                            placeholder="Search orders..."
+                            onblur="this.form.submit()"
+                            class="w-full md:w-64 border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                      </form>
                     </div>
-                    <button
-                      class="flex items-center bg-primary-accent text-white px-4 py-2 rounded-md shadow w-full md:w-auto justify-center"
-                      onclick="exportOrders()">
-                      <i class="fas fa-download mr-2"></i> Export
-                    </button>
+                   
                   </div>
                 </div>
 
@@ -51,159 +51,163 @@
                       </tr>
                     </thead>
                     <tbody id="ordersTable" class="text-gray-700">
-                      <% if (orders.length===0) { %>
+                      <% if (orders.length === 0) { %>
                         <tr>
-                          <td colspan="9" class="text-center py-4">No orders found</td>
+                          <td colspan="9" class="text-center py-10">
+                            <h2 class="text-xl font-semibold text-gray-600">
+                              <%= search ? `No orders found for "${search}"` : 'No orders found' %>
+                            </h2>
+                          </td>
                         </tr>
-                        <% } else { %>
-                          <% orders.forEach((order)=> { %>
-                            <tr class="border-b hover:bg-gray-100">
-                              <td class="px-6 py-3 font-medium">
-                                <%= order.orderId %>
-                                  <div class="text-xs text-gray-500">
-                                    Items: <%= order.items.length %>
-                                      <button onclick="toggleOrderDetails('<%= order._id %>')"
-                                        class="text-blue-600 hover:text-blue-800 ml-2" id="toggle-<%= order._id %>">
-                                        View Details
-                                      </button>
-                                  </div>
-                              </td>
-                              <td class="px-6 py-3">
-                                <%= order.userId.fullname %>
-                              </td>
-                              <td class="px-6 py-3">
-                                <%= order.shippingAddress.name %><br>
-                                  <span class="text-sm text-gray-500">
-                                    <%= order.shippingAddress.houseName %>,
-                                      <%= order.shippingAddress.localityStreet %>,
-                                        <%= order.shippingAddress.city %>,
-                                          <%= order.shippingAddress.state %> -
-                                            <%= order.shippingAddress.pincode %>
-                                  </span>
-                              </td>
-                              <td class="px-6 py-3">₹<%= order.totalAmount.toFixed(2) %>
-                              </td>
-                              <td class="px-6 py-3">
-                                <%= order.paymentMethod.toUpperCase() %>
-                              </td>
-                              <td class="px-6 py-3">
-                                <span
-                                  class="px-3 py-1 rounded-full text-sm font-medium
-                        <%= order.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">
-                                  <%= order.paymentStatus %>
+                      <% } else { %>
+                        <% orders.forEach((order)=> { %>
+                          <tr class="border-b hover:bg-gray-100">
+                            <td class="px-6 py-3 font-medium">
+                              <%= order.orderId %>
+                                <div class="text-xs text-gray-500">
+                                  Items: <%= order.items.length %>
+                                    <button onclick="toggleOrderDetails('<%= order._id %>')"
+                                      class="text-blue-600 hover:text-blue-800 ml-2" id="toggle-<%= order._id %>">
+                                      View Details
+                                    </button>
+                                </div>
+                            </td>
+                            <td class="px-6 py-3">
+                              <%= order.userId.fullname %>
+                            </td>
+                            <td class="px-6 py-3">
+                              <%= order.shippingAddress.name %><br>
+                                <span class="text-sm text-gray-500">
+                                  <%= order.shippingAddress.houseName %>,
+                                    <%= order.shippingAddress.localityStreet %>,
+                                      <%= order.shippingAddress.city %>,
+                                        <%= order.shippingAddress.state %> -
+                                          <%= order.shippingAddress.pincode %>
                                 </span>
-                              </td>
-                              <td class="px-6 py-3">
-                                <%= new Date(order.orderDate).toLocaleDateString() %>
-                              </td>
-                            </tr>
-                            <!-- Order Details Row -->
-                            <tr id="details-<%= order._id %>" class="hidden bg-gray-50">
-                              <td colspan="9" class="px-6 py-4">
-                                <div class="space-y-4">
-                                  <!-- Add Coupon Information if exists -->
-                                  <% if (order.coupon && order.coupon.code) { %>
-                                    <div class="bg-blue-50 p-3 rounded-lg mb-4">
-                                      <h4 class="font-medium text-blue-800">Applied Coupon:</h4>
-                                      <p class="text-sm text-blue-600">
-                                        Code: <%= order.coupon.code %> 
-                                        <span class="ml-2">Discount: ₹<%= order.coupon.discount.toFixed(2) %></span>
-                                      </p>
-                                    </div>
-                                  <% } %>
+                            </td>
+                            <td class="px-6 py-3">₹<%= order.totalAmount.toFixed(2) %>
+                            </td>
+                            <td class="px-6 py-3">
+                              <%= order.paymentMethod.toUpperCase() %>
+                            </td>
+                            <td class="px-6 py-3">
+                              <span
+                                class="px-3 py-1 rounded-full text-sm font-medium
+                      <%= order.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">
+                                <%= order.paymentStatus %>
+                              </span>
+                            </td>
+                            <td class="px-6 py-3">
+                              <%= new Date(order.orderDate).toLocaleDateString() %>
+                            </td>
+                          </tr>
+                          <!-- Order Details Row -->
+                          <tr id="details-<%= order._id %>" class="hidden bg-gray-50">
+                            <td colspan="9" class="px-6 py-4">
+                              <div class="space-y-4">
+                                <!-- Add Coupon Information if exists -->
+                                <% if (order.coupon && order.coupon.code) { %>
+                                  <div class="bg-blue-50 p-3 rounded-lg mb-4">
+                                    <h4 class="font-medium text-blue-800">Applied Coupon:</h4>
+                                    <p class="text-sm text-blue-600">
+                                      Code: <%= order.coupon.code %> 
+                                      <span class="ml-2">Discount: ₹<%= order.coupon.discount.toFixed(2) %></span>
+                                    </p>
+                                  </div>
+                                <% } %>
 
-                                  <h4 class="font-medium">Order Items:</h4>
-                                  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    <% order.items.forEach(item => { %>
-                                      <div class="flex items-center space-x-4 bg-white p-3 rounded-lg shadow-sm">
-                                        <img src="<%= item.images[0].path %>" alt="<%= item.name %>"
-                                          class="w-16 h-16 object-cover rounded">
-                                        <div class="flex-grow">
-                                          <h5 class="font-medium"><%= item.name %></h5>
-                                          <p class="text-sm text-gray-600">
-                                            Qty: <%= item.quantity %> × ₹<%= item.price %>
+                                <h4 class="font-medium">Order Items:</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                  <% order.items.forEach(item => { %>
+                                    <div class="flex items-center space-x-4 bg-white p-3 rounded-lg shadow-sm">
+                                      <img src="<%= item.images[0].path %>" alt="<%= item.name %>"
+                                        class="w-16 h-16 object-cover rounded">
+                                      <div class="flex-grow">
+                                        <h5 class="font-medium"><%= item.name %></h5>
+                                        <p class="text-sm text-gray-600">
+                                          Qty: <%= item.quantity %> × ₹<%= item.price %>
+                                        </p>
+                                        <!-- Add Discount Information -->
+                                        <% if (item.discount > 0) { %>
+                                          <p class="text-sm text-green-600">
+                                            Discount: <%= item.discount %>% off
                                           </p>
-                                          <!-- Add Discount Information -->
-                                          <% if (item.discount > 0) { %>
-                                            <p class="text-sm text-green-600">
-                                              Discount: <%= item.discount %>% off
-                                            </p>
+                                        <% } %>
+                                        <p class="text-sm mb-2">
+                                          Status: <span class="font-medium <%= 
+                                            item.status === 'delivered' ? 'text-green-600' :
+                                            item.status === 'cancelled' ? 'text-red-600' :
+                                            item.status === 'returned' ? 'text-gray-600' :
+                                            item.status === 'shipped' ? 'text-blue-600' :
+                                            item.status === 'processing' ? 'text-yellow-600' :
+                                            'text-purple-600'
+                                          %>">
+                                            <%= item.status.charAt(0).toUpperCase() + item.status.slice(1) %>
+                                          </span>
+                                        </p>
+                                        <div class="mt-2 flex items-center">
+                                          <% if (!['delivered', 'cancelled', 'returned'].includes(item.status)) { %>
+                                            <select id="status-<%= order._id %>-<%= item._id %>"
+                                              class="border rounded px-2 py-1 text-sm mr-2">
+                                              <% if (item.status === 'pending') { %>
+                                                <option value="shipped">Shipped</option>
+                                                <option value="delivered">Delivered</option>
+                                                <option value="cancelled">Cancelled</option>
+                                              <% } else if (item.status === 'processing') { %>
+                                                <option value="shipped">Shipped</option>
+                                                <option value="delivered">Delivered</option>
+                                                <option value="cancelled">Cancelled</option>
+                                              <% } else if (item.status === 'shipped') { %>
+                                                <option value="delivered">Delivered</option>
+                                                <option value="cancelled">Cancelled</option>
+                                              <% } else if (item.status === 'return requested') { %>
+                                                <option value="returned">Returned</option>
+                                              <% } %>
+                                            </select>
+                                            <button
+                                              onclick="updateItemStatus('<%= order._id %>', '<%= item._id %>')"
+                                              class="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600">
+                                              Update
+                                            </button>
                                           <% } %>
-                                          <p class="text-sm mb-2">
-                                            Status: <span class="font-medium <%= 
-                                              item.status === 'delivered' ? 'text-green-600' :
-                                              item.status === 'cancelled' ? 'text-red-600' :
-                                              item.status === 'returned' ? 'text-gray-600' :
-                                              item.status === 'shipped' ? 'text-blue-600' :
-                                              item.status === 'processing' ? 'text-yellow-600' :
-                                              'text-purple-600'
-                                            %>">
-                                              <%= item.status.charAt(0).toUpperCase() + item.status.slice(1) %>
-                                            </span>
-                                          </p>
-                                          <div class="mt-2 flex items-center">
-                                            <% if (!['delivered', 'cancelled', 'returned'].includes(item.status)) { %>
-                                              <select id="status-<%= order._id %>-<%= item._id %>"
-                                                class="border rounded px-2 py-1 text-sm mr-2">
-                                                <% if (item.status === 'pending') { %>
-                                                  <option value="shipped">Shipped</option>
-                                                  <option value="delivered">Delivered</option>
-                                                  <option value="cancelled">Cancelled</option>
-                                                <% } else if (item.status === 'processing') { %>
-                                                  <option value="shipped">Shipped</option>
-                                                  <option value="delivered">Delivered</option>
-                                                  <option value="cancelled">Cancelled</option>
-                                                <% } else if (item.status === 'shipped') { %>
-                                                  <option value="delivered">Delivered</option>
-                                                  <option value="cancelled">Cancelled</option>
-                                                <% } else if (item.status === 'return requested') { %>
-                                                  <option value="returned">Returned</option>
-                                                <% } %>
-                                              </select>
-                                              <button
-                                                onclick="updateItemStatus('<%= order._id %>', '<%= item._id %>')"
-                                                class="bg-blue-500 text-white px-2 py-1 rounded text-sm hover:bg-blue-600">
-                                                Update
-                                              </button>
-                                            <% } %>
-                                          </div>
                                         </div>
                                       </div>
-                                      <% }); %>
-                                  </div>
+                                    </div>
+                                    <% }); %>
                                 </div>
-                              </td>
-                            </tr>
-                            <% }); %>
-                              <% } %>
+                              </div>
+                            </td>
+                          </tr>
+                          <% }); %>
+                            <% } %>
                     </tbody>
                   </table>
 
-                  <!--  pagination controls -->
-                  <% if (orders.length> 0) { %>
+                  <!-- Pagination -->
+                  <% if (orders.length > 0) { %>
                     <div class="mt-8 flex justify-center items-center space-x-4">
                       <% if (hasPrevPage) { %>
-                        <a href="/admin/orders?page=<%= currentPage - 1 %>"
+                        <a href="/admin/orders?page=<%= currentPage - 1 %><%= search ? `&search=${search}` : '' %>"
                           class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
                           Previous
                         </a>
-                        <% } %>
+                      <% } %>
 
-                          <% for(let i=1; i <=totalPages; i++) { %>
-                            <a href="/admin/orders?page=<%= i %>"
-                              class="px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
-                              <%= i %>
-                            </a>
-                            <% } %>
+                      <% for(let i=1; i <=totalPages; i++) { %>
+                        <a href="/admin/orders?page=<%= i %><%= search ? `&search=${search}` : '' %>"
+                          class="px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
+                          <%= i %>
+                        </a>
+                      <% } %>
 
-                              <% if (hasNextPage) { %>
-                                <a href="/admin/orders?page=<%= currentPage + 1 %>"
-                                  class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                                  Next
-                                </a>
-                                <% } %>
+                      <% if (hasNextPage) { %>
+                        <a href="/admin/orders?page=<%= currentPage + 1 %><%= search ? `&search=${search}` : '' %>"
+                          class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                          Next
+                        </a>
+                      <% } %>
                     </div>
-                    <% } %>
+                  <% } %>
                 </div>
               </div>
         </div>

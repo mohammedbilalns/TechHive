@@ -9,13 +9,23 @@ const getOrders = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 10;
     const skip = (page - 1) * limit;
+    const search = req.query.search || '';
+
+    // Create search query
+    const searchQuery = {
+      $or: [
+        { orderId: { $regex: search, $options: 'i' } },
+        { 'shippingAddress.name': { $regex: search, $options: 'i' } },
+        { 'shippingAddress.phone': { $regex: search, $options: 'i' } }
+      ]
+    };
 
     // Get total count for pagination
-    const totalOrders = await orderModel.countDocuments();
+    const totalOrders = await orderModel.countDocuments(searchQuery);
     const totalPages = Math.ceil(totalOrders / limit);
 
     // Get paginated orders
-    const orders = await orderModel.find()
+    const orders = await orderModel.find(searchQuery)
       .populate('userId', 'fullname email')
       .sort({ createdAt: -1 })
       .skip(skip)
@@ -27,7 +37,8 @@ const getOrders = async (req, res) => {
       currentPage: page,
       totalPages,
       hasNextPage: page < totalPages,
-      hasPrevPage: page > 1
+      hasPrevPage: page > 1,
+      search
     });
   } catch (error) {
     console.error('Error fetching orders:', error);
