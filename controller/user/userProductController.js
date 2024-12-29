@@ -1,8 +1,8 @@
 import { log } from "mercedlogger";
 import productSchema from "../../model/productModel.js";
 import categorySchema from "../../model/categoryModel.js";
-import wishlistSchema from "../../model/wishlistModel.js"
 import reviewModel from '../../model/reviewModel.js';
+import mongoose from 'mongoose';
 
 
 // ---- load home ---- homepage 
@@ -129,7 +129,7 @@ const loadAllProducts = async (req, res) => {
 
     } catch (error) {
         console.error("Error in loadAllProducts:", error);
-        res.status(500).render('error', {
+        res.status(500).render('notfound', {
             message: "Error loading products",
             alertType: "error"
         });
@@ -140,11 +140,18 @@ const viewProduct = async (req, res) => {
     try {
         const productId = req.params.id;
         
-        // First fetch the product
-        const product = await productSchema.findById(productId);
+        // Validate if the ID is a valid MongoDB ObjectId
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.redirect('/notfound?message=Invalid+Product+id&alertType=error');
+
+        }
         
-        if (!product) {
-            return res.redirect('/allproducts');
+        // First fetch the product
+        const product = await productSchema?.findById(productId);
+        
+        if (!product || product.status !== "Active") {
+            return res.redirect('/notfound?message=Product+not+found&alertType=error');
+
         }
 
         // Then fetch related products and reviews in parallel
@@ -175,8 +182,11 @@ const viewProduct = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('View product error:', error);
-        res.redirect('/allproducts');
+        log.red("VIEWPRODUCT_ERROR", error);
+        res.status(500).render('notfound', {
+            message: "Error loading product",
+            alertType: "error"
+        });
     }
 };
 
@@ -190,6 +200,11 @@ const viewCategory = async (req, res) => {
         const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : Number.MAX_VALUE;
         const minRating = req.query.minRating ? parseFloat(req.query.minRating) : 0;
 
+        // Validate if the ID is a valid MongoDB ObjectId
+        if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+            return res.redirect('/notfound?message=Invalid+category+id&alertType=error');
+        }
+
         // Fetch the category
         const category = await categorySchema.findOne({
             _id: categoryId,
@@ -197,10 +212,8 @@ const viewCategory = async (req, res) => {
         });
 
         if (!category) {
-            return res.status(404).render('error', {
-                message: "Category not found",
-                alertType: "error"
-            });
+            return res.redirect('/notfound?message=Category+not+found&alertType=error');
+
         }
 
         // Get product ratings
@@ -287,13 +300,13 @@ const viewCategory = async (req, res) => {
         });
 
     } catch (error) {
-        log.red("ERROR", error);
+        log.red("VIEW_CATEGORY_ERROR", error);
         if (req.xhr) {
             return res.status(500).json({
                 error: "Error loading category"
             });
         }
-        res.status(500).render('error', {
+        res.status(500).render('notfound', {
             message: "Error loading category",
             alertType: "error"
         });

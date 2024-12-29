@@ -1,6 +1,24 @@
 <%- include(locals.fullname ? './partials/header' : './partials/authheader') %>
 <main class="flex-1 flex flex-col justify-center items-center bg-gray-100">
     <div class="bg-primary-white rounded-lg shadow-lg flex flex-col items-center text-center max-w-4xl w-full">
+      <!-- Alert Section -->
+      <% if (locals.message) { %>
+        <div class="w-full p-4 <%= locals.alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %> rounded-t-lg">
+          <div class="flex items-center justify-center">
+            <% if (locals.alertType === 'error') { %>
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+              </svg>
+            <% } else { %>
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+            <% } %>
+            <p><%= message %></p>
+          </div>
+        </div>
+      <% } %>
+
       <!-- Message Section -->
       <div class="bg-gray-50 p-6 md:p-12 flex-1 w-full">
         <h1 class="text-4xl font-bold text-gray-800 mb-4">Oops! Page Not Found</h1>

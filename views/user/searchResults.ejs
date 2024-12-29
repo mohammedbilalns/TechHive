@@ -191,7 +191,7 @@ let currentFilters = {
     page: 1
 };
 
-window.wishlistItems = <%- JSON.stringify(wishlistItems || []) %>;
+window.wishlistItems = JSON.parse('<%- JSON.stringify(wishlistItems || []) %>');
 
 async function fetchProducts() {
     try {
@@ -516,7 +516,6 @@ async function removeFromWishlist(productId) {
         showAlert('Error removing item from wishlist', 'error');
     }
 }
-
 
 </script>
 

@@ -18,7 +18,7 @@ import userWishlistController from "../controller/user/userWishlistController.js
 import userCouponsController from "../controller/user/userCouponsController.js"
 import userWalletController from "../controller/user/userWalletController.js"
 import userReviewController from "../controller/user/userReviewController.js"
-
+import notfoundController from "../controller/user/notfoundController.js"
 
 const router = Router()
 
@@ -122,5 +122,6 @@ router.post('/profile/orders/:orderId/items/:itemId/return', userOrderController
 router.post('/review/add', auth.checkSession, userReviewController.addReview);
 router.get('/review/get', auth.checkSession, userReviewController.getReview);
 
+router.get('/notfound',notfoundController.loadNotfound )
 
 export default router
