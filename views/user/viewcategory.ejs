@@ -374,13 +374,37 @@ let priceTimeout;
 function handlePriceChange() {
     clearTimeout(priceTimeout);
     priceTimeout = setTimeout(() => {
-        currentFilters.minPrice = document.getElementById('minPrice').value;
-        currentFilters.maxPrice = document.getElementById('maxPrice').value;
-        currentFilters.page = 1;
-        fetchProducts();
+        const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
+        const maxPrice = parseFloat(document.getElementById('maxPrice').value) || 0;
+        
+        // Only fetch products if there's no validation error
+        if (!maxPrice || minPrice <= maxPrice) {
+            currentFilters.minPrice = minPrice || '';
+            currentFilters.maxPrice = maxPrice || '';
+            currentFilters.page = 1;
+            fetchProducts();
+        }
     }, 500);
 }
 
+// Add blur event listeners for price validation
+document.getElementById('minPrice').addEventListener('blur', validatePriceRange);
+document.getElementById('maxPrice').addEventListener('blur', validatePriceRange);
+
+function validatePriceRange() {
+    const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
+    const maxPrice = parseFloat(document.getElementById('maxPrice').value) || 0;
+    
+    // Only show error if max price is set and is less than min price
+    if (maxPrice && minPrice > maxPrice) {
+        showAlert('Maximum price cannot be less than minimum price', 'error');
+        // Clear the max price field
+        document.getElementById('maxPrice').value = '';
+        currentFilters.maxPrice = '';
+    }
+}
+
+//  event listeners for continuous updates
 document.getElementById('minPrice').addEventListener('input', handlePriceChange);
 document.getElementById('maxPrice').addEventListener('input', handlePriceChange);
 
