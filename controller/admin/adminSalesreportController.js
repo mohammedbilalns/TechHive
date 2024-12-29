@@ -18,6 +18,23 @@ const renderSalesReport = async (req, res) => {
 const getSalesReportData = async (req, res) => {
   try {
     const { filterType, startDate, endDate } = req.query;
+    
+    // Add date validation for custom range
+    if (filterType === 'custom') {
+      if (!startDate || !endDate) {
+        return res.status(400).json({ message: 'Start date and end date are required' });
+      }
+
+      const startDateTime = new Date(startDate);
+      const endDateTime = new Date(endDate);
+
+      if (startDateTime > endDateTime) {
+        return res.status(400).json({ 
+          message: 'Invalid date range: Start date cannot be after end date' 
+        });
+      }
+    }
+
     let dateFilter = {};
 
     // Set date filter based on filter type

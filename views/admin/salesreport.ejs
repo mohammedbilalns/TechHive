@@ -101,6 +101,20 @@
     if (filterType === 'custom') {
       startDate = document.getElementById('startDate').value;
       endDate = document.getElementById('endDate').value;
+
+      // Add frontend validation
+      if (!startDate || !endDate) {
+        showAlert('Please select both start and end dates', 'error');
+        return;
+      }
+
+      const startDateTime = new Date(startDate);
+      const endDateTime = new Date(endDate);
+
+      if (startDateTime > endDateTime) {
+        showAlert('Start date cannot be after end date', 'error');
+        return;
+      }
     }
 
     try {
@@ -114,7 +128,8 @@
 
       updateDashboard(response.data);
     } catch (error) {
-      showAlert('Failed to fetch sales report', 'error');
+      const errorMessage = error.response?.data?.message || 'Failed to fetch sales report';
+      showAlert(errorMessage, 'error');
     }
   }
 
