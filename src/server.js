@@ -25,6 +25,7 @@ app.use(session({
     saveUninitialized: true,
     cookie: { maxAge: 1000 * 60 * 60 * 24 }
 }))
+
 app.use(express.static('static'))
 app.use('/js', express.static('static/js'));
 app.use(express.json())

@@ -88,7 +88,6 @@ const getOffers = async (req, res) => {
 // Get offer details
 const getOfferDetails = async (req, res) => {
     try {
-        console.log('Fetching offer details for ID:', req.params.offerId);
         
         if (!req.params.offerId) {
             return res.status(400).json({ success: false, message: 'Offer ID is required' });
@@ -98,7 +97,6 @@ const getOfferDetails = async (req, res) => {
             .populate('applicableCategories', '_id name')
             .populate('applicableProducts', '_id name');
 
-        console.log('Found offer:', offer);
 
         if (!offer) {
             return res.status(404).json({ success: false, message: 'Offer not found' });
@@ -119,7 +117,6 @@ const getOfferDetails = async (req, res) => {
             }
         };
 
-        console.log('Sending response:', response);
         res.json(response);
     } catch (error) {
         console.error('Error fetching offer details:', error);

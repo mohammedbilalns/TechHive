@@ -13,7 +13,7 @@ const getWallet = async (req, res) => {
 
         const wallet = await walletModel.findOne({ userId: req.session.user.id });
         const user =  await userModel.findOne({_id: req.session.user.id})
-        console.log(user)
+      
         if (!wallet) {
             // Create wallet if it doesn't exist
             const newWallet = new walletModel({

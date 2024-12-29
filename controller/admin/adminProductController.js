@@ -232,7 +232,6 @@ const addProduct = async (req, res) => {
 const getEditProduct = async (req, res) => {
     try {
         const product = await productSchema.findById(req.params.productid)
-        console.log(product)
         const categories = await categorySchema.find({ status: "Active" })
         res.render('admin/editproduct', { product, categories, page: 'products' })
     } catch (error) {

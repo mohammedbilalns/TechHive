@@ -15,4 +15,5 @@ const isValidEmail = (email) => {
 
 
 
+
 export default { isValidName, isValidPhone, isValidPincode, isValidEmail}

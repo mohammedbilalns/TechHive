@@ -245,14 +245,12 @@ const verifyOTP = async (req, res) => {
 
 // Resend OTP functionality
 const resendOTP = async (req, res) => {
-    console.log(req.body)
+
     let { email } = req.body;
     email = email.trim()
-    console.log("email: ", email)
     try {
         // Find the user by email
         const user = await userSchema.findOne({ email });
-        console.log("user: ", user)
 
         if (user.otp.otpAttempts >= 3) {
             await userSchema.findOneAndDelete({ email });
@@ -493,7 +491,6 @@ const resetPassword = async (req, res) => {
     email = email.trim();
     try {
         const user = await userSchema.findOne({ email });
-        console.log("user: ", user)
         if (!user) {
             return res.render('user/auth/resetpassword', {
                 message: "Invalid reset attempt",

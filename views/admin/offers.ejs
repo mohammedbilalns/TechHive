@@ -240,9 +240,7 @@
 
   async function editOffer(offerId) {
     try {
-        console.log('Fetching offer details for ID:', offerId);
         const response = await axios.get(`/admin/offers/${offerId}`);
-        console.log('Received response:', response.data);
 
         if (!response.data.success) {
             throw new Error(response.data.message || 'Failed to fetch offer details');
@@ -271,7 +269,6 @@
                 const option = categorySelect.querySelector(`option[value="${categoryId}"]`);
                 if (option) {
                     option.selected = true;
-                    console.log('Selected category:', categoryId);
                 }
             });
         } else {
@@ -281,7 +278,6 @@
                 const option = productSelect.querySelector(`option[value="${productId}"]`);
                 if (option) {
                     option.selected = true;
-                    console.log('Selected product:', productId);
                 }
             });
         }

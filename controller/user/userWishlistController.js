@@ -86,7 +86,6 @@ const addToWishlist = async (req, res) => {
 
 const removeFromWishlist = async (req, res) => {
     try {
-        console.log("removeFromWishlist");
         const { productId } = req.body;
         const userId = req.session.user.id;
 
