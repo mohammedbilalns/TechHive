@@ -146,8 +146,14 @@ const viewProduct = async (req, res) => {
 const viewCategory = async (req, res) => {
     try {
         const categoryId = req.params.id;
-        
-        // Fetch the category with its products
+        const page = parseInt(req.query.page) || 1;
+        const limit = 8;
+        const sortBy = req.query.sort || 'newest';
+        const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice) : 0;
+        const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : Number.MAX_VALUE;
+        const minRating = req.query.minRating ? parseFloat(req.query.minRating) : 0;
+
+        // Fetch the category
         const category = await categorySchema.findOne({
             _id: categoryId,
             status: "Active"
@@ -160,19 +166,97 @@ const viewCategory = async (req, res) => {
             });
         }
 
-        // Fetch active products in this category
-        const products = await productSchema.find({
+        // Get product ratings
+        const productRatings = await reviewModel.aggregate([
+            { 
+                $group: {
+                    _id: "$product",
+                    avgRating: { $avg: "$rating" }
+                }
+            }
+        ]);
+
+        const ratingMap = new Map(productRatings.map(item => [item._id.toString(), item.avgRating]));
+
+        // Base query with category and price filter
+        const baseQuery = {
             category: categoryId,
-            status: "Active"
+            status: "Active",
+            price: { $gte: minPrice, $lte: maxPrice }
+        };
+
+        // Get all products matching the base query
+        let allProducts = await productSchema
+            .find(baseQuery);
+
+        // Apply rating filter if needed
+        if (minRating > 0) {
+            allProducts = allProducts.filter(product => 
+                (ratingMap.get(product._id.toString()) || 0) >= minRating
+            );
+        }
+
+        // Sort products
+        allProducts.sort((a, b) => {
+            switch (sortBy) {
+                case 'newest':
+                    return b.createdAt - a.createdAt;
+                case 'price_asc':
+                    return a.price - b.price;
+                case 'price_desc':
+                    return b.price - a.price;
+                case 'name_asc':
+                    return a.name.localeCompare(b.name);
+                case 'name_desc':
+                    return b.name.localeCompare(a.name);
+                case 'rating':
+                    const ratingA = ratingMap.get(a._id.toString()) || 0;
+                    const ratingB = ratingMap.get(b._id.toString()) || 0;
+                    return ratingB - ratingA;
+                default:
+                    return b.createdAt - a.createdAt;
+            }
         });
+
+        // Calculate pagination
+        const totalProducts = allProducts.length;
+        const totalPages = Math.ceil(totalProducts / limit);
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+
+        // Slice the products array for pagination
+        const products = allProducts.slice(startIndex, endIndex);
+
+        if (req.xhr) {
+            return res.json({
+                products,
+                productRatings: Object.fromEntries(ratingMap),
+                currentPage: page,
+                totalPages,
+                hasNextPage: page < totalPages,
+                hasPrevPage: page > 1
+            });
+        }
 
         res.render('user/viewcategory', {
             category,
             products,
-            fullname: req.session.user?.fullname
+            productRatings: Object.fromEntries(ratingMap),
+            currentPage: page,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+            fullname: req.session.user?.fullname,
+            wishlistItems: req.wishlistItems || []
         });
+
     } catch (error) {
         log.red("ERROR", error);
+        if (req.xhr) {
+            return res.status(500).json({
+                error: "Error loading category"
+            });
+        }
         res.status(500).render('error', {
             message: "Error loading category",
             alertType: "error"

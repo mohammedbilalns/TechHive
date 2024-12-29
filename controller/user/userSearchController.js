@@ -7,7 +7,7 @@ const searchProducts = async (req, res) => {
     try {
         const query = req.query.q || '';
         const page = parseInt(req.query.page) || 1;
-        const limit = 8;
+        const limit = 6;
         const sortBy = req.query.sort || 'newest';
         const categoryFilter = req.query.category;
         const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice) : 0;
