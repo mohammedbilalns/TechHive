@@ -14,6 +14,18 @@ const searchProducts = async (req, res) => {
         const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : Number.MAX_VALUE;
         const minRating = req.query.minRating ? parseFloat(req.query.minRating) : 0;
 
+        // Get product ratings first
+        const productRatings = await reviewSchema.aggregate([
+            { 
+                $group: {
+                    _id: "$product",
+                    avgRating: { $avg: "$rating" }
+                }
+            }
+        ]);
+
+        const ratingMap = new Map(productRatings.map(item => [item._id.toString(), item.avgRating]));
+
         // Base query with price filter
         const baseQuery = {
             status: "Active",
@@ -67,34 +79,27 @@ const searchProducts = async (req, res) => {
                 sortOptions = { createdAt: -1 };
         }
 
-        // Get product ratings
-        const productRatings = await reviewSchema.aggregate([
-            { $group: {
-                _id: "$product",
-                avgRating: { $avg: "$rating" }
-            }}
-        ]);
-
-        const ratingMap = new Map(productRatings.map(item => [item._id.toString(), item.avgRating]));
-
-        // Get total count for pagination
-        const totalProducts = await productSchema.countDocuments(baseQuery);
-        const totalPages = Math.ceil(totalProducts / limit);
-
-        // Get products with pagination
-        let products = await productSchema
+        // Get all products first to apply rating filter
+        let allProducts = await productSchema
             .find(baseQuery)
             .populate('category', 'name')
-            .sort(sortOptions)
-            .skip((page - 1) * limit)
-            .limit(limit);
+            .sort(sortOptions);
 
-        // Filter by rating after fetching products
+        // Apply rating filter if needed
         if (minRating > 0) {
-            products = products.filter(product => 
+            allProducts = allProducts.filter(product => 
                 (ratingMap.get(product._id.toString()) || 0) >= minRating
             );
         }
+
+        // Calculate pagination after all filters
+        const totalProducts = allProducts.length;
+        const totalPages = Math.ceil(totalProducts / limit);
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+
+        // Slice the products array for pagination
+        const products = allProducts.slice(startIndex, endIndex);
 
         // Get all categories for filter dropdown
         const allCategories = await categorySchema.find({ status: 'Active' });
