@@ -146,6 +146,198 @@ const getSalesReportData = async (req, res) => {
   }
 };
 
+const getFormattedDateRange = (filterType, startDate, endDate) => {
+  const today = new Date();
+  
+  switch (filterType) {
+    case 'daily':
+      return `Date: ${today.toLocaleDateString()}`;
+    case 'weekly':
+      const weekStart = new Date();
+      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+      return `Week: ${weekStart.toLocaleDateString()} - ${today.toLocaleDateString()}`;
+    case 'monthly':
+      return `Month: ${today.toLocaleString('default', { month: 'long', year: 'numeric' })}`;
+    case 'yearly':
+      return `Year: ${today.getFullYear()}`;
+    case 'custom':
+      return `Period: ${new Date(startDate).toLocaleDateString()} - ${new Date(endDate).toLocaleDateString()}`;
+    default:
+      return '';
+  }
+};
+
+const generateExcelReport = async (res, orders, totals, filterType, startDate, endDate) => {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Sales Report');
+
+  // Add title and date range
+  worksheet.mergeCells('A1:H1');
+  worksheet.getCell('A1').value = 'Sales Report';
+  worksheet.getCell('A1').font = { size: 16, bold: true };
+  worksheet.getCell('A1').alignment = { horizontal: 'center' };
+
+  // Add date range
+  worksheet.mergeCells('A2:H2');
+  worksheet.getCell('A2').value = getFormattedDateRange(filterType, startDate, endDate);
+  worksheet.getCell('A2').font = { size: 12, bold: true };
+  worksheet.getCell('A2').alignment = { horizontal: 'center' };
+
+  // Add generated date
+  worksheet.mergeCells('A3:H3');
+  worksheet.getCell('A3').value = `Generated on: ${new Date().toLocaleString()}`;
+  worksheet.getCell('A3').font = { size: 10, italic: true };
+  worksheet.getCell('A3').alignment = { horizontal: 'center' };
+
+  // Add headers (now starting from row 5)
+  worksheet.addRow(['']);  // Empty row for spacing
+  const headers = [
+    'Order ID',
+    'Date',
+    'Customer',
+    'Items',
+    'Total Amount (₹)',
+    'Coupon Discount (₹)',
+    'Offer Discount (₹)',
+    'Net Amount (₹)'
+  ];
+  const headerRow = worksheet.addRow(headers);
+  headerRow.font = { bold: true };
+
+  // Add data rows
+  orders.forEach(order => {
+    worksheet.addRow([
+      order.orderId,
+      new Date(order.orderDate).toLocaleDateString(),
+      order.customer,
+      order.itemCount,
+      order.totalAmount.toFixed(2),
+      order.couponDiscount.toFixed(2),
+      order.offerDiscount.toFixed(2),
+      order.netAmount.toFixed(2)
+    ]);
+  });
+
+  // Add totals
+  worksheet.addRow(['']);  // Empty row for spacing
+  worksheet.addRow([
+    'TOTALS',
+    '',
+    '',
+    totals.totalOrders,
+    totals.totalAmount.toFixed(2),
+    totals.totalCouponDiscounts.toFixed(2),
+    totals.totalOfferDiscounts.toFixed(2),
+    totals.netAmount.toFixed(2)
+  ]).font = { bold: true };
+
+  // Style the worksheet
+  worksheet.columns.forEach(column => {
+    column.width = 15;
+    column.alignment = { horizontal: 'left' };
+  });
+
+  // Set response headers
+  res.setHeader(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  );
+  res.setHeader(
+    'Content-Disposition',
+    `attachment; filename=sales-report-${filterType}-${new Date().toISOString().split('T')[0]}.xlsx`
+  );
+
+  // Write to response
+  await workbook.xlsx.write(res);
+};
+
+const generatePDFReport = async (res, orders, totals, filterType, startDate, endDate) => {
+  const doc = new PDFDocument({ margin: 30, size: 'A4' });
+  
+  // Set response headers
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader(
+    'Content-Disposition', 
+    `attachment; filename=sales-report-${filterType}-${new Date().toISOString().split('T')[0]}.pdf`
+  );
+
+  doc.pipe(res);
+
+  // Add title
+  doc.fontSize(20)
+     .text('Sales Report', { align: 'center' })
+     .moveDown(0.5);
+
+  // Add date range
+  doc.fontSize(14)
+     .text(getFormattedDateRange(filterType, startDate, endDate), { align: 'center' })
+     .moveDown(0.5);
+
+  // Add generated date
+  doc.fontSize(10)
+     .text(`Generated on: ${new Date().toLocaleString()}`, { align: 'center' })
+     .moveDown(2);
+
+  // Define table layout
+  const tableTop = 150;
+  const columnSpacing = 70;
+  const headers = ['Order ID', 'Date', 'Customer', 'Items', 'Total', 'Coupon Disc.', 'Offer Disc.', 'Net'];
+
+  // Add headers
+  headers.forEach((header, i) => {
+    doc.fontSize(10)
+       .text(header, 30 + (i * columnSpacing), tableTop, { width: columnSpacing, align: 'left' });
+  });
+
+  // Add rows
+  let yPosition = tableTop + 25;
+  orders.forEach((order, index) => {
+    if (yPosition > 700) {  // New page check
+      doc.addPage();
+      yPosition = 50;
+      headers.forEach((header, i) => {
+        doc.fontSize(10)
+           .text(header, 30 + (i * columnSpacing), yPosition, { width: columnSpacing, align: 'left' });
+      });
+      yPosition += 25;
+    }
+
+    const row = [
+      order.orderId,
+      new Date(order.orderDate).toLocaleDateString(),
+      order.customer,
+      order.itemCount,
+      `₹${order.totalAmount.toFixed(2)}`,
+      `₹${order.couponDiscount.toFixed(2)}`,
+      `₹${order.offerDiscount.toFixed(2)}`,
+      `₹${order.netAmount.toFixed(2)}`
+    ];
+
+    row.forEach((text, i) => {
+      doc.fontSize(8)
+         .text(text.toString(), 30 + (i * columnSpacing), yPosition, { 
+           width: columnSpacing, 
+           align: 'left' 
+         });
+    });
+
+    yPosition += 20;
+  });
+
+  // Add totals
+  yPosition += 20;
+  doc.fontSize(10)
+     .text('TOTALS', 30, yPosition)
+     .text(`Orders: ${totals.totalOrders}`, 30 + (3 * columnSpacing), yPosition)
+     .text(`₹${totals.totalAmount.toFixed(2)}`, 30 + (4 * columnSpacing), yPosition)
+     .text(`₹${totals.totalCouponDiscounts.toFixed(2)}`, 30 + (5 * columnSpacing), yPosition)
+     .text(`₹${totals.totalOfferDiscounts.toFixed(2)}`, 30 + (6 * columnSpacing), yPosition)
+     .text(`₹${totals.netAmount.toFixed(2)}`, 30 + (7 * columnSpacing), yPosition);
+
+  // Finalize PDF
+  doc.end();
+};
+
 const downloadReport = async (req, res) => {
   try {
     const { format, filterType, startDate, endDate } = req.query;
@@ -247,165 +439,26 @@ const downloadReport = async (req, res) => {
     });
 
     if (format === 'excel') {
-      await generateExcelReport(res, formattedOrders, totals, filterType);
+      const fileName = `sales-report-${filterType}-${new Date().toISOString().split('T')[0]}.xlsx`;
+      
+      res.setHeader(
+        'Content-Type',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      );
+      res.setHeader(
+        'Content-Disposition',
+        `attachment; filename=${fileName}`
+      );
+      
+      await generateExcelReport(res, formattedOrders, totals, filterType, startDate, endDate);
     } else if (format === 'pdf') {
-      await generatePDFReport(res, formattedOrders, totals, filterType);
+      await generatePDFReport(res, formattedOrders, totals, filterType, startDate, endDate);
     }
 
   } catch (error) {
     log.red('DOWNLOAD_REPORT_ERROR', error);
     res.status(500).json({ message: 'Failed to download report' });
   }
-};
-
-const generateExcelReport = async (res, orders, totals, filterType) => {
-  const workbook = new ExcelJS.Workbook();
-  const worksheet = workbook.addWorksheet('Sales Report');
-
-  // Add title
-  worksheet.mergeCells('A1:H1');
-  worksheet.getCell('A1').value = `Sales Report - ${filterType.charAt(0).toUpperCase() + filterType.slice(1)}`;
-  worksheet.getCell('A1').font = { size: 16, bold: true };
-  worksheet.getCell('A1').alignment = { horizontal: 'center' };
-
-  // Add headers
-  worksheet.addRow(['']);  // Empty row for spacing
-  const headers = [
-    'Order ID',
-    'Date',
-    'Customer',
-    'Items',
-    'Total Amount (₹)',
-    'Coupon Discount (₹)',
-    'Offer Discount (₹)',
-    'Net Amount (₹)'
-  ];
-  const headerRow = worksheet.addRow(headers);
-  headerRow.font = { bold: true };
-
-  // Add data rows
-  orders.forEach(order => {
-    worksheet.addRow([
-      order.orderId,
-      new Date(order.orderDate).toLocaleDateString(),
-      order.customer,
-      order.itemCount,
-      order.totalAmount.toFixed(2),
-      order.couponDiscount.toFixed(2),
-      order.offerDiscount.toFixed(2),
-      order.netAmount.toFixed(2)
-    ]);
-  });
-
-  // Add totals
-  worksheet.addRow(['']);  // Empty row for spacing
-  worksheet.addRow([
-    'TOTALS',
-    '',
-    '',
-    totals.totalOrders,
-    totals.totalAmount.toFixed(2),
-    totals.totalCouponDiscounts.toFixed(2),
-    totals.totalOfferDiscounts.toFixed(2),
-    totals.netAmount.toFixed(2)
-  ]).font = { bold: true };
-
-  // Style the worksheet
-  worksheet.columns.forEach(column => {
-    column.width = 15;
-    column.alignment = { horizontal: 'left' };
-  });
-
-  // Set response headers
-  res.setHeader(
-    'Content-Type',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-  );
-  res.setHeader(
-    'Content-Disposition',
-    `attachment; filename=sales-report-${filterType}-${new Date().toISOString().split('T')[0]}.xlsx`
-  );
-
-  // Write to response
-  await workbook.xlsx.write(res);
-};
-
-const generatePDFReport = async (res, orders, totals, filterType) => {
-  const doc = new PDFDocument({ margin: 30, size: 'A4' });
-  
-  // Set response headers
-  res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader(
-    'Content-Disposition', 
-    `attachment; filename=sales-report-${filterType}-${new Date().toISOString().split('T')[0]}.pdf`
-  );
-
-  // Pipe the PDF to the response
-  doc.pipe(res);
-
-  // Add title
-  doc.fontSize(20)
-     .text(`Sales Report - ${filterType.charAt(0).toUpperCase() + filterType.slice(1)}`, { align: 'center' })
-     .moveDown(2);
-
-  // Define table layout
-  const tableTop = 150;
-  const columnSpacing = 70;
-  const headers = ['Order ID', 'Date', 'Customer', 'Items', 'Total', 'Coupon Disc.', 'Offer Disc.', 'Net'];
-
-  // Add headers
-  headers.forEach((header, i) => {
-    doc.fontSize(10)
-       .text(header, 30 + (i * columnSpacing), tableTop, { width: columnSpacing, align: 'left' });
-  });
-
-  // Add rows
-  let yPosition = tableTop + 25;
-  orders.forEach((order, index) => {
-    if (yPosition > 700) {  // New page check
-      doc.addPage();
-      yPosition = 50;
-      headers.forEach((header, i) => {
-        doc.fontSize(10)
-           .text(header, 30 + (i * columnSpacing), yPosition, { width: columnSpacing, align: 'left' });
-      });
-      yPosition += 25;
-    }
-
-    const row = [
-      order.orderId,
-      new Date(order.orderDate).toLocaleDateString(),
-      order.customer,
-      order.itemCount,
-      `₹${order.totalAmount.toFixed(2)}`,
-      `₹${order.couponDiscount.toFixed(2)}`,
-      `₹${order.offerDiscount.toFixed(2)}`,
-      `₹${order.netAmount.toFixed(2)}`
-    ];
-
-    row.forEach((text, i) => {
-      doc.fontSize(8)
-         .text(text.toString(), 30 + (i * columnSpacing), yPosition, { 
-           width: columnSpacing, 
-           align: 'left' 
-         });
-    });
-
-    yPosition += 20;
-  });
-
-  // Add totals
-  yPosition += 20;
-  doc.fontSize(10)
-     .text('TOTALS', 30, yPosition)
-     .text(`Orders: ${totals.totalOrders}`, 30 + (3 * columnSpacing), yPosition)
-     .text(`₹${totals.totalAmount.toFixed(2)}`, 30 + (4 * columnSpacing), yPosition)
-     .text(`₹${totals.totalCouponDiscounts.toFixed(2)}`, 30 + (5 * columnSpacing), yPosition)
-     .text(`₹${totals.totalOfferDiscounts.toFixed(2)}`, 30 + (6 * columnSpacing), yPosition)
-     .text(`₹${totals.netAmount.toFixed(2)}`, 30 + (7 * columnSpacing), yPosition);
-
-  // Finalize PDF
-  doc.end();
 };
 
 export  default {
