@@ -38,17 +38,11 @@
 
             <!-- Price Range -->
             <div class="flex items-center space-x-2">
-                <input type="number" 
-                       id="minPrice" 
-                       placeholder="Min Price" 
-                       class="border rounded-md px-3 py-2 w-32 text-sm"
-                       min="0">
+                <input type="number" id="minPrice" placeholder="Min Price"
+                    class="border rounded-md px-3 py-2 w-32 text-sm" min="0">
                 <span>-</span>
-                <input type="number" 
-                       id="maxPrice" 
-                       placeholder="Max Price" 
-                       class="border rounded-md px-3 py-2 w-32 text-sm"
-                       min="0">
+                <input type="number" id="maxPrice" placeholder="Max Price"
+                    class="border rounded-md px-3 py-2 w-32 text-sm" min="0">
             </div>
 
             <!-- Rating Filter -->
@@ -91,43 +85,56 @@
 
                                 <!-- Add rating stars -->
                                 <div class="flex items-center justify-center gap-1 mb-2">
-                                    <% const rating = locals.productRatings[product._id] || 0 %>
-                                    <div class="flex items-center">
-                                        <% for(let i = 1; i <= 5; i++) { %>
-                                            <% if (i <= Math.floor(rating)) { %>
-                                                <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                                </svg>
-                                            <% } else if (i - rating < 1) { %>
-                                                <div class="relative">
-                                                    <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    <% const rating=locals.productRatings[product._id] || 0 %>
+                                        <div class="flex items-center">
+                                            <% for(let i=1; i <=5; i++) { %>
+                                                <% if (i <=Math.floor(rating)) { %>
+                                                    <svg class="w-4 h-4 text-yellow-400" fill="currentColor"
+                                                        viewBox="0 0 20 20">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                                     </svg>
-                                                    <div class="absolute top-0 left-0 overflow-hidden" style="width: '<%= (rating % 1) * 100 %>%'">
-                                                        <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                                        </svg>
-                                                    </div>
-                                                </div>
-                                            <% } else { %>
-                                                <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                                </svg>
-                                            <% } %>
-                                        <% } %>
-                                    </div>
-                                    <span class="text-sm text-gray-600">(<%= rating %>)</span>
+                                                    <% } else if (i - rating < 1) { %>
+                                                        <div class="relative">
+                                                            <svg class="w-4 h-4 text-gray-300" fill="currentColor"
+                                                                viewBox="0 0 20 20">
+                                                                <path
+                                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                            </svg>
+                                                            <div class="absolute top-0 left-0 overflow-hidden"
+                                                                style="width: '<%= (rating % 1) * 100 %>%'">
+                                                                <svg class="w-4 h-4 text-yellow-400" fill="currentColor"
+                                                                    viewBox="0 0 20 20">
+                                                                    <path
+                                                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+                                                        <% } else { %>
+                                                            <svg class="w-4 h-4 text-gray-300" fill="currentColor"
+                                                                viewBox="0 0 20 20">
+                                                                <path
+                                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                            </svg>
+                                                            <% } %>
+                                                                <% } %>
+                                        </div>
+                                        <span class="text-sm text-gray-600">(<%= rating %>)</span>
                                 </div>
 
                                 <!-- Price section -->
-                                <% if (product.discount > 0) { %>
+                                <% if (product.discount> 0) { %>
                                     <div class="flex items-center justify-center gap-2">
-                                        <p class="text-red-600">₹<%= (product.price * (1 - product.discount/100)).toFixed(2) %></p>
-                                        <p class="text-gray-400 line-through text-sm">₹<%= product.price.toFixed(2) %></p>
+                                        <p class="text-red-600">₹<%= (product.price * (1 -
+                                                product.discount/100)).toFixed(2) %>
+                                        </p>
+                                        <p class="text-gray-400 line-through text-sm">₹<%= product.price.toFixed(2) %>
+                                        </p>
                                     </div>
-                                <% } else { %>
-                                    <p class="text-red-600">₹<%= product.price.toFixed(2) %></p>
-                                <% } %>
+                                    <% } else { %>
+                                        <p class="text-red-600">₹<%= product.price.toFixed(2) %>
+                                        </p>
+                                        <% } %>
                             </a>
 
                             <!-- Buttons centered at bottom -->
@@ -143,6 +150,7 @@
                                             </svg>
                                         </button>
                                         <% } %>
+                                        
                                             <% if(wishlistItems.some(id=> id.equals(product._id))) { %>
                                                 <button onclick="removeFromWishlist('<%= product._id %>')"
                                                     class="p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
@@ -179,59 +187,59 @@
         <!-- Add this after the products grid -->
         <div class="flex justify-center mt-8 gap-2" id="pagination">
             <% if (hasPrevPage) { %>
-                <button onclick="changePage('<%= currentPage - 1 %>')" 
-                        class="px-4 py-2 border rounded-md hover:bg-gray-100">
+                <button onclick="changePage('<%= currentPage - 1 %>')"
+                    class="px-4 py-2 border rounded-md hover:bg-gray-100">
                     Previous
                 </button>
-            <% } %>
-            
-            <% for(let i = 1; i <= totalPages; i++) { %>
-                <button onclick="changePage('<%= i %>')"
-                        class="px-4 py-2 border rounded-md <%= currentPage === i ? 'bg-red-600 text-white' : 'hover:bg-gray-100' %>">
-                    <%= i %>
-                </button>
-            <% } %>
-            
-            <% if (hasNextPage) { %>
-                <button onclick="changePage('<%= currentPage + 1 %>')"
-                        class="px-4 py-2 border rounded-md hover:bg-gray-100">
-                    Next
-                </button>
-            <% } %>
+                <% } %>
+
+                    <% for(let i=1; i <=totalPages; i++) { %>
+                        <button onclick="changePage('<%= i %>')"
+                            class="px-4 py-2 border rounded-md <%= currentPage === i ? 'bg-red-600 text-white' : 'hover:bg-gray-100' %>">
+                            <%= i %>
+                        </button>
+                        <% } %>
+
+                            <% if (hasNextPage) { %>
+                                <button onclick="changePage('<%= currentPage + 1 %>')"
+                                    class="px-4 py-2 border rounded-md hover:bg-gray-100">
+                                    Next
+                                </button>
+                                <% } %>
         </div>
     </main>
 
     <script>
-let currentFilters = {
-    sort: 'newest',
-    minPrice: '',
-    maxPrice: '',
-    minRating: 0,
-    page: 1
-};
-
-async function fetchProducts() {
-    try {
-        const categoryId = '<%= category._id %>'; // Get category ID from EJS
-        const params = {
-            ...currentFilters
+        let currentFilters = {
+            sort: 'newest',
+            minPrice: '',
+            maxPrice: '',
+            minRating: 0,
+            page: 1
         };
 
-        const response = await axios.get(`/category/${categoryId}`, { 
-            params,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        });
-        const data = response.data;
+        async function fetchProducts() {
+            try {
+                const categoryId = '<%= category._id %>'; // Get category ID from EJS
+                const params = {
+                    ...currentFilters
+                };
 
-        // Update products grid
-        const productsGrid = document.querySelector('.grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-4');
-        if (productsGrid) {
-            let productsHTML = '';
-            
-            if (data.products.length === 0) {
-                productsHTML = `
+                const response = await axios.get(`/category/${categoryId}`, {
+                    params,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                const data = response.data;
+
+                // Update products grid
+                const productsGrid = document.querySelector('.grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-4');
+                if (productsGrid) {
+                    let productsHTML = '';
+
+                    if (data.products.length === 0) {
+                        productsHTML = `
                     <div class="col-span-full">
                         <div class="bg-blue-50 text-blue-700 p-4 rounded-lg text-center">
                             <svg class="w-6 h-6 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -240,10 +248,10 @@ async function fetchProducts() {
                             No products available in this category with the selected filters.
                         </div>
                     </div>`;
-            } else {
-                data.products.forEach(product => {
-                    const rating = data.productRatings[product._id] || 0;
-                    productsHTML += `
+                    } else {
+                        data.products.forEach(product => {
+                            const rating = data.productRatings[product._id] || 0;
+                            productsHTML += `
                         <div class="bg-white rounded-lg text-center p-4 md:p-5 hover:opacity-90 transition-opacity border border-gray-200">
                             <a href="/product/${product._id}">
                                 <div class="aspect-square rounded-lg overflow-hidden mb-2">
@@ -266,308 +274,308 @@ async function fetchProducts() {
                             <!-- Action buttons -->
                             ${generateActionButtons(product)}
                         </div>`;
+                        });
+                    }
+                    productsGrid.innerHTML = productsHTML;
+                }
+
+                // Update URL with new filters
+                const url = new URL(window.location.href);
+                Object.keys(params).forEach(key => {
+                    if (params[key]) {
+                        url.searchParams.set(key, params[key]);
+                    } else {
+                        url.searchParams.delete(key);
+                    }
                 });
+                window.history.pushState({}, '', url);
+
+                if (data.totalPages > 0) {
+                    updatePagination(data.currentPage, data.totalPages, data.hasNextPage, data.hasPrevPage);
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert(error.response?.data?.message || 'Error fetching products', 'error');
             }
-            productsGrid.innerHTML = productsHTML;
         }
 
-        // Update URL with new filters
-        const url = new URL(window.location.href);
-        Object.keys(params).forEach(key => {
-            if (params[key]) {
-                url.searchParams.set(key, params[key]);
-            } else {
-                url.searchParams.delete(key);
-            }
-        });
-        window.history.pushState({}, '', url);
-
-        if (data.totalPages > 0) {
-            updatePagination(data.currentPage, data.totalPages, data.hasNextPage, data.hasPrevPage);
-        }
-
-    } catch (error) {
-        console.error('Error:', error);
-        showAlert(error.response?.data?.message || 'Error fetching products', 'error');
-    }
-}
-
-function generateStarRating(rating) {
-    let starsHTML = '';
-    for (let i = 1; i <= 5; i++) {
-        if (i <= Math.floor(rating)) {
-            starsHTML += `<svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+        function generateStarRating(rating) {
+            let starsHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= Math.floor(rating)) {
+                    starsHTML += `<svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                         </svg>`;
-        } else {
-            starsHTML += `<svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
+                } else {
+                    starsHTML += `<svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                         </svg>`;
+                }
+            }
+            return starsHTML;
         }
-    }
-    return starsHTML;
-}
 
-function generatePriceHTML(product) {
-    if (product.discount > 0) {
-        const discountedPrice = (product.price * (1 - product.discount/100)).toFixed(2);
-        return `
+        function generatePriceHTML(product) {
+            if (product.discount > 0) {
+                const discountedPrice = (product.price * (1 - product.discount / 100)).toFixed(2);
+                return `
             <div class="flex items-center justify-center gap-2">
                 <p class="text-red-600">₹${discountedPrice}</p>
                 <p class="text-gray-400 line-through text-sm">₹${product.price.toFixed(2)}</p>
             </div>`;
-    }
-    return `<p class="text-red-600">₹${product.price.toFixed(2)}</p>`;
-}
+            }
+            return `<p class="text-red-600">₹${product.price.toFixed(2)}</p>`;
+        }
 
-function generateActionButtons(product) {
-    let buttonsHTML = '<div class="flex justify-center gap-2 mt-3">';
-    
-    if (product.stock > 0) {
-        buttonsHTML += `
+        function generateActionButtons(product) {
+            let buttonsHTML = '<div class="flex justify-center gap-2 mt-3">';
+
+            if (product.stock > 0) {
+                buttonsHTML += `
             <button onclick="addToCart('${product._id}')" 
                     class="p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
             </button>`;
-    }
+            }
 
-    // Wishlist button
-    const isInWishlist = window.wishlistItems?.includes(product._id);
-    if (isInWishlist) {
-        buttonsHTML += `
+            // Wishlist button
+            const isInWishlist = window.wishlistItems?.includes(product._id);
+            if (isInWishlist) {
+                buttonsHTML += `
             <button onclick="removeFromWishlist('${product._id}')" 
                     class="p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
             </button>`;
-    } else {
-        buttonsHTML += `
+            } else {
+                buttonsHTML += `
             <button onclick="addToWishlist('${product._id}')" 
                     class="p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
             </button>`;
-    }
+            }
 
-    buttonsHTML += '</div>';
-    
-    if (product.stock <= 0) {
-        buttonsHTML += '<p class="text-red-500 text-sm mt-1">Out of Stock</p>';
-    }
-    
-    return buttonsHTML;
-}
+            buttonsHTML += '</div>';
 
-// Event Listeners
-document.getElementById('sortSelect').addEventListener('change', function() {
-    currentFilters.sort = this.value;
-    currentFilters.page = 1;
-    fetchProducts();
-});
+            if (product.stock <= 0) {
+                buttonsHTML += '<p class="text-red-500 text-sm mt-1">Out of Stock</p>';
+            }
 
-// Debounce function for price inputs
-let priceTimeout;
-function handlePriceChange() {
-    clearTimeout(priceTimeout);
-    priceTimeout = setTimeout(() => {
-        const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
-        const maxPrice = parseFloat(document.getElementById('maxPrice').value) || 0;
-        
-        // Only fetch products if there's no validation error
-        if (!maxPrice || minPrice <= maxPrice) {
-            currentFilters.minPrice = minPrice || '';
-            currentFilters.maxPrice = maxPrice || '';
+            return buttonsHTML;
+        }
+
+        // Event Listeners
+        document.getElementById('sortSelect').addEventListener('change', function () {
+            currentFilters.sort = this.value;
             currentFilters.page = 1;
             fetchProducts();
+        });
+
+        // Debounce function for price inputs
+        let priceTimeout;
+        function handlePriceChange() {
+            clearTimeout(priceTimeout);
+            priceTimeout = setTimeout(() => {
+                const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
+                const maxPrice = parseFloat(document.getElementById('maxPrice').value) || 0;
+
+                // Only fetch products if there's no validation error
+                if (!maxPrice || minPrice <= maxPrice) {
+                    currentFilters.minPrice = minPrice || '';
+                    currentFilters.maxPrice = maxPrice || '';
+                    currentFilters.page = 1;
+                    fetchProducts();
+                }
+            }, 500);
         }
-    }, 500);
-}
 
-// Add blur event listeners for price validation
-document.getElementById('minPrice').addEventListener('blur', validatePriceRange);
-document.getElementById('maxPrice').addEventListener('blur', validatePriceRange);
+        // Add blur event listeners for price validation
+        document.getElementById('minPrice').addEventListener('blur', validatePriceRange);
+        document.getElementById('maxPrice').addEventListener('blur', validatePriceRange);
 
-function validatePriceRange() {
-    const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
-    const maxPrice = parseFloat(document.getElementById('maxPrice').value) || 0;
-    
-    // Only show error if max price is set and is less than min price
-    if (maxPrice && minPrice > maxPrice) {
-        showAlert('Maximum price cannot be less than minimum price', 'error');
-        // Clear the max price field
-        document.getElementById('maxPrice').value = '';
-        currentFilters.maxPrice = '';
-    }
-}
+        function validatePriceRange() {
+            const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
+            const maxPrice = parseFloat(document.getElementById('maxPrice').value) || 0;
 
-//  event listeners for continuous updates
-document.getElementById('minPrice').addEventListener('input', handlePriceChange);
-document.getElementById('maxPrice').addEventListener('input', handlePriceChange);
-
-document.getElementById('ratingSelect').addEventListener('change', function() {
-    currentFilters.minRating = parseFloat(this.value);
-    currentFilters.page = 1;
-    fetchProducts();
-});
-
-// Initialize filters from URL
-function initializeFiltersFromURL() {
-    const urlParams = new URLSearchParams(window.location.search);
-    currentFilters.sort = urlParams.get('sort') || 'newest';
-    currentFilters.minPrice = urlParams.get('minPrice') || '';
-    currentFilters.maxPrice = urlParams.get('maxPrice') || '';
-    currentFilters.minRating = parseFloat(urlParams.get('minRating')) || 0;
-    currentFilters.page = parseInt(urlParams.get('page')) || 1;
-
-    // Set initial values in form controls
-    document.getElementById('sortSelect').value = currentFilters.sort;
-    document.getElementById('minPrice').value = currentFilters.minPrice;
-    document.getElementById('maxPrice').value = currentFilters.maxPrice;
-    document.getElementById('ratingSelect').value = currentFilters.minRating;
-}
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
-    initializeFiltersFromURL();
-});
-
-async function addToCart(productId) {
-    try {
-        const response = await axios.post('/cart/add', { productId });
-        const data = response.data;
-        
-        if (data.success) {
-            // Update cart count in header if it exists
-            const cartCountElement = document.getElementById('cartCount');
-            if (cartCountElement) {
-                cartCountElement.textContent = data.cartCount;
+            // Only show error if max price is set and is less than min price
+            if (maxPrice && minPrice > maxPrice) {
+                showAlert('Maximum price cannot be less than minimum price', 'error');
+                // Clear the max price field
+                document.getElementById('maxPrice').value = '';
+                currentFilters.maxPrice = '';
             }
-            showAlert('Item added to cart successfully', 'success');
-        } else {
-            showAlert(data.message, 'error');
         }
-    } catch (error) {
-        console.error('Error:', error);
-        showAlert(error.response?.data?.message || 'Error adding item to cart', 'error');
-    }
-}
 
-async function addToWishlist(productId) {
-    try {
-        const response = await axios.post('/wishlist/add', { productId });
-        const data = response.data;
-        
-        if (data.success) {
-            // Find all wishlist buttons for this product
-            const wishlistButtons = document.querySelectorAll(`button[onclick="addToWishlist('${productId}')"]`);
-            
-            wishlistButtons.forEach(button => {
-                // Create the new button with "remove" functionality
-                const newButton = document.createElement('button');
-                newButton.setAttribute('onclick', `removeFromWishlist('${productId}')`);
-                newButton.className = 'p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300';
-                
-                // Set the SVG content
-                newButton.innerHTML = `
+        //  event listeners for continuous updates
+        document.getElementById('minPrice').addEventListener('input', handlePriceChange);
+        document.getElementById('maxPrice').addEventListener('input', handlePriceChange);
+
+        document.getElementById('ratingSelect').addEventListener('change', function () {
+            currentFilters.minRating = parseFloat(this.value);
+            currentFilters.page = 1;
+            fetchProducts();
+        });
+
+        // Initialize filters from URL
+        function initializeFiltersFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            currentFilters.sort = urlParams.get('sort') || 'newest';
+            currentFilters.minPrice = urlParams.get('minPrice') || '';
+            currentFilters.maxPrice = urlParams.get('maxPrice') || '';
+            currentFilters.minRating = parseFloat(urlParams.get('minRating')) || 0;
+            currentFilters.page = parseInt(urlParams.get('page')) || 1;
+
+            // Set initial values in form controls
+            document.getElementById('sortSelect').value = currentFilters.sort;
+            document.getElementById('minPrice').value = currentFilters.minPrice;
+            document.getElementById('maxPrice').value = currentFilters.maxPrice;
+            document.getElementById('ratingSelect').value = currentFilters.minRating;
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeFiltersFromURL();
+        });
+
+        async function addToCart(productId) {
+            try {
+                const response = await axios.post('/cart/add', { productId });
+                const data = response.data;
+
+                if (data.success) {
+                    // Update cart count in header if it exists
+                    const cartCountElement = document.getElementById('cartCount');
+                    if (cartCountElement) {
+                        cartCountElement.textContent = data.cartCount;
+                    }
+                    showAlert('Item added to cart successfully', 'success');
+                } else {
+                    showAlert(data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert(error.response?.data?.message || 'Error adding item to cart', 'error');
+            }
+        }
+
+        async function addToWishlist(productId) {
+            try {
+                const response = await axios.post('/wishlist/add', { productId });
+                const data = response.data;
+
+                if (data.success) {
+                    // Find all wishlist buttons for this product
+                    const wishlistButtons = document.querySelectorAll(`button[onclick="addToWishlist('${productId}')"]`);
+
+                    wishlistButtons.forEach(button => {
+                        // Create the new button with "remove" functionality
+                        const newButton = document.createElement('button');
+                        newButton.setAttribute('onclick', `removeFromWishlist('${productId}')`);
+                        newButton.className = 'p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300';
+
+                        // Set the SVG content
+                        newButton.innerHTML = `
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
                 `;
-                
-                // Replace the old button with the new one
-                button.parentNode.replaceChild(newButton, button);
-            });
-            showAlert('Item added to wishlist successfully', 'success');
-        } else {
-            showAlert(data.message || 'Failed to add item', 'error');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        showAlert(error.response?.data?.message || 'Error adding item to wishlist', 'error');
-    }
-}
 
-async function removeFromWishlist(productId) {
-    try {
-        const response = await axios.post('/wishlist/remove', { productId });
-        if (response.data.success) {
-            // Find all wishlist buttons for this product
-            const wishlistButtons = document.querySelectorAll(`button[onclick="removeFromWishlist('${productId}')"]`);
-            
-            wishlistButtons.forEach(button => {
-                // Create the new button with "add" functionality
-                const newButton = document.createElement('button');
-                newButton.setAttribute('onclick', `addToWishlist('${productId}')`);
-                newButton.className = 'p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300';
-                
-                // Set the SVG content
-                newButton.innerHTML = `
+                        // Replace the old button with the new one
+                        button.parentNode.replaceChild(newButton, button);
+                    });
+                    showAlert('Item added to wishlist successfully', 'success');
+                } else {
+                    showAlert(data.message || 'Failed to add item', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert(error.response?.data?.message || 'Error adding item to wishlist', 'error');
+            }
+        }
+
+        async function removeFromWishlist(productId) {
+            try {
+                const response = await axios.post('/wishlist/remove', { productId });
+                if (response.data.success) {
+                    // Find all wishlist buttons for this product
+                    const wishlistButtons = document.querySelectorAll(`button[onclick="removeFromWishlist('${productId}')"]`);
+
+                    wishlistButtons.forEach(button => {
+                        // Create the new button with "add" functionality
+                        const newButton = document.createElement('button');
+                        newButton.setAttribute('onclick', `addToWishlist('${productId}')`);
+                        newButton.className = 'p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300';
+
+                        // Set the SVG content
+                        newButton.innerHTML = `
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
                 `;
-                
-                // Replace the old button with the new one
-                button.parentNode.replaceChild(newButton, button);
-            });
-            showAlert('Item removed from wishlist successfully', 'success');
-        } else {
-            showAlert(response.data.message || 'Failed to remove item', 'error');
+
+                        // Replace the old button with the new one
+                        button.parentNode.replaceChild(newButton, button);
+                    });
+                    showAlert('Item removed from wishlist successfully', 'success');
+                } else {
+                    showAlert(response.data.message || 'Failed to remove item', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Error removing item from wishlist', 'error');
+            }
         }
-    } catch (error) {
-        console.error('Error:', error);
-        showAlert('Error removing item from wishlist', 'error');
-    }
-}
 
-// Add this function for pagination
-function changePage(page) {
-    currentFilters.page = page;
-    fetchProducts();
-}
+        // Add this function for pagination
+        function changePage(page) {
+            currentFilters.page = page;
+            fetchProducts();
+        }
 
-// Update the fetchProducts function to include pagination rendering
-function updatePagination(currentPage, totalPages, hasNextPage, hasPrevPage) {
-    const paginationContainer = document.getElementById('pagination');
-    let paginationHTML = '';
-    
-    if (hasPrevPage) {
-        paginationHTML += `
+        // Update the fetchProducts function to include pagination rendering
+        function updatePagination(currentPage, totalPages, hasNextPage, hasPrevPage) {
+            const paginationContainer = document.getElementById('pagination');
+            let paginationHTML = '';
+
+            if (hasPrevPage) {
+                paginationHTML += `
             <button onclick="changePage(${currentPage - 1})" 
                     class="px-4 py-2 border rounded-md hover:bg-gray-100">
                 Previous
             </button>`;
-    }
-    
-    for(let i = 1; i <= totalPages; i++) {
-        paginationHTML += `
+            }
+
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHTML += `
             <button onclick="changePage(${i})"
                     class="px-4 py-2 border rounded-md ${currentPage === i ? 'bg-red-600 text-white' : 'hover:bg-gray-100'}">
                 ${i}
             </button>`;
-    }
-    
-    if (hasNextPage) {
-        paginationHTML += `
+            }
+
+            if (hasNextPage) {
+                paginationHTML += `
             <button onclick="changePage(${currentPage + 1})"
                     class="px-4 py-2 border rounded-md hover:bg-gray-100">
                 Next
             </button>`;
-    }
-    
-    paginationContainer.innerHTML = paginationHTML;
-}
+            }
 
-// Add this to your existing fetchProducts function after updating the products grid
-function updatePaginationInFetchProducts() {
-    // Inside your fetchProducts function, after updating the products grid:
-    if (data.totalPages > 0) {
-        updatePagination(data.currentPage, data.totalPages, data.hasNextPage, data.hasPrevPage);
-    }
-}
+            paginationContainer.innerHTML = paginationHTML;
+        }
+
+        // Add this to your existing fetchProducts function after updating the products grid
+        function updatePaginationInFetchProducts() {
+            // Inside your fetchProducts function, after updating the products grid:
+            if (data.totalPages > 0) {
+                updatePagination(data.currentPage, data.totalPages, data.hasNextPage, data.hasPrevPage);
+            }
+        }
     </script>
     <%- include('../partials/footer') %>

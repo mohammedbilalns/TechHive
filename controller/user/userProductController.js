@@ -125,7 +125,6 @@ const loadAllProducts = async (req, res) => {
             hasNextPage: page < totalPages,
             hasPrevPage: page > 1,
             fullname: req.session.user?.fullname,
-            wishlistItems: req.wishlistItems || []
         });
 
     } catch (error) {
@@ -285,7 +284,6 @@ const viewCategory = async (req, res) => {
             hasNextPage: page < totalPages,
             hasPrevPage: page > 1,
             fullname: req.session.user?.fullname,
-            wishlistItems: req.wishlistItems || []
         });
 
     } catch (error) {

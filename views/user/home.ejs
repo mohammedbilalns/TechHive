@@ -1,318 +1,369 @@
-<%- include(locals.fullname ? '../partials/header' : '../partials/authheader') %>
+<%- include(locals.fullname ? '../partials/header' : '../partials/authheader' ) %>
 
-<main class="mx-auto my-5 md:my-10 container px-4 md:px-0">
-  <!-- Hero Section -->
-  <section class="mb-6 md:mb-10">
-    <img alt="Hero Banner" 
-         src="/images/banner.png" 
-         class="w-full h-[200px] md:h-[250px] lg:h-[300px] rounded-lg object-cover"/>
-  </section>
+    <main class="mx-auto my-5 md:my-10 container px-4 md:px-0">
+        <!-- Hero Section -->
+        <section class="mb-6 md:mb-10">
+            <img alt="Hero Banner" src="/images/banner.png"
+                class="w-full h-[200px] md:h-[250px] lg:h-[300px] rounded-lg object-cover" />
+        </section>
 
 
-  <!-- New Arrival -->
-  <section class="mb-6 md:mb-10">
-    <div class="flex justify-between items-center mb-3 md:mb-5">
-        <p class="text-xl md:text-2xl">New Arrival</p>
-        <a href="/allproducts" class="text-sm text-red-600 hover:text-red-700">View All</a>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- New Arrival -->
+        <section class="mb-6 md:mb-10">
+            <div class="flex justify-between items-center mb-3 md:mb-5">
+                <p class="text-xl md:text-2xl">New Arrival</p>
+                <a href="/allproducts" class="text-sm text-red-600 hover:text-red-700">View All</a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-        <% newArrivals.slice(0, 4).forEach(product => { %>
-            <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 max-w-[300px] border border-gray-100">
-                <a href="/product/<%= product._id %>" class="block">
-                    <div class="aspect-square rounded-t-lg overflow-hidden p-4 bg-gray-50">
-                        <img alt="<%= product.name %>" 
-                             src="<%= product.images[0].path %>" 
-                             class="w-full h-full object-contain"/>
-                    </div>
-                    <div class="p-4">
-                        <p class="text-gray-800 text-sm font-medium truncate mb-2"><%= product.name %></p>
-                        <div class="flex items-center gap-1 mb-2">
-                            <% const rating = locals.productRatings[product._id] || 0 %>
-                            <div class="flex items-center">
-                                <% for(let i = 1; i <= 5; i++) { %>
-                                    <% if (i <= Math.floor(rating)) { %>
-                                        <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                        </svg>
-                                    <% } else if (i - rating < 1) { %>
-                                        <div class="relative">
-                                            <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                            </svg>
-                                            <div class="absolute top-0 left-0 overflow-hidden" style="width: '<%= (rating % 1) * 100 %>%'">
-                                                <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                                </svg>
-                                            </div>
+                <% newArrivals.slice(0, 4).forEach(product=> { %>
+                    <div
+                        class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 max-w-[300px] border border-gray-100">
+                        <a href="/product/<%= product._id %>" class="block">
+                            <div class="aspect-square rounded-t-lg overflow-hidden p-4 bg-gray-50">
+                                <img alt="<%= product.name %>" src="<%= product.images[0].path %>"
+                                    class="w-full h-full object-contain" />
+                            </div>
+                            <div class="p-4">
+                                <p class="text-gray-800 text-sm font-medium truncate mb-2">
+                                    <%= product.name %>
+                                </p>
+                                <div class="flex items-center gap-1 mb-2">
+                                    <% const rating=locals.productRatings[product._id] || 0 %>
+                                        <div class="flex items-center">
+                                            <% for(let i=1; i <=5; i++) { %>
+                                                <% if (i <=Math.floor(rating)) { %>
+                                                    <svg class="w-4 h-4 text-yellow-400" fill="currentColor"
+                                                        viewBox="0 0 20 20">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+                                                    <% } else if (i - rating < 1) { %>
+                                                        <div class="relative">
+                                                            <svg class="w-4 h-4 text-gray-300" fill="currentColor"
+                                                                viewBox="0 0 20 20">
+                                                                <path
+                                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                            </svg>
+                                                            <div class="absolute top-0 left-0 overflow-hidden"
+                                                                style="width: '<%= (rating % 1) * 100 %>%'">
+                                                                <svg class="w-4 h-4 text-yellow-400" fill="currentColor"
+                                                                    viewBox="0 0 20 20">
+                                                                    <path
+                                                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+                                                        <% } else { %>
+                                                            <svg class="w-4 h-4 text-gray-300" fill="currentColor"
+                                                                viewBox="0 0 20 20">
+                                                                <path
+                                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                            </svg>
+                                                            <% } %>
+                                                                <% } %>
                                         </div>
+                                        <span class="text-sm text-gray-600">(<%= rating %>)</span>
+                                </div>
+                                <% if (product.discount> 0) { %>
+                                    <div class="flex items-center gap-2">
+                                        <p class="text-red-600 text-sm font-bold">₹<%= (product.price * (1 -
+                                                product.discount/100)).toFixed(2) %>
+                                        </p>
+                                        <p class="text-gray-400 line-through text-xs">₹<%= product.price.toFixed(2) %>
+                                        </p>
+                                    </div>
                                     <% } else { %>
-                                        <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                        </svg>
-                                    <% } %>
+                                        <p class="text-red-600 text-sm font-bold">₹<%= product.price.toFixed(2) %>
+                                        </p>
+                                        <% } %>
+                            </div>
+                        </a>
+                        <div class="flex justify-center gap-2 p-4 pt-0">
+                            <% if (product.stock> 0) { %>
+                                <button onclick="addToCart('<%= product._id %>')"
+                                    class="p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                </button>
                                 <% } %>
-                            </div>
-                            <span class="text-sm text-gray-600">(<%= rating %>)</span>
-                        </div>
-                        <% if (product.discount > 0) { %>
-                            <div class="flex items-center gap-2">
-                                <p class="text-red-600 text-sm font-bold">₹<%= (product.price * (1 - product.discount/100)).toFixed(2) %></p>
-                                <p class="text-gray-400 line-through text-xs">₹<%= product.price.toFixed(2) %></p>
-                            </div>
-                        <% } else { %>
-                            <p class="text-red-600 text-sm font-bold">₹<%= product.price.toFixed(2) %></p>
-                        <% } %>
-                    </div>
-                </a>
-                <div class="flex justify-center gap-2 p-4 pt-0">
-                    <% if (product.stock > 0) { %>
-                        <button onclick="addToCart('<%= product._id %>')" 
-                                class="p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                        </button>
-                    <% } %>
-                 
-                    <% if(wishlistItems.some(id=> id.equals(product._id))) { %>
-                        <button onclick="removeFromWishlist('<%= product._id %>')" 
-                                class="p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                </svg>
 
-                        </button>
-                    <% } else { %>
-                    <button onclick="addToWishlist('<%= product._id %>')" 
-                            class="p-2 rounded-full  bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    <% if(wishlistItems.some(id=> id.equals(product._id))) { %>
+                                        <button onclick="removeFromWishlist('<%= product._id %>')"
+                                            class="p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                            </svg>
+
+                                        </button>
+                                        <% } else { %>
+                                            <button onclick="addToWishlist('<%= product._id %>')"
+                                                class="p-2 rounded-full  bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                                </svg>
+                                            </button>
+                                            <% } %>
+                        </div>
+                    </div>
+                    <% }); %>
+            </div>
+        </section>
+
+        <!-- All Products Section -->
+        <section class="mb-6 md:mb-10">
+            <div class="flex justify-between items-center mb-3 md:mb-5">
+                <p class="text-xl md:text-2xl">View All Products</p>
+                <a href="/allproducts" class="text-sm text-red-600 hover:text-red-700">View All</a>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-5">
+                <% allProducts.forEach(product=> { %>
+                    <div class="col-span-1">
+                        <a href="/product/<%= product._id %>" class="hover:opacity-90 transition-opacity block">
+                            <div class="aspect-square rounded-lg overflow-hidden">
+                                <img alt="<%= product.name %>" src="<%= product.images[0].path %>"
+                                    class="w-full h-full object-contain" />
+                            </div>
+                            <div class="flex flex-col h-[100px]">
+                                <p class="text-black text-sm mt-2 truncate">
+                                    <%= product.name %>
+                                </p>
+                                <div class="flex items-center gap-1 my-1">
+                                    <% const rating=locals.productRatings[product._id] || 0 %>
+                                        <div class="flex items-center">
+                                            <% for(let i=1; i <=5; i++) { %>
+                                                <% if (i <=Math.floor(rating)) { %>
+                                                    <svg class="w-4 h-4 text-yellow-400" fill="currentColor"
+                                                        viewBox="0 0 20 20">
+                                                        <path
+                                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                    </svg>
+                                                    <% } else if (i - rating < 1) { %>
+                                                        <div class="relative">
+                                                            <svg class="w-4 h-4 text-gray-300" fill="currentColor"
+                                                                viewBox="0 0 20 20">
+                                                                <path
+                                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                            </svg>
+                                                            <div class="absolute top-0 left-0 overflow-hidden"
+                                                                style="width: '<%= (rating % 1) * 100 %>%'">
+                                                                <svg class="w-4 h-4 text-yellow-400" fill="currentColor"
+                                                                    viewBox="0 0 20 20">
+                                                                    <path
+                                                                        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+                                                        <% } else { %>
+                                                            <svg class="w-4 h-4 text-gray-300" fill="currentColor"
+                                                                viewBox="0 0 20 20">
+                                                                <path
+                                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                            </svg>
+                                                            <% } %>
+                                                                <% } %>
+                                        </div>
+                                        <span class="text-xs text-gray-600">(<%= rating %>)</span>
+                                </div>
+                                <% if (product.discount> 0) { %>
+                                    <div class="flex items-center gap-2 mt-auto">
+                                        <p class="text-primary-accent">₹<%= (product.price * (1 -
+                                                product.discount/100)).toFixed(2) %>
+                                        </p>
+                                        <p class="text-gray-400 line-through text-xs">₹<%= product.price.toFixed(2) %>
+                                        </p>
+                                    </div>
+                                    <% } else { %>
+                                        <p class="text-primary-accent mt-auto">₹<%= product.price.toFixed(2) %>
+                                        </p>
+                                        <% } %>
+                            </div>
+                        </a>
+                        <div class="flex justify-center gap-2 mt-2">
+                            <% if (product.stock> 0) { %>
+                                <button onclick="addToCart('<%= product._id %>')"
+                                    class="p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                </button>
+                                <% } %>
+                                    <% if(wishlistItems.some(id=> id.equals(product._id))) { %>
+                                        <button onclick="removeFromWishlist('<%= product._id %>')"
+                                            class="p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                            </svg>
+
+                                        </button>
+                                        <% } else { %>
+                                            <button onclick="addToWishlist('<%= product._id %>')"
+                                                class="p-2 rounded-full  bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                    viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                                </svg>
+                                            </button>
+                                            <% } %>
+                        </div>
+                    </div>
+
+                    <% }); %>
+            </div>
+        </section>
+
+        <!-- Browse By Category -->
+        <section class="mb-6 md:mb-10">
+
+            <p class="text-xl md:text-2xl mb-3 md:mb-5">Browse By Category</p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-5">
+                <% categories.forEach(category=> { %>
+                    <a href="/category/<%= category._id %>"
+                        class="bg-gray-200 text-black rounded-lg text-center p-3 md:p-5 hover:bg-gray-300 transition-colors">
+                        <p class="text-sm md:text-base">
+                            <%= category.name %>
+                        </p>
+                    </a>
+                    <% }); %>
+            </div>
+        </section>
+
+        <!-- Service Benefits Section -->
+        <section class="bg-gray-100 py-8 mb-6 md:mb-10">
+            <div class="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-4 ">
+                <div class="flex items-center justify-center text-center">
+                    <div>
+                        <svg class="w-12 h-12 mx-auto mb-3 text-gray-800" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                         </svg>
-                    </button>
-                    <% } %>
+                        <h3 class="font-semibold mb-2">FREE AND FAST DELIVERY</h3>
+                        <p class="text-sm text-gray-600">Free delivery for all orders over ₹150</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-center text-center">
+                    <div>
+                        <svg class="w-12 h-12 mx-auto mb-3 text-gray-800" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z">
+                            </path>
+                        </svg>
+                        <h3 class="font-semibold mb-2">24/7 CUSTOMER SERVICE</h3>
+                        <p class="text-sm text-gray-600">Friendly 24/7 customer support</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-center text-center">
+                    <div>
+                        <svg class="w-12 h-12 mx-auto mb-3 text-gray-800" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <h3 class="font-semibold mb-2">MONEY BACK GUARANTEE</h3>
+                        <p class="text-sm text-gray-600">We return money within 30 days</p>
+                    </div>
                 </div>
             </div>
-        <% }); %>
-    </div>
-  </section>
+        </section>
 
-  <!-- All Products Section -->
-  <section class="mb-6 md:mb-10">
-    <div class="flex justify-between items-center mb-3 md:mb-5">
-      <p class="text-xl md:text-2xl">View All Products</p>
-      <a href="/allproducts" class="text-sm text-red-600 hover:text-red-700">View All</a>
-    </div>
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-5">
-        <% allProducts.forEach(product => { %>
-            <div class="col-span-1">
-                <a href="/product/<%= product._id %>" class="hover:opacity-90 transition-opacity block">
-                    <div class="aspect-square rounded-lg overflow-hidden">
-                        <img alt="<%= product.name %>" 
-                             src="<%= product.images[0].path %>" 
-                             class="w-full h-full object-contain"/>
-                    </div>
-                    <div class="flex flex-col h-[100px]">
-                        <p class="text-black text-sm mt-2 truncate"><%= product.name %></p>
-                        <div class="flex items-center gap-1 my-1">
-                            <% const rating = locals.productRatings[product._id] || 0 %>
-                            <div class="flex items-center">
-                                <% for(let i = 1; i <= 5; i++) { %>
-                                    <% if (i <= Math.floor(rating)) { %>
-                                        <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                        </svg>
-                                    <% } else if (i - rating < 1) { %>
-                                        <div class="relative">
-                                            <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                            </svg>
-                                            <div class="absolute top-0 left-0 overflow-hidden" style="width: '<%= (rating % 1) * 100 %>%'">
-                                                <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                                </svg>
-                                            </div>
-                                        </div>
-                                    <% } else { %>
-                                        <svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                        </svg>
-                                    <% } %>
-                                <% } %>
-                            </div>
-                            <span class="text-xs text-gray-600">(<%= rating %>)</span>
-                        </div>
-                        <% if (product.discount > 0) { %>
-                            <div class="flex items-center gap-2 mt-auto">
-                                <p class="text-primary-accent">₹<%= (product.price * (1 - product.discount/100)).toFixed(2) %></p>
-                                <p class="text-gray-400 line-through text-xs">₹<%= product.price.toFixed(2) %></p>
-                            </div>
-                        <% } else { %>
-                            <p class="text-primary-accent mt-auto">₹<%= product.price.toFixed(2) %></p>
-                        <% } %>
-                    </div>
-                </a>
-                <div class="flex justify-center gap-2 mt-2">
-                    <% if (product.stock > 0) { %>
-                        <button onclick="addToCart('<%= product._id %>')" 
-                                class="p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                        </button>
-                    <% } %>
-                    <% if(wishlistItems.some(id=> id.equals(product._id))) { %>
-                        <button onclick="removeFromWishlist('<%= product._id %>')" 
-                                class="p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                </svg>
+    </main>
+    <%- include('../partials/footer') %>
 
-                        </button>
-                    <% } else { %>
-                    <button onclick="addToWishlist('<%= product._id %>')" 
-                            class="p-2 rounded-full  bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                    </button>
-                    <% } %>
-                </div>
-            </div>
-            
-        <% }); %>
-    </div>
-  </section>
+        <script>
 
-  <!-- Browse By Category -->
-  <section class="mb-6 md:mb-10">
-
-    <p class="text-xl md:text-2xl mb-3 md:mb-5">Browse By Category</p>
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-5">
-        <% categories.forEach(category => { %>
-            <a href="/category/<%= category._id %>" 
-               class="bg-gray-200 text-black rounded-lg text-center p-3 md:p-5 hover:bg-gray-300 transition-colors">
-                <p class="text-sm md:text-base"><%= category.name %></p>
-            </a>
-        <% }); %>
-    </div>
-  </section>
-
-  <!-- Service Benefits Section -->
-  <section class="bg-gray-100 py-8 mb-6 md:mb-10">
-    <div class="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-4 ">
-      <div class="flex items-center justify-center text-center">
-        <div>
-          <svg class="w-12 h-12 mx-auto mb-3 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-          </svg>
-          <h3 class="font-semibold mb-2">FREE AND FAST DELIVERY</h3>
-          <p class="text-sm text-gray-600">Free delivery for all orders over ₹150</p>
-        </div>
-      </div>
-      
-      <div class="flex items-center justify-center text-center">
-        <div>
-          <svg class="w-12 h-12 mx-auto mb-3 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path>
-          </svg>
-          <h3 class="font-semibold mb-2">24/7 CUSTOMER SERVICE</h3>
-          <p class="text-sm text-gray-600">Friendly 24/7 customer support</p>
-        </div>
-      </div>
-      
-      <div class="flex items-center justify-center text-center">
-        <div>
-          <svg class="w-12 h-12 mx-auto mb-3 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          <h3 class="font-semibold mb-2">MONEY BACK GUARANTEE</h3>
-          <p class="text-sm text-gray-600">We return money within 30 days</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-</main>
-<%- include('../partials/footer') %>
-
-<script >
-
-async function addToCart(productId) {
-    try {
-        const { data } = await axios.post('/cart/add', { productId });
-        showAlert(data.message, data.success ? 'success' : 'error');
-        document.getElementById("cart-quantity").innerText = data.totalQuantity;
-    } catch (error) {
-        console.error('Error:', error);
-        showAlert(error.response?.data?.message || 'Error adding item to cart', 'error');
-    }
-}
+            async function addToCart(productId) {
+                try {
+                    const { data } = await axios.post('/cart/add', { productId });
+                    showAlert(data.message, data.success ? 'success' : 'error');
+                    document.getElementById("cart-quantity").innerText = data.totalQuantity;
+                } catch (error) {
+                    console.error('Error:', error);
+                    showAlert(error.response?.data?.message || 'Error adding item to cart', 'error');
+                }
+            }
 
 
-async function addToWishlist(productId) {
-    try {
-        const { data } = await axios.post('/wishlist/add', { productId });
-        if (data.success) {
-            // Find all wishlist buttons for this product (in case it appears multiple times on page)
-            const wishlistButtons = document.querySelectorAll(`button[onclick="addToWishlist('${productId}')"]`);
-            
-            wishlistButtons.forEach(button => {
-                // Create the new button with "remove" functionality
-                const newButton = document.createElement('button');
-                newButton.setAttribute('onclick', `removeFromWishlist('${productId}')`);
-                newButton.className = 'p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300';
-                
-                // Set the SVG content
-                newButton.innerHTML = `
+            async function addToWishlist(productId) {
+                try {
+                    const { data } = await axios.post('/wishlist/add', { productId });
+                    if (data.success) {
+                        // Find all wishlist buttons for this product (in case it appears multiple times on page)
+                        const wishlistButtons = document.querySelectorAll(`button[onclick="addToWishlist('${productId}')"]`);
+
+                        wishlistButtons.forEach(button => {
+                            // Create the new button with "remove" functionality
+                            const newButton = document.createElement('button');
+                            newButton.setAttribute('onclick', `removeFromWishlist('${productId}')`);
+                            newButton.className = 'p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300';
+
+                            // Set the SVG content
+                            newButton.innerHTML = `
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
                 `;
-                
-                // Replace the old button with the new one
-                button.parentNode.replaceChild(newButton, button);
-            });
-        }
-        showAlert(data.message, data.success ? 'success' : 'error');
-    } catch (error) {
-        console.error('Error:', error);
-        showAlert(error.response?.data?.message || 'Error adding item to wishlist', 'error');
-    }
-}
 
-async function removeFromWishlist(productId) {
-    try {
-        const response = await axios.post('/wishlist/remove', { productId });
-        if (response.data.success) {
-            // Find all wishlist buttons for this product
-            const wishlistButtons = document.querySelectorAll(`button[onclick="removeFromWishlist('${productId}')"]`);
-            
-            wishlistButtons.forEach(button => {
-                // Create the new button with "add" functionality
-                const newButton = document.createElement('button');
-                newButton.setAttribute('onclick', `addToWishlist('${productId}')`);
-                newButton.className = 'p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300';
-                
-                // Set the SVG content
-                newButton.innerHTML = `
+                            // Replace the old button with the new one
+                            button.parentNode.replaceChild(newButton, button);
+                        });
+                    }
+                    showAlert(data.message, data.success ? 'success' : 'error');
+                } catch (error) {
+                    console.error('Error:', error);
+                    showAlert(error.response?.data?.message || 'Error adding item to wishlist', 'error');
+                }
+            }
+
+            async function removeFromWishlist(productId) {
+                try {
+                    const response = await axios.post('/wishlist/remove', { productId });
+                    if (response.data.success) {
+                        // Find all wishlist buttons for this product
+                        const wishlistButtons = document.querySelectorAll(`button[onclick="removeFromWishlist('${productId}')"]`);
+
+                        wishlistButtons.forEach(button => {
+                            // Create the new button with "add" functionality
+                            const newButton = document.createElement('button');
+                            newButton.setAttribute('onclick', `addToWishlist('${productId}')`);
+                            newButton.className = 'p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300';
+
+                            // Set the SVG content
+                            newButton.innerHTML = `
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
                 `;
-                
-                // Replace the old button with the new one
-                button.parentNode.replaceChild(newButton, button);
-            });
-            showAlert('Item removed from wishlist successfully', 'success');
-        } else {
-            showAlert(response.data.message || 'Failed to remove item', 'error');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        showAlert('Error removing item from wishlist', 'error');
-    }
-}
+
+                            // Replace the old button with the new one
+                            button.parentNode.replaceChild(newButton, button);
+                        });
+                        showAlert('Item removed from wishlist successfully', 'success');
+                    } else {
+                        showAlert(response.data.message || 'Failed to remove item', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showAlert('Error removing item from wishlist', 'error');
+                }
+            }
 
 
-</script>
+        </script>

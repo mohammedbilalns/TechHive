@@ -4,6 +4,7 @@
     <div class="flex flex-col space-y-4 mb-6">
         <h1 class="text-2xl font-semibold">Search Results for "<%= query %>"</h1>
         
+       
         <!-- Filters Section -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- Sort Dropdown -->
@@ -190,6 +191,8 @@ let currentFilters = {
     page: 1
 };
 
+window.wishlistItems = <%- JSON.stringify(wishlistItems || []) %>;
+
 async function fetchProducts() {
     try {
         const searchQuery = new URLSearchParams(window.location.search).get('q');
@@ -216,6 +219,7 @@ async function fetchProducts() {
         } else {
             data.products.forEach(product => {
                 const rating = data.productRatings[product._id] || 0;
+                // Check if product is in wishlist using the global wishlistItems array
                 const isInWishlist = Array.isArray(window.wishlistItems) && 
                                    window.wishlistItems.includes(product._id);
                 
@@ -252,21 +256,12 @@ async function fetchProducts() {
                                     </button>
                                 ` : ''}
                                 
-                                ${isInWishlist ? `
-                                    <button onclick="event.preventDefault(); removeFromWishlist('${product._id}')" 
-                                            class="p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                        </svg>
-                                    </button>
-                                ` : `
-                                    <button onclick="event.preventDefault(); addToWishlist('${product._id}')" 
-                                            class="p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                        </svg>
-                                    </button>
-                                `}
+                                <button onclick="event.preventDefault(); ${isInWishlist ? 'removeFromWishlist' : 'addToWishlist'}('${product._id}')" 
+                                        class="p-2 rounded-full ${isInWishlist ? 'bg-red-600 text-white hover:bg-gray-100 hover:text-black' : 'bg-gray-100 hover:bg-red-600 hover:text-white'} transition-colors duration-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                    </svg>
+                                </button>
                             </div>
                         ` : ''}
                         
@@ -466,27 +461,27 @@ async function addToWishlist(productId) {
     try {
         const { data } = await axios.post('/wishlist/add', { productId });
         if (data.success) {
-            // Find all wishlist buttons for this product (in case it appears multiple times on page)
-            const wishlistButtons = document.querySelectorAll(`button[onclick="addToWishlist('${productId}')"]`);
+            if (!window.wishlistItems.includes(productId)) {
+                window.wishlistItems.push(productId);
+            }
             
-            wishlistButtons.forEach(button => {
-                // Create the new button with "remove" functionality
-                const newButton = document.createElement('button');
-                newButton.setAttribute('onclick', `removeFromWishlist('${productId}')`);
-                newButton.className = 'p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300';
-                
-                // Set the SVG content
-                newButton.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
+            // More specific selector targeting the wishlist button
+            const button = document.querySelector(`button[onclick*="addToWishlist('${productId}')"]`);
+            if (button) {
+                button.outerHTML = `
+                    <button onclick="event.preventDefault(); removeFromWishlist('${productId}')" 
+                            class="p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                    </button>
                 `;
-                
-                // Replace the old button with the new one
-                button.parentNode.replaceChild(newButton, button);
-            });
+            }
+            
+            showAlert(data.message, 'success');
+        } else {
+            showAlert(data.message, 'error');
         }
-        showAlert(data.message, data.success ? 'success' : 'error');
     } catch (error) {
         console.error('Error:', error);
         showAlert(error.response?.data?.message || 'Error adding item to wishlist', 'error');
@@ -497,25 +492,21 @@ async function removeFromWishlist(productId) {
     try {
         const response = await axios.post('/wishlist/remove', { productId });
         if (response.data.success) {
-            // Find all wishlist buttons for this product
-            const wishlistButtons = document.querySelectorAll(`button[onclick="removeFromWishlist('${productId}')"]`);
+            window.wishlistItems = window.wishlistItems.filter(id => id !== productId);
             
-            wishlistButtons.forEach(button => {
-                // Create the new button with "add" functionality
-                const newButton = document.createElement('button');
-                newButton.setAttribute('onclick', `addToWishlist('${productId}')`);
-                newButton.className = 'p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300';
-                
-                // Set the SVG content
-                newButton.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
+            // More specific selector targeting the wishlist button
+            const button = document.querySelector(`button[onclick*="removeFromWishlist('${productId}')"]`);
+            if (button) {
+                button.outerHTML = `
+                    <button onclick="event.preventDefault(); addToWishlist('${productId}')" 
+                            class="p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                    </button>
                 `;
-                
-                // Replace the old button with the new one
-                button.parentNode.replaceChild(newButton, button);
-            });
+            }
+            
             showAlert('Item removed from wishlist successfully', 'success');
         } else {
             showAlert(response.data.message || 'Failed to remove item', 'error');

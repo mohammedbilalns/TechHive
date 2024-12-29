@@ -18,7 +18,9 @@ const fetchWishlistItems = async (req, res, next)=>{
                 wishlist = await wishlistSchema.create({ userId, products: [] })
             }
             
+            
             res.locals.wishlistItems = wishlist.products.map(product => product._id)
+           
         } else {
             res.locals.wishlistItems = []
         }

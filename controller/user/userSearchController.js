@@ -121,7 +121,6 @@ const searchProducts = async (req, res) => {
             hasNextPage: page < totalPages,
             hasPrevPage: page > 1,
             fullname: req.session.user?.fullname,
-            wishlistItems: req.wishlistItems || []
         });
 
     } catch (error) {
