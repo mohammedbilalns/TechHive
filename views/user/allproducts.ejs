@@ -11,14 +11,15 @@
 
         <h1 class="text-xl md:text-2xl mb-4">All Products</h1>
 
-        <% categoriesWithProducts.forEach(category=> { %>
-            <% if (category.products.length> 0) { %>
+        <% categoriesWithProducts.slice(0, 4).forEach(category => { %>
+            <% if (category.products.length > 0) { %>
                 <section class="mb-6 md:mb-10">
-                    <h2 class="text-xl md:text-2xl mb-3 md:mb-5">
-                        <%= category.name %>
-                    </h2>
+                    <div class="flex justify-between items-center mb-3 md:mb-5">
+                        <h2 class="text-xl md:text-2xl"><%= category.name %></h2>
+                        <a href="/category/<%= category._id %>" class="text-sm text-red-600 hover:text-red-700">View All</a>
+                    </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
-                        <% category.products.forEach(product=> { %>
+                        <% category.products.slice(0, 4).forEach(product => { %>
                             <div class="bg-white rounded-lg text-center p-4 md:p-5 border border-gray-200">
                                 <a href="/product/<%= product._id %>">
                                     <div class="aspect-square rounded-lg overflow-hidden mb-2">
@@ -121,6 +122,26 @@
                 </section>
                 <% } %>
                     <% }); %>
+
+        <!-- Pagination -->
+        <div class="flex justify-center gap-2 mt-8" id="pagination">
+            <% if (hasPrevPage) { %>
+                <a href="/allproducts?page=<%= currentPage - 1 %>" 
+                   class="px-4 py-2 border rounded-md hover:bg-gray-100">Previous</a>
+            <% } %>
+            
+            <% for(let i = 1; i <= totalPages; i++) { %>
+                <a href="/allproducts?page=<%= i %>"
+                   class="px-4 py-2 border rounded-md <%= currentPage === i ? 'bg-red-600 text-white' : 'hover:bg-gray-100' %>">
+                    <%= i %>
+                </a>
+            <% } %>
+            
+            <% if (hasNextPage) { %>
+                <a href="/allproducts?page=<%= currentPage + 1 %>"
+                   class="px-4 py-2 border rounded-md hover:bg-gray-100">Next</a>
+            <% } %>
+        </div>
     </main>
 
     <script>

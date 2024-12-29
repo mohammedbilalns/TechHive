@@ -73,26 +73,64 @@ const loadLanding = async (req, res) => {
 
 const loadAllProducts = async (req, res) => {
     try {
-        const categoriesWithProducts = await categorySchema
-            .aggregate([
-                { $match: { status: "Active" } },
-                {
-                    $lookup: {
-                        from: "products",
-                        localField: "_id",
-                        foreignField: "category",
-                        pipeline: [{ $match: { status: "Active" } }],
-                        as: "products"
-                    }
+        const page = parseInt(req.query.page) || 1;
+        const limit = 4; // Number of categories per page
+
+        // Get total number of active categories
+        const totalCategories = await categorySchema.countDocuments({ status: "Active" });
+        const totalPages = Math.ceil(totalCategories / limit);
+
+        // Get categories
+        const categories = await categorySchema
+            .find({ status: "Active" })
+            .skip((page - 1) * limit)
+            .limit(limit);
+
+        // Get products for each category
+        const categoriesWithProducts = await Promise.all(
+            categories.map(async (category) => {
+                const products = await productSchema
+                    .find({ 
+                        category: category._id,
+                        status: "Active"
+                    })
+                    .sort({ createdAt: -1 });
+
+                return {
+                    ...category.toObject(),
+                    products
+                };
+            })
+        );
+
+        // Get product ratings
+        const productRatings = await reviewModel.aggregate([
+            {
+                $group: {
+                    _id: "$product",
+                    avgRating: { $avg: "$rating" }
                 }
-            ]);
+            }
+        ]);
+
+        const ratingMap = new Map(
+            productRatings.map(item => [item._id.toString(), item.avgRating])
+        );
 
         res.render('user/allproducts', {
-            categoriesWithProducts, fullname: req.session.user?.fullname
+            categoriesWithProducts,
+            productRatings: Object.fromEntries(ratingMap),
+            currentPage: page,
+            totalPages,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+            fullname: req.session.user?.fullname,
+            wishlistItems: req.wishlistItems || []
         });
+
     } catch (error) {
-        log.red("ERROR", error);
-        res.status(500).render('user/allproducts', {
+        console.error("Error in loadAllProducts:", error);
+        res.status(500).render('error', {
             message: "Error loading products",
             alertType: "error"
         });
