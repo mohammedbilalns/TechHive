@@ -15,6 +15,7 @@ import userWishlistController from "../controller/user/userWishlistController.js
 import userCouponsController from "../controller/user/userCouponsController.js"
 import userWalletController from "../controller/user/userWalletController.js"
 import userReviewController from "../controller/user/userReviewController.js"
+import averageRatings from "../middlewares/averageRatings.js"
 const router = Router()
 
 router.use(express.static('static'))
@@ -52,12 +53,12 @@ router.route('/reset-password') // user reset password
 
 //---- user and product routes ---- 
 router.use(cartQuantity.fetchCartQuantity) // middleware to set the cart Quantity 
-router.get('/home', auth.checkSession, wishlistItems.fetchWishlistItems , userProductController.loadHome)
-router.get('/category/:id',  wishlistItems.fetchWishlistItems, userProductController.viewCategory)
-router.get('/allproducts', wishlistItems.fetchWishlistItems,  userProductController.loadAllProducts)
+router.get('/home', auth.checkSession, wishlistItems.fetchWishlistItems, averageRatings.calculateAverageRatings, userProductController.loadHome)
+router.get('/category/:id',  wishlistItems.fetchWishlistItems, averageRatings.calculateAverageRatings, userProductController.viewCategory)
+router.get('/allproducts', wishlistItems.fetchWishlistItems, averageRatings.calculateAverageRatings,  userProductController.loadAllProducts)
 router.get('/product/:id',wishlistItems.fetchWishlistItems,  userProductController.viewProduct)
-router.get('/' , auth.isLogin, userProductController.loadLanding)
-router.get('/search',  wishlistItems.fetchWishlistItems, userSearchController.searchProducts);
+router.get('/' , auth.isLogin, averageRatings.calculateAverageRatings, userProductController.loadLanding)
+router.get('/search',  wishlistItems.fetchWishlistItems, averageRatings.calculateAverageRatings, userSearchController.searchProducts);
 
 
 //---- user dashboard ---- .
@@ -103,7 +104,7 @@ router.get('/order/success/:orderId', auth.checkSession, userOrderController.get
 router.get('/profile/orders/:orderId', auth.checkSession, userOrderController.getOrderDetails);
 router.post('/profile/orders/:orderId/items/:itemId/cancel', auth.checkSession, userOrderController.cancelOrderItem);
 
-//---- search products ----
+
 
 //---- wishlist management ----
 router.get('/profile/wishlist', auth.checkSession, userWishlistController.getWishlist);

@@ -736,6 +736,11 @@ input::placeholder {
   margin-bottom: 1.25rem;
 }
 
+.my-1 {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
 .mb-1 {
   margin-bottom: 0.25rem;
 }
@@ -818,6 +823,10 @@ input::placeholder {
 
 .mt-8 {
   margin-top: 2rem;
+}
+
+.mt-auto {
+  margin-top: auto;
 }
 
 .line-clamp-2 {
@@ -927,6 +936,14 @@ input::placeholder {
   height: 100vh;
 }
 
+.h-3 {
+  height: 0.75rem;
+}
+
+.h-\[100px\] {
+  height: 100px;
+}
+
 .max-h-\[90vh\] {
   max-height: 90vh;
 }
@@ -1005,6 +1022,10 @@ input::placeholder {
 
 .w-full {
   width: 100%;
+}
+
+.w-3 {
+  width: 0.75rem;
 }
 
 .min-w-0 {
@@ -1152,6 +1173,10 @@ input::placeholder {
 
 .justify-between {
   justify-content: space-between;
+}
+
+.gap-1 {
+  gap: 0.25rem;
 }
 
 .gap-2 {
