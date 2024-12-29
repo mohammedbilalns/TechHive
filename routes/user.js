@@ -56,7 +56,7 @@ router.use(cartQuantity.fetchCartQuantity) // middleware to set the cart Quantit
 router.get('/home', auth.checkSession, wishlistItems.fetchWishlistItems, averageRatings.calculateAverageRatings, userProductController.loadHome)
 router.get('/category/:id',  wishlistItems.fetchWishlistItems, averageRatings.calculateAverageRatings, userProductController.viewCategory)
 router.get('/allproducts', wishlistItems.fetchWishlistItems, averageRatings.calculateAverageRatings,  userProductController.loadAllProducts)
-router.get('/product/:id',wishlistItems.fetchWishlistItems,  userProductController.viewProduct)
+router.get('/product/:id', wishlistItems.fetchWishlistItems, averageRatings.calculateAverageRatings, userProductController.viewProduct)
 router.get('/' , auth.isLogin, averageRatings.calculateAverageRatings, userProductController.loadLanding)
 router.get('/search',  wishlistItems.fetchWishlistItems, averageRatings.calculateAverageRatings, userSearchController.searchProducts);
 
