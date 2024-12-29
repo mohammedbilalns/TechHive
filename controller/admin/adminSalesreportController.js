@@ -4,6 +4,7 @@ import ExcelJS from 'exceljs';
 import PDFDocument from 'pdfkit';
 import {log} from "mercedlogger"
 
+
 const renderSalesReport = async (req, res) => {
   try {
     res.render('admin/salesreport', {
@@ -254,6 +255,11 @@ const generateExcelReport = async (res, orders, totals, filterType, startDate, e
 const generatePDFReport = async (res, orders, totals, filterType, startDate, endDate) => {
   const doc = new PDFDocument({ margin: 40, size: 'A4' });
   
+  
+  doc.registerFont('NotoSans', 'static/fonts/NotoSans-Regular.ttf');
+  doc.registerFont('NotoSans-Bold', 'static/fonts/NotoSans-Bold.ttf');
+  doc.registerFont('NotoSans-Italic', 'static/fonts/NotoSans-Italic.ttf');
+
   // Set response headers
   res.setHeader('Content-Type', 'application/pdf');
   res.setHeader(
@@ -265,19 +271,19 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
 
   // Title Section
   doc.fontSize(24)
-     .font('Helvetica-Bold')
+     .font('NotoSans-Bold')
      .text('Sales Report - TechHive', 40, 40, { align: 'center' })
      .moveDown(0.5);
 
   // Date Range Section
   doc.fontSize(14)
-     .font('Helvetica')
+     .font('NotoSans')
      .text(getFormattedDateRange(filterType, startDate, endDate), { align: 'center' })
      .moveDown(0.5);
 
   // Generated Date
   doc.fontSize(10)
-     .font('Helvetica-Oblique')
+     .font('NotoSans-Italic')
      .text(`Generated on: ${new Date().toLocaleString()}`, { align: 'center' })
      .moveDown(2);
 
@@ -294,14 +300,14 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
        .fillColor('#000000');
     
     doc.fontSize(10)
-       .font('Helvetica')
+       .font('NotoSans')
        .text(title, x + 10, y + 10, { 
          width: cardWidth - 20,
          ellipsis: true  // Add ellipsis for overflow
        });
     
     doc.fontSize(16)
-       .font('Helvetica-Bold')
+       .font('NotoSans-Bold')
        .text(value, x + 10, y + 35, { 
          width: cardWidth - 20,
          ellipsis: true  // Add ellipsis for overflow
@@ -339,7 +345,7 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
 
   // Draw table header - using new tableLeftMargin
   let xPos = tableLeftMargin;
-  doc.font('Helvetica-Bold')
+  doc.font('NotoSans-Bold')
      .fontSize(9)
      .fillColor('#1F2937');
 
@@ -360,7 +366,7 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
 
   // Table Rows
   let yPos = tableTop + 35;
-  doc.font('Helvetica').fontSize(8);
+  doc.font('NotoSans').fontSize(8);
 
   orders.forEach((order, index) => {
     // Add new page if needed
@@ -372,7 +378,7 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
       doc.rect(tableLeftMargin, yPos - 10, totalWidth, 40).fill('#F3F4F6');
       
       xPos = tableLeftMargin;
-      doc.font('Helvetica-Bold')
+      doc.font('NotoSans-Bold')
          .fontSize(9)
          .fillColor('#1F2937');
       
@@ -391,7 +397,7 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
          .stroke();
       
       yPos += 35;
-      doc.font('Helvetica').fontSize(8);
+      doc.font('NotoSans').fontSize(8);
     }
 
     // Alternate row background with border - using new tableLeftMargin
@@ -464,7 +470,7 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
 
   // Add totals with adjusted positioning and width
   const addTotalLine = (label, value, lineY) => {
-    doc.font('Helvetica-Bold')
+    doc.font('NotoSans-Bold')
        .fontSize(10)
        .fillColor('#1F2937')
        .text(label, 60, lineY, { width: 180, align: 'left' })
@@ -482,7 +488,7 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
 
   // Footer
   doc.fontSize(8)
-     .font('Helvetica-Oblique')
+     .font('NotoSans-Italic')
      .fillColor('#6B7280')
      .text(
        'This is a computer generated report.',
