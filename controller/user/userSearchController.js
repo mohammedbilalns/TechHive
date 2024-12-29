@@ -54,36 +54,10 @@ const searchProducts = async (req, res) => {
             baseQuery.category = categoryFilter;
         }
 
-        // Sort options
-        let sortOptions = {};
-        switch (sortBy) {
-            case 'newest':
-                sortOptions = { createdAt: -1 };
-                break;
-            case 'price_asc':
-                sortOptions = { price: 1 };
-                break;
-            case 'price_desc':
-                sortOptions = { price: -1 };
-                break;
-            case 'name_asc':
-                sortOptions = { name: 1 };
-                break;
-            case 'name_desc':
-                sortOptions = { name: -1 };
-                break;
-            case 'rating':
-                sortOptions = { avgRating: -1 };
-                break;
-            default:
-                sortOptions = { createdAt: -1 };
-        }
-
-        // Get all products first to apply rating filter
+        // Get all products first
         let allProducts = await productSchema
             .find(baseQuery)
-            .populate('category', 'name')
-            .sort(sortOptions);
+            .populate('category', 'name');
 
         // Apply rating filter if needed
         if (minRating > 0) {
@@ -92,7 +66,29 @@ const searchProducts = async (req, res) => {
             );
         }
 
-        // Calculate pagination after all filters
+        // Sort products based on selected option
+        allProducts.sort((a, b) => {
+            switch (sortBy) {
+                case 'newest':
+                    return b.createdAt - a.createdAt;
+                case 'price_asc':
+                    return a.price - b.price;
+                case 'price_desc':
+                    return b.price - a.price;
+                case 'name_asc':
+                    return a.name.localeCompare(b.name);
+                case 'name_desc':
+                    return b.name.localeCompare(a.name);
+                case 'rating':
+                    const ratingA = ratingMap.get(a._id.toString()) || 0;
+                    const ratingB = ratingMap.get(b._id.toString()) || 0;
+                    return ratingB - ratingA;
+                default:
+                    return b.createdAt - a.createdAt;
+            }
+        });
+
+        // Calculate pagination after all filters and sorting
         const totalProducts = allProducts.length;
         const totalPages = Math.ceil(totalProducts / limit);
         const startIndex = (page - 1) * limit;
