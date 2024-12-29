@@ -126,4 +126,6 @@ router.post('/profile/orders/:orderId/items/:itemId/return', userOrderController
 router.post('/review/add', auth.checkSession, userReviewController.addReview);
 router.get('/review/get', auth.checkSession, userReviewController.getReview);
 
+router.get('/api/search', userSearchController.searchProducts);
+
 export default router

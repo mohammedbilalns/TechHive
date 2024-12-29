@@ -1037,6 +1037,14 @@ input::placeholder {
   width: 0.75rem;
 }
 
+.w-32 {
+  width: 8rem;
+}
+
+.w-1\/2 {
+  width: 50%;
+}
+
 .min-w-0 {
   min-width: 0px;
 }
@@ -2467,6 +2475,14 @@ input::placeholder {
 
   .lg\:w-80 {
     width: 20rem;
+  }
+
+  .lg\:w-1\/4 {
+    width: 25%;
+  }
+
+  .lg\:w-3\/4 {
+    width: 75%;
   }
 
   .lg\:grid-cols-3 {
