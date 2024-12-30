@@ -24,7 +24,7 @@ const getCoupons = async (req, res) => {
                 const expiryDate = new Date(coupon.expiryDate);
                 const startDate = new Date(coupon.startDate);
                 
-                // Count how many times this user has used the coupon
+                // Count usage count of this coupon 
                 const userUsageCount = coupon.usageHistory?.filter(usage => 
                     usage.userId?.toString() === userId.toString()
                 ).length || 0;
@@ -47,7 +47,7 @@ const getCoupons = async (req, res) => {
                     return;
                 }
 
-                // Only consider a coupon "used" if this user has no remaining uses
+                // push the used coupons
                 if (remainingUses <= 0) {
                     categorizedCoupons.used.push({
                         ...coupon,
@@ -59,7 +59,7 @@ const getCoupons = async (req, res) => {
                     return;
                 }
 
-                // If there are remaining uses for this user, show as available
+                // push the available coupons 
                 categorizedCoupons.available.push({
                     ...coupon,
                     remainingUses,
@@ -72,7 +72,7 @@ const getCoupons = async (req, res) => {
             }
         });
 
-        // Combine all coupons in desired order
+        // Combine all coupons in  order
         const combinedCoupons = [
             ...categorizedCoupons.available,
             ...categorizedCoupons.used,

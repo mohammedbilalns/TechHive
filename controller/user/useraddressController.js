@@ -1,6 +1,7 @@
 import userSchema from "../../model/userModel.js";
 import { log } from "mercedlogger";
 import addressSchema from "../../model/addressModel.js";
+import mongoose from 'mongoose';
 
 // get all addresses of a user
 const getAddresses = async (req, res) => {
@@ -12,6 +13,7 @@ const getAddresses = async (req, res) => {
         res.render('user/profile/addresses', { addresses, user, page: "addresses" })
     } catch (error) {
         log.red("FETCH_ADDRESSES_ERROR", error)
+        res.status(500).render("notfound")
     }
 }
 
@@ -151,6 +153,11 @@ const getAddress = async (req, res) => {
     try {
         const addressId = req.params.id;
         const userId = req.session.user.id;
+
+        // Validate if addressId is a valid  ObjectId
+        if (!mongoose.Types.ObjectId.isValid(addressId)) {
+            return res.redirect("/notfound?message=Invalid+Address+Id&alertType=error")
+        }
 
         const address = await addressSchema.findOne({
             _id: addressId,

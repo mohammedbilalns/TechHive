@@ -8,6 +8,7 @@ import { configDotenv } from 'dotenv';
 import razorpay from '../../utils/razorpayConfig.js';
 import crypto from 'crypto';
 import walletModel from '../../model/walletModel.js';
+import mongoose from 'mongoose';
 configDotenv()
 
 const placeOrder = async (req, res) => {
@@ -211,6 +212,12 @@ const placeOrder = async (req, res) => {
 const getOrderSuccess = async (req, res) => {
   try {
     const orderId = req.params.orderId;
+    
+    // Validate if orderId is a valid  ObjectId
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+      return res.redirect('/notfound?alertType=error&message=Invalid+order+id');
+    }
+
     const order = await orderModel.findById(orderId);
     
     if (!order) {
@@ -333,7 +340,7 @@ const cancelOrderItem = async (req, res) => {
 
     // Handle refund if payment was made
     if (order.paymentStatus === 'paid') {
-      // Calculate base refund amount for this item
+      // Calculate  refund amount for this item
       const itemPrice = orderItem.price;
       const itemDiscount = orderItem.discount;
       const quantity = orderItem.quantity;

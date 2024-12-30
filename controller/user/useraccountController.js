@@ -10,6 +10,7 @@ const getAccountDetails = async (req, res) => {
         res.render('user/profile/account', { user, page: "account" })
     } catch (error) {
         log.red("FETCH_ACCOUNT_DETAILS_ERROR", error)
+        res.status(500).render("notfound")
     }
 }
 
@@ -23,23 +24,23 @@ const updateProfile = async (req, res) => {
             { new: true }
         );
         if (!updatedUser) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'User not found' 
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
             });
         }
 
-        res.json({ 
-            success: true, 
+        res.json({
+            success: true,
             message: 'Profile updated successfully',
-            user: updatedUser 
+            user: updatedUser
         });
 
     } catch (error) {
         log.red("Error in updateProfile:", error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Internal server error' 
+        res.status(500).json({
+            success: false,
+            message: 'Internal server error'
         });
     }
 };
@@ -98,4 +99,4 @@ const changePassword = async (req, res) => {
     }
 };
 
-export default { getAccountDetails,updateProfile, changePassword };
+export default { getAccountDetails, updateProfile, changePassword };

@@ -11,7 +11,7 @@ const getOrders = async (req, res) => {
     const skip = (page - 1) * limit;
     const search = req.query.search || '';
 
-    // Create search query
+    //  search query
     const searchQuery = {
       $or: [
         { orderId: { $regex: search, $options: 'i' } },
@@ -20,7 +20,7 @@ const getOrders = async (req, res) => {
       ]
     };
 
-    // Get total count for pagination
+  
     const totalOrders = await orderModel.countDocuments(searchQuery);
     const totalPages = Math.ceil(totalOrders / limit);
 
@@ -82,7 +82,7 @@ const updateOrderItemStatus = async (req, res) => {
     // Handle return approval or cancellation refund
     if ((status === 'returned' && orderItem.status === 'return requested') || 
         (status === 'cancelled' && order.paymentStatus === 'paid')) {
-      // Calculate base refund amount for this item
+      // Calculate base refund amount 
       const itemPrice = orderItem.price;
       const itemDiscount = orderItem.discount;
       const quantity = orderItem.quantity;
@@ -91,12 +91,12 @@ const updateOrderItemStatus = async (req, res) => {
       // Calculate coupon discount per item if coupon was applied
       let couponDiscountPerItem = 0;
       if (order.coupon && order.coupon.discount > 0) {
-        // Distribute coupon discount equally among all items
+        // Distribute coupon discount equally 
         const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
         couponDiscountPerItem = (order.coupon.discount / totalItems) * quantity;
       }
 
-      // Final refund amount after deducting proportional coupon discount
+      // Final refund amount 
       const refundAmount = baseRefundAmount - couponDiscountPerItem;
 
       // Create wallet transaction ID

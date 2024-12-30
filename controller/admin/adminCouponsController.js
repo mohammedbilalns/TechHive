@@ -29,6 +29,7 @@ const getCoupons = async (req, res) => {
     }
 };
 
+// get the coupon details for edit modal 
 const getCouponDetails = async (req, res) => {
     try {
         const coupon = await Coupon.findById(req.params.couponId);
@@ -56,7 +57,7 @@ const addCoupon = async (req, res) => {
             expiryDate
         } = req.body;
 
-       
+
         // Validate coupon code format and length 
         if (!/^[A-Za-z0-9]{1,10}$/.test(code)) {
             return res.status(400).json({
@@ -64,7 +65,7 @@ const addCoupon = async (req, res) => {
                 message: 'Invalid coupon code format'
             });
         }
-        
+
 
         // Validate description length
         if (description.length < 10 || description.length > 100) {
@@ -245,9 +246,9 @@ const toggleCouponStatus = async (req, res) => {
         coupon.isActive = !coupon.isActive;
         await coupon.save();
 
-        res.json({ 
-            success: true, 
-            message: `Coupon ${coupon.isActive ? 'activated' : 'deactivated'} successfully` 
+        res.json({
+            success: true,
+            message: `Coupon ${coupon.isActive ? 'activated' : 'deactivated'} successfully`
         });
     } catch (error) {
         log.red('TOGGLE_COUPON_STATUS_ERROR', error);

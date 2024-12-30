@@ -2,7 +2,7 @@ import Order from '../../model/orderModel.js';
 import User from '../../model/userModel.js';
 import ExcelJS from 'exceljs';
 import PDFDocument from 'pdfkit';
-import {log} from "mercedlogger"
+import { log } from "mercedlogger"
 
 
 const renderSalesReport = async (req, res) => {
@@ -19,8 +19,8 @@ const renderSalesReport = async (req, res) => {
 const getSalesReportData = async (req, res) => {
   try {
     const { filterType, startDate, endDate } = req.query;
-    
-    // Add date validation for custom range
+
+    //  date validation for custom range
     if (filterType === 'custom') {
       if (!startDate || !endDate) {
         return res.status(400).json({ message: 'Start date and end date are required' });
@@ -30,15 +30,15 @@ const getSalesReportData = async (req, res) => {
       const endDateTime = new Date(endDate);
 
       if (startDateTime > endDateTime) {
-        return res.status(400).json({ 
-          message: 'Invalid date range: Start date cannot be after end date' 
+        return res.status(400).json({
+          message: 'Invalid date range: Start date cannot be after end date'
         });
       }
     }
 
     let dateFilter = {};
 
-    // Set date filter based on filter type
+    //  date filter based on filter type
     switch (filterType) {
       case 'daily':
         dateFilter = {
@@ -99,22 +99,22 @@ const getSalesReportData = async (req, res) => {
     let totalDiscounts = 0;
 
     const formattedOrders = await Promise.all(orders.map(order => {
-      // Calculate coupon discount
+      //  coupon discount
       const couponDiscount = order.coupon?.discount || 0;
-      
-      // Calculate total offer discount from all items
+
+      //  total offer discount from all items
       const offerDiscount = order.items.reduce((total, item) => {
-        // Calculate discount amount for each item based on percentage
-        const itemDiscountAmount = (item.price * (item.discount/100)) * item.quantity;
+        //  discount amount for each item based on percentage
+        const itemDiscountAmount = (item.price * (item.discount / 100)) * item.quantity;
         return total + itemDiscountAmount;
       }, 0);
 
-      // Calculate total discount
+      //  total discount
       const totalDiscount = couponDiscount + offerDiscount;
-      
-      // Calculate original amount (before discounts)
+
+      //  original amount (before discounts)
       const originalAmount = order.totalAmount + totalDiscount;
-      
+
       totalSales += order.totalAmount;
       totalDiscounts += totalDiscount;
 
@@ -149,7 +149,7 @@ const getSalesReportData = async (req, res) => {
 
 const getFormattedDateRange = (filterType, startDate, endDate) => {
   const today = new Date();
-  
+
   switch (filterType) {
     case 'daily':
       return `Date: ${today.toLocaleDateString()}`;
@@ -190,7 +190,6 @@ const generateExcelReport = async (res, orders, totals, filterType, startDate, e
   worksheet.getCell('A3').font = { size: 10, italic: true };
   worksheet.getCell('A3').alignment = { horizontal: 'center' };
 
-  // Add headers (now starting from row 5)
   worksheet.addRow(['']);  // Empty row for spacing
   const headers = [
     'Order ID',
@@ -254,8 +253,8 @@ const generateExcelReport = async (res, orders, totals, filterType, startDate, e
 
 const generatePDFReport = async (res, orders, totals, filterType, startDate, endDate) => {
   const doc = new PDFDocument({ margin: 40, size: 'A4' });
-  
-  
+
+
   doc.registerFont('NotoSans', 'static/fonts/NotoSans-Regular.ttf');
   doc.registerFont('NotoSans-Bold', 'static/fonts/NotoSans-Bold.ttf');
   doc.registerFont('NotoSans-Italic', 'static/fonts/NotoSans-Italic.ttf');
@@ -263,7 +262,7 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
   // Set response headers
   res.setHeader('Content-Type', 'application/pdf');
   res.setHeader(
-    'Content-Disposition', 
+    'Content-Disposition',
     `attachment; filename=sales-report-${filterType}-${new Date().toISOString().split('T')[0]}.pdf`
   );
 
@@ -271,21 +270,21 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
 
   // Title Section
   doc.fontSize(24)
-     .font('NotoSans-Bold')
-     .text('Sales Report - TechHive', 40, 40, { align: 'center' })
-     .moveDown(0.5);
+    .font('NotoSans-Bold')
+    .text('Sales Report - TechHive', 40, 40, { align: 'center' })
+    .moveDown(0.5);
 
   // Date Range Section
   doc.fontSize(14)
-     .font('NotoSans')
-     .text(getFormattedDateRange(filterType, startDate, endDate), { align: 'center' })
-     .moveDown(0.5);
+    .font('NotoSans')
+    .text(getFormattedDateRange(filterType, startDate, endDate), { align: 'center' })
+    .moveDown(0.5);
 
   // Generated Date
   doc.fontSize(10)
-     .font('NotoSans-Italic')
-     .text(`Generated on: ${new Date().toLocaleString()}`, { align: 'center' })
-     .moveDown(2);
+    .font('NotoSans-Italic')
+    .text(`Generated on: ${new Date().toLocaleString()}`, { align: 'center' })
+    .moveDown(2);
 
   // Summary Cards Section - Adjusted widths and spacing
   const summaryStartY = doc.y;
@@ -296,25 +295,25 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
   // Helper function to draw a card with text truncation
   const drawCard = (x, y, title, value, color) => {
     doc.roundedRect(x, y, cardWidth, cardHeight, 5)
-       .fill(color)
-       .fillColor('#000000');
-    
+      .fill(color)
+      .fillColor('#000000');
+
     doc.fontSize(10)
-       .font('NotoSans')
-       .text(title, x + 10, y + 10, { 
-         width: cardWidth - 20,
-         ellipsis: true  // Add ellipsis for overflow
-       });
-    
+      .font('NotoSans')
+      .text(title, x + 10, y + 10, {
+        width: cardWidth - 20,
+        ellipsis: true
+      });
+
     doc.fontSize(16)
-       .font('NotoSans-Bold')
-       .text(value, x + 10, y + 35, { 
-         width: cardWidth - 20,
-         ellipsis: true  // Add ellipsis for overflow
-       });
+      .font('NotoSans-Bold')
+      .text(value, x + 10, y + 35, {
+        width: cardWidth - 20,
+        ellipsis: true
+      });
   };
 
-  // Draw summary cards with adjusted spacing
+  //  summary cards with adjusted spacing
   drawCard(40, summaryStartY, 'Total Orders', totals.totalOrders.toString(), '#EBF5FF');
   drawCard(40 + cardWidth + cardSpacing, summaryStartY, 'Total Sales', `₹${totals.totalAmount.toFixed(2)}`, '#F0FDF4');
   drawCard(40 + (cardWidth + cardSpacing) * 2, summaryStartY, 'Total Discounts', `₹${totals.totalDiscounts.toFixed(2)}`, '#F5F3FF');
@@ -324,8 +323,8 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
 
   // Table Headers
   const tableTop = doc.y + 20;
-  const tableLeftMargin = 50;  // Increased from 40 to move table right
-  
+  const tableLeftMargin = 50;
+
   const columns = [
     { header: 'Order ID', width: 62 },
     { header: 'Date', width: 62 },
@@ -340,29 +339,29 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
   // Calculate total width
   const totalWidth = columns.reduce((sum, col) => sum + col.width, 0);
 
-  // Draw table border - using new tableLeftMargin
+  // Draw table border
   doc.rect(tableLeftMargin, tableTop - 10, totalWidth, 40).fill('#F3F4F6');
 
-  // Draw table header - using new tableLeftMargin
+  // Draw table header 
   let xPos = tableLeftMargin;
   doc.font('NotoSans-Bold')
-     .fontSize(9)
-     .fillColor('#1F2937');
+    .fontSize(9)
+    .fillColor('#1F2937');
 
   columns.forEach(column => {
-    doc.text(column.header, xPos, tableTop, { 
+    doc.text(column.header, xPos, tableTop, {
       width: column.width,
       align: 'center'
     });
     xPos += column.width;
   });
 
-  // Draw header bottom border - using new tableLeftMargin
+  // Draw header bottom border 
   doc.moveTo(tableLeftMargin, tableTop + 25)
-     .lineTo(tableLeftMargin + totalWidth, tableTop + 25)
-     .strokeColor('#D1D5DB')
-     .lineWidth(1.5)
-     .stroke();
+    .lineTo(tableLeftMargin + totalWidth, tableTop + 25)
+    .strokeColor('#D1D5DB')
+    .lineWidth(1.5)
+    .stroke();
 
   // Table Rows
   let yPos = tableTop + 35;
@@ -373,57 +372,57 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
     if (yPos > 680) {
       doc.addPage();
       yPos = 50;
-      
-      // Redraw headers on new page - using new tableLeftMargin
+
+      // Redraw headers on new page 
       doc.rect(tableLeftMargin, yPos - 10, totalWidth, 40).fill('#F3F4F6');
-      
+
       xPos = tableLeftMargin;
       doc.font('NotoSans-Bold')
-         .fontSize(9)
-         .fillColor('#1F2937');
-      
+        .fontSize(9)
+        .fillColor('#1F2937');
+
       columns.forEach(column => {
-        doc.text(column.header, xPos, yPos, { 
+        doc.text(column.header, xPos, yPos, {
           width: column.width,
           align: 'center'
         });
         xPos += column.width;
       });
-      
+
       doc.moveTo(tableLeftMargin, yPos + 25)
-         .lineTo(tableLeftMargin + totalWidth, yPos + 25)
-         .strokeColor('#D1D5DB')
-         .lineWidth(1.5)
-         .stroke();
-      
+        .lineTo(tableLeftMargin + totalWidth, yPos + 25)
+        .strokeColor('#D1D5DB')
+        .lineWidth(1.5)
+        .stroke();
+
       yPos += 35;
       doc.font('NotoSans').fontSize(8);
     }
 
-    // Alternate row background with border - using new tableLeftMargin
+    // Alternate row background with border
     doc.rect(tableLeftMargin, yPos - 5, totalWidth, 30)
-       .fill(index % 2 === 0 ? '#FFFFFF' : '#F9FAFB');
-    
-    // Draw light vertical lines for columns - using new tableLeftMargin
+      .fill(index % 2 === 0 ? '#FFFFFF' : '#F9FAFB');
+
+    // Draw light vertical lines for columns 
     xPos = tableLeftMargin;
     columns.forEach(column => {
       doc.moveTo(xPos, yPos - 5)
-         .lineTo(xPos, yPos + 25)
-         .strokeColor('#E5E7EB')
-         .lineWidth(0.5)
-         .stroke();
+        .lineTo(xPos, yPos + 25)
+        .strokeColor('#E5E7EB')
+        .lineWidth(0.5)
+        .stroke();
       xPos += column.width;
     });
-    
-    // Draw last vertical line - using new tableLeftMargin
-    doc.moveTo(tableLeftMargin + totalWidth, yPos - 5)
-       .lineTo(tableLeftMargin + totalWidth, yPos + 25)
-       .stroke();
 
-    // Draw row data - using new tableLeftMargin
+    // Draw last vertical line 
+    doc.moveTo(tableLeftMargin + totalWidth, yPos - 5)
+      .lineTo(tableLeftMargin + totalWidth, yPos + 25)
+      .stroke();
+
+    // Draw row data 
     xPos = tableLeftMargin;
     doc.fillColor('#000000');
-    
+
     const rowData = [
       { text: order.orderId, align: 'left' },
       { text: new Date(order.orderDate).toLocaleDateString(), align: 'left' },
@@ -453,49 +452,49 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
     yPos += 30;
   });
 
-  // Draw bottom border of the table - using new tableLeftMargin
+  // Draw bottom border of the table 
   doc.moveTo(tableLeftMargin, yPos - 5)
-     .lineTo(tableLeftMargin + totalWidth, yPos - 5)
-     .strokeColor('#D1D5DB')
-     .lineWidth(1.5)
-     .stroke();
+    .lineTo(tableLeftMargin + totalWidth, yPos - 5)
+    .strokeColor('#D1D5DB')
+    .lineWidth(1.5)
+    .stroke();
 
   // Totals section with improved design and adjusted positioning
   const totalsY = yPos + 10;
-  
+
   // Draw totals box with adjusted width
-  const totalsBoxWidth = 490; // Reduced from 510
+  const totalsBoxWidth = 490;
   doc.rect(40, totalsY, totalsBoxWidth, 120)
-     .fill('#F8FAFC');
+    .fill('#F8FAFC');
 
   // Add totals with adjusted positioning and width
   const addTotalLine = (label, value, lineY) => {
     doc.font('NotoSans-Bold')
-       .fontSize(10)
-       .fillColor('#1F2937')
-       .text(label, 60, lineY, { width: 180, align: 'left' })
-       .text(value, 240, lineY, { width: 250, align: 'right' });
+      .fontSize(10)
+      .fillColor('#1F2937')
+      .text(label, 60, lineY, { width: 180, align: 'left' })
+      .text(value, 240, lineY, { width: 250, align: 'right' });
   };
 
   addTotalLine('Total Number of Orders:', totals.totalOrders.toString(), totalsY + 15);
   addTotalLine('Total Sales Amount:', `₹${totals.totalAmount.toFixed(2)}`, totalsY + 40);
   addTotalLine('Total Discounts Applied:', `₹${totals.totalDiscounts.toFixed(2)}`, totalsY + 65);
-  
+
   // Net Revenue with highlighted background and adjusted width
   doc.rect(40, totalsY + 90, totalsBoxWidth, 30)
-     .fill('#E0E7FF');
+    .fill('#E0E7FF');
   addTotalLine('Net Revenue:', `₹${totals.netAmount.toFixed(2)}`, totalsY + 95);
 
   // Footer
   doc.fontSize(8)
-     .font('NotoSans-Italic')
-     .fillColor('#6B7280')
-     .text(
-       'This is a computer generated report.',
-       40,
-       doc.page.height - 40,
-       { align: 'center' }
-     );
+    .font('NotoSans-Italic')
+    .fillColor('#6B7280')
+    .text(
+      'This is a computer generated report.',
+      40,
+      doc.page.height - 40,
+      { align: 'center' }
+    );
 
   doc.end();
 };
@@ -565,7 +564,7 @@ const downloadReport = async (req, res) => {
       const couponDiscount = order.coupon?.discount || 0;
       const offerDiscount = order.items.reduce((total, item) => {
         // Calculate discount amount for each item based on percentage
-        const itemDiscountAmount = (item.price * (item.discount/100)) * item.quantity;
+        const itemDiscountAmount = (item.price * (item.discount / 100)) * item.quantity;
         return total + itemDiscountAmount;
       }, 0);
       const totalDiscount = couponDiscount + offerDiscount;
@@ -591,18 +590,18 @@ const downloadReport = async (req, res) => {
       totalOfferDiscounts: acc.totalOfferDiscounts + order.offerDiscount,
       totalDiscounts: acc.totalDiscounts + order.totalDiscount,
       netAmount: acc.netAmount + order.netAmount
-    }), { 
-      totalOrders: 0, 
-      totalAmount: 0, 
+    }), {
+      totalOrders: 0,
+      totalAmount: 0,
       totalCouponDiscounts: 0,
       totalOfferDiscounts: 0,
-      totalDiscounts: 0, 
-      netAmount: 0 
+      totalDiscounts: 0,
+      netAmount: 0
     });
 
     if (format === 'excel') {
       const fileName = `sales-report-${filterType}-${new Date().toISOString().split('T')[0]}.xlsx`;
-      
+
       res.setHeader(
         'Content-Type',
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -611,7 +610,7 @@ const downloadReport = async (req, res) => {
         'Content-Disposition',
         `attachment; filename=${fileName}`
       );
-      
+
       await generateExcelReport(res, formattedOrders, totals, filterType, startDate, endDate);
     } else if (format === 'pdf') {
       await generatePDFReport(res, formattedOrders, totals, filterType, startDate, endDate);
@@ -623,7 +622,7 @@ const downloadReport = async (req, res) => {
   }
 };
 
-export  default {
+export default {
   renderSalesReport,
   getSalesReportData,
   downloadReport,

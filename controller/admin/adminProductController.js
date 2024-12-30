@@ -39,7 +39,7 @@ const getProducts = async (req, res) => {
         const page = parseInt(req.query.page) || 1
         const limit = 10
         const search = req.query.search || ''
-        
+
         // Create search query
         const searchQuery = {
             $or: [
@@ -54,10 +54,10 @@ const getProducts = async (req, res) => {
 
         const products = await productSchema.find(searchQuery)
             .populate('category')
-            .sort({createdAt: 1})
+            .sort({ createdAt: 1 })
             .skip(skip)
             .limit(limit)
-        
+
         res.render("admin/products", {
             products,
             page: "products",
@@ -76,7 +76,7 @@ const getProducts = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
     try {
-        // Get the product details before deletion
+        // Get the product details 
         const product = await productSchema.findById(req.params.productid);
 
         if (!product) {
@@ -86,15 +86,15 @@ const deleteProduct = async (req, res) => {
             });
         }
 
-        if (product.images) {
-            // Delete each image file from the storage
-            product.images.forEach(image => {
-                const imagePath = path.join('static', image.path);
-                if (fs.existsSync(imagePath)) {
-                    fs.unlinkSync(imagePath);
-                }
-            });
-        }
+        // if (product.images) {
+        //     // Delete each image file from the storage
+        //     product.images.forEach(image => {
+        //         const imagePath = path.join('static', image.path);
+        //         if (fs.existsSync(imagePath)) {
+        //             fs.unlinkSync(imagePath);
+        //         }
+        //     });
+        // }
 
         // Delete the product from database
         await productSchema.findByIdAndDelete(req.params.productid);

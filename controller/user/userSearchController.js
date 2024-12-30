@@ -7,14 +7,14 @@ const searchProducts = async (req, res) => {
     try {
         const query = req.query.q || '';
         const page = parseInt(req.query.page) || 1;
-        const limit = 6;
+        const limit = 8;
         const sortBy = req.query.sort || 'newest';
         const categoryFilter = req.query.category;
         const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice) : 0;
         const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : Number.MAX_VALUE;
         const minRating = req.query.minRating ? parseFloat(req.query.minRating) : 0;
 
-        // Get product ratings first
+        // Get product ratings 
         const productRatings = await reviewSchema.aggregate([
             { 
                 $group: {
@@ -26,13 +26,13 @@ const searchProducts = async (req, res) => {
 
         const ratingMap = new Map(productRatings.map(item => [item._id.toString(), item.avgRating]));
 
-        // Base query with price filter
+        //  query with price filtery
         const baseQuery = {
             status: "Active",
             price: { $gte: minPrice, $lte: maxPrice }
         };
 
-        // Add search query if provided
+        // Add search query
         if (query) {
             const matchingCategories = await categorySchema.find({
                 name: { $regex: query, $options: 'i' },
@@ -54,19 +54,19 @@ const searchProducts = async (req, res) => {
             baseQuery.category = categoryFilter;
         }
 
-        // Get all products first
+        // Get all products 
         let allProducts = await productSchema
             .find(baseQuery)
             .populate('category', 'name');
 
-        // Apply rating filter if needed
+        // Apply rating filter 
         if (minRating > 0) {
             allProducts = allProducts.filter(product => 
                 (ratingMap.get(product._id.toString()) || 0) >= minRating
             );
         }
 
-        // Sort products based on selected option
+        // Sort products 
         allProducts.sort((a, b) => {
             switch (sortBy) {
                 case 'newest':
@@ -94,7 +94,7 @@ const searchProducts = async (req, res) => {
         const startIndex = (page - 1) * limit;
         const endIndex = startIndex + limit;
 
-        // Slice the products array for pagination
+        // Slice  products array for pagination
         const products = allProducts.slice(startIndex, endIndex);
 
         // Get all categories for filter dropdown

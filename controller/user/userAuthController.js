@@ -515,38 +515,6 @@ const resetPassword = async (req, res) => {
 };
 
 
-const getDashboard = (req, res) => {
-    try {
-
-    } catch (error) {
-        log.red("FETCH_DASHBOARD_ERROR", error)
-    }
-}
-
-
-
-const getWishlist = (req, res) => {
-    try {
-
-    } catch (error) {
-        log.red("FETCH_WISHLIST_ERROR", error)
-    }
-}
-const getOrders = (req, res) => {
-    try {
-
-    } catch (error) {
-        log.red("FETCH_ORDERS_ERROR", error)
-    }
-}
-const getWallet = (req, res) => {
-    try {
-
-    } catch (error) {
-        log.red("FETCH_WALLET_ERROR", error)
-    }
-}
-
 
 
 
@@ -556,7 +524,7 @@ export default {
     loadForgotpassword, processForgotPassword, verifyForgotPasswordOTP,
     resendForgotPasswordOTP, resetPassword, loadResetpassword,
     registerUser, authGoogle, authGoogleCallback,
-    logoutUser, getDashboard, getWishlist, getOrders, getWallet,
+    logoutUser
 }
 
 

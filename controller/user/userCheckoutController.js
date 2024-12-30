@@ -33,8 +33,8 @@ const getCheckout = async (req, res) => {
     }
 
     if (stockError) {
-      req.flash('error', 'Some items in your cart are out of stock');
-      return res.redirect('/profile/cart');
+      res.status(500).json({ success: false, message: 'Some products are out of stock' });
+
     }
 
     // Calculate totals

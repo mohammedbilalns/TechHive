@@ -24,19 +24,6 @@ router.route('/login')
 router.use(adminAuth.checkSession)
 router.get('/logout', adminAuthController.logoutAdmin)
 
-//---- customers routes ----
-router.get('/customers', adminCustomersController.getCustomers)
-router.post('/customers/block/:customerid', adminCustomersController.blockCustomer)
-router.post('/customers/unblock/:customerid', adminCustomersController.unblockCustomer)
-
-
-//---- categories routes ----
-router.get('/categories', adminCategoryController.getCategories)
-router.delete('/categories/:categoryid', adminCategoryController.deleteCategory)
-router.post('/categories/hide/:categoryid', adminCategoryController.hideCategory)
-router.post('/categories/unhide/:categoryid', adminCategoryController.unhideCategory)
-router.post('/categories/new', adminCategoryController.addCategory)
-router.post('/categories/edit/:categoryid', adminCategoryController.editCategory)
 
 //---- products routes ---- 
 router.get('/products', adminProductController.getProducts)
@@ -48,9 +35,18 @@ router.post('/products/add', adminProductController.productUpload.array('mainIma
 router.get('/products/edit/:productid', adminProductController.getEditProduct);
 router.post('/products/edit/:productid', adminProductController.productUpload.array('mainImages', 4), adminProductController.editProduct);
 
+
+//---- categories routes ----
+router.get('/categories', adminCategoryController.getCategories)
+router.delete('/categories/:categoryid', adminCategoryController.deleteCategory)
+router.post('/categories/hide/:categoryid', adminCategoryController.hideCategory)
+router.post('/categories/unhide/:categoryid', adminCategoryController.unhideCategory)
+router.post('/categories/new', adminCategoryController.addCategory)
+router.post('/categories/edit/:categoryid', adminCategoryController.editCategory)
+
+
 //---- orders routes ----
 router.get('/orders', adminOrderController.getOrders)
-//router.post('/orders/update-status/:orderId', adminOrderController.updateOrderStatus)
 router.post('/orders/:orderId/items/:itemId/update-status', adminOrderController.updateOrderItemStatus);
 
 //---- coupons routes ----
@@ -73,6 +69,13 @@ router.delete('/offers/:offerId', adminOfferController.deleteOffer)
 router.get('/sales-report', adminSalesreportController.renderSalesReport)
 router.get('/sales-report/data', adminSalesreportController.getSalesReportData)
 router.get('/sales-report/download', adminSalesreportController.downloadReport)
+
+
+//---- customers routes ----
+router.get('/customers', adminCustomersController.getCustomers)
+router.post('/customers/block/:customerid', adminCustomersController.blockCustomer)
+router.post('/customers/unblock/:customerid', adminCustomersController.unblockCustomer)
+
 
 export default router
 

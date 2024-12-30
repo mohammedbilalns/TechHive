@@ -88,7 +88,7 @@ const getOffers = async (req, res) => {
 // Get offer details
 const getOfferDetails = async (req, res) => {
     try {
-        
+
         if (!req.params.offerId) {
             return res.status(400).json({ success: false, message: 'Offer ID is required' });
         }
@@ -102,8 +102,8 @@ const getOfferDetails = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Offer not found' });
         }
 
-        const response = { 
-            success: true, 
+        const response = {
+            success: true,
             offer: {
                 _id: offer._id,
                 name: offer.name,
@@ -120,10 +120,10 @@ const getOfferDetails = async (req, res) => {
         res.json(response);
     } catch (error) {
         console.error('Error fetching offer details:', error);
-        res.status(500).json({ 
-            success: false, 
+        res.status(500).json({
+            success: false,
             message: 'Failed to fetch offer details',
-            error: error.message 
+            error: error.message
         });
     }
 }
@@ -223,8 +223,8 @@ const toggleOfferStatus = async (req, res) => {
 
         // Only check for conflicts when activating
         if (!offer.isActive) {
-            const items = offer.offerType === 'category' ? 
-                offer.applicableCategories : 
+            const items = offer.offerType === 'category' ?
+                offer.applicableCategories :
                 offer.applicableProducts;
 
             const existingOffer = await checkExistingOffers(

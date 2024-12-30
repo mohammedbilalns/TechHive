@@ -140,7 +140,7 @@ const viewProduct = async (req, res) => {
     try {
         const productId = req.params.id;
         
-        // Validate if the ID is a valid MongoDB ObjectId
+        // Validate if the ID is a valid  ObjectId
         if (!mongoose.Types.ObjectId.isValid(productId)) {
             return res.redirect('/notfound?message=Invalid+Product+id&alertType=error');
 
@@ -154,7 +154,7 @@ const viewProduct = async (req, res) => {
 
         }
 
-        // Then fetch related products and reviews in parallel
+        //  fetch related products and reviews 
         const [relatedProducts, reviews] = await Promise.all([
             productSchema.find({
                 category: product.category,
@@ -175,7 +175,7 @@ const viewProduct = async (req, res) => {
         res.render('user/viewproduct', {
             product,
             relatedProducts,
-            reviews: reviews || [], // Ensure reviews is always an array
+            reviews: reviews || [], 
             averageRating,
             reviewCount: reviews ? reviews.length : 0,
             fullname: req.session.user?.fullname
@@ -200,7 +200,7 @@ const viewCategory = async (req, res) => {
         const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : Number.MAX_VALUE;
         const minRating = req.query.minRating ? parseFloat(req.query.minRating) : 0;
 
-        // Validate if the ID is a valid MongoDB ObjectId
+        // Validate if the ID is a valid  ObjectId
         if (!mongoose.Types.ObjectId.isValid(categoryId)) {
             return res.redirect('/notfound?message=Invalid+category+id&alertType=error');
         }

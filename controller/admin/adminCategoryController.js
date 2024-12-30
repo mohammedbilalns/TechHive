@@ -3,14 +3,14 @@ import categorySchema from "../../model/categoryModel.js"
 import productSchema from "../../model/productModel.js"
 
 // Fetch the categories page
-const getCategories = async (req, res)=>{
-    try{
-        let message = req.query.message 
+const getCategories = async (req, res) => {
+    try {
+        let message = req.query.message
         let alertType = req.query.alertType
         const page = parseInt(req.query.page) || 1
         const limit = 10
         const search = req.query.search || ''
-        
+
         // Create search query
         const searchQuery = {
             name: { $regex: search, $options: 'i' }
@@ -21,7 +21,7 @@ const getCategories = async (req, res)=>{
         const skip = (page - 1) * limit
 
         const categories = await categorySchema.find(searchQuery)
-            .sort({createdAt: 1})
+            .sort({ createdAt: 1 })
             .skip(skip)
             .limit(limit)
 
@@ -36,20 +36,20 @@ const getCategories = async (req, res)=>{
             hasPrevPage: page > 1,
             search
         });
-    }catch(error){
-        log.red('FETCH_CATEGORIES_ERROR',error)
+    } catch (error) {
+        log.red('FETCH_CATEGORIES_ERROR', error)
     }
 }
 
 // Delete a category
-const deleteCategory = async (req,res) => {
+const deleteCategory = async (req, res) => {
     try {
         await categorySchema.findByIdAndDelete(req.params.categoryid)
         res.json({
             success: true,
             message: 'Category deleted successfully'
         });
-    } catch(error) {
+    } catch (error) {
         log.red('DELETE_CATEGORY_ERROR', error)
         res.status(500).json({
             success: false,
@@ -59,11 +59,11 @@ const deleteCategory = async (req,res) => {
 }
 
 // Hide a category
-const hideCategory = async (req,res) => {
+const hideCategory = async (req, res) => {
     try {
         // Update category status
-        await categorySchema.findByIdAndUpdate(req.params.categoryid, {status:"Inactive"})
-        
+        await categorySchema.findByIdAndUpdate(req.params.categoryid, { status: "Inactive" })
+
         // Update all products in this category to Inactive
         await productSchema.updateMany(
             { category: req.params.categoryid },
@@ -74,7 +74,7 @@ const hideCategory = async (req,res) => {
             success: true,
             message: 'Category and associated products hidden successfully'
         });
-    } catch(error) {
+    } catch (error) {
         log.red('HIDE_CATEGORY_ERROR', error)
         res.status(500).json({
             success: false,
@@ -84,11 +84,11 @@ const hideCategory = async (req,res) => {
 }
 
 // Unhide a category
-const unhideCategory = async (req,res) => {
+const unhideCategory = async (req, res) => {
     try {
         // Update category status
-        await categorySchema.findByIdAndUpdate(req.params.categoryid, {status:"Active"})
-        
+        await categorySchema.findByIdAndUpdate(req.params.categoryid, { status: "Active" })
+
         // Update all products in this category to Active
         await productSchema.updateMany(
             { category: req.params.categoryid },
@@ -99,7 +99,7 @@ const unhideCategory = async (req,res) => {
             success: true,
             message: 'Category and associated products unhidden successfully'
         });
-    } catch(error) {
+    } catch (error) {
         log.red('HIDE_CATEGORY_ERROR', error)
         res.status(500).json({
             success: false,
@@ -109,14 +109,14 @@ const unhideCategory = async (req,res) => {
 }
 
 // Add a new category
-const addCategory = async (req,res) => {
+const addCategory = async (req, res) => {
     try {
-        let {name, description} = req.body 
+        let { name, description } = req.body
         name = name.trim()[0].toUpperCase() + name.trim().slice(1).toLowerCase()
         description = description.trim()
 
-        const existingCategory = await categorySchema.findOne({name})
-        if(existingCategory) {
+        const existingCategory = await categorySchema.findOne({ name })
+        if (existingCategory) {
             return res.status(400).json({
                 success: false,
                 message: 'Category with same name already exists'
@@ -135,7 +135,7 @@ const addCategory = async (req,res) => {
             message: 'Category created successfully',
             category: savedCategory
         });
-    } catch(error) {
+    } catch (error) {
         log.red('ADD_CATEGORY_ERROR', error)
         res.status(500).json({
             success: false,
@@ -151,7 +151,8 @@ const editCategory = async (req, res) => {
 
         name = name.trim()[0].toUpperCase() + name.trim().slice(1).toLowerCase();
         description = description.trim();
-        
+
+        // find if another category exists with name
         const existingCategory = await categorySchema.findOne({
             name: name,
             _id: { $ne: req.params.categoryid }
@@ -165,7 +166,7 @@ const editCategory = async (req, res) => {
         }
 
         const updatedCategory = await categorySchema.findByIdAndUpdate(
-            req.params.categoryid, 
+            req.params.categoryid,
             { name, description },
             { new: true }
         );
@@ -186,7 +187,7 @@ const editCategory = async (req, res) => {
 
 export default {
     getCategories,
-    deleteCategory, 
+    deleteCategory,
     hideCategory,
     unhideCategory,
     addCategory,
