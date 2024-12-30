@@ -507,7 +507,7 @@ async function removeFromWishlist(productId) {
                 `;
             }
             
-            showAlert('Item removed from wishlist successfully', 'success');
+            showAlert('Product removed from wishlist successfully', 'success');
         } else {
             showAlert(response.data.message || 'Failed to remove item', 'error');
         }

@@ -12,7 +12,7 @@ const getCheckout = async (req, res) => {
       addressModel.find({ userId: userId }),
       walletModel.findOne({ userId })
     ]);
-    
+
     if (!cart || cart.items.length === 0) {
       return res.redirect('/profile/cart');
     }
@@ -43,7 +43,7 @@ const getCheckout = async (req, res) => {
 
     cart.items.forEach(item => {
       const itemOriginalPrice = item.productId.price * item.quantity;
-      const discountedPrice = itemOriginalPrice * (1 - item.productId.discount/100);
+      const discountedPrice = itemOriginalPrice * (1 - item.productId.discount / 100);
       originalPrice += itemOriginalPrice;
       totalSavings += itemOriginalPrice - discountedPrice;
     });

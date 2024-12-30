@@ -78,7 +78,7 @@
                               </button>
                               <% } else { %>
                                 <button onclick="toggleCategoryStatus('<%= category._id %>', 'unhide')"
-                                  class="bg-green-500 text-white px-4 py-2 rounded-md shadow hover:bg-green-600"
+                                  class="bg-green-700 text-white px-4 py-2 rounded-md shadow hover:bg-green-800"
                                   id="toggle-<%= category._id %>">
                                   Unhide
                                 </button>
@@ -98,7 +98,7 @@
                     </tbody>
                   </table>
 
-                  <!--  pagination controls --><!--  pagination controls -->
+                  <!--  pagination controls -->
                   <% if (categories.length> 0) { %>
                     <div class="mt-8 flex justify-center items-center space-x-4">
                       <% if (hasPrevPage) { %>
