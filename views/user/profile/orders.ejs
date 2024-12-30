@@ -105,24 +105,16 @@
                             Status: <span class="<%= item.status === 'delivered' ? 'text-green-600' : item.status === 'cancelled' ? 'text-red-600' : 'text-blue-600' %>">
                               <%= item.status %>
                             </span>
-                            <% if (item.deliveredDate) { %>
+                            <% 
+                              let statusDates = [];
+                              if (item.deliveredDate) statusDates.push(`Delivered on ${new Date(item.deliveredDate).toLocaleDateString()}`);
+                              if (item.shippedDate) statusDates.push(`Shipped on ${new Date(item.shippedDate).toLocaleDateString()}`);
+                              if (item.cancelledDate) statusDates.push(`Cancelled on ${new Date(item.cancelledDate).toLocaleDateString()}`);
+                              if (item.returnedDate) statusDates.push(`Returned on ${new Date(item.returnedDate).toLocaleDateString()}`);
+                            %>
+                            <% if (statusDates.length > 0) { %>
                               <span class="text-gray-600 ml-2">
-                                (Delivered on <%= new Date(item.deliveredDate).toLocaleDateString() %>)
-                              </span>
-                            <% } %>
-                            <% if (item.shippedDate) { %>
-                              <span class="text-gray-600 ml-2">
-                                (Shipped on <%= new Date(item.shippedDate).toLocaleDateString() %>)
-                              </span>
-                            <% } %>
-                            <% if (item.cancelledDate) { %>
-                              <span class="text-gray-600 ml-2">
-                                (Cancelled on <%= new Date(item.cancelledDate).toLocaleDateString() %>)
-                              </span>
-                            <% } %>
-                            <% if (item.returnedDate) { %>
-                              <span class="text-gray-600 ml-2">
-                                (Returned on <%= new Date(item.returnedDate).toLocaleDateString() %>)
+                                (<%= statusDates.join(', ') %>)
                               </span>
                             <% } %>
                           </p>
