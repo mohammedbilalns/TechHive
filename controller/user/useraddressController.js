@@ -16,7 +16,8 @@ const getAddresses = async (req, res) => {
         res.status(500).render("notfound")
     }
 }
-
+let a = 10 
+let b = 15 
 // Add a new address
 const addAddress = async (req, res) => {
     try {

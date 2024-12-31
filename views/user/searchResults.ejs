@@ -206,7 +206,7 @@ async function fetchProducts() {
             minRating: currentFilters.minRating || 0
         };
 
-        // Use Axios to make the GET request with query parameters
+        
         const response = await axios.get('/api/search', { params });
         const data = response.data;
 
@@ -273,16 +273,7 @@ async function fetchProducts() {
 
         productsGrid.innerHTML = productsHTML;
 
-        // Update URL with new filters without reloading the page
-        const url = new URL(window.location.href);
-        Object.keys(params).forEach(key => {
-            if (params[key]) {
-                url.searchParams.set(key, params[key]);
-            } else {
-                url.searchParams.delete(key);
-            }
-        });
-        window.history.pushState({}, '', url);
+    
 
         // Update pagination
         updatePagination(data.currentPage, data.totalPages, data.hasNextPage, data.hasPrevPage);

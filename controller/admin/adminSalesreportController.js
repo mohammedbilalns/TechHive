@@ -89,8 +89,15 @@ const getSalesReportData = async (req, res) => {
         break;
     }
 
-    // Fetch orders with date filter
-    const orders = await Order.find(dateFilter)
+    // Add delivered status to the filter
+    dateFilter.status = 'Delivered'; // Only include delivered orders
+    dateFilter.isReturned = { $ne: true }; // Exclude returned orders
+
+    // Modify the query to find orders with at least one delivered item
+    const orders = await Order.find({
+      'items.status': 'delivered',  // At least one item is delivered
+      orderDate: dateFilter.orderDate // Keep existing date filter
+    })
       .populate('userId', 'fullname')
       .sort({ orderDate: -1 });
 
@@ -99,46 +106,59 @@ const getSalesReportData = async (req, res) => {
     let totalDiscounts = 0;
 
     const formattedOrders = await Promise.all(orders.map(order => {
-      //  coupon discount
-      const couponDiscount = order.coupon?.discount || 0;
+      // Filter only delivered items
+      const deliveredItems = order.items.filter(item => item.status === 'delivered');
+      
+      // Skip orders with no delivered items
+      if (deliveredItems.length === 0) return null;
 
-      //  total offer discount from all items
-      const offerDiscount = order.items.reduce((total, item) => {
-        //  discount amount for each item based on percentage
+      // Calculate amounts only for delivered items
+      const itemTotals = deliveredItems.reduce((acc, item) => {
+        const itemOriginalAmount = item.price * item.quantity;
         const itemDiscountAmount = (item.price * (item.discount / 100)) * item.quantity;
-        return total + itemDiscountAmount;
-      }, 0);
+        
+        acc.originalAmount += itemOriginalAmount;
+        acc.offerDiscount += itemDiscountAmount;
+        return acc;
+      }, { originalAmount: 0, offerDiscount: 0 });
 
-      //  total discount
-      const totalDiscount = couponDiscount + offerDiscount;
+      // Calculate coupon discount proportionally for delivered items
+      const orderTotalAmount = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const deliveredItemsRatio = itemTotals.originalAmount / orderTotalAmount;
+      const couponDiscount = order.coupon?.discount 
+        ? (order.coupon.discount * deliveredItemsRatio) 
+        : 0;
 
-      //  original amount (before discounts)
-      const originalAmount = order.totalAmount + totalDiscount;
+      const totalDiscount = couponDiscount + itemTotals.offerDiscount;
+      const netAmount = itemTotals.originalAmount - totalDiscount;
 
-      totalSales += order.totalAmount;
+      totalSales += itemTotals.originalAmount;
       totalDiscounts += totalDiscount;
 
       return {
         orderId: order.orderId,
         orderDate: order.orderDate,
         customer: order.userId.fullname,
-        itemCount: order.items.length,
-        totalAmount: originalAmount,
+        itemCount: deliveredItems.length,
+        totalAmount: itemTotals.originalAmount,
         discount: {
           coupon: couponDiscount,
-          offer: offerDiscount,
+          offer: itemTotals.offerDiscount,
           total: totalDiscount
         },
-        netAmount: order.totalAmount
+        netAmount: netAmount
       };
     }));
 
+    // Filter out null values (orders with no delivered items)
+    const validOrders = formattedOrders.filter(order => order !== null);
+
     res.json({
-      totalOrders: orders.length,
-      totalSales: totalSales + totalDiscounts,
+      totalOrders: validOrders.length,
+      totalSales,
       totalDiscounts,
-      netRevenue: totalSales,
-      orders: formattedOrders
+      netRevenue: totalSales - totalDiscounts,
+      orders: validOrders
     });
 
   } catch (error) {
@@ -555,7 +575,11 @@ const downloadReport = async (req, res) => {
         break;
     }
 
-    // Fetch orders
+    // Add delivered status to the filter
+    dateFilter.status = 'Delivered'; // Only include delivered orders
+    dateFilter.isReturned = { $ne: true }; // Exclude returned orders
+
+    // Fetch orders with date and status filter
     const orders = await Order.find(dateFilter)
       .populate('userId', 'fullname')
       .sort({ orderDate: -1 });
