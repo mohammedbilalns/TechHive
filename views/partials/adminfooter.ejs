@@ -54,6 +54,19 @@
 <script>
    
     document.getElementById('year').textContent = new Date().getFullYear();
+    document.addEventListener('DOMContentLoaded', () => {
+    const links = document.querySelectorAll('.nav-link');
+
+    links.forEach(link => {
+      link.addEventListener('click', (e) => {
+        // Prevent default if the link points to the current page
+        if (window.location.pathname === link.getAttribute('href')) {
+          e.preventDefault();
+          console.log('Already on the same page!');
+        }
+      });
+    });
+  });
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
