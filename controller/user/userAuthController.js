@@ -9,31 +9,29 @@ config();
 
 // ---- User Login ----  
 const loadLogin = (req, res) => {
-    let message = req.query.message
-    let alertType = req.query.alertType
-    let email = req.query.email
-    res.render('user/auth/login', { message, alertType, email });
+    res.render('user/auth/login');
 };
 
 // Verify user login 
 const verifyLogin = async (req, res) => {
     try {
         let { email, password } = req.body;
+        email = email.trim()
+        password = password.trim()
 
-       
         const user = await userSchema.findOne({ email });// find the user 
 
-        if(!email || !password){
+        if (!email || !password) {
             return res.status(401).json({
-                success: false , 
-                message : "Fill all the required fields"
+                success: false,
+                message: "Email and password are required"
             })
         } // check all fields are filled 
 
-        if(! validation.isValidEmail(email)){
+        if (!validation.isValidEmail(email)) {
             return res.status(401).json({
-                success: false , 
-                message : "Enter a valid email address"
+                success: false,
+                message: "Enter a valid email address"
             })
         } // check the email is in vaid format 
 
@@ -42,7 +40,7 @@ const verifyLogin = async (req, res) => {
                 success: false,
                 message: 'Email or password is incorrect. Please try again.'
             });
-        } 
+        }
 
         // Check if user's status is pending and delete if found
         if (user.status === "Pending") {
@@ -103,16 +101,58 @@ const loadSignup = (req, res) => {
     res.render('user/auth/signup');
 };
 
+const loadSignupOTP = (req, res) => {
+    let email = req.query.email;
+    res.render('user/auth/signupotp', { email });
+};
+
 // Register a new user
 const registerUser = async (req, res) => {
     try {
-        let { fullname, phonenumber, email, password } = req.body;
+        let { fullname, phonenumber, email, password, confirmPassword } = req.body;
         fullname = fullname.trim()
         phonenumber = phonenumber.trim()
         email = email.trim()
         password = password.trim()
+        confirmPassword = confirmPassword.trim()
         const otp = authUtils.generateOTP();
 
+        if (!fullname || !phonenumber || !email || !password || !confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required"
+            })
+        }
+        if (!/^[a-zA-Z ]{3,30}$/.test(fullname)) {
+            return res.status(400).json({
+                success: false,
+                message: "Full name should containe only alphabets (3-30 characters)"
+            })
+        }
+        if (!validation.isValidPhone(phonenumber)) {
+            return res.status(400).json({
+                success: false,
+                message: "Phone number must be 10 digits"
+            })
+        }
+        if (!validation.isValidEmail(email)) {
+            return res.status(400).json({
+                success: false,
+                message: "Please enter a valid email address"
+            })
+        }
+        if (!validation.isValidPassword(password)) {
+            return res.status(400).json({
+                success: false,
+                message: "Password must contain 8+ characters with uppercase, lowercase, number, and special character"
+            })
+        }
+        if (password !== confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "Passwords do not match"
+            })
+        }
         // Check if a user already exists with the given email or phone number
         const existingUser = await userSchema.findOne({
             $or: [
@@ -122,23 +162,20 @@ const registerUser = async (req, res) => {
         });
 
         // If the user already exists, return an error message
-        if (existingUser) {
+        if(existingUser && existingUser.status == "Pending"){
+            await userSchema.findOneAndDelete({email})
+
+        }else if (existingUser ) {
             let message;
-            if (existingUser.status === "Pending") {
-                message = "You recently had a failed attempt. Please try again after some time.";
-            } else if (!existingUser.password) {
+             if (!existingUser.password) {
                 message = "This email is linked to a Google login. Please log in with Google.";
             } else {
                 message = existingUser.email === email ? "Email already registered" : "Phone number already registered";
             }
-
-            return res.render('user/auth/signup', {
-                message,
-                alertType: "error",
-                fullname,
-                email,
-                phonenumber
-            });
+            return res.status(400).json({
+                success: false,
+                message
+            })
         }
 
         // Hash the user's password before saving it
@@ -158,7 +195,6 @@ const registerUser = async (req, res) => {
                 otpAttempts: 0,
             },
         });
-
         // Save the new user to the database
         await newUser.save();
 
@@ -176,10 +212,18 @@ const registerUser = async (req, res) => {
 
         // Send OTP email to the user
         await authUtils.sendOTPEmail(email, otp);
-        res.render('user/auth/signupotp', { email });  // Render OTP verification page
+        
+        return res.status(200).json({
+            success: true,
+            email: email
+        });
+       
     } catch (error) {
-        log.red('ERROR', error);
-        res.status(500).render('user/auth/signup', { message: "Something went wrong", alertType: "error" });
+        log.red('SIGNUP_ERROR', error);
+        return res.status(500).json({
+            success: false,
+            message: "Something went wrong"
+        });
     }
 };
 
@@ -520,7 +564,7 @@ const resetPassword = async (req, res) => {
 
 export default {
     loadLogin, verifyLogin,
-    loadSignup, verifyOTP, resendOTP,
+    loadSignup, verifyOTP, resendOTP, loadSignupOTP,
     loadForgotpassword, processForgotPassword, verifyForgotPasswordOTP,
     resendForgotPasswordOTP, resetPassword, loadResetpassword,
     registerUser, authGoogle, authGoogleCallback,

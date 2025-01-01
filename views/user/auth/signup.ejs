@@ -1,166 +1,124 @@
 <%- include('../../partials/authheader') %>
 
-<main class="py-8 flex justify-center items-center min-h-[70vh]">
-  <div class="bg-primary-white rounded-lg shadow-lg flex flex-col lg:flex-row overflow-hidden max-w-4xl w-full">
-    <!-- Image Section -->
-    <div class="bg-blue-100 p-6 hidden sm:flex justify-center items-center">
-      <img alt="Illustration of a laptop with a clock display and office supplies" src="./images/login.png"
-           class="object-cover max-w-full h-auto"/>
-    </div>
-    <!-- Form Section -->
-    <div class="bg-gray-50 p-4 md:p-8 flex-1">
-      <form action="/auth/google">
-      <button type="submit"  class="flex border items-center justify-center rounded-md py-2 mb-4 bg-white text-black w-full">
-        <img alt="Google logo" src="images/google.svg" class="mr-3"/>
-        Sign Up with Google
-      </button>
-    </form>
-      <form id="signupForm" method="post" action="/signup" class="space-y-3" novalidate>
-        <p class="text-2xl font-semibold text-gray-800 mb-1">Create an Account</p>
-        <p class="text-gray-600 mb-4">Enter your details below</p>
-        <input 
-          type="text" 
-          id="fullname" 
-          placeholder="Full Name" 
-          value="<%= locals.fullname ? fullname : '' %>"
-          name="fullname" 
-          class="border w-full mb-3 px-3 py-2 rounded-md" 
-        />
-        <input 
-          type="tel" 
-          id="phonenumber" 
-          placeholder="Phone Number" 
-          value="<%= locals.phonenumber ? phonenumber : '' %>"
-          name="phonenumber" 
-          class="border w-full mb-3 px-3 py-2 rounded-md" 
-        />
-        <input 
-          type="email" 
-          id="email" 
-          placeholder="Email" 
-          value="<%= locals.email ? email : '' %>"
-          name="email" 
-          class="border w-full mb-3 px-3 py-2 rounded-md" 
-        />
-        <div class="relative w-full mb-3">
-          <input 
-            type="password" 
-            id="password" 
-            placeholder="Password" 
-            name="password" 
-            class="border w-full px-3 py-2 rounded-md pr-10" 
-          />
-          <span 
-            class="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-600"
-            id="togglePassword"
-          >
-            <i class="fas fa-eye"></i>
-          </span>
-        </div>
-        <div class="relative w-full mb-3">
-          <input 
-            type="password" 
-            id="confirmPassword" 
-            placeholder="Confirm Password" 
-            name="confirmPassword" 
-            class="border w-full px-3 py-2 rounded-md pr-10" 
-          />
-          <span 
-            class="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-600"
-            id="toggleConfirmPassword"
-          >
-            <i class="fas fa-eye"></i>
-          </span>
-        </div>
-        <p class="text-xs text-gray-500 mb-3">
-          Password must contain at least 8 characters, including uppercase, lowercase letters, numbers, and special characters.
-        </p>
-        <% if (locals.message && locals.alertType) { %>
-          <div id="alertMessage" 
-               class="mb-4 p-3 rounded-md 
-               <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
-            <%= message %>
+  <main class="py-8 flex justify-center items-center min-h-[70vh]">
+    <div class="bg-primary-white rounded-lg shadow-lg flex flex-col lg:flex-row overflow-hidden max-w-4xl w-full">
+      <!-- Image Section -->
+      <div class="bg-blue-100 p-6 hidden sm:flex justify-center items-center">
+        <img alt="Illustration of a laptop with a clock display and office supplies" src="./images/login.png"
+          class="object-cover max-w-full h-auto" />
+      </div>
+      <!-- Form Section -->
+      <div class="bg-gray-50 p-4 md:p-8 flex-1">
+        <form action="/auth/google">
+          <button type="submit"
+            class="flex border items-center justify-center rounded-md py-2 mb-4 bg-white text-black w-full">
+            <img alt="Google logo" src="images/google.svg" class="mr-3" />
+            Sign Up with Google
+          </button>
+        </form>
+        <form id="signupForm" method="post" action="/signup" class="space-y-3" novalidate>
+          <p class="text-2xl font-semibold text-gray-800 mb-1">Create an Account</p>
+          <p class="text-gray-600 mb-4">Enter your details below</p>
+          <input type="text" id="fullname" placeholder="Full Name" value="<%= locals.fullname ? fullname : '' %>"
+            name="fullname" class="border w-full mb-3 px-3 py-2 rounded-md" />
+          <input type="tel" id="phonenumber" placeholder="Phone Number"
+            value="<%= locals.phonenumber ? phonenumber : '' %>" name="phonenumber"
+            class="border w-full mb-3 px-3 py-2 rounded-md" />
+          <input type="email" id="email" placeholder="Email" value="<%= locals.email ? email : '' %>" name="email"
+            class="border w-full mb-3 px-3 py-2 rounded-md" />
+          <div class="relative w-full mb-3">
+            <input type="password" id="password" placeholder="Password" name="password"
+              class="border w-full px-3 py-2 rounded-md pr-10" />
+            <span class="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-600" id="togglePassword">
+              <i class="fas fa-eye"></i>
+            </span>
           </div>
-        <% } %>
-        <button type="submit" class="w-full py-2 mb-2 text-white bg-primary-accent rounded-md">Sign Up</button>
-      </form>
-      <a href="/login" class="text-right text-sm text-primary-accent block">Already have an account? Login</a>
+          <div class="relative w-full mb-3">
+            <input type="password" id="confirmPassword" placeholder="Confirm Password" name="confirmPassword"
+              class="border w-full px-3 py-2 rounded-md pr-10" />
+            <span class="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-600"
+              id="toggleConfirmPassword">
+              <i class="fas fa-eye"></i>
+            </span>
+          </div>
+          <p class="text-xs text-gray-500 mb-3">
+            Password must contain at least 8 characters, including uppercase, lowercase letters, numbers, and special
+            characters.
+          </p>
+          <% if (locals.message && locals.alertType) { %>
+            <div id="alertMessage" class="mb-4 p-3 rounded-md 
+               <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
+              <%= message %>
+            </div>
+            <% } %>
+              <button type="submit" class="w-full py-2 mb-2 text-white bg-primary-accent rounded-md">Sign Up</button>
+        </form>
+        <a href="/login" class="text-right text-sm text-primary-accent block">Already have an account? Login</a>
+      </div>
     </div>
-  </div>
-</main>
-<%- include('../../partials/authfooter') %>
+  </main>
+  <%- include('../../partials/authfooter') %>
 
-<script >
-  
-  // Toggle password visibility
-  function togglePasswordVisibility(inputId, toggleId) {
-    const input = document.getElementById(inputId);
-    const toggle = document.getElementById(toggleId);
-    const icon = toggle.querySelector('i');
+    <script>
 
-    toggle.addEventListener('click', () => {
-      if (input.type === 'password') {
-        input.type = 'text';
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
-      } else {
-        input.type = 'password';
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
+
+      //  form validation
+      document.getElementById('signupForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        closeCustomAlert();
+
+        const fullname = document.getElementById('fullname').value.trim();
+        const phonenumber = document.getElementById('phonenumber').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+
+
+        try {
+          const response = await axios.post('/signup', {
+            fullname,
+            phonenumber,
+            email,
+            password,
+            confirmPassword
+          });
+
+          if (response.data.success) {
+            window.location.href = `/signup-otp?email=${response.data.email}`;
+        }
+
+
+
+        } catch (error) {
+          const errorMessage = error.response?.data?.message || 'Signup failed';
+          showAlert(errorMessage, 'error');
+        }
+      });
+
+
+      // Toggle password visibility
+      function togglePasswordVisibility(inputId, toggleId) {
+        const input = document.getElementById(inputId);
+        const toggle = document.getElementById(toggleId);
+        const icon = toggle.querySelector('i');
+
+        toggle.addEventListener('click', () => {
+          if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+          } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+          }
+        });
       }
-    });
-  }
 
-  // Initialize toggle for both password fields
-  togglePasswordVisibility('password', 'togglePassword');
-  togglePasswordVisibility('confirmPassword', 'toggleConfirmPassword');
+      // Initialize toggle for both password fields
+      togglePasswordVisibility('password', 'togglePassword');
+      togglePasswordVisibility('confirmPassword', 'toggleConfirmPassword');
 
-  //  form validation
-  document.getElementById('signupForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    
-    closeCustomAlert();
-    
-    const fullname = document.getElementById('fullname').value.trim();
-    const phonenumber = document.getElementById('phonenumber').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
-    const confirmPassword = document.getElementById('confirmPassword').value.trim();
-
-    if (!fullname) {
-      showAlert('Full Name is required', 'error');
-      return;
-    }
-
-    if (!/^\d{10}$/.test(phonenumber)) {
-      showAlert('Phone number must be 10 digits', 'error');
-      return;
-    }
-
-    if (!email.includes('@') || !email.includes('.')) {
-      showAlert('Please enter a valid email address', 'error');
-      return;
-    }
-
-    // Password validation
-    const hasMinLength = password.length >= 8;
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumber = /\d/.test(password);
-    const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};:'",.<>/?\\|]/.test(password);
-
-    if (!hasMinLength || !hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecialChar) {
-      showAlert('Password must contain 8+ characters with uppercase, lowercase, number, and special character', 'error');
-      return;
-    }
-
-    // Confirm password validation
-    if (password !== confirmPassword) {
-      showAlert('Passwords do not match', 'error');
-      return;
-    }
-
-    //  submit the form
-    this.submit();
-  });
-</script>
+    </script>
