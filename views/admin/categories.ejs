@@ -307,11 +307,11 @@
               toggleButton.onclick = () => toggleCategoryStatus(categoryId, 'hide');
             }
 
-            showAlert(`Category ${action === 'hide' ? 'hidden' : 'unhidden'} successfully`, 'success');
+            showToast(`Category ${action === 'hide' ? 'hidden' : 'unhidden'} successfully`);
           }
         } catch (error) {
           console.error('Error:', error);
-          showAlert(error.response?.data?.message || `Failed to ${action} category`, 'error');
+          showToast(error.response?.data?.message || `Failed to ${action} category`, 'error');
         }
       }
     }
@@ -375,11 +375,11 @@
 
 
           // Show success message
-          showAlert('Category added successfully', 'success');
+          showToast('Category added successfully');
         }
       } catch (error) {
         console.error('Error:', error);
-        showAlert(error.response?.data?.message || 'Failed to add category', 'error');
+        showToast(error.response?.data?.message || 'Failed to add category', 'error');
       }
     }
 
@@ -411,11 +411,11 @@
 
           // Close modal and show success message
           closeModal('editCategoryModal');
-          showAlert('Category updated successfully', 'success');
+          showToast('Category updated successfully');
         }
       } catch (error) {
         console.error('Error:', error);
-        showAlert(error.response?.data?.message || 'Failed to update category', 'error');
+        showToast(error.response?.data?.message || 'Failed to update category', 'error');
       }
     }
 
@@ -434,7 +434,7 @@
             const row = document.querySelector(`#toggle-${id}`).closest('tr');
             row.remove();
 
-            showAlert('Category deleted successfully', 'success');
+            showToast('Category deleted successfully');
 
             // Update the row numbers
             const rows = document.querySelectorAll('#categoryTableBody tr');
@@ -442,11 +442,11 @@
               row.children[0].textContent = index + 1;
             });
           } else {
-            showAlert('Failed to delete category', 'error');
+            showToast('Failed to delete category', 'error');
           }
         } catch (error) {
           console.error('Error:', error);
-          showAlert(error.response?.data?.message || 'Failed to delete category', 'error');
+          showToast(error.response?.data?.message || 'Failed to delete category', 'error');
         }
       }
     }

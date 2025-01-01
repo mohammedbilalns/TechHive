@@ -170,13 +170,7 @@
 
   <%- include('../partials/adminfooter') %>
 
-    <script type="module">
-      import { customConfirm, showAlert, closeCustomAlert } from '/js/util.js';
-      window.customConfirm = customConfirm;
-      window.showAlert = showAlert;
-      window.closeCustomAlert = closeCustomAlert;
-    </script>
-
+ 
     <script>
       async function toggleProductStatus(productId, action) {
         const confirmed = await customConfirm(
@@ -218,11 +212,11 @@
               `;
               
               actionCell.innerHTML = newActionButtons;
-              showAlert(`Product ${action}d successfully`, 'success');
+              showToast(`Product ${action}d successfully`);
             }
           } catch (error) {
             console.error('Error:', error);
-            showAlert(error.response?.data?.message || `Failed to ${action} product`, 'error');
+            showToast(error.response?.data?.message || `Failed to ${action} product`, 'error');
           }
         }
       }
@@ -247,11 +241,11 @@
                 row.querySelector('td:first-child').textContent = index + 1;
               });
 
-              showAlert('Product deleted successfully', 'success');
+              showToast('Product deleted successfully');
             }
           } catch (error) {
             console.error('Error:', error);
-            showAlert(error.response?.data?.message || 'Failed to delete product', 'error');
+            showToast(error.response?.data?.message || 'Failed to delete product', 'error');
           }
         }
       }

@@ -1,5 +1,3 @@
-
-
 const  loadNotfound = (req,res)=>{
    
         let message = req.query.message 

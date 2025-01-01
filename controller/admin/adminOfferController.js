@@ -277,7 +277,6 @@ const deleteOffer = async (req, res) => {
     }
 }
 
-
 export default { getOffers, getOfferDetails, addOffer, updateOffer, toggleOfferStatus, deleteOffer };
 
 

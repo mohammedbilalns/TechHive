@@ -166,13 +166,13 @@
             toggleButton.onclick = () => toggleCustomerStatus(customerId, 'block');
           }
 
-          showAlert(response.data.message, 'success');
+          showToast(response.data.message);
         } else {
-          showAlert('Operation failed. Please try again.', 'error');
+          showToast('Operation failed. Please try again.', 'error');
         }
       } catch (error) {
         console.error('Error:', error);
-        showAlert('Something went wrong. Please try again.', 'error');
+        showToast('Something went wrong. Please try again.', 'error');
       }
     };
 

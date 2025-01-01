@@ -334,14 +334,14 @@
 
       const response = await axios.post(`/profile/orders/${orderId}/items/${itemId}/cancel`);
       if (response.data.success) {
-        showAlert('Item cancelled successfully', 'success');
+        showToast('Item cancelled successfully', 'success');
         setTimeout(() => window.location.reload(), 1500);
       } else {
-        showAlert(response.data.message || 'Failed to cancel item', 'error');
+        showToast(response.data.message || 'Failed to cancel item', 'error');
       }
     } catch (error) {
       console.error('Error:', error);
-      showAlert('Failed to cancel item', 'error');
+      showToast('Failed to cancel item', 'error');
     }
   }
 
@@ -352,14 +352,14 @@
 
       const response = await axios.post(`/profile/orders/${orderId}/items/${itemId}/return`);
       if (response.data.success) {
-        showAlert('Return request submitted successfully', 'success');
+        showToast('Return request submitted successfully', 'success');
         setTimeout(() => window.location.reload(), 1500);
       } else {
-        showAlert(response.data.message || 'Failed to submit return request', 'error');
+        showToast(response.data.message || 'Failed to submit return request', 'error');
       }
     } catch (error) {
       console.error('Error:', error);
-      showAlert('Failed to submit return request', 'error');
+      showToast('Failed to submit return request', 'error');
     }
   }
 
@@ -390,7 +390,7 @@
     const reason = document.getElementById('returnReason').value;
 
     if (reason.length < 10) {
-      showAlert('Return reason must be at least 10 characters long', 'error');
+      showToast('Return reason must be at least 10 characters long', 'error');
       return;
     }
 
@@ -400,15 +400,15 @@
       });
 
       if (response.data.success) {
-        showAlert('Return request submitted successfully', 'success');
+        showToast('Return request submitted successfully', 'success');
         closeReturnModal();
         setTimeout(() => window.location.reload(), 1500);
       } else {
-        showAlert(response.data.message || 'Failed to submit return request', 'error');
+        showToast(response.data.message || 'Failed to submit return request', 'error');
       }
     } catch (error) {
       console.error('Error:', error);
-      showAlert('Failed to submit return request', 'error');
+      showToast('Failed to submit return request', 'error');
     }
   });
 
@@ -428,7 +428,7 @@
         openReviewModal(productName);
         document.getElementById('reviewModalTitle').textContent = 'Add Review';
       } else {
-        showAlert('Error fetching review details', 'error');
+        showToast('Error fetching review details', 'error');
       }
     }
   }
@@ -496,12 +496,12 @@
     const comment = document.getElementById('reviewComment').value;
 
     if (!selectedRating) {
-      showAlert('Please select a rating', 'error');
+      showToast('Please select a rating', 'error');
       return;
     }
 
     if (comment.length < 10) {
-      showAlert('Review must be at least 10 characters long', 'error');
+      showToast('Review must be at least 10 characters long', 'error');
       return;
     }
 
@@ -513,14 +513,14 @@
       });
 
       if (response.data.success) {
-        showAlert(response.data.message, 'success');
+        showToast(response.data.message, 'success');
         closeReviewModal();
       } else {
-        showAlert(response.data.message || 'Failed to submit review', 'error');
+        showToast(response.data.message || 'Failed to submit review', 'error');
       }
     } catch (error) {
       console.error('Error:', error);
-      showAlert(error.response?.data?.message || 'Failed to submit review', 'error');
+      showToast(error.response?.data?.message || 'Failed to submit review', 'error');
     }
   });
 </script>

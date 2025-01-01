@@ -5,7 +5,6 @@ const getCustomers = async (req, res) => {
   try {
     let message = req.query.message
     let alertType = req.query.alertType
-
     //  pagination
     const page = parseInt(req.query.page) || 1
     const limit = 10
@@ -19,7 +18,7 @@ const getCustomers = async (req, res) => {
       .limit(limit)
       .sort({ createdAt: -1 })
 
-    res.render('admin/userdashboard', {
+    res.render('admin/customers', {
       customers,
       message,
       alertType,

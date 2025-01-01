@@ -20,7 +20,7 @@
               <option value="custom">Custom Range</option>
             </select>
 
-            <div id="customDateRange" class="hidden flex gap-2 items-center">
+            <div id="customDateRange" class="hidden gap-2 items-center">
               <input type="date" id="startDate" class="border rounded-md px-3 py-2">
               <span>to</span>
               <input type="date" id="endDate" class="border rounded-md px-3 py-2">
@@ -91,7 +91,13 @@
   // Show/hide custom date range based on filter type
   document.getElementById('filterType').addEventListener('change', function() {
     const customDateRange = document.getElementById('customDateRange');
-    customDateRange.classList.toggle('hidden', this.value !== 'custom');
+    if (this.value === 'custom') {
+      customDateRange.classList.remove('hidden');
+      customDateRange.classList.add('flex');
+    } else {
+      customDateRange.classList.remove('flex');
+      customDateRange.classList.add('hidden');
+    }
   });
 
   async function applyFilter() {
@@ -104,7 +110,7 @@
 
       // Add frontend validation
       if (!startDate || !endDate) {
-        showAlert('Please select both start and end dates', 'error');
+        showToast('Please select both start and end dates', 'error');
         return;
       }
 
@@ -112,7 +118,7 @@
       const endDateTime = new Date(endDate);
 
       if (startDateTime > endDateTime) {
-        showAlert('Start date cannot be after end date', 'error');
+        showToast('Start date cannot be after end date', 'error');
         return;
       }
     }
@@ -129,7 +135,7 @@
       updateDashboard(response.data);
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Failed to fetch sales report';
-      showAlert(errorMessage, 'error');
+      showToast(errorMessage, 'error');
     }
   }
 
@@ -209,7 +215,7 @@
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      showAlert(`Failed to download ${format.toUpperCase()} report`, 'error');
+      showToast(`Failed to download ${format.toUpperCase()} report`, 'error');
     }
   }
 

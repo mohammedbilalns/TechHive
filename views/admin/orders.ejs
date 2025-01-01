@@ -216,12 +216,6 @@
 
   <%- include('../partials/adminfooter') %>
 
-    <script type="module">
-      import { customConfirm, showAlert, closeCustomAlert } from '/js/util.js';
-      window.customConfirm = customConfirm;
-      window.showAlert = showAlert;
-      window.closeCustomAlert = closeCustomAlert;
-    </script>
 
     <script>
       // Update order status
@@ -248,12 +242,12 @@
               actionCell.innerHTML = '';
             }
 
-            showAlert(response.data.message, 'success', 3000);
+            showToast(response.data.message);
           } else {
-            showAlert(response.data.message, 'error', 3000);
+            showToast(response.data.message, 'error');
           }
         } catch (error) {
-          showAlert(error.response?.data?.message || 'Error updating order status', 'error', 3000);
+          showToast(error.response?.data?.message || 'Error updating order status', 'error');
         }
       }
 
@@ -360,14 +354,14 @@
               paymentStatusCell.className = 'px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800';
             }
 
-            showAlert('Item status updated successfully', 'success');
+            showToast('Item status updated successfully');
           } else {
             
-            showAlert(response.data.message || 'Failed to update status', 'error');
+            showToast(response.data.message || 'Failed to update status');
           }
         } catch (error) {
           console.error('Error:', error);
-          showAlert('Failed to update status', 'error');
+          showToast('Failed to update status', 'error');
         }
       }
 

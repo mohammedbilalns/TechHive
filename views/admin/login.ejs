@@ -29,8 +29,8 @@
 
         <% if (locals.message && locals.alertType) { %>
           <script type="module">
-            import { showAlert, closeCustomAlert } from '/js/util.js';
-            showAlert('<%= message %>', '<%= alertType %>')
+            import { showToast, closeCustomAlert } from '/js/util.js';
+            showToast('<%= message %>', '<%= alertType %>')
             window.closeCustomAlert = closeCustomAlert;
           </script>
         <% } %>
@@ -57,14 +57,14 @@
 
     // First check password since we want to show its specific message
     if (!password.value.trim()) {
-      showAlert('Password is required.', 'error');
+      showToast('Password is required.', 'error');
       isValid = false;
       return;
     }
 
     // Check email, but show generic message
     if (!email.value.trim() || !/^[^@]+@[^@]+\.[a-zA-Z]{2,}$/.test(email.value)) {
-      showAlert('Invalid credentials', 'error');
+      showToast('Invalid credentials', 'error');
       isValid = false;
       return;
     }

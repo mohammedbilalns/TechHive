@@ -1,5 +1,4 @@
 <%- include('../../partials/authheader') %>
-
   <main class="min-h-[70vh] py-8 flex justify-center items-center">
     <div class="bg-primary-white rounded-lg shadow-lg flex flex-col lg:flex-row overflow-hidden max-w-4xl w-full">
       <!-- Image Section -->
@@ -48,13 +47,10 @@
   </main>
   <%- include('../../partials/authfooter') %>
 
-    <script>
+    <script >
 
-
-      document.getElementById('userlogin').addEventListener('submit', async function (event) {
+      document.getElementById('userlogin').addEventListener('submit', async function(event) {
         event.preventDefault();
-
-        closeCustomAlert();
 
         const email = document.querySelector('input[name="email"]').value.trim()
         const password = document.querySelector('input[name="password"]').value.trim()
@@ -66,17 +62,16 @@
           });
 
           if (response.data.success) {
-
             window.location.href = '/home';
           }
         } catch (error) {
           const errorMessage = error.response?.data?.message || 'Login failed';
-          showAlert(errorMessage, 'error');
+          showToast(errorMessage, 'error');
         }
       });
 
       // toggle password visibility
-      document.getElementById('togglePassword').addEventListener('click', function () {
+      document.getElementById('togglePassword').addEventListener('click', function() {
         const passwordInput = document.querySelector('input[name="password"]');
         const eyeIcon = this.querySelector('i');
 
@@ -92,19 +87,18 @@
       });
 
       // Check for message and alertType in URL parameters when page loads
-      document.addEventListener('DOMContentLoaded', function () {
+      document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
         const message = urlParams.get('message');
         const alertType = urlParams.get('alertType');
 
         if (message && alertType) {
-
           const decodedMessage = decodeURIComponent(message).replace(/\+/g, ' ');
-          showAlert(decodedMessage, alertType);
+          showToast(decodedMessage, alertType);
 
+          // Clean up the URL without reloading the page
           const newUrl = window.location.pathname;
           window.history.replaceState({}, document.title, newUrl);
         }
       });
-
     </script>

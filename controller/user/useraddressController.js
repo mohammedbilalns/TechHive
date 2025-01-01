@@ -69,7 +69,6 @@ const addAddress = async (req, res) => {
     }
 };
 
-
 // Update an address
 const updateAddress = async (req, res) => {
     try {

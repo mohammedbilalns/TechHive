@@ -2,11 +2,8 @@ import { log } from "mercedlogger";
 import { configDotenv } from "dotenv";
 configDotenv()
 
-
-
 //---- Admin Login----
 const loadLogin = (req, res) => {
-
   const message = req.query.message
   const alertType = req.query.alertType
   const email = req.query.email
@@ -39,8 +36,6 @@ const logoutAdmin = (req, res) => {
   }
 
 }
-
-
 
 export default {
   loadLogin, verifyLogin, logoutAdmin,

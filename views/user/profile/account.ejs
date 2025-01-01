@@ -154,7 +154,7 @@
         if (response.data.success) {
           // Update the displayed name in view mode
           document.querySelector('#viewMode .font-semibold').textContent = fullname;
-          showAlert(response.data.message, 'success');
+          showToast(response.data.message);
           
           // Switch back to view mode
           toggleEdit();
@@ -163,7 +163,7 @@
         console.error('Error updating profile:', error);
         
         const errorMessage = error.response?.data?.message || 'Error updating profile';
-        showAlert(errorMessage, 'error');
+        showToast(errorMessage, 'error');
       }
     }
 
@@ -194,12 +194,12 @@
       const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&]).{8,}$/;
       
       if (!passwordRegex.test(newPassword)) {
-        showAlert('Password must be at least 8 characters long and include at least one letter, one number, and one special character', 'error');
+        showToast('Password must be at least 8 characters long and include at least one letter, one number, and one special character', 'error');
         return;
       }
       
       if (newPassword !== confirmPassword) {
-        showAlert('New passwords do not match', 'error');
+        showToast('New passwords do not match', 'error');
         return;
       }
       
@@ -214,14 +214,14 @@
         });
         
         if (response.data.success) {
-          showAlert(response.data.message, 'success');
+          showToast(response.data.message);
           event.target.reset();
           togglePasswordChange();
         }
       } catch (error) {
         console.error('Error changing password:', error);
         const errorMessage = error.response?.data?.message || 'Error changing password';
-        showAlert(errorMessage, 'error');
+        showToast(errorMessage, 'error');
       }
     }
   </script>

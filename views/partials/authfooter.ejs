@@ -74,13 +74,15 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 </script>
 
 <script type="module">
-    import { customConfirm, showAlert, closeCustomAlert } from '/js/util.js';
+    import { customConfirm, showAlert, closeCustomAlert, showToast } from '/js/util.js';
     window.customConfirm = customConfirm;
     window.showAlert = showAlert;
     window.closeCustomAlert = closeCustomAlert;
+    window.showToast = showToast;
 </script>

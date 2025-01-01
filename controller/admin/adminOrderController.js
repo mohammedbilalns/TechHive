@@ -20,7 +20,6 @@ const getOrders = async (req, res) => {
       ]
     };
 
-  
     const totalOrders = await orderModel.countDocuments(searchQuery);
     const totalPages = Math.ceil(totalOrders / limit);
 

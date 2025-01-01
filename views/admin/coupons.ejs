@@ -267,7 +267,7 @@
 
       openModal();
     } catch (error) {
-      showAlert(error.response?.data?.message || 'Failed to fetch coupon details', 'error');
+      showToast(error.response?.data?.message || 'Failed to fetch coupon details', 'error');
     }
   }
 
@@ -277,7 +277,7 @@
     // Validate coupon code
     const code = document.getElementById('code').value.toUpperCase();
     if (!/^[A-Z0-9]+$/.test(code)) {
-      showAlert('Coupon code can only contain letters and numbers', 'error');
+      showToast('Coupon code can only contain letters and numbers', 'error');
       return;
     }
 
@@ -287,12 +287,12 @@
     const now = new Date();
 
     if (startDate < now) {
-      showAlert('Start date cannot be in the past', 'error');
+      showToast('Start date cannot be in the past', 'error');
       return;
     }
 
     if (expiryDate <= startDate) {
-      showAlert('Expiry date must be after start date', 'error');
+      showToast('Expiry date must be after start date', 'error');
       return;
     }
 
@@ -302,13 +302,13 @@
     
     if (discountType === 'PERCENTAGE') {
       if (discountValue < 1 || discountValue > 99) {
-        showAlert('Percentage discount must be between 1 and 99', 'error');
+        showToast('Percentage discount must be between 1 and 99', 'error');
         return;
       }
       // Validate maximum discount for percentage type
       const maxDiscount = Number(document.getElementById('maxDiscount').value);
       if (maxDiscount < 100) {
-        showAlert('Maximum discount amount must be at least ₹100', 'error');
+        showToast('Maximum discount amount must be at least ₹100', 'error');
         return;
       }
     }
@@ -337,7 +337,7 @@
           // Update existing row
           const row = document.querySelector(`button[onclick="editCoupon('${couponId}')"]`).closest('tr');
           updateCouponRow(row, formData, couponId);
-          showAlert('Coupon updated successfully', 'success');
+          showToast('Coupon updated successfully');
         } else {
           // Add new row at the top
           const tbody = document.getElementById('couponsTable');
@@ -349,11 +349,11 @@
             tbody.insertAdjacentHTML('afterbegin', newRow);
             updateRowNumbers();
           }
-          showAlert('Coupon added successfully', 'success');
+          showToast('Coupon added successfully');
         }
       }
     } catch (error) {
-      showAlert(error.response?.data?.message || 'Failed to save coupon', 'error');
+      showToast(error.response?.data?.message || 'Failed to save coupon', 'error');
     }
   });
 
@@ -386,10 +386,10 @@
                 toggleButton.className = `${newStatus ? 'bg-primary-accent hover:bg-red-600' : 'bg-green-700 hover:bg-green-800'} text-white px-3 py-2 rounded-md`;
                 toggleButton.setAttribute('onclick', `toggleCouponStatus('${couponId}', '${newStatus}')`);
                 
-                showAlert(`Coupon ${action}d successfully`, 'success');
+                showToast(`Coupon ${action}d successfully`);
             }
         } catch (error) {
-            showAlert(error.response?.data?.message || `Failed to ${action} coupon`, 'error');
+            showToast(error.response?.data?.message || `Failed to ${action} coupon`, 'error');
         }
     }
   }
@@ -419,10 +419,10 @@
                 } else {
                     updateRowNumbers();
                 }
-                showAlert('Coupon deleted successfully', 'success');
+                showToast('Coupon deleted successfully');
             }
         } catch (error) {
-            showAlert(error.response?.data?.message || 'Failed to delete coupon', 'error');
+            showToast(error.response?.data?.message || 'Failed to delete coupon', 'error');
         }
     }
   }

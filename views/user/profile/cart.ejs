@@ -241,13 +241,13 @@
 
           } else {
             const errorMessage = response.data.message || 'Error updating quantity';
-            showAlert(errorMessage, 'error');
+            showToast(errorMessage, 'error');
           }
         })
         .catch(error => {
           console.error('Error:', error);
           const errorMessage = error.response?.data?.message || 'Error updating cart quantity';
-          showAlert(errorMessage, 'error');
+          showToast(errorMessage, 'error');
         });
     }
 
@@ -259,7 +259,7 @@
         .then(response => {
           if (response.data.success) {
             document.querySelector(`[data-product="${productId}"]`).remove();
-            showAlert('Item removed from cart successfully', 'success');
+            showToast('Item removed from cart successfully', 'success');
             
             // Update cart summary values
             document.getElementById('originalPrice').textContent = `₹${response.data.originalPrice}`;
@@ -273,12 +273,12 @@
             }
             document.getElementById("cart-quantity").innerText = response.data.totalQuantity;
           } else {
-            showAlert(response.data.message || 'Failed to remove item', 'error');
+            showToast(response.data.message || 'Failed to remove item', 'error');
           }
         })
         .catch(error => {
           console.error('Error:', error);
-          showAlert('Error removing item', 'error');
+          showToast('Error removing item', 'error');
         });
     }
 
@@ -287,7 +287,7 @@
         
         const code = document.getElementById('couponCode').value.trim();
         if (!code) {
-            showAlert('Please enter a coupon code', 'error');
+            showToast('Please enter a coupon code', 'error');
             return;
         }
 
@@ -325,7 +325,7 @@
                     document.getElementById('total').textContent = `₹${response.data.total}`;
                     
                     // Show success message
-                    showAlert('Coupon applied successfully!', 'success');
+                    showToast('Coupon applied successfully!', 'success');
                     
                     // Update coupon display
                     const couponForm = document.getElementById('couponForm');
@@ -345,13 +345,13 @@
                     // Reload page after a delay to ensure all values are updated
                     setTimeout(() => window.location.reload(), 1500);
                 } else {
-                    showAlert(response.data.message || 'Failed to apply coupon', 'error');
+                    showToast(response.data.message || 'Failed to apply coupon', 'error');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
                 const errorMessage = error.response?.data?.message || 'Error applying coupon';
-                showAlert(errorMessage, 'error');
+                showToast(errorMessage, 'error');
             })
             .finally(() => {
                 // Reset button state
@@ -364,15 +364,15 @@
       axios.post('/cart/remove-coupon')
         .then(response => {
           if (response.data.success) {
-            showAlert('Coupon removed successfully', 'success');
+            showToast('Coupon removed successfully', 'success');
             setTimeout(() => window.location.reload(), 1500);
           } else {
-            showAlert(response.data.message, 'error');
+            showToast(response.data.message, 'error');
           }
         })
         .catch(error => {
           console.error('Error:', error);
-          showAlert('Error removing coupon', 'error');
+          showToast('Error removing coupon', 'error');
         });
     }
 
@@ -410,14 +410,14 @@
       axios.get('/checkout')
         .then(response => {
           if (response.data.success === false) {
-            showAlert(response.data.message, 'error');
+            showToast(response.data.message, 'error');
           } else {
             window.location.href = '/checkout';
           }
         })
         .catch(error => {
           const errorMessage = error.response?.data?.message || 'Error proceeding to checkout';
-          showAlert(errorMessage, 'error');
+          showToast(errorMessage, 'error');
         });
     }
 
@@ -431,14 +431,14 @@
             showEmptyCart();
             document.getElementById("clear-cart-button").classList.add('hidden');   
             document.getElementById("cart-quantity").innerText = "0";
-            showAlert('Cart cleared successfully', 'success');
+            showToast('Cart cleared successfully', 'success');
           } else {
-            showAlert(response.data.message || 'Failed to clear cart', 'error');
+            showToast(response.data.message || 'Failed to clear cart', 'error');
           }
         })
         .catch(error => {
           console.error('Error:', error);
-          showAlert('Error clearing cart', 'error');
+          showToast('Error clearing cart', 'error');
         });
     }
   </script>

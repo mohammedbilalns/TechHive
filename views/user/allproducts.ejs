@@ -153,12 +153,12 @@
                 const { data } = await axios.post('/cart/add', { productId });
 
                 // Use custom alert
-                showAlert(data.message, data.success ? 'success' : 'error');
+                showToast(data.message, data.success ? 'success' : 'error');
                 document.getElementById("cart-quantity").innerText = data.totalQuantity
 
             } catch (error) {
                 console.error('Error:', error);
-                showAlert(error.response?.data?.message || 'Error adding item to cart', 'error');
+                showToast(error.response?.data?.message || 'Error adding item to cart', 'error');
             }
         }
 
@@ -187,10 +187,10 @@
                         button.parentNode.replaceChild(newButton, button);
                     });
                 }
-                showAlert(data.message, data.success ? 'success' : 'error');
+                showToast(data.message, data.success ? 'success' : 'error');
             } catch (error) {
                 console.error('Error:', error);
-                showAlert(error.response?.data?.message || 'Error adding item to wishlist', 'error');
+                showToast(error.response?.data?.message || 'Error adding item to wishlist', 'error');
             }
         }
 
@@ -215,13 +215,13 @@
                 `;
                         button.parentNode.replaceChild(newButton, button);
                     });
-                    showAlert('Product removed from wishlist successfully', 'success');
+                    showToast('Product removed from wishlist successfully', 'success');
                 } else {
-                    showAlert(response.data.message || 'Failed to remove item', 'error');
+                    showToast(response.data.message || 'Failed to remove item', 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showAlert('Error removing item from wishlist', 'error');
+                showToast('Error removing item from wishlist', 'error');
             }
         }
 

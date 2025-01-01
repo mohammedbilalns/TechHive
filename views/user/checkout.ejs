@@ -420,7 +420,7 @@ async function placeOrder() {
   const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
 
   if (!selectedAddress) {
-    showAlert('Please select a delivery address', 'error');
+    showToast('Please select a delivery address', 'error');
     return;
   }
 
@@ -441,11 +441,11 @@ async function placeOrder() {
         window.location.href = `/order/success/${response.data.orderId}`;
       }
     } else {
-      showAlert(response.data.message || 'Failed to place order', 'error');
+      showToast(response.data.message || 'Failed to place order', 'error');
     }
   } catch (error) {
     console.error('Error:', error);
-    showAlert('Error placing order', 'error');
+    showToast('Error placing order', 'error');
   }
 }
 
@@ -455,11 +455,11 @@ async function verifyPayment(paymentData) {
     if (response.data.success) {
       window.location.href = `/order/success/${paymentData.orderId}`;
     } else {
-      showAlert('Payment verification failed', 'error');
+      showToast('Payment verification failed', 'error');
     }
   } catch (error) {
     console.error('Error:', error);
-    showAlert('Payment verification failed', 'error');
+    showToast('Payment verification failed', 'error');
   }
 }
 
@@ -492,25 +492,25 @@ async function verifyPayment(paymentData) {
     // Basic validation
     if (!data.name || !data.houseName || !data.localityStreet || 
         !data.city || !data.state || !data.pincode || !data.phone) {
-      showAlert('Please fill in all required fields', 'error');
+      showToast('Please fill in all required fields', 'error');
       return false;
     }
 
     // Pincode validation (6 digits)
     if (!/^\d{6}$/.test(data.pincode)) {
-      showAlert('Please enter a valid 6-digit pincode', 'error');
+      showToast('Please enter a valid 6-digit pincode', 'error');
       return false;
     }
 
     // Phone number validation (10 digits)
     if (!/^\d{10}$/.test(data.phone)) {
-      showAlert('Please enter a valid 10-digit phone number', 'error');
+      showToast('Please enter a valid 10-digit phone number', 'error');
       return false;
     }
 
     // Alternate phone validation (if provided)
     if (data.alternatePhone && !/^\d{10}$/.test(data.alternatePhone)) {
-      showAlert('Please enter a valid 10-digit alternate phone number', 'error');
+      showToast('Please enter a valid 10-digit alternate phone number', 'error');
       return false;
     }
 
@@ -529,16 +529,16 @@ async function verifyPayment(paymentData) {
 
       if (response.data.success) {
         toggleAddAddress();
-        showAlert('Address added successfully', 'success');
+        showToast('Address added successfully', 'success');
         setTimeout(() => {
           window.location.reload();
         }, 150);
       } else {
-        showAlert(response.data.message || 'Failed to add address', 'error');
+        showToast(response.data.message || 'Failed to add address', 'error');
       }
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Failed to add address';
-      showAlert(errorMessage, 'error');
+      showToast(errorMessage, 'error');
     }
   }
 
@@ -562,7 +562,7 @@ async function verifyPayment(paymentData) {
       toggleEditAddress();
     } catch (error) {
       console.error('Error fetching address:', error);
-      showAlert('Failed to load address details', 'error');
+      showToast('Failed to load address details', 'error');
     }
   }
 // submit edited address
@@ -579,16 +579,16 @@ async function verifyPayment(paymentData) {
 
       if (response.data.success) {
         toggleEditAddress();
-        showAlert('Address updated successfully', 'success');
+        showToast('Address updated successfully', 'success');
         setTimeout(() => {
           window.location.reload();
         }, 1500);
       } else {
-        showAlert(response.data.message || 'Failed to update address', 'error');
+        showToast(response.data.message || 'Failed to update address', 'error');
       }
     } catch (error) {
       console.error('Error updating address:', error);
-      showAlert('Failed to update address', 'error');
+      showToast('Failed to update address', 'error');
     }
   }
 

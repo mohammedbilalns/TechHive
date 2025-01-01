@@ -1,13 +1,4 @@
 <%- include('../../partials/header') %>
-
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-<script type="module">
-  import { customConfirm, showAlert, closeCustomAlert } from '/js/util.js';
-  window.customConfirm = customConfirm;
-  window.showAlert = showAlert;
-  window.closeCustomAlert = closeCustomAlert;
-</script>
-
   <!-- Mobile Menu Button -->
   <div class="md:hidden p-4 bg-gray-100 flex justify-between items-center">
     <h1 class="text-xl font-semibold text-gray-800">My Wishlist</h1>
@@ -125,7 +116,7 @@
   </div>
 
   <script type="module">
-    import { customConfirm, showAlert, closeCustomAlert } from '/js/util.js';
+    import { customConfirm, showToast, closeCustomAlert } from '/js/util.js';
     
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
@@ -163,31 +154,31 @@
             wishlistGrid.parentElement.innerHTML = emptyWishlist;
           }
 
-          showAlert('Product removed from wishlist successfully', 'success');
+          showToast('Product removed from wishlist successfully', 'success');
         } else {
-          showAlert(response.data.message || 'Failed to remove item', 'error');
+          showToast(response.data.message || 'Failed to remove item', 'error');
         }
       } catch (error) {
         console.error('Error:', error);
-        showAlert('Error removing item from wishlist', 'error');
+        showToast('Error removing item from wishlist', 'error');
       }
     }
 
     async function addToCart(productId) {
       try {
         const { data } = await axios.post('/cart/add', { productId });
-        showAlert(data.message, data.success ? 'success' : 'error');
+        showToast(data.message, data.success ? 'success' : 'error');
         document.getElementById("cart-quantity").innerText = data.totalQuantity;
       } catch (error) {
         console.error('Error:', error);
-        showAlert(error.response?.data?.message || 'Error adding item to cart', 'error');
+        showToast(error.response?.data?.message || 'Error adding item to cart', 'error');
       }
     }
 
     window.addToCart = addToCart;
     window.removeFromWishlist = removeFromWishlist;
     window.customConfirm = customConfirm;
-    window.showAlert = showAlert;
+    window.showToast = showToast;
     window.closeCustomAlert = closeCustomAlert;
   </script>
 

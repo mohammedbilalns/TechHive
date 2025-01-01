@@ -296,7 +296,7 @@
 
             } catch (error) {
                 console.error('Error:', error);
-                showAlert(error.response?.data?.message || 'Error fetching products', 'error');
+                showToast(error.response?.data?.message || 'Error fetching products', 'error');
             }
         }
 
@@ -405,7 +405,7 @@
 
             // Only show error if max price is set and is less than min price
             if (maxPrice && minPrice > maxPrice) {
-                showAlert('Maximum price cannot be less than minimum price', 'error');
+                showToast('Maximum price cannot be less than minimum price', 'error');
                 // Clear the max price field
                 document.getElementById('maxPrice').value = '';
                 currentFilters.maxPrice = '';
@@ -454,13 +454,13 @@
                     if (cartCountElement) {
                         cartCountElement.textContent = data.cartCount;
                     }
-                    showAlert('Item added to cart successfully', 'success');
+                    showToast('Item added to cart successfully', 'success');
                 } else {
-                    showAlert(data.message, 'error');
+                    showToast(data.message, 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showAlert(error.response?.data?.message || 'Error adding item to cart', 'error');
+                showToast(error.response?.data?.message || 'Error adding item to cart', 'error');
             }
         }
 
@@ -489,13 +489,13 @@
                         // Replace the old button with the new one
                         button.parentNode.replaceChild(newButton, button);
                     });
-                    showAlert('Item added to wishlist successfully', 'success');
+                    showToast('Item added to wishlist successfully', 'success');
                 } else {
-                    showAlert(data.message || 'Failed to add item', 'error');
+                    showToast(data.message || 'Failed to add item', 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showAlert(error.response?.data?.message || 'Error adding item to wishlist', 'error');
+                showToast(error.response?.data?.message || 'Error adding item to wishlist', 'error');
             }
         }
 
@@ -522,13 +522,13 @@
                         // Replace the old button with the new one
                         button.parentNode.replaceChild(newButton, button);
                     });
-                    showAlert('Product removed from wishlist successfully', 'success');
+                    showToast('Product removed from wishlist successfully', 'success');
                 } else {
-                    showAlert(response.data.message || 'Failed to remove item', 'error');
+                    showToast(response.data.message || 'Failed to remove item', 'error');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showAlert('Error removing item from wishlist', 'error');
+                showToast('Error removing item from wishlist', 'error');
             }
         }
 

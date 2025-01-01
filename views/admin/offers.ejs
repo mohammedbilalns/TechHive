@@ -103,7 +103,7 @@
 </div>
 
 <!-- Add/Edit Offer Modal -->
-<div id="offerModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+<div id="offerModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full items-center justify-center">
   <div class="relative mx-auto p-5 border w-[800px] shadow-lg rounded-md bg-white">
     <div class="mt-3">
       <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modalTitle">Add New Offer</h3>
@@ -285,16 +285,20 @@
         openModal();
     } catch (error) {
         console.error('Error in editOffer:', error);
-        showAlert(error.response?.data?.message || error.message || 'Failed to fetch offer details', 'error');
+        showToast(error.response?.data?.message || error.message || 'Failed to fetch offer details', 'error');
     }
   }
 
   function openModal() {
-    document.getElementById('offerModal').classList.remove('hidden');
+    const modal = document.getElementById('offerModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
   }
 
   function closeModal() {
-    document.getElementById('offerModal').classList.add('hidden');
+    const modal = document.getElementById('offerModal');
+    modal.classList.remove('flex');
+    modal.classList.add('hidden');
   }
 
   document.getElementById('offerForm').addEventListener('submit', async function(e) {
@@ -306,19 +310,19 @@
     const now = new Date();
 
     if (startDate < now) {
-      showAlert('Start date cannot be in the past', 'error');
+      showToast('Start date cannot be in the past', 'error');
       return;
     }
 
     if (endDate <= startDate) {
-      showAlert('End date must be after start date', 'error');
+      showToast('End date must be after start date', 'error');
       return;
     }
 
     // Validate offer percentage
     const offerPercentage = Number(document.getElementById('offerPercentage').value);
     if (offerPercentage < 1 || offerPercentage > 99) {
-      showAlert('Offer percentage must be between 1 and 99', 'error');
+      showToast('Offer percentage must be between 1 and 99', 'error');
       return;
     }
 
@@ -328,12 +332,12 @@
     const products = Array.from(document.getElementById('products').selectedOptions).map(opt => opt.value);
 
     if (offerType === 'category' && categories.length === 0) {
-      showAlert('Please select at least one category', 'error');
+      showToast('Please select at least one category', 'error');
       return;
     }
 
     if (offerType === 'product' && products.length === 0) {
-      showAlert('Please select at least one product', 'error');
+      showToast('Please select at least one product', 'error');
       return;
     }
 
@@ -366,7 +370,7 @@
           row.children[4].textContent = new Date(formData.startDate).toLocaleDateString();
           row.children[5].textContent = new Date(formData.endDate).toLocaleDateString();
           
-          showAlert('Offer updated successfully', 'success');
+          showToast('Offer updated successfully');
         } else {
           // For new offers, add new row at the top
           const tbody = document.getElementById('offersTable');
@@ -422,11 +426,11 @@
             });
           }
 
-          showAlert('Offer added successfully', 'success');
+          showToast('Offer added successfully');
         }
       }
     } catch (error) {
-      showAlert(error.response?.data?.message || 'Failed to save offer', 'error');
+      showToast(error.response?.data?.message || 'Failed to save offer', 'error');
     }
   });
 
@@ -456,10 +460,10 @@
                 toggleButton.textContent = newStatus ? 'Deactivate' : 'Activate';
                 toggleButton.setAttribute('onclick', `toggleOfferStatus('${offerId}', '${newStatus}')`);
 
-                showAlert(response.data.message, 'success');
+                showToast(response.data.message);
             }
         } catch (error) {
-            showAlert(error.response?.data?.message || `Failed to ${action} offer`, 'error');
+            showToast(error.response?.data?.message || `Failed to ${action} offer`, 'error');
         }
     }
   }
@@ -502,10 +506,10 @@
                     });
                 }
 
-                showAlert(response.data.message, 'success');
+                showToast(response.data.message);
             }
         } catch (error) {
-            showAlert(error.response?.data?.message || 'Failed to delete offer', 'error');
+            showToast(error.response?.data?.message || 'Failed to delete offer', 'error');
         }
     }
   }

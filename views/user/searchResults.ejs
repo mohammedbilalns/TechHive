@@ -279,7 +279,7 @@ async function fetchProducts() {
         updatePagination(data.currentPage, data.totalPages, data.hasNextPage, data.hasPrevPage);
     } catch (error) {
         console.error('Error:', error);
-        showAlert(error.response?.data?.message || 'Error fetching products', 'error');
+        showToast(error.response?.data?.message || 'Error fetching products', 'error');
     }
 }
 
@@ -393,7 +393,7 @@ function validatePriceRange() {
     
     // Only show error if max price is set and is less than min price
     if (maxPrice && minPrice > maxPrice) {
-        showAlert('Maximum price cannot be less than minimum price', 'error');
+        showToast('Maximum price cannot be less than minimum price', 'error');
         // Clear the max price field
         document.getElementById('maxPrice').value = '';
         currentFilters.maxPrice = '';
@@ -439,11 +439,11 @@ document.addEventListener('DOMContentLoaded', () => {
 async function addToCart(productId) {
     try {
         const { data } = await axios.post('/cart/add', { productId });
-        showAlert(data.message, data.success ? 'success' : 'error');
+        showToast(data.message, data.success ? 'success' : 'error');
         document.getElementById("cart-quantity").innerText = data.totalQuantity;
     } catch (error) {
         console.error('Error:', error);
-        showAlert(error.response?.data?.message || 'Error adding item to cart', 'error');
+        showToast(error.response?.data?.message || 'Error adding item to cart', 'error');
     }
 }
 
@@ -469,13 +469,13 @@ async function addToWishlist(productId) {
                 `;
             }
             
-            showAlert(data.message, 'success');
+            showToast(data.message, 'success');
         } else {
-            showAlert(data.message, 'error');
+            showToast(data.message, 'error');
         }
     } catch (error) {
         console.error('Error:', error);
-        showAlert(error.response?.data?.message || 'Error adding item to wishlist', 'error');
+        showToast(error.response?.data?.message || 'Error adding item to wishlist', 'error');
     }
 }
 
@@ -498,13 +498,13 @@ async function removeFromWishlist(productId) {
                 `;
             }
             
-            showAlert('Product removed from wishlist successfully', 'success');
+            showToast('Product removed from wishlist successfully', 'success');
         } else {
-            showAlert(response.data.message || 'Failed to remove item', 'error');
+            showToast(response.data.message || 'Failed to remove item', 'error');
         }
     } catch (error) {
         console.error('Error:', error);
-        showAlert('Error removing item from wishlist', 'error');
+        showToast('Error removing item from wishlist', 'error');
     }
 }
 

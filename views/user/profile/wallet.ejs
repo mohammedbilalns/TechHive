@@ -95,7 +95,7 @@
 </div>
 
 <!-- Add Money Modal -->
-<div id="addMoneyModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+<div id="addMoneyModal" class="hidden fixed inset-0 bg-black bg-opacity-50  items-center justify-center">
     <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-semibold">Add Money to Wallet</h3>
@@ -166,7 +166,7 @@
         const amount = parseFloat(document.getElementById('amount').value);
 
         if (!amount || amount <= 0) {
-            showAlert('Please enter a valid amount', 'error');
+            showToast('Please enter a valid amount', 'error');
             return;
         }
 
@@ -176,11 +176,11 @@
                 await initializeRazorpay(response.data);
                 hideAddMoneyModal();
             } else {
-                showAlert(response.data.message || 'Error adding money', 'error');
+                showToast(response.data.message || 'Error adding money', 'error');
             }
         } catch (error) {
             console.error('Error:', error);
-            showAlert('Error adding money to wallet', 'error');
+            showToast('Error adding money to wallet', 'error');
         }
     }
 
@@ -201,14 +201,14 @@
                 };
                 
                 prependTransaction(newTransaction);
-                showAlert('Money added successfully', 'success');
+                showToast('Money added successfully', 'success');
                 hideAddMoneyModal();
             } else {
-                showAlert('Payment verification failed', 'error');
+                showToast('Payment verification failed', 'error');
             }
         } catch (error) {
             console.error('Error:', error);
-            showAlert('Payment verification failed', 'error');
+            showToast('Payment verification failed', 'error');
         }
     }
 
@@ -244,11 +244,11 @@
     }
 
     function showAddMoneyModal() {
-        document.getElementById('addMoneyModal').classList.remove('hidden');
+        document.getElementById('addMoneyModal').classList.replace('hidden','flex');
     }
 
     function hideAddMoneyModal() {
-        document.getElementById('addMoneyModal').classList.add('hidden');
+        document.getElementById('addMoneyModal').classList.replace('flex','hidden');
     }
 
     function setAmount(amount) {

@@ -149,7 +149,7 @@
           }
         } catch (error) {
           const errorMessage = error.response?.data?.message || 'Signup failed';
-          showAlert(errorMessage, 'error');
+          showToast(errorMessage, 'error');
         } finally {
           // Reset loading state
           buttonText.textContent = 'Sign Up';
@@ -326,7 +326,7 @@
           if (error.response?.data?.maxAttemptsExceeded) {
             setTimeout(() => {
               closeOtpModal();
-              showAlert('Maximum attempts exceeded. Please sign up again.', 'error');
+              showToast('Maximum attempts exceeded. Please sign up again.', 'error');
             }, 2000);
           }
         } finally {
@@ -383,7 +383,7 @@
             alertMessage.textContent = 'Maximum resend attempts exceeded. Please sign up again.';
             setTimeout(() => {
               closeOtpModal();
-              showAlert('Maximum resend attempts exceeded. Please sign up again.', 'error');
+              showToast('Maximum resend attempts exceeded. Please sign up again.', 'error');
             }, 2000);
           }
         } finally {

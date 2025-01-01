@@ -57,7 +57,6 @@ const addCoupon = async (req, res) => {
             expiryDate
         } = req.body;
 
-
         // Validate coupon code format and length 
         if (!/^[A-Za-z0-9]{1,10}$/.test(code)) {
             return res.status(400).json({
@@ -65,7 +64,6 @@ const addCoupon = async (req, res) => {
                 message: 'Invalid coupon code format'
             });
         }
-
 
         // Validate description length
         if (description.length < 10 || description.length > 100) {
@@ -245,7 +243,6 @@ const toggleCouponStatus = async (req, res) => {
 
         coupon.isActive = !coupon.isActive;
         await coupon.save();
-
         res.json({
             success: true,
             message: `Coupon ${coupon.isActive ? 'activated' : 'deactivated'} successfully`

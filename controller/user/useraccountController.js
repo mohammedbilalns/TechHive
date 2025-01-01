@@ -2,7 +2,6 @@ import userSchema from "../../model/userModel.js";
 import { log } from "mercedlogger";
 import bcrypt from 'bcryptjs';
 
-
 const getAccountDetails = async (req, res) => {
     try {
         let email = req.session.user.email
