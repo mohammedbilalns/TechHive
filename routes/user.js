@@ -34,7 +34,7 @@ router.route('/signup') // signup route
     .all(auth.isLogin)
     .get(userAuthController.loadSignup)
     .post(userAuthController.registerUser)
-router.get('/signup-otp', userAuthController.loadSignupOTP)
+
 router.post('/verify-otp', auth.isLogin, userAuthController.verifyOTP) // verify user otp 
 router.post('/resend-otp', auth.isLogin, userAuthController.resendOTP) // resend otp 
 router.get("/auth/google", auth.isLogin, userAuthController.authGoogle) // google oAuth 
@@ -48,7 +48,6 @@ router.post('/resend-forgot-password-otp', auth.isLogin, userAuthController.rese
 
 router.route('/reset-password') // user reset password 
     .all(auth.isLogin)
-    .get(userAuthController.loadResetpassword)
     .post(userAuthController.resetPassword)
 
 //---- user and product routes ---- 

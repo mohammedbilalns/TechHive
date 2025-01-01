@@ -9,7 +9,8 @@ config();
 
 // ---- User Login ----  
 const loadLogin = (req, res) => {
-    res.render('user/auth/login');
+
+    res.render('user/auth/login', { message: req.query.message, alertType: req.query.alertType });
 };
 
 // Verify user login 
@@ -101,11 +102,6 @@ const loadSignup = (req, res) => {
     res.render('user/auth/signup');
 };
 
-const loadSignupOTP = (req, res) => {
-    let email = req.query.email;
-    res.render('user/auth/signupotp', { email });
-};
-
 // Register a new user
 const registerUser = async (req, res) => {
     try {
@@ -162,12 +158,12 @@ const registerUser = async (req, res) => {
         });
 
         // If the user already exists, return an error message
-        if(existingUser && existingUser.status == "Pending"){
-            await userSchema.findOneAndDelete({email})
+        if (existingUser && existingUser.status == "Pending") {
+            await userSchema.findOneAndDelete({ email })
 
-        }else if (existingUser ) {
+        } else if (existingUser) {
             let message;
-             if (!existingUser.password) {
+            if (!existingUser.password) {
                 message = "This email is linked to a Google login. Please log in with Google.";
             } else {
                 message = existingUser.email === email ? "Email already registered" : "Phone number already registered";
@@ -212,12 +208,12 @@ const registerUser = async (req, res) => {
 
         // Send OTP email to the user
         await authUtils.sendOTPEmail(email, otp);
-        
+
         return res.status(200).json({
             success: true,
             email: email
         });
-       
+
     } catch (error) {
         log.red('SIGNUP_ERROR', error);
         return res.status(500).json({
@@ -286,7 +282,7 @@ const verifyOTP = async (req, res) => {
 const resendOTP = async (req, res) => {
     let { email } = req.body;
     email = email.trim();
-    
+
     try {
         const user = await userSchema.findOne({ email });
 
@@ -302,7 +298,7 @@ const resendOTP = async (req, res) => {
         }
 
         const otp = authUtils.generateOTP();
-    
+
         user.otp.otpValue = otp;
         user.otp.otpExpiresAt = Date.now() + 60000;
         user.otp.otpAttempts += 1;
@@ -380,10 +376,7 @@ const loadForgotpassword = (req, res) => {
     let email = req.query.email;
     res.render('user/auth/forgotpassword', { message, alertType, email });
 };
-const loadResetpassword = (req, res) => {
-    let email = req.query.email;
-    res.render('user/auth/resetpassword', { email });
-};
+
 
 const processForgotPassword = async (req, res) => {
     try {
@@ -392,92 +385,98 @@ const processForgotPassword = async (req, res) => {
         const user = await userSchema.findOne({ email });
 
         if (!user) {
-            return res.render('user/auth/forgotpassword', {
-                message: "Email not found",
-                alertType: "error",
-                email
+            return res.status(400).json({
+                success: false,
+                message: "Email not found"
             });
         }
 
-        // Check if user is a Google auth user
         if (!user.password) {
-            return res.redirect('/login?message=Google+accounts+cannot+reset+password.+Please+login+with+Google&alertType=error');
+            return res.status(400).json({
+                success: false,
+                message: "This account uses Google login. Please login with Google"
+            });
         }
 
         const otp = authUtils.generateOTP();
 
-        // Update user with new OTP details
         user.otp = {
             otpValue: otp,
-            otpExpiresAt: Date.now() + 60000, // 1 minute
+            otpExpiresAt: Date.now() + 60000, // 1 minute expiry
             otpAttempts: 0,
         };
         await user.save();
 
-        // Send OTP email
         await authUtils.sendOTPEmail(email, otp);
-        res.render('user/auth/forgotpasswordotp', { email });
+
+        return res.json({
+            success: true,
+            message: "OTP sent successfully"
+        });
 
     } catch (error) {
-        log.red('ERROR', error);
-        res.render('user/auth/forgotpassword', {
-            message: "Something went wrong",
-            alertType: "error",
-            email: req.body.email
+        log.red('FORGOT_PASSWORD_ERROR', error);
+        return res.status(500).json({
+            success: false,
+            message: "Something went wrong"
         });
     }
 };
 
 const verifyForgotPasswordOTP = async (req, res) => {
-    const { otp1, otp2, otp3, otp4, email, timeRem } = req.body;
+    const { otp1, otp2, otp3, otp4, email } = req.body;
     const userOTP = otp1 + otp2 + otp3 + otp4;
 
     try {
         const user = await userSchema.findOne({ email });
         const currentTime = Date.now();
 
-        if (currentTime > user.otp.otpExpiresAt) {
-            return res.render("user/auth/forgotpasswordotp", {
-                email,
-                message: "OTP has expired",
-                alertType: "error",
-                timeRemaining: 0,
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid verification attempt"
+            });
+        }
+
+        if (currentTime > user?.otp?.otpExpiresAt) {
+            return res.status(400).json({
+                success: false,
+                message: "OTP has expired"
             });
         }
 
         if (user.otp.otpValue === userOTP) {
             user.otp = undefined;
             await user.save();
-            res.redirect(`/reset-password?email=${email}`);
+
+            return res.json({
+                success: true,
+                message: "OTP verified successfully"
+            });
         } else {
             if (user.otp.otpAttempts >= 3) {
                 user.otp = undefined;
                 await user.save();
-                return res.render("user/auth/forgotpassword", {
+                return res.status(400).json({
+                    success: false,
                     message: "Too many attempts. Please try again.",
-                    alertType: "error",
+                    maxAttemptsExceeded: true
                 });
             }
 
             user.otp.otpAttempts += 1;
             await user.save();
 
-            const remainingTime = Math.max(0, Math.floor((user.otp.otpExpiresAt - currentTime) / 1000));
-
-            res.render("user/auth/forgotpasswordotp", {
-                email,
-                message: "Invalid OTP",
-                alertType: "error",
-                timeRemaining: remainingTime,
+            return res.status(400).json({
+                success: false,
+                message: "Invalid OTP, please try again"
             });
         }
     } catch (error) {
-        log.red("ERROR", error);
-        res.render("user/auth/forgotpasswordotp", {
-            email,
-            message: "Something went wrong",
-            alertType: "error",
-            timeRemaining: parseInt(timeRem),
+        log.red("VERIFY_FORGOT_PASSWORD_OTP_ERROR", error);
+        return res.status(500).json({
+            success: false,
+            message: "Something went wrong"
         });
     }
 };
@@ -515,7 +514,7 @@ const resendForgotPasswordOTP = async (req, res) => {
         });
 
     } catch (error) {
-        log.red("ERROR", error);
+        log.red("RESEND_FORGOT_PASSWORD_OTP", error);
         res.render("user/auth/forgotpasswordotp", {
             email,
             message: "Failed to resend OTP",
@@ -525,29 +524,56 @@ const resendForgotPasswordOTP = async (req, res) => {
 };
 
 const resetPassword = async (req, res) => {
-    let { email, password } = req.body;
+    let { email, password, confirmPassword } = req.body;
     email = email.trim();
-    try {
-        const user = await userSchema.findOne({ email });
-        if (!user) {
-            return res.render('user/auth/resetpassword', {
-                message: "Invalid reset attempt",
-                alertType: "error",
-                email
-            });
+    password = password.trim()
+    confirmPassword = confirmPassword.trim()
 
+    try {
+        if (!password || !confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required"
+            })
+        }
+        const user = await userSchema.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid reset attempt"
+            });
         }
 
+        // Validate password format
+        if (!validation.isValidPassword(password)) {
+            return res.status(400).json({
+                success: false,
+                message: "Password must contain 8+ characters with uppercase, lowercase, number, and special character"
+            });
+        }
+        if (password !== confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "Passwords do not match..."
+            })
+        }
+
+        // Hash the new password
         const hashedPassword = await bcrypt.hash(password, 10);
         user.password = hashedPassword;
         await user.save();
 
-        res.redirect('/login?message=Password+reset+successful&alertType=success');
+        return res.json({
+            success: true,
+            message: "Password reset successful"
+        });
+
     } catch (error) {
-        log.red("ERROR", error);
-        res.render('user/auth/resetpassword', {
-            message: "Failed to reset password",
-            alertType: "error",
+        log.red("RESET_PASSWORD_ERROR", error);
+        return res.status(500).json({
+            success: false,
+            message: "Failed to reset password"
         });
     }
 };
@@ -558,9 +584,9 @@ const resetPassword = async (req, res) => {
 
 export default {
     loadLogin, verifyLogin,
-    loadSignup, verifyOTP, resendOTP, loadSignupOTP,
+    loadSignup, verifyOTP, resendOTP,
     loadForgotpassword, processForgotPassword, verifyForgotPasswordOTP,
-    resendForgotPasswordOTP, resetPassword, loadResetpassword,
+    resendForgotPasswordOTP, resetPassword,
     registerUser, authGoogle, authGoogleCallback,
     logoutUser
 }
