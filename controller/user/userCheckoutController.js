@@ -2,6 +2,7 @@ import userModel from '../../model/userModel.js';
 import cartModel from '../../model/cartModel.js';
 import addressModel from '../../model/addressModel.js';
 import walletModel from '../../model/walletModel.js';
+import couponModel from '../../model/couponModel.js';
 
 const getCheckout = async (req, res) => {
   try {
@@ -34,7 +35,6 @@ const getCheckout = async (req, res) => {
 
     if (stockError) {
       res.status(500).json({ success: false, message: 'Some products are out of stock' });
-
     }
 
     // Calculate totals
@@ -48,7 +48,8 @@ const getCheckout = async (req, res) => {
       totalSavings += itemOriginalPrice - discountedPrice;
     });
 
-    const total = originalPrice - totalSavings - (cart.discount || 0);
+    const subtotal = originalPrice - totalSavings;
+    const total = subtotal;
 
     res.render('user/checkout', {
       user,
@@ -66,8 +67,98 @@ const getCheckout = async (req, res) => {
   }
 };
 
+const applyCoupon = async (req, res) => {
+  try {
+    const { couponCode } = req.body;
+    const userId = req.session.user.id;
+
+    // Find cart and calculate total
+    const cart = await cartModel.findOne({ user: userId }).populate('items.productId');
+    let subtotal = 0;
+    cart.items.forEach(item => {
+      const itemPrice = item.productId.price * (1 - item.productId.discount / 100);
+      subtotal += itemPrice * item.quantity;
+    });
+
+    // Find and validate coupon
+    const coupon = await couponModel.findOne({ 
+      code: couponCode.toUpperCase(),
+      isActive: true,
+      expiryDate: { $gt: new Date() }
+    });
+
+    if (!coupon) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Invalid or expired coupon' 
+      });
+    }
+
+    // Check minimum purchase requirement
+    if (subtotal < coupon.minPurchase) {
+      return res.status(400).json({
+        success: false,
+        message: `Minimum purchase of ₹${coupon.minPurchase} required`
+      });
+    }
+
+    // Check usage limit
+    const userUsageCount = coupon.usageHistory.filter(
+      history => history.userId.toString() === userId
+    ).length;
+
+    if (userUsageCount >= coupon.usageLimit) {
+      return res.status(400).json({
+        success: false,
+        message: 'Coupon usage limit exceeded'
+      });
+    }
+
+    // Calculate discount
+    let discountAmount;
+    if (coupon.discountType === 'PERCENTAGE') {
+      discountAmount = (subtotal * coupon.discountValue) / 100;
+      if (coupon.maxDiscount) {
+        discountAmount = Math.min(discountAmount, coupon.maxDiscount);
+      }
+    } else {
+      discountAmount = coupon.discountValue;
+    }
+
+    return res.status(200).json({
+      success: true,
+      couponCode: couponCode,
+      discount: discountAmount,
+      message: 'Coupon applied successfully'
+    });
+
+  } catch (error) {
+    console.error('Apply coupon error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error applying coupon'
+    });
+  }
+};
+
+const removeCoupon = async (req, res) => {
+  try {
+    return res.status(200).json({
+      success: true,
+      message: 'Coupon removed successfully'
+    });
+  } catch (error) {
+    console.error('Remove coupon error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error removing coupon'
+    });
+  }
+};
 
 export default {
-  getCheckout
+  getCheckout,
+  applyCoupon,
+  removeCoupon
 };
 

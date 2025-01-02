@@ -111,4 +111,7 @@ router.route('/wallet')
     .post(userWalletController.addMoney)
 router.post('/wallet/verify-payment', userWalletController.verifyWalletPayment)
 
+router.post('/checkout/apply-coupon', userCheckController.applyCoupon);
+router.post('/checkout/remove-coupon', userCheckController.removeCoupon);
+
 export default router

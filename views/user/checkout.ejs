@@ -111,18 +111,52 @@
                     <span>Items discount</span>
                     <span data-total-savings>₹<%= totalSavings.toFixed(2) %></span>
                   </div>
-                  <% if (cart.discount> 0) { %>
-                    <div class="flex justify-between text-green-600">
-                      <span>Coupon Discount</span>
-                      <span>-₹<%= cart.discount.toFixed(2) %></span>
+
+                  <!-- New Coupon Section -->
+                  <div class="border-t border-b py-3 my-2">
+                    <div id="couponToggle">
+                      <button onclick="toggleCouponInput()" class="text-primary-accent hover:underline flex items-center gap-2">
+                        <i class="fas fa-tag"></i>
+                        Have a coupon code?
+                      </button>
                     </div>
-                    <% } %>
-                      <div class="border-t pt-2 mt-2">
-                        <div class="flex justify-between font-semibold">
-                          <span>Total Amount</span>
-                          <span data-total>₹<%= total.toFixed(2) %></span>
-                        </div>
+                    
+                    <div id="couponInputSection" class="hidden mt-2">
+                      <div class="flex gap-2">
+                        <input type="text" id="couponCode" 
+                          class="border rounded px-3 py-2 flex-grow focus:ring-2 focus:ring-primary-accent uppercase"
+                          placeholder="Enter coupon code">
+                        <button onclick="applyCoupon()" 
+                          class="bg-primary-accent text-white px-4 py-2 rounded hover:bg-primary-accent/90">
+                          Apply
+                        </button>
                       </div>
+                    </div>
+
+                    <div id="appliedCouponSection" class="hidden mt-2">
+                      <div class="flex justify-between items-center">
+                        <div>
+                          <span class="font-medium text-primary-accent" id="appliedCouponCode"></span>
+                          <span class="text-green-600 text-sm ml-2">applied</span>
+                        </div>
+                        <button onclick="removeCoupon()" 
+                          class="text-red-500 hover:text-red-600 text-sm">
+                          Remove
+                        </button>
+                      </div>
+                      <div class="flex justify-between text-green-600 mt-1">
+                        <span>Coupon Discount</span>
+                        <span id="couponDiscount">-₹0.00</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="border-t pt-2 mt-2">
+                    <div class="flex justify-between font-semibold">
+                      <span>Total Amount</span>
+                      <span data-total>₹<%= total.toFixed(2) %></span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -436,7 +470,8 @@
 
       const orderData = {
         addressId: selectedAddress.value,
-        paymentMethod: paymentMethod.value
+        paymentMethod: paymentMethod.value,
+        couponCode: currentCouponCode
       };
 
       try {
@@ -611,6 +646,85 @@
     document.getElementById('editAddressModal').addEventListener('click', function (e) {
       if (e.target === this) {
         toggleEditAddress();
+      }
+    });
+
+    let originalTotal = parseFloat('<%= total %>');
+
+    let currentCouponCode = null;
+    let currentCouponDiscount = 0;
+
+    function toggleCouponInput() {
+      const inputSection = document.getElementById('couponInputSection');
+      inputSection.classList.toggle('hidden');
+    }
+
+    async function applyCoupon() {
+      const couponCode = document.getElementById('couponCode').value.trim();
+      
+      if (!couponCode) {
+        showToast('Please enter a coupon code', 'error');
+        return;
+      }
+
+      try {
+        const response = await axios.post('/checkout/apply-coupon', { couponCode });
+        
+        if (response.data.success) {
+          // Store coupon information in memory
+          currentCouponCode = response.data.couponCode;
+          currentCouponDiscount = response.data.discount;
+
+          // Update UI to show applied coupon
+          document.getElementById('couponInputSection').classList.add('hidden');
+          document.getElementById('appliedCouponSection').classList.remove('hidden');
+          document.getElementById('couponToggle').classList.add('hidden');
+          
+          document.getElementById('appliedCouponCode').textContent = currentCouponCode;
+          document.getElementById('couponDiscount').textContent = `-₹${currentCouponDiscount.toFixed(2)}`;
+          
+          // Update total amount
+          const newTotal = originalTotal - currentCouponDiscount;
+          document.querySelector('[data-total]').textContent = `₹${newTotal.toFixed(2)}`;
+          
+          showToast(response.data.message, 'success');
+        }
+      } catch (error) {
+        const message = error.response?.data?.message || 'Error applying coupon';
+        showToast(message, 'error');
+      }
+    }
+
+    async function removeCoupon() {
+      try {
+        const response = await axios.post('/checkout/remove-coupon');
+        
+        if (response.data.success) {
+          // Clear coupon information
+          currentCouponCode = null;
+          currentCouponDiscount = 0;
+
+          // Reset UI
+          document.getElementById('couponInputSection').classList.add('hidden');
+          document.getElementById('appliedCouponSection').classList.add('hidden');
+          document.getElementById('couponToggle').classList.remove('hidden');
+          document.getElementById('couponCode').value = '';
+          
+          // Reset total amount to original
+          document.querySelector('[data-total]').textContent = `₹${originalTotal.toFixed(2)}`;
+          
+          showToast('Coupon removed successfully', 'success');
+        }
+      } catch (error) {
+        showToast('Error removing coupon', 'error');
+      }
+    }
+
+    // Add event listener for Enter key on coupon input
+    document.getElementById('couponCode').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        applyCoupon();
       }
     });
   </script>
