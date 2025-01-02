@@ -279,17 +279,6 @@
                     productsGrid.innerHTML = productsHTML;
                 }
 
-                // Update URL with new filters
-                const url = new URL(window.location.href);
-                Object.keys(params).forEach(key => {
-                    if (params[key]) {
-                        url.searchParams.set(key, params[key]);
-                    } else {
-                        url.searchParams.put(key);
-                    }
-                });
-                window.history.pushState({}, '', url);
-
                 if (data.totalPages > 0) {
                     updatePagination(data.currentPage, data.totalPages, data.hasNextPage, data.hasPrevPage);
                 }
