@@ -1,8 +1,8 @@
 <%- include('../../partials/header') %>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
   <div class="flex flex-col md:flex-row">
     <%- include('../../partials/usersidebar') %>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
       <main class="flex-grow p-4 md:py-12">
         <nav class="flex mb-6 text-sm">
@@ -127,26 +127,26 @@
                             <% } %>
                           </p>
                           <div class="mt-2">
-                            <% if (![' delivered', 'cancelled' , 'returned' ].includes(item.status)) { %>
-                                          <button onclick="cancelOrderItem('<%= order._id %>', '<%= item._id %>')"
-                                            class="text-red-600 text-sm hover:underline">
-                                            Cancel Item
-                                          </button>
-                                          <% } %>
-                                            <% if (item.status==='delivered' ) { %>
-                                              <button onclick="openReturnModal('<%= order._id %>', '<%= item._id %>')"
-                                                class="text-blue-600 text-sm hover:underline ml-2">
-                                                Return Item
-                                              </button>
-                                              <% } %>
-                                                <% if (['delivered', 'return requested' , 'returned'
-                                                  ].includes(item.status)) { %>
-                                                  <button onclick="handleReviewClick('<%= item.name %>')"
-                                                    class="text-blue-600 text-sm hover:underline ml-2">
-                                                    Add/Edit Review
-                                                  </button>
-                                                  <% } %>
-                              </div>
+                            <% if (![' delivered', 'cancelled' , 'returned' ].includes(item.status) && 
+                                !(order.paymentMethod === 'online' && order.paymentStatus === 'pending')) { %>
+                              <button onclick="cancelOrderItem('<%= order._id %>', '<%= item._id %>')"
+                                class="text-red-600 text-sm hover:underline">
+                                Cancel Item
+                              </button>
+                            <% } %>
+                              <% if (item.status==='delivered' ) { %>
+                                <button onclick="openReturnModal('<%= order._id %>', '<%= item._id %>')"
+                                  class="text-blue-600 text-sm hover:underline ml-2">
+                                  Return Item
+                                </button>
+                              <% } %>
+                                <% if (['delivered', 'return requested' , 'returned'].includes(item.status)) { %>
+                                  <button onclick="handleReviewClick('<%= item.name %>')"
+                                    class="text-blue-600 text-sm hover:underline ml-2">
+                                    Add/Edit Review
+                                  </button>
+                                <% } %>
+                          </div>
                             </div>
                         </div>
                         <% }); %>
@@ -201,15 +201,15 @@
                         </div>
                         <% } %>
 
-                        <% if (order.paymentMethod === 'online' && order.paymentStatus === 'pending') { %>
-                          <div class="mt-4 bg-yellow-50 p-4 rounded-lg">
-                            <p class="text-yellow-800 mb-2">Payment pending for this order</p>
-                            <button onclick="retryPayment('<%= order._id %>')" 
-                              class="bg-primary-accent text-white px-4 py-2 rounded hover:bg-primary-accent/90">
-                              Retry Payment
-                            </button>
-                          </div>
-                        <% } %>
+                          <% if (order.paymentMethod==='online' && order.paymentStatus==='pending' ) { %>
+                            <div class="mt-4 bg-yellow-50 p-4 rounded-lg">
+                              <p class="text-yellow-800 mb-2">Payment pending for this order</p>
+                              <button onclick="retryPayment('<%= order._id %>')"
+                                class="bg-primary-accent text-white px-4 py-2 rounded hover:bg-primary-accent/90">
+                                Retry Payment
+                              </button>
+                            </div>
+                            <% } %>
                     </div>
                   </div>
               </div>
@@ -531,7 +531,7 @@
     async function retryPayment(orderId) {
       try {
         const response = await axios.post(`/orders/${orderId}/retry-payment`);
-        
+
         if (response.data.success) {
           // Initialize Razorpay payment
           const options = {
@@ -550,7 +550,7 @@
               });
             },
             modal: {
-              ondismiss: function() {
+              ondismiss: function () {
                 showToast('Payment failed', 'error');
               }
             },
