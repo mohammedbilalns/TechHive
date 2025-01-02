@@ -106,7 +106,7 @@
 
                                                 <% if(wishlistItems.some(id=> id.equals(product._id))) { %>
                                                     <button onclick="removeFromWishlist('<%= product._id %>')"
-                                                        class="p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
+                                                        class="p-2 rounded-full bg-primary-accent text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
                                                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -187,7 +187,7 @@
                         // Create the new button with "remove" functionality
                         const newButton = document.createElement('button');
                         newButton.setAttribute('onclick', `removeFromWishlist('${productId}')`);
-                        newButton.className = 'p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300';
+                        newButton.className = 'p-2 rounded-full bg-primary-accent text-white hover:bg-gray-100 hover:text-black transition-colors duration-300';
 
                         // Set the SVG content
                         newButton.innerHTML = `

@@ -736,14 +736,14 @@ input::placeholder {
   margin-bottom: 0.25rem;
 }
 
-.my-5 {
-  margin-top: 1.25rem;
-  margin-bottom: 1.25rem;
-}
-
 .my-2 {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
+}
+
+.my-5 {
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
 }
 
 .mb-1 {
@@ -941,28 +941,12 @@ input::placeholder {
   height: 100vh;
 }
 
-.h-64 {
-  height: 16rem;
-}
-
-.h-60 {
-  height: 15rem;
-}
-
-.h-40 {
-  height: 10rem;
-}
-
-.h-\[400px\] {
-  height: 400px;
+.max-h-80 {
+  max-height: 20rem;
 }
 
 .max-h-\[90vh\] {
   max-height: 90vh;
-}
-
-.max-h-80 {
-  max-height: 20rem;
 }
 
 .min-h-\[70vh\] {
@@ -1045,14 +1029,6 @@ input::placeholder {
   width: 100%;
 }
 
-.w-\[95\%\] {
-  width: 95%;
-}
-
-.w-\[98\%\] {
-  width: 98%;
-}
-
 .min-w-0 {
   min-width: 0px;
 }
@@ -1103,10 +1079,6 @@ input::placeholder {
 
 .max-w-screen-xl {
   max-width: 1280px;
-}
-
-.max-w-5xl {
-  max-width: 64rem;
 }
 
 .flex-1 {

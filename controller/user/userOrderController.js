@@ -17,7 +17,7 @@ const placeOrder = async (req, res) => {
     const { addressId, paymentMethod, couponCode } = req.body;
     const userId = req.session.user.id;
 
-    // Get  cart, address, and wallet
+    // Get cart, address, and wallet
     const [cart, shippingAddress, wallet] = await Promise.all([
       cartModel.findOne({ user: userId }).populate('items.productId'),
       addressModel.findById(addressId),
@@ -26,6 +26,16 @@ const placeOrder = async (req, res) => {
 
     if (!cart || cart.items.length === 0) {
       return res.json({ success: false, message: 'Cart is empty' });
+    }
+
+    // Check stock availability for all items before proceeding
+    for (const item of cart.items) {
+      if (item.productId.stock < item.quantity) {
+        return res.json({
+          success: false,
+          message: `${item.productId.name} is out of stock`
+        });
+      }
     }
 
     // Calculate totals after applying offers 
@@ -74,23 +84,14 @@ const placeOrder = async (req, res) => {
     }
 
     // Create order items array with product data 
-    const orderItems = cart.items.map(item => {
-      if (item.productId.stock < item.quantity) {
-        return res.json({
-          success:false ,
-          message: 'Insufficient stock for some product'
-        })
-      }
-      
-      return {
-        name: item.productId.name,
-        brand: item.productId.brand,
-        images: item.productId.images,
-        quantity: item.quantity,
-        price: item.productId.price,
-        discount: item.productId.discount
-      };
-    });
+    const orderItems = cart.items.map(item => ({
+      name: item.productId.name,
+      brand: item.productId.brand,
+      images: item.productId.images,
+      quantity: item.quantity,
+      price: item.productId.price,
+      discount: item.productId.discount
+    }));
 
     // Generate order ID 
     const date = new Date();

@@ -19,22 +19,13 @@ const getCheckout = async (req, res) => {
     }
 
     // Check stock availability
-    let stockError = false;
-    let outOfStockItems = [];
-
     for (const item of cart.items) {
       if (item.productId.stock < item.quantity) {
-        stockError = true;
-        outOfStockItems.push({
-          name: item.productId.name,
-          available: item.productId.stock,
-          requested: item.quantity
+        return res.status(400).json({ 
+          success: false, 
+          message: `${item.productId.name} is out of stock` 
         });
       }
-    }
-
-    if (stockError) {
-      res.status(500).json({ success: false, message: 'Some products are out of stock' });
     }
 
     // Calculate totals
@@ -63,7 +54,10 @@ const getCheckout = async (req, res) => {
     });
   } catch (error) {
     console.error('Checkout error:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    res.status(500).json({ 
+      success: false, 
+      message: 'Something went wrong. Please try again.' 
+    });
   }
 };
 

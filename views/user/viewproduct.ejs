@@ -138,7 +138,7 @@
                     </button>
                     <% } else { %>
                       <button onclick="addToWishlist('<%= product._id %>')"
-                        class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-primary-accent hover:text-white transition-colors duration-300">
+                        class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-600 hover:text-white hover:bg-red-600 transition-colors duration-300">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                           stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -353,11 +353,9 @@
       try {
         const { data } = await axios.post('/wishlist', { productId });
         if (data.success) {
-          // Find all wishlist buttons for this product 
           const wishlistButtons = document.querySelectorAll(`button[onclick="addToWishlist('${productId}')"]`);
 
           wishlistButtons.forEach(button => {
-            // Create the new button with "remove" functionality
             const newButton = document.createElement('button');
             newButton.setAttribute('onclick', `removeFromWishlist('${productId}')`);
             newButton.className = 'w-10 h-10 flex items-center justify-center rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300';
@@ -368,7 +366,6 @@
                     </svg>
                 `;
 
-            // Replace the old button with the new one
             button.parentNode.replaceChild(newButton, button);
           });
         }
@@ -383,14 +380,12 @@
       try {
         const response = await axios.put('/wishlist', { productId });
         if (response.data.success) {
-          // Find all wishlist buttons for this product
           const wishlistButtons = document.querySelectorAll(`button[onclick="removeFromWishlist('${productId}')"]`);
 
           wishlistButtons.forEach(button => {
-            // Create the new button with "add" functionality
             const newButton = document.createElement('button');
             newButton.setAttribute('onclick', `addToWishlist('${productId}')`);
-            newButton.className = 'w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-primary-accent hover:text-white transition-colors duration-300';
+            newButton.className = 'w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300';
 
             newButton.innerHTML = `
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -398,7 +393,6 @@
                     </svg>
                 `;
 
-            // Replace the old button with the new one
             button.parentNode.replaceChild(newButton, button);
           });
           showToast('Product removed from wishlist successfully', 'success');
