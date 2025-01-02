@@ -82,10 +82,7 @@ router.route('/cart')
     .post(userCartController.addToCart)
     .patch(userCartController.updateQuantity)
     .put(userCartController.removeFromCart)
-router.post('/cart/apply-coupon', userCartController.applyCoupon)
 router.post('/cart/clear', userCartController.clearCart)
-router.post('/cart/apply-coupon', userCartController.applyCoupon);
-router.post('/cart/remove-coupon', userCartController.removeCoupon);
 
 //---- user checkout/order management ----
 router.get('/checkout', userCheckController.getCheckout);

@@ -16,14 +16,7 @@ const cartSchema = new mongoose.Schema({
         type: Number,
         required: true
        }
-    }],
-    discount: {
-        type: Number,
-        default: 0
-    },
-    couponCode: {
-        type: String
-    }
+    }]
 }, { timestamps: true });
 
 export default mongoose.model("cart", cartSchema);
