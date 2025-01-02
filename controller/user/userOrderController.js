@@ -821,9 +821,13 @@ const downloadInvoice = async (req, res) => {
       .moveDown(0.5);
 
     doc.font('NotoSans')
-      .text(`Subtotal: ₹${baseAmount.toFixed(2)}`)
-      .text(`Coupon Discount: ₹${couponDiscount.toFixed(2)}`)
-      .moveDown(0.5);
+      .text(`Subtotal: ₹${baseAmount.toFixed(2)}`);
+
+    // Only show coupon discount if it exists and is greater than 0
+    if (couponDiscount > 0) {
+      doc.text(`Coupon Discount: ₹${couponDiscount.toFixed(2)}`);
+    }
+    doc.moveDown(0.5);
 
     doc.font('NotoSans-Bold')
       .text(`Final Amount: ₹${finalAmount.toFixed(2)}`, { color: 'blue' })
