@@ -1,202 +1,200 @@
 <%- include("../partials/header") %>
 
 
-<div class="flex flex-col md:flex-row">
-  <%- include('../partials/usersidebar') %>
-  
-  <!-- Main Content -->
-  <main class="flex-grow p-4 md:py-12">
-    <div class="max-w-6xl mx-auto">
-      <!-- Breadcrumbs -->
-      <nav class="flex mb-6 text-sm">
-        <a href="/home" class="text-gray-500 hover:text-primary-accent">Home</a>
-        <span class="mx-2 text-gray-500">/</span>
-        <a href="/profile/cart" class="text-gray-500 hover:text-primary-accent">Cart</a>
-        <span class="mx-2 text-gray-500">/</span>
-        <span class="text-gray-800">Checkout</span>
-      </nav>
+  <div class="flex flex-col md:flex-row">
+    <%- include('../partials/usersidebar') %>
 
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h1 class="text-2xl font-semibold text-gray-800 mb-6">Checkout</h1>
+      <!-- Main Content -->
+      <main class="flex-grow p-4 md:py-12">
+        <div class="max-w-6xl mx-auto">
+          <!-- Breadcrumbs -->
+          <nav class="flex mb-6 text-sm">
+            <a href="/home" class="text-gray-500 hover:text-primary-accent">Home</a>
+            <span class="mx-2 text-gray-500">/</span>
+            <a href="/profile/cart" class="text-gray-500 hover:text-primary-accent">Cart</a>
+            <span class="mx-2 text-gray-500">/</span>
+            <span class="text-gray-800">Checkout</span>
+          </nav>
 
-        <!-- Delivery Address Section -->
-        <div class="mb-8">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-semibold">Delivery Address</h2>
-            <% if (addresses.length < 4) { %>
-              <button onclick="toggleAddAddress()" 
-                      class="text-primary-accent hover:underline">
-                + Add New Address
-              </button>
-            <% } %>
-          </div>
+          <div class="bg-white rounded-lg shadow-lg p-6">
+            <h1 class="text-2xl font-semibold text-gray-800 mb-6">Checkout</h1>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <% addresses.forEach((address, index) => { %>
-              <div class="border rounded-lg p-4 relative">
-                <input type="radio" name="selectedAddress" value="<%= address._id %>" 
-                       class="absolute right-4 top-4"
-                       <%= index === 0 ? 'checked' : '' %>>
-                <h3 class="font-semibold"><%= address.name %></h3>
-                <p class="text-gray-600">
-                  <%= address.houseName %>,<%= address.localitystreet %><br>
-                  <%= address.city %>, <%= address.state %> <%= address.pincode %><br>
-                  Phone: <%= address.phone %>
-                </p>
-                <div class="mt-2">
-                  <button onclick="editAddress('<%= address._id %>')" 
-                          class="text-primary-accent hover:underline mr-2">
-                    Edit
+            <!-- Delivery Address Section -->
+            <div class="mb-8">
+              <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">Delivery Address</h2>
+                <% if (addresses.length < 4) { %>
+                  <button onclick="toggleAddAddress()" class="text-primary-accent hover:underline">
+                    + Add New Address
                   </button>
-                </div>
-              </div>
-            <% }) %>
-          </div>
-        </div>
-
-        <!-- Order Summary -->
-        <div class="mb-8">
-          <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
-          <div class="space-y-4">
-            <% cart.items.forEach(item => { %>
-              <div class="cart-item flex items-center border rounded-lg p-4" data-product="<%= item.productId._id %>">
-                <div class="w-24 h-24 flex-shrink-0">
-                  <img src="<%= item.productId.images[0].path %>" 
-                       alt="<%= item.productId.name %>"
-                       class="w-full h-full object-cover rounded">
-                </div>
-                <div class="ml-4 flex-grow">
-                  <div class="flex justify-between items-start">
-                    <div>
-                      <h3 class="font-semibold"><%= item.productId.name %></h3>
-                      <p class="text-gray-600 text-sm item-price">
-                        <% if (item.productId.discount > 0) { %>
-                          ₹<%= (item.productId.price * (1 - item.productId.discount/100)).toFixed(2) %>
-                          <span class="line-through text-gray-400">₹<%= item.productId.price.toFixed(2) %></span>
-                        <% } else { %>
-                          ₹<%= item.productId.price.toFixed(2) %>
-                        <% } %>
-                      </p>
-                    </div>
-                  </div>
-                  <div class="mt-4 flex items-center">
-                    <span class="text-gray-600">Quantity: <%= item.quantity %></span>
-                    <p class="ml-auto font-semibold item-total">
-                      ₹<%= ((item.productId.price * (1 - item.productId.discount/100)) * item.quantity).toFixed(2) %>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            <% }) %>
-          </div>
-
-          <!-- Price Details -->
-          <div class="mt-6 border-t pt-4">
-            <h3 class="font-semibold mb-2">Price Details</h3>
-            <div class="space-y-2">
-              <div class="flex justify-between">
-                <span>Original Price</span>
-                <span data-subtotal>₹<%= originalPrice.toFixed(2) %></span>
-              </div>
-              <div class="flex justify-between">
-                <span>Shipping</span>
-                <span>Free</span>
-              </div>
-             
-              <div class="flex justify-between text-green-600">
-                <span>Items discount</span>
-                <span data-total-savings>₹<%= totalSavings.toFixed(2) %></span>
-              </div>
-              <% if (cart.discount > 0) { %>
-                <div class="flex justify-between text-green-600">
-                  <span>Coupon Discount</span>
-                  <span>-₹<%= cart.discount.toFixed(2) %></span>
-                </div>
-              <% } %>
-              <div class="border-t pt-2 mt-2">
-                <div class="flex justify-between font-semibold">
-                  <span>Total Amount</span>
-                  <span data-total>₹<%= total.toFixed(2) %></span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Payment Method -->
-        <div class="mb-8">
-          <h2 class="text-xl font-semibold mb-4">Payment Method</h2>
-          <div class="space-y-3">
-            <!-- Add Wallet Option -->
-            <div class="border rounded-lg p-4">
-              <label class="flex items-center">
-                <input type="radio" name="paymentMethod" value="wallet" 
-                       class="form-radio text-primary-accent"
-                       onchange="handlePaymentMethodChange(this)"
-                       <%= wallet.balance < total ? 'disabled' : '' %>
-                       <%= wallet.balance >= total ? 'checked' : '' %>>
-                <div class="ml-2 flex-grow">
-                  <span>Pay using Wallet</span>
-                  <span class="ml-2 text-sm text-gray-600">
-                    (Balance: ₹<%= wallet.balance.toFixed(2) %>)
-                  </span>
-                  <% if (wallet.balance < total) { %>
-                    <div class="flex items-center mt-1">
-                      <span class="text-sm text-red-500">
-                        Insufficient wallet balance
-                      </span>
-                      <a href="/profile/wallet" 
-                         class="ml-2 text-sm text-primary-accent hover:underline">
-                        Add Money to Wallet
-                      </a>
-                    </div>
                   <% } %>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <% addresses.forEach((address, index)=> { %>
+                  <div class="border rounded-lg p-4 relative">
+                    <input type="radio" name="selectedAddress" value="<%= address._id %>" class="absolute right-4 top-4"
+                      <%=index===0 ? 'checked' : '' %>>
+                    <h3 class="font-semibold">
+                      <%= address.name %>
+                    </h3>
+                    <p class="text-gray-600">
+                      <%= address.houseName %>,<%= address.localitystreet %><br>
+                          <%= address.city %>, <%= address.state %>
+                              <%= address.pincode %><br>
+                                Phone: <%= address.phone %>
+                    </p>
+                    <div class="mt-2">
+                      <button onclick="editAddress('<%= address._id %>')"
+                        class="text-primary-accent hover:underline mr-2">
+                        Edit
+                      </button>
+                    </div>
+                  </div>
+                  <% }) %>
+              </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="mb-8">
+              <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
+              <div class="space-y-4">
+                <% cart.items.forEach(item=> { %>
+                  <div class="cart-item flex items-center border rounded-lg p-4"
+                    data-product="<%= item.productId._id %>">
+                    <div class="w-24 h-24 flex-shrink-0">
+                      <img src="<%= item.productId.images[0].path %>" alt="<%= item.productId.name %>"
+                        class="w-full h-full object-cover rounded">
+                    </div>
+                    <div class="ml-4 flex-grow">
+                      <div class="flex justify-between items-start">
+                        <div>
+                          <h3 class="font-semibold">
+                            <%= item.productId.name %>
+                          </h3>
+                          <p class="text-gray-600 text-sm item-price">
+                            <% if (item.productId.discount> 0) { %>
+                              ₹<%= (item.productId.price * (1 - item.productId.discount/100)).toFixed(2) %>
+                                <span class="line-through text-gray-400">₹<%= item.productId.price.toFixed(2) %></span>
+                                <% } else { %>
+                                  ₹<%= item.productId.price.toFixed(2) %>
+                                    <% } %>
+                          </p>
+                        </div>
+                      </div>
+                      <div class="mt-4 flex items-center">
+                        <span class="text-gray-600">Quantity: <%= item.quantity %></span>
+                        <p class="ml-auto font-semibold item-total">
+                          ₹<%= ((item.productId.price * (1 - item.productId.discount/100)) * item.quantity).toFixed(2)
+                            %>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <% }) %>
+              </div>
+
+              <!-- Price Details -->
+              <div class="mt-6 border-t pt-4">
+                <h3 class="font-semibold mb-2">Price Details</h3>
+                <div class="space-y-2">
+                  <div class="flex justify-between">
+                    <span>Original Price</span>
+                    <span data-subtotal>₹<%= originalPrice.toFixed(2) %></span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span>Shipping</span>
+                    <span>Free</span>
+                  </div>
+
+                  <div class="flex justify-between text-green-600">
+                    <span>Items discount</span>
+                    <span data-total-savings>₹<%= totalSavings.toFixed(2) %></span>
+                  </div>
+                  <% if (cart.discount> 0) { %>
+                    <div class="flex justify-between text-green-600">
+                      <span>Coupon Discount</span>
+                      <span>-₹<%= cart.discount.toFixed(2) %></span>
+                    </div>
+                    <% } %>
+                      <div class="border-t pt-2 mt-2">
+                        <div class="flex justify-between font-semibold">
+                          <span>Total Amount</span>
+                          <span data-total>₹<%= total.toFixed(2) %></span>
+                        </div>
+                      </div>
                 </div>
-              </label>
+              </div>
             </div>
-            
-            <!-- Existing payment options -->
-            <div class="border rounded-lg p-4">
-              <label class="flex items-center">
-                <input type="radio" name="paymentMethod" value="cod" 
-                       class="form-radio text-primary-accent"
-                       onchange="handlePaymentMethodChange(this)"
-                       <%= wallet.balance >= total ? '' : 'checked' %>>
-                <span class="ml-2">Cash on Delivery</span>
-              </label>
+
+            <!-- Payment Method -->
+            <div class="mb-8">
+              <h2 class="text-xl font-semibold mb-4">Payment Method</h2>
+              <div class="space-y-3">
+                <!-- Add Wallet Option -->
+                <div class="border rounded-lg p-4">
+                  <label class="flex items-center">
+                    <input type="radio" name="paymentMethod" value="wallet" class="form-radio text-primary-accent"
+                      onchange="handlePaymentMethodChange(this)" <%=wallet.balance < total ? 'disabled' : '' %>
+                    <%= wallet.balance>= total ? 'checked' : '' %>>
+                      <div class="ml-2 flex-grow">
+                        <span>Pay using Wallet</span>
+                        <span class="ml-2 text-sm text-gray-600">
+                          (Balance: ₹<%= wallet.balance.toFixed(2) %>)
+                        </span>
+                        <% if (wallet.balance < total) { %>
+                          <div class="flex items-center mt-1">
+                            <span class="text-sm text-red-500">
+                              Insufficient wallet balance
+                            </span>
+                            <a href="/wallet" class="ml-2 text-sm text-primary-accent hover:underline">
+                              Add Money to Wallet
+                            </a>
+                          </div>
+                          <% } %>
+                      </div>
+                  </label>
+                </div>
+
+                <!-- Existing payment options -->
+                <div class="border rounded-lg p-4">
+                  <label class="flex items-center">
+                    <input type="radio" name="paymentMethod" value="cod" class="form-radio text-primary-accent"
+                      onchange="handlePaymentMethodChange(this)" <%=wallet.balance>= total ? '' : 'checked' %>>
+                    <span class="ml-2">Cash on Delivery</span>
+                  </label>
+                </div>
+                <div class="border rounded-lg p-4">
+                  <label class="flex items-center">
+                    <input type="radio" name="paymentMethod" value="online" class="form-radio text-primary-accent"
+                      onchange="handlePaymentMethodChange(this)">
+                    <span class="ml-2">Pay Online (UPI/Card/NetBanking)</span>
+                  </label>
+                </div>
+              </div>
             </div>
-            <div class="border rounded-lg p-4">
-              <label class="flex items-center">
-                <input type="radio" name="paymentMethod" value="online" 
-                       class="form-radio text-primary-accent"
-                       onchange="handlePaymentMethodChange(this)">
-                <span class="ml-2">Pay Online (UPI/Card/NetBanking)</span>
-              </label>
-            </div>
+
+            <!-- Place Order Button -->
+            <button onclick="placeOrder()"
+              class="w-full bg-primary-accent text-white px-6 py-3 rounded-lg hover:bg-primary-accent/90">
+              Place Order
+            </button>
           </div>
         </div>
+      </main>
+  </div>
 
-        <!-- Place Order Button -->
-        <button onclick="placeOrder()" 
-                class="w-full bg-primary-accent text-white px-6 py-3 rounded-lg hover:bg-primary-accent/90">
-          Place Order
+  <!-- Add Address Modal -->
+  <div id="addAddressModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold text-gray-800">Add New Address</h2>
+        <button onclick="toggleAddAddress()" class="text-gray-600 hover:text-gray-900">
+          <i class="fas fa-times"></i>
         </button>
       </div>
-    </div>
-  </main>
-</div>
 
-<!-- Add Address Modal -->
-<div id="addAddressModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
-  <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-semibold text-gray-800">Add New Address</h2>
-      <button onclick="toggleAddAddress()" class="text-gray-600 hover:text-gray-900">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
-    
-    <form id="addAddressForm">
+      <form id="addAddressForm">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-gray-600 mb-2">Name</label>
@@ -204,11 +202,13 @@
           </div>
           <div>
             <label class="block text-gray-600 mb-2">House Name</label>
-            <input type="text" name="houseName" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <input type="text" name="houseName"
+              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
           </div>
           <div>
             <label class="block text-gray-600 mb-2">Locality/Street</label>
-            <input type="text" name="localityStreet" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <input type="text" name="localityStreet"
+              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
           </div>
           <div>
             <label class="block text-gray-600 mb-2">City</label>
@@ -258,7 +258,8 @@
           </div>
           <div>
             <label class="block text-gray-600 mb-2">Pincode</label>
-            <input type="text" name="pincode" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <input type="text" name="pincode"
+              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
           </div>
           <div>
             <label class="block text-gray-600 mb-2">Phone</label>
@@ -266,30 +267,33 @@
           </div>
           <div>
             <label class="block text-gray-600 mb-2">Alternate Phone (Optional)</label>
-            <input type="tel" name="alternatePhone" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <input type="tel" name="alternatePhone"
+              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
           </div>
         </div>
         <div class="flex justify-end space-x-4 mt-4">
-          <button type="button" onclick="toggleAddAddress()" class="px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
-          <button type="button" onclick="submitAddAddress()" class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-primary-accent/90">
+          <button type="button" onclick="toggleAddAddress()"
+            class="px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
+          <button type="button" onclick="submitAddAddress()"
+            class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-primary-accent/90">
             Save Address
           </button>
         </div>
       </form>
-  </div>
-</div>
-
-<!-- Edit Address Modal -->
-<div id="editAddressModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
-  <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-semibold text-gray-800">Edit Address</h2>
-      <button onclick="toggleEditAddress()" class="text-gray-600 hover:text-gray-900">
-        <i class="fas fa-times"></i>
-      </button>
     </div>
-    
-    <form id="editAddressForm">
+  </div>
+
+  <!-- Edit Address Modal -->
+  <div id="editAddressModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold text-gray-800">Edit Address</h2>
+        <button onclick="toggleEditAddress()" class="text-gray-600 hover:text-gray-900">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <form id="editAddressForm">
         <input type="hidden" name="addressId">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -298,11 +302,13 @@
           </div>
           <div>
             <label class="block text-gray-600 mb-2">House Name</label>
-            <input type="text" name="houseName" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <input type="text" name="houseName"
+              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
           </div>
           <div>
             <label class="block text-gray-600 mb-2">Locality/Street</label>
-            <input type="text" name="localityStreet" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <input type="text" name="localityStreet"
+              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
           </div>
           <div>
             <label class="block text-gray-600 mb-2">City</label>
@@ -352,7 +358,8 @@
           </div>
           <div>
             <label class="block text-gray-600 mb-2">Pincode</label>
-            <input type="text" name="pincode" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <input type="text" name="pincode"
+              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
           </div>
           <div>
             <label class="block text-gray-600 mb-2">Phone</label>
@@ -360,249 +367,252 @@
           </div>
           <div>
             <label class="block text-gray-600 mb-2">Alternate Phone (Optional)</label>
-            <input type="tel" name="alternatePhone" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <input type="tel" name="alternatePhone"
+              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
           </div>
         </div>
         <div class="flex justify-end space-x-4 mt-4">
-          <button type="button" onclick="toggleEditAddress()" class="px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
-          <button type="button" onclick="submitEditAddress()" class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-primary-accent/90">
+          <button type="button" onclick="toggleEditAddress()"
+            class="px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
+          <button type="button" onclick="submitEditAddress()"
+            class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-primary-accent/90">
             Update Address
           </button>
         </div>
       </form>
+    </div>
   </div>
-</div>
 
-<!-- Add Razorpay Script -->
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <!-- Add Razorpay Script -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
-<script>
-let razorpayInstance = null;
+  <script>
+    let razorpayInstance = null;
 
-function handlePaymentMethodChange(radio) {
-  const placeOrderBtn = document.querySelector('button[onclick="placeOrder()"]');
-  placeOrderBtn.textContent = radio.value === 'cod' ? 'Place Order' : 'Proceed to Payment';
-}
-
-async function initializeRazorpay(orderData) {
-  const options = {
-    key: '<%= process.env.RAZORPAY_KEY_ID %>', 
-    amount: orderData.amount,
-    currency: "INR",
-    name: "TechHive",
-    description: "Order Payment",
-    order_id: orderData.razorpayOrderId,
-    handler: function (response) {
-      // Handle successful payment
-      verifyPayment({
-        razorpay_payment_id: response.razorpay_payment_id,
-        razorpay_order_id: response.razorpay_order_id,
-        razorpay_signature: response.razorpay_signature,
-        orderId: orderData.orderId
-      });
-    },
-    prefill: {
-      name: "<%= user.name %>",
-      email: "<%= user.email %>",
-      contact: "<%= addresses[0]?.phone %>"
-    },
-    theme: {
-      color: "#DA0037"
+    function handlePaymentMethodChange(radio) {
+      const placeOrderBtn = document.querySelector('button[onclick="placeOrder()"]');
+      placeOrderBtn.textContent = radio.value === 'cod' ? 'Place Order' : 'Proceed to Payment';
     }
-  };
 
-  razorpayInstance = new Razorpay(options);
-  razorpayInstance.open();
-}
+    async function initializeRazorpay(orderData) {
+      const options = {
+        key: '<%= process.env.RAZORPAY_KEY_ID %>',
+        amount: orderData.amount,
+        currency: "INR",
+        name: "TechHive",
+        description: "Order Payment",
+        order_id: orderData.razorpayOrderId,
+        handler: function (response) {
+          // Handle successful payment
+          verifyPayment({
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_signature: response.razorpay_signature,
+            orderId: orderData.orderId
+          });
+        },
+        prefill: {
+          name: "<%= user.name %>",
+          email: "<%= user.email %>",
+          contact: "<%= addresses[0]?.phone %>"
+        },
+        theme: {
+          color: "#DA0037"
+        }
+      };
 
-async function placeOrder() {
-  const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
-  const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+      razorpayInstance = new Razorpay(options);
+      razorpayInstance.open();
+    }
 
-  if (!selectedAddress) {
-    showToast('Please select a delivery address', 'error');
-    return;
-  }
+    async function placeOrder() {
+      const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
+      const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
 
-  const orderData = {
-    addressId: selectedAddress.value,
-    paymentMethod: paymentMethod.value
-  };
-
-  try {
-    const response = await axios.post('/order/place', orderData);
-    
-    if (response.data.success) {
-      if (paymentMethod.value === 'online') {
-        // Initialize Razorpay for online payment
-        await initializeRazorpay(response.data);
-      } else {
-        // Redirect for COD orders
-        window.location.href = `/order/success/${response.data.orderId}`;
+      if (!selectedAddress) {
+        showToast('Please select a delivery address', 'error');
+        return;
       }
-    } else {
-      showToast(response.data.message || 'Failed to place order', 'error');
+
+      const orderData = {
+        addressId: selectedAddress.value,
+        paymentMethod: paymentMethod.value
+      };
+
+      try {
+        const response = await axios.post('/checkout/placeorder', orderData);
+
+        if (response.data.success) {
+          if (paymentMethod.value === 'online') {
+            // Initialize Razorpay for online payment
+            await initializeRazorpay(response.data);
+          } else {
+            // Redirect for COD orders
+            window.location.href = `/order/success/${response.data.orderId}`;
+          }
+        } else {
+          showToast(response.data.message || 'Failed to place order', 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('Error placing order', 'error');
+      }
     }
-  } catch (error) {
-    console.error('Error:', error);
-    showToast('Error placing order', 'error');
-  }
-}
 
-async function verifyPayment(paymentData) {
-  try {
-    const response = await axios.post('/order/verify-payment', paymentData);
-    if (response.data.success) {
-      window.location.href = `/order/success/${paymentData.orderId}`;
-    } else {
-      showToast('Payment verification failed', 'error');
+    async function verifyPayment(paymentData) {
+      try {
+        const response = await axios.post('/checkout/verifypayment', paymentData);
+        if (response.data.success) {
+          window.location.href = `/order/success/${paymentData.orderId}`;
+        } else {
+          showToast('Payment verification failed', 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('Payment verification failed', 'error');
+      }
     }
-  } catch (error) {
-    console.error('Error:', error);
-    showToast('Payment verification failed', 'error');
-  }
-}
 
-// toggle add address modal
-  function toggleAddAddress() {
-    const modal = document.getElementById('addAddressModal');
-    modal.classList.toggle('hidden');
-    modal.classList.toggle('flex');
-    
-    if (modal.classList.contains('hidden')) {
-      document.getElementById('addAddressForm').reset();
+    // toggle add address modal
+    function toggleAddAddress() {
+      const modal = document.getElementById('addAddressModal');
+      modal.classList.toggle('hidden');
+      modal.classList.toggle('flex');
+
+      if (modal.classList.contains('hidden')) {
+        document.getElementById('addAddressForm').reset();
+      }
     }
-  }
 
-  // toggle edit address modal
+    // toggle edit address modal
 
-  function toggleEditAddress() {
-    const modal = document.getElementById('editAddressModal');
-    modal.classList.toggle('hidden');
-    modal.classList.toggle('flex');
-    
-    if (modal.classList.contains('hidden')) {
-      document.getElementById('editAddressForm').reset();
+    function toggleEditAddress() {
+      const modal = document.getElementById('editAddressModal');
+      modal.classList.toggle('hidden');
+      modal.classList.toggle('flex');
+
+      if (modal.classList.contains('hidden')) {
+        document.getElementById('editAddressForm').reset();
+      }
     }
-  }
 
-  // validate address forms
+    // validate address forms
 
-  function validateAddressForm(data) {
-    // Basic validation
-    if (!data.name || !data.houseName || !data.localityStreet || 
+    function validateAddressForm(data) {
+      // Basic validation
+      if (!data.name || !data.houseName || !data.localityStreet ||
         !data.city || !data.state || !data.pincode || !data.phone) {
-      showToast('Please fill in all required fields', 'error');
-      return false;
-    }
-
-    // Pincode validation (6 digits)
-    if (!/^\d{6}$/.test(data.pincode)) {
-      showToast('Please enter a valid 6-digit pincode', 'error');
-      return false;
-    }
-
-    // Phone number validation (10 digits)
-    if (!/^\d{10}$/.test(data.phone)) {
-      showToast('Please enter a valid 10-digit phone number', 'error');
-      return false;
-    }
-
-    // Alternate phone validation (if provided)
-    if (data.alternatePhone && !/^\d{10}$/.test(data.alternatePhone)) {
-      showToast('Please enter a valid 10-digit alternate phone number', 'error');
-      return false;
-    }
-
-    return true;
-  }
-// submit new address 
-  async function submitAddAddress() {
-    try {
-      const form = document.getElementById('addAddressForm');
-      const formData = new FormData(form);
-      const data = Object.fromEntries(formData.entries());
-
-      if (!validateAddressForm(data)) return;
-
-      const response = await axios.post('/account/add-address', data);
-
-      if (response.data.success) {
-        toggleAddAddress();
-        showToast('Address added successfully', 'success');
-        setTimeout(() => {
-          window.location.reload();
-        }, 150);
-      } else {
-        showToast(response.data.message || 'Failed to add address', 'error');
+        showToast('Please fill in all required fields', 'error');
+        return false;
       }
-    } catch (error) {
-      const errorMessage = error.response?.data?.message || 'Failed to add address';
-      showToast(errorMessage, 'error');
-    }
-  }
 
-  async function editAddress(addressId) {
-    try {
+      // Pincode validation (6 digits)
+      if (!/^\d{6}$/.test(data.pincode)) {
+        showToast('Please enter a valid 6-digit pincode', 'error');
+        return false;
+      }
+
+      // Phone number validation (10 digits)
+      if (!/^\d{10}$/.test(data.phone)) {
+        showToast('Please enter a valid 10-digit phone number', 'error');
+        return false;
+      }
+
+      // Alternate phone validation (if provided)
+      if (data.alternatePhone && !/^\d{10}$/.test(data.alternatePhone)) {
+        showToast('Please enter a valid 10-digit alternate phone number', 'error');
+        return false;
+      }
+
+      return true;
+    }
+    // submit new address 
+    async function submitAddAddress() {
+      try {
+        const form = document.getElementById('addAddressForm');
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+
+        if (!validateAddressForm(data)) return;
+
+        const response = await axios.post('/addresses', data);
+
+        if (response.data.success) {
+          toggleAddAddress();
+          showToast('Address added successfully', 'success');
+          setTimeout(() => {
+            window.location.reload();
+          }, 150);
+        } else {
+          showToast(response.data.message || 'Failed to add address', 'error');
+        }
+      } catch (error) {
+        const errorMessage = error.response?.data?.message || 'Failed to add address';
+        showToast(errorMessage, 'error');
+      }
+    }
+
+    async function editAddress(addressId) {
+      try {
         // get address details  
-      const response = await axios.get(`/account/address/${addressId}`);
-      const address = response.data.address;
+        const response = await axios.get(`/address/${addressId}`);
+        const address = response.data.address;
 
-      const form = document.getElementById('editAddressForm');
-      form.querySelector('[name="addressId"]').value = addressId;
-      form.querySelector('[name="name"]').value = address.name;
-      form.querySelector('[name="houseName"]').value = address.houseName;
-      form.querySelector('[name="localityStreet"]').value = address.localityStreet;
-      form.querySelector('[name="city"]').value = address.city;
-      form.querySelector('[name="state"]').value = address.state;
-      form.querySelector('[name="pincode"]').value = address.pincode;
-      form.querySelector('[name="phone"]').value = address.phone;
-      form.querySelector('[name="alternatePhone"]').value = address.alternatePhone || '';
+        const form = document.getElementById('editAddressForm');
+        form.querySelector('[name="addressId"]').value = addressId;
+        form.querySelector('[name="name"]').value = address.name;
+        form.querySelector('[name="houseName"]').value = address.houseName;
+        form.querySelector('[name="localityStreet"]').value = address.localityStreet;
+        form.querySelector('[name="city"]').value = address.city;
+        form.querySelector('[name="state"]').value = address.state;
+        form.querySelector('[name="pincode"]').value = address.pincode;
+        form.querySelector('[name="phone"]').value = address.phone;
+        form.querySelector('[name="alternatePhone"]').value = address.alternatePhone || '';
 
-      toggleEditAddress();
-    } catch (error) {
-      console.error('Error fetching address:', error);
-      showToast('Failed to load address details', 'error');
-    }
-  }
-// submit edited address
-  async function submitEditAddress() {
-    try {
-      const form = document.getElementById('editAddressForm');
-      const addressId = form.querySelector('[name="addressId"]').value;
-      const formData = new FormData(form);
-      const data = Object.fromEntries(formData.entries());
-      
-      if (!validateAddressForm(data)) return;
-
-      const response = await axios.put(`/account/address/${addressId}`, data);
-
-      if (response.data.success) {
         toggleEditAddress();
-        showToast('Address updated successfully', 'success');
-        setTimeout(() => {
-          window.location.reload();
-        }, 1500);
-      } else {
-        showToast(response.data.message || 'Failed to update address', 'error');
+      } catch (error) {
+        console.error('Error fetching address:', error);
+        showToast('Failed to load address details', 'error');
       }
-    } catch (error) {
-      console.error('Error updating address:', error);
-      showToast('Failed to update address', 'error');
     }
-  }
+    // submit edited address
+    async function submitEditAddress() {
+      try {
+        const form = document.getElementById('editAddressForm');
+        const addressId = form.querySelector('[name="addressId"]').value;
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
 
-  document.getElementById('addAddressModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-      toggleAddAddress();
+        if (!validateAddressForm(data)) return;
+
+        const response = await axios.put(`/address/${addressId}`, data);
+
+        if (response.data.success) {
+          toggleEditAddress();
+          showToast('Address updated successfully', 'success');
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        } else {
+          showToast(response.data.message || 'Failed to update address', 'error');
+        }
+      } catch (error) {
+        console.error('Error updating address:', error);
+        showToast('Failed to update address', 'error');
+      }
     }
-  });
 
-  document.getElementById('editAddressModal').addEventListener('click', function(e) {
-    if (e.target === this) {
-      toggleEditAddress();
-    }
-  });
-</script>
+    document.getElementById('addAddressModal').addEventListener('click', function (e) {
+      if (e.target === this) {
+        toggleAddAddress();
+      }
+    });
 
-<%- include('../partials/footer') %>
+    document.getElementById('editAddressModal').addEventListener('click', function (e) {
+      if (e.target === this) {
+        toggleEditAddress();
+      }
+    });
+  </script>
+
+  <%- include('../partials/footer') %>

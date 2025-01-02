@@ -1,73 +1,71 @@
 <%- include('../partials/header') %>
 
-
-
   <div class="flex flex-col md:flex-row">
     <!-- Sidebar -->
     <%- include('../partials/usersidebar') %>
 
-    <!-- Main Content -->
-    <main class="flex-grow p-4 md:py-12">
-      <% if (locals.message && locals.alertType) { %>
-        <div id="alertMessage" class="mb-4 p-3 rounded-md 
+      <!-- Main Content -->
+      <main class="flex-grow p-4 md:py-12">
+        <% if (locals.message && locals.alertType) { %>
+          <div id="alertMessage" class="mb-4 p-3 rounded-md 
            <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
-          <%= message %>
-        </div>
-        <% } %>
-
-          <div class="bg-white rounded-lg shadow-lg p-6">
-            <h1 class="text-2xl font-semibold text-gray-800 mb-6">Welcome Back, <%= user.fullname %>!</h1>
-
-            <!-- Dashboard Stats -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <div class="bg-gray-50 p-4 rounded-lg">
-                <div class="flex items-center">
-                  <i class="fas fa-shopping-bag text-primary-accent text-2xl"></i>
-                  <div class="ml-4">
-                    <p class="text-gray-600">Total Orders</p>
-                    <h3 class="text-xl font-semibold">orderCount</h3>
-                  </div>
-                </div>
-              </div>
-
-              <div class="bg-gray-50 p-4 rounded-lg">
-                <div class="flex items-center">
-                  <i class="fas fa-wallet text-primary-accent text-2xl"></i>
-                  <div class="ml-4">
-                    <p class="text-gray-600">Wallet Balance</p>
-                    <h3 class="text-xl font-semibold">walletBalance</h3>
-                  </div>
-                </div>
-              </div>
-
-              <div class="bg-gray-50 p-4 rounded-lg">
-                <div class="flex items-center">
-                  <i class="fas fa-heart text-primary-accent text-2xl"></i>
-                  <div class="ml-4">
-                    <p class="text-gray-600">Wishlist Items</p>
-                    <h3 class="text-xl font-semibold">wishlistCount</h3>
-                  </div>
-                </div>
-              </div>
-
-              <div class="bg-gray-50 p-4 rounded-lg">
-                <div class="flex items-center">
-                  <i class="fas fa-ticket-alt text-primary-accent text-2xl"></i>
-                  <div class="ml-4">
-                    <p class="text-gray-600">Available Coupons</p>
-                    <h3 class="text-xl font-semibold">couponCount</h3>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Recent Orders -->
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Recent Orders</h2>
-            <div class="overflow-x-auto">
-              <!-- Add your recent orders table here -->
-            </div>
+            <%= message %>
           </div>
-    </main>
+          <% } %>
+
+            <div class="bg-white rounded-lg shadow-lg p-6">
+              <h1 class="text-2xl font-semibold text-gray-800 mb-6">Welcome Back, <%= user.fullname %>!</h1>
+
+              <!-- Dashboard Stats -->
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="bg-gray-50 p-4 rounded-lg">
+                  <div class="flex items-center">
+                    <i class="fas fa-shopping-bag text-primary-accent text-2xl"></i>
+                    <div class="ml-4">
+                      <p class="text-gray-600">Total Orders</p>
+                      <h3 class="text-xl font-semibold">orderCount</h3>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-lg">
+                  <div class="flex items-center">
+                    <i class="fas fa-wallet text-primary-accent text-2xl"></i>
+                    <div class="ml-4">
+                      <p class="text-gray-600">Wallet Balance</p>
+                      <h3 class="text-xl font-semibold">walletBalance</h3>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-lg">
+                  <div class="flex items-center">
+                    <i class="fas fa-heart text-primary-accent text-2xl"></i>
+                    <div class="ml-4">
+                      <p class="text-gray-600">Wishlist Items</p>
+                      <h3 class="text-xl font-semibold">wishlistCount</h3>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-lg">
+                  <div class="flex items-center">
+                    <i class="fas fa-ticket-alt text-primary-accent text-2xl"></i>
+                    <div class="ml-4">
+                      <p class="text-gray-600">Available Coupons</p>
+                      <h3 class="text-xl font-semibold">couponCount</h3>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Recent Orders -->
+              <h2 class="text-xl font-semibold text-gray-800 mb-4">Recent Orders</h2>
+              <div class="overflow-x-auto">
+                <!-- Add your recent orders table here -->
+              </div>
+            </div>
+      </main>
   </div>
 
 

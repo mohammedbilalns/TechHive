@@ -108,7 +108,7 @@ const getSalesReportData = async (req, res) => {
     const formattedOrders = await Promise.all(orders.map(order => {
       // Filter only delivered items
       const deliveredItems = order.items.filter(item => item.status === 'delivered');
-      
+
       // Skip orders with no delivered items
       if (deliveredItems.length === 0) return null;
 
@@ -116,7 +116,7 @@ const getSalesReportData = async (req, res) => {
       const itemTotals = deliveredItems.reduce((acc, item) => {
         const itemOriginalAmount = item.price * item.quantity;
         const itemDiscountAmount = (item.price * (item.discount / 100)) * item.quantity;
-        
+
         acc.originalAmount += itemOriginalAmount;
         acc.offerDiscount += itemDiscountAmount;
         return acc;
@@ -125,8 +125,8 @@ const getSalesReportData = async (req, res) => {
       // Calculate coupon discount proportionally for delivered items
       const orderTotalAmount = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
       const deliveredItemsRatio = itemTotals.originalAmount / orderTotalAmount;
-      const couponDiscount = order.coupon?.discount 
-        ? (order.coupon.discount * deliveredItemsRatio) 
+      const couponDiscount = order.coupon?.discount
+        ? (order.coupon.discount * deliveredItemsRatio)
         : 0;
 
       const totalDiscount = couponDiscount + itemTotals.offerDiscount;

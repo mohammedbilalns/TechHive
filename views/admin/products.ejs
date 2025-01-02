@@ -1,11 +1,8 @@
 <%- include('../partials/adminheader') %>
 
-
-
   <div class="flex min-h-screen">
     <!-- Sidebar -->
     <%- include('../partials/adminsidebar') %>
-
       <!-- Main Content -->
       <main class="md:ml-64 w-full min-h-screen bg-gray-50 transition-all duration-300 ease-in-out">
         <div class="pt-14 md:pt-0 p-4">
@@ -166,11 +163,7 @@
       </main>
   </div>
 
-
-
   <%- include('../partials/adminfooter') %>
-
- 
     <script>
       async function toggleProductStatus(productId, action) {
         const confirmed = await customConfirm(

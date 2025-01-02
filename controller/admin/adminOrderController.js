@@ -69,7 +69,7 @@ const updateOrderItemStatus = async (req, res) => {
       'processing': ['shipped', 'delivered', 'cancelled'],
       'shipped': ['delivered', 'cancelled'],
       'delivered': ['return requested'],
-      'return requested': ['returned', 'delivered'], 
+      'return requested': ['returned', 'delivered'],
       'returned': [],
       'cancelled': []
     };
@@ -79,13 +79,13 @@ const updateOrderItemStatus = async (req, res) => {
     }
 
     // Handle return approval or cancellation refund
-    if ((status === 'returned' && orderItem.status === 'return requested') || 
-        (status === 'cancelled' && order.paymentStatus === 'paid')) {
+    if ((status === 'returned' && orderItem.status === 'return requested') ||
+      (status === 'cancelled' && order.paymentStatus === 'paid')) {
       // Calculate base refund amount 
       const itemPrice = orderItem.price;
       const itemDiscount = orderItem.discount;
       const quantity = orderItem.quantity;
-      const baseRefundAmount = (itemPrice * (1 - itemDiscount/100)) * quantity;
+      const baseRefundAmount = (itemPrice * (1 - itemDiscount / 100)) * quantity;
 
       // Calculate coupon discount per item if coupon was applied
       let couponDiscountPerItem = 0;
@@ -147,7 +147,7 @@ const updateOrderItemStatus = async (req, res) => {
     await order.save();
 
     // Check if all items are delivered and update order payment status
-    const allItemsDelivered = order.items.every(item => 
+    const allItemsDelivered = order.items.every(item =>
       item.status === 'delivered'
     );
 
@@ -157,7 +157,7 @@ const updateOrderItemStatus = async (req, res) => {
     }
 
     // Check if all items are returned/cancelled and update order payment status
-    const allItemsReturnedOrCancelled = order.items.every(item => 
+    const allItemsReturnedOrCancelled = order.items.every(item =>
       ['cancelled', 'returned'].includes(item.status)
     );
 

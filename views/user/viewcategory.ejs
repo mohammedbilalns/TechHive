@@ -150,7 +150,7 @@
                                             </svg>
                                         </button>
                                         <% } %>
-                                        
+
                                             <% if(wishlistItems.some(id=> id.equals(product._id))) { %>
                                                 <button onclick="removeFromWishlist('<%= product._id %>')"
                                                     class="p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
@@ -445,7 +445,7 @@
 
         async function addToCart(productId) {
             try {
-                const response = await axios.post('/cart/add', { productId });
+                const response = await axios.post('/cart', { productId });
                 const data = response.data;
 
                 if (data.success) {
@@ -466,7 +466,7 @@
 
         async function addToWishlist(productId) {
             try {
-                const response = await axios.post('/wishlist/add', { productId });
+                const response = await axios.post('/wishlist', { productId });
                 const data = response.data;
 
                 if (data.success) {
@@ -501,7 +501,7 @@
 
         async function removeFromWishlist(productId) {
             try {
-                const response = await axios.post('/wishlist/remove', { productId });
+                const response = await axios.delete('/wishlist', { productId });
                 if (response.data.success) {
                     // Find all wishlist buttons for this product
                     const wishlistButtons = document.querySelectorAll(`button[onclick="removeFromWishlist('${productId}')"]`);

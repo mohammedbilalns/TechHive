@@ -174,7 +174,7 @@ const registerUser = async (req, res) => {
             })
         }
 
-        // Hash the user's password before saving it
+        // Hash the password 
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Create a new user document
@@ -577,9 +577,6 @@ const resetPassword = async (req, res) => {
         });
     }
 };
-
-
-
 
 
 export default {

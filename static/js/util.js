@@ -158,5 +158,4 @@ toastStyles.textContent = `
 `;
 document.head.appendChild(toastStyles);
 
-// Export the functions
 export { showToast, customConfirm, showAlert, closeCustomAlert }; 

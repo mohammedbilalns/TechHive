@@ -2475,6 +2475,10 @@ input::placeholder {
     height: 500px;
   }
 
+  .lg\:w-1\/2 {
+    width: 50%;
+  }
+
   .lg\:w-80 {
     width: 20rem;
   }

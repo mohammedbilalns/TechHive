@@ -1,123 +1,117 @@
 <%- include('../../partials/header') %>
-  <!-- Mobile Menu Button -->
-  <div class="md:hidden p-4 bg-gray-100 flex justify-between items-center">
-    <h1 class="text-xl font-semibold text-gray-800">My Wishlist</h1>
-    <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900">
-      <i class="fas fa-bars text-xl"></i>
-    </button>
-  </div>
+
 
   <div class="flex flex-col md:flex-row">
     <%- include('../../partials/usersidebar') %>
 
-    <!-- Main Content -->
-    <main class="flex-grow p-4 md:py-12">
-      <nav class="flex mb-6 text-sm">
-        <a href="/home" class="text-gray-500 hover:text-primary-accent">Home</a>
-        <span class="mx-2 text-gray-500">/</span>
-    
-        <span class="text-gray-800">Wishlist</span>
-    </nav>
-      <% if (locals.message && locals.alertType) { %>
-        <div id="alertMessage" class="mb-4 p-3 rounded-md 
+      <!-- Main Content -->
+      <main class="flex-grow p-4 md:py-12">
+        <nav class="flex mb-6 text-sm">
+          <a href="/home" class="text-gray-500 hover:text-primary-accent">Home</a>
+          <span class="mx-2 text-gray-500">/</span>
+
+          <span class="text-gray-800">Wishlist</span>
+        </nav>
+        <% if (locals.message && locals.alertType) { %>
+          <div id="alertMessage" class="mb-4 p-3 rounded-md 
            <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
-          <%= message %>
-        </div>
-        <% } %>
-
-          <div class="bg-white rounded-lg shadow-lg p-6">
-            <h1 class="text-2xl font-semibold text-gray-800 mb-6">My Wishlist</h1>
-
-            <% if (wishlist && wishlist?.products?.length > 0) { %>
-              <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4" id="wishlist-grid">
-                <% wishlist.products.forEach(item => { %>
-                  <div class="border rounded-lg overflow-hidden max-w-[300px]" data-product-id="<%= item._id %>">
-                    <!-- Product Image -->
-                    <div class="relative aspect-square w-full">
-                      <img src="<%= item.images[0].path %>" alt="<%= item.name %>"
-                        class="w-full h-full object-contain">
-                      <button onclick="removeFromWishlist('<%= item._id %>')"
-                        class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-red-600 hover:text-red-800">
-                        <i class="fas fa-heart"></i>
-                      </button>
-                    </div>
-
-                    <!-- Product Details -->
-                    <div class="p-3">
-                      <h3 class="font-semibold mb-2 text-sm h-10 line-clamp-2">
-                        <%= item.name %>
-                      </h3>
-                      <div class="flex items-center justify-between mb-3">
-                        <p class="text-gray-600 text-sm">₹<%= item.price %>
-                        </p>
-                        <% if (item.stock> 0) { %>
-                          <span class="text-green-600 text-xs">In Stock</span>
-                          <% } else { %>
-                            <span class="text-red-600 text-xs">Out of Stock</span>
-                            <% } %>
-                      </div>
-
-                      <!-- Action Buttons -->
-                      <div class="space-y-2">
-                        <% if (item.stock> 0) { %>
-                          <button onclick="addToCart('<%= item._id %>')"
-                            class="w-full bg-primary-accent text-white px-3 py-1.5 rounded-lg hover:bg-primary-accent/90 text-sm">
-                            Add to Cart
-                          </button>
-                          <% } %>
-                            <a href="/product/<%= item._id %>"
-                              class="block text-center w-full border border-gray-300 px-3 py-1.5 rounded-lg hover:bg-gray-50 text-sm">
-                              View Details
-                            </a>
-                      </div>
-                    </div>
-                  </div>
-                  <% }) %>
-              </div>
-
-              <!-- Add pagination controls -->
-              <% if (totalPages > 1) { %>
-                <div class="mt-8 flex justify-center items-center space-x-4">
-                  <% if (hasPrevPage) { %>
-                    <a href="/profile/wishlist?page=<%= currentPage - 1 %>" 
-                       class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                      Previous
-                    </a>
-                  <% } %>
-
-                  <% for(let i = 1; i <= totalPages; i++) { %>
-                    <a href="/profile/wishlist?page=<%= i %>"
-                       class="px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
-                      <%= i %>
-                    </a>
-                  <% } %>
-
-                  <% if (hasNextPage) { %>
-                    <a href="/profile/wishlist?page=<%= currentPage + 1 %>"
-                       class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                      Next
-                    </a>
-                  <% } %>
-                </div>
-              <% } %>
-            <% } else { %>
-              <!-- Empty Wishlist -->
-              <div class="text-center py-8">
-                <i class="fas fa-heart text-gray-400 text-4xl mb-4"></i>
-                <p class="text-gray-600">Your wishlist is empty</p>
-                <a href="/shop"
-                  class="inline-block mt-4 bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-primary-accent/90">
-                  Continue Shopping
-                </a>
-              </div>
-              <% } %>
+            <%= message %>
           </div>
-    </main>
+          <% } %>
+          
+            <div class="bg-white rounded-lg shadow-lg p-6">
+              <h1 class="text-2xl font-semibold text-gray-800 mb-6">My Wishlist</h1>
+
+              <% if (wishlist && wishlist?.products?.length> 0) { %>
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4" id="wishlist-grid">
+                  <% wishlist.products.forEach(item=> { %>
+                    <div class="border rounded-lg overflow-hidden max-w-[300px]" data-product-id="<%= item._id %>">
+                      <!-- Product Image -->
+                      <div class="relative aspect-square w-full">
+                        <img src="<%= item.images[0].path %>" alt="<%= item.name %>"
+                          class="w-full h-full object-contain">
+                        <button onclick="removeFromWishlist('<%= item._id %>')"
+                          class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-red-600 hover:text-red-800">
+                          <i class="fas fa-heart"></i>
+                        </button>
+                      </div>
+
+                      <!-- Product Details -->
+                      <div class="p-3">
+                        <h3 class="font-semibold mb-2 text-sm h-10 line-clamp-2">
+                          <%= item.name %>
+                        </h3>
+                        <div class="flex items-center justify-between mb-3">
+                          <p class="text-gray-600 text-sm">₹<%= item.price %>
+                          </p>
+                          <% if (item.stock> 0) { %>
+                            <span class="text-green-600 text-xs">In Stock</span>
+                            <% } else { %>
+                              <span class="text-red-600 text-xs">Out of Stock</span>
+                              <% } %>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="space-y-2">
+                          <% if (item.stock> 0) { %>
+                            <button onclick="addToCart('<%= item._id %>')"
+                              class="w-full bg-primary-accent text-white px-3 py-1.5 rounded-lg hover:bg-primary-accent/90 text-sm">
+                              Add to Cart
+                            </button>
+                            <% } %>
+                              <a href="/product/<%= item._id %>"
+                                class="block text-center w-full border border-gray-300 px-3 py-1.5 rounded-lg hover:bg-gray-50 text-sm">
+                                View Details
+                              </a>
+                        </div>
+                      </div>
+                    </div>
+                    <% }) %>
+                </div>
+
+                <!-- Add pagination controls -->
+                <% if (totalPages> 1) { %>
+                  <div class="mt-8 flex justify-center items-center space-x-4">
+                    <% if (hasPrevPage) { %>
+                      <a href="/profile/wishlist?page=<%= currentPage - 1 %>"
+                        class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                        Previous
+                      </a>
+                      <% } %>
+
+                        <% for(let i=1; i <=totalPages; i++) { %>
+                          <a href="/profile/wishlist?page=<%= i %>"
+                            class="px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
+                            <%= i %>
+                          </a>
+                          <% } %>
+
+                            <% if (hasNextPage) { %>
+                              <a href="/profile/wishlist?page=<%= currentPage + 1 %>"
+                                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                                Next
+                              </a>
+                              <% } %>
+                  </div>
+                  <% } %>
+                    <% } else { %>
+                      <!-- Empty Wishlist -->
+                      <div class="text-center py-8">
+                        <i class="fas fa-heart text-gray-400 text-4xl mb-4"></i>
+                        <p class="text-gray-600">Your wishlist is empty</p>
+                        <a href="/shop"
+                          class="inline-block mt-4 bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-primary-accent/90">
+                          Continue Shopping
+                        </a>
+                      </div>
+                      <% } %>
+            </div>
+      </main>
   </div>
 
   <script type="module">
     import { customConfirm, showToast, closeCustomAlert } from '/js/util.js';
-    
+
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
       sidebar.classList.toggle('hidden');
@@ -133,7 +127,7 @@
       if (!confirmed) return;
 
       try {
-        const response = await axios.post('/wishlist/remove', { productId });
+        const response = await axios.delete('/wishlist', { productId });
         if (response.data.success) {
           // Remove the product element from DOM
           const productElement = document.querySelector(`[data-product-id="${productId}"]`);

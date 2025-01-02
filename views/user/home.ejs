@@ -7,7 +7,6 @@
                 class="w-full h-[200px] md:h-[250px] lg:h-[300px] rounded-lg object-cover" />
         </section>
 
-
         <!-- New Arrival -->
         <section class="mb-6 md:mb-10">
             <div class="flex justify-between items-center mb-3 md:mb-5">
@@ -291,7 +290,7 @@
 
             async function addToCart(productId) {
                 try {
-                    const { data } = await axios.post('/cart/add', { productId });
+                    const { data } = await axios.post('/cart', { productId });
                     showToast(data.message, data.success ? 'success' : 'error');
                     document.getElementById("cart-quantity").innerText = data.totalQuantity;
                 } catch (error) {
@@ -303,7 +302,7 @@
 
             async function addToWishlist(productId) {
                 try {
-                    const { data } = await axios.post('/wishlist/add', { productId });
+                    const { data } = await axios.post('/wishlist', { productId });
                     if (data.success) {
                         // Find all wishlist buttons for this product (in case it appears multiple times on page)
                         const wishlistButtons = document.querySelectorAll(`button[onclick="addToWishlist('${productId}')"]`);
@@ -334,7 +333,7 @@
 
             async function removeFromWishlist(productId) {
                 try {
-                    const response = await axios.post('/wishlist/remove', { productId });
+                    const response = await axios.delete('/wishlist', { productId });
                     if (response.data.success) {
                         // Find all wishlist buttons for this product
                         const wishlistButtons = document.querySelectorAll(`button[onclick="removeFromWishlist('${productId}')"]`);
