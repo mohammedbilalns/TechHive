@@ -98,6 +98,7 @@ router.get('/orders', auth.checkSession, userOrderController.getOrders);
 router.post('/orders/:orderId/items/:itemId/return', auth.checkSession, userOrderController.returnOrderItem);
 router.post('/review/add', auth.checkSession, userReviewController.addReview);
 router.get('/review/get', auth.checkSession, userReviewController.getReview);
+router.post('/orders/:orderId/retry-payment', auth.checkSession, userOrderController.retryPayment);
 
 //---- wishlist management ----
 router.route('/wishlist')
@@ -118,5 +119,7 @@ router.post('/wallet/verify-payment',auth.checkSession, userWalletController.ver
 
 router.post('/checkout/apply-coupon',auth.checkSession, userCheckController.applyCoupon);
 router.post('/checkout/remove-coupon',auth.checkSession, userCheckController.removeCoupon);
+
+router.get('/payment/failed/:orderId', auth.checkSession, userOrderController.getPaymentFailed);
 
 export default router

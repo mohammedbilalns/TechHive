@@ -1,5 +1,5 @@
 <%- include("../partials/header") %>
-
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
   <div class="flex flex-col md:flex-row">
     <%- include('../partials/usersidebar') %>
@@ -476,29 +476,65 @@
     }
 
     async function placeOrder() {
-      const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
-      const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
-
-      if (!selectedAddress) {
-        showToast('Please select a delivery address', 'error');
-        return;
-      }
-
-      const orderData = {
-        addressId: selectedAddress.value,
-        paymentMethod: paymentMethod.value,
-        couponCode: currentCouponCode
-      };
-
       try {
+        const selectedAddress = document.querySelector('input[name="selectedAddress"]:checked');
+        const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked');
+
+        if (!selectedAddress) {
+          showToast('Please select a delivery address', 'error');
+          return;
+        }
+
+        if (!selectedPayment) {
+          showToast('Please select a payment method', 'error');
+          return;
+        }
+
+        const orderData = {
+          addressId: selectedAddress.value,
+          paymentMethod: selectedPayment.value,
+          couponCode: currentCouponCode
+        };
+
         const response = await axios.post('/checkout/placeorder', orderData);
 
         if (response.data.success) {
-          if (paymentMethod.value === 'online') {
-            // Initialize Razorpay for online payment
-            await initializeRazorpay(response.data);
+          if (orderData.paymentMethod === 'online') {
+            // Initialize Razorpay payment
+            const options = {
+              key: '<%= process.env.RAZORPAY_KEY_ID %>',
+              amount: response.data.amount,
+              currency: "INR",
+              name: "TechHive",
+              description: "Order Payment",
+              order_id: response.data.razorpayOrderId,
+              handler: function (response) {
+                verifyPayment({
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_signature: response.razorpay_signature,
+                  orderId: response.data.orderId
+                });
+              },
+              modal: {
+                ondismiss: function() {
+                  // Redirect to payment failed page when modal is closed
+                  window.location.href = `/payment/failed/${response.data.orderId}`;
+                }
+              },
+              prefill: {
+                name: "<%= user.name %>",
+                email: "<%= user.email %>"
+              },
+              theme: {
+                color: "#DA0037"
+              }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.open();
           } else {
-            // Redirect for COD orders
+            // For COD or wallet payments
             window.location.href = `/order/success/${response.data.orderId}`;
           }
         } else {
@@ -506,7 +542,7 @@
         }
       } catch (error) {
         console.error('Error:', error);
-        showToast('Error placing order', 'error');
+        showToast(error.response?.data?.message || 'Failed to place order', 'error');
       }
     }
 
@@ -516,11 +552,11 @@
         if (response.data.success) {
           window.location.href = `/order/success/${paymentData.orderId}`;
         } else {
-          showToast('Payment verification failed', 'error');
+          window.location.href = `/payment/failed/${paymentData.orderId}`;
         }
       } catch (error) {
         console.error('Error:', error);
-        showToast('Payment verification failed', 'error');
+        window.location.href = `/payment/failed/${paymentData.orderId}`;
       }
     }
 
@@ -746,7 +782,7 @@
       }
     });
 
-    // When the page loads or when coupon is applied/removed, check payment methods
+    // check payment methods when page is reloaded or coupon is applied 
     function updatePaymentMethods() {
       const total = parseFloat(document.querySelector('[data-total]').textContent.replace('₹', ''));
       const codRadio = document.querySelector('input[value="cod"]');
@@ -763,7 +799,7 @@
       }
     }
 
-    // Call this function when page loads
+    
     document.addEventListener('DOMContentLoaded', updatePaymentMethods);
   </script>
 

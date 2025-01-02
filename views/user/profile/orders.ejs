@@ -1,4 +1,5 @@
 <%- include('../../partials/header') %>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
   <div class="flex flex-col md:flex-row">
     <%- include('../../partials/usersidebar') %>
@@ -198,6 +199,16 @@
                             <p>Discount Amount: <span class="text-green-600">-₹<%= order.coupon.discount %></span></p>
                           </div>
                         </div>
+                        <% } %>
+
+                        <% if (order.paymentMethod === 'online' && order.paymentStatus === 'pending') { %>
+                          <div class="mt-4 bg-yellow-50 p-4 rounded-lg">
+                            <p class="text-yellow-800 mb-2">Payment pending for this order</p>
+                            <button onclick="retryPayment('<%= order._id %>')" 
+                              class="bg-primary-accent text-white px-4 py-2 rounded hover:bg-primary-accent/90">
+                              Retry Payment
+                            </button>
+                          </div>
                         <% } %>
                     </div>
                   </div>
@@ -516,6 +527,67 @@
         showToast(error.response?.data?.message || 'Failed to submit review', 'error');
       }
     });
+
+    async function retryPayment(orderId) {
+      try {
+        const response = await axios.post(`/orders/${orderId}/retry-payment`);
+        
+        if (response.data.success) {
+          // Initialize Razorpay payment
+          const options = {
+            key: '<%= process.env.RAZORPAY_KEY_ID %>',
+            amount: response.data.amount,
+            currency: "INR",
+            name: "TechHive",
+            description: "Order Payment",
+            order_id: response.data.razorpayOrderId,
+            handler: function (response) {
+              verifyPayment({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+                orderId: orderId
+              });
+            },
+            modal: {
+              ondismiss: function() {
+                showToast('Payment failed', 'error');
+              }
+            },
+            prefill: {
+              name: "<%= user.name %>",
+              email: "<%= user.email %>"
+            },
+            theme: {
+              color: "#DA0037"
+            }
+          };
+
+          const rzp = new Razorpay(options);
+          rzp.open();
+        } else {
+          showToast(response.data.message || 'Failed to initialize payment', 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('Failed to initialize payment', 'error');
+      }
+    }
+
+    async function verifyPayment(paymentData) {
+      try {
+        const response = await axios.post('/checkout/verifypayment', paymentData);
+        if (response.data.success) {
+          showToast('Payment successful', 'success');
+          setTimeout(() => window.location.reload(), 1500);
+        } else {
+          showToast('Payment verification failed', 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('Payment verification failed', 'error');
+      }
+    }
   </script>
 
   <%- include('../../partials/footer') %>

@@ -1,0 +1,29 @@
+<%- include("../partials/header") %>
+
+<div class="h-[70vh] bg-gray-50 flex flex-col items-center justify-center p-4">
+  <div class="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
+    <div class="mb-6">
+      <i class="fas fa-exclamation-circle text-6xl text-red-500"></i>
+    </div>
+
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">Payment Failed</h1>
+    <p class="text-gray-600 mb-4">Your order has been placed but payment was not successful.</p>
+    <p class="text-gray-600 mb-8">
+      Your order <span class="font-semibold text-gray-800">
+        <%= orderId %>
+      </span> is pending payment.
+      You can retry the payment from your orders section.
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="/orders" class="bg-primary-accent text-white px-6 py-3 rounded-lg hover:bg-primary-accent/90">
+        View Orders
+      </a>
+      <a href="/home" class="border border-primary-accent text-primary-accent px-6 py-3 rounded-lg hover:bg-gray-50">
+        Back to Home
+      </a>
+    </div>
+  </div>
+</div>
+
+<%- include("../partials/footer") %>
