@@ -54,6 +54,14 @@ const placeOrder = async (req, res) => {
       }
     }
 
+    // Check if COD is allowed for this order amount
+    if (paymentMethod === 'cod' && finalAmount > 1000) {
+      return res.json({ 
+        success: false, 
+        message: 'Cash on Delivery is not available for orders above ₹1,000' 
+      });
+    }
+
     // Check wallet balance if payment method is wallet
     if (paymentMethod === 'wallet') {
       if (!wallet || wallet.balance < finalAmount) {

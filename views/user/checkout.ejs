@@ -168,40 +168,54 @@
                 <!-- Add Wallet Option -->
                 <div class="border rounded-lg p-4">
                   <label class="flex items-center">
-                    <input type="radio" name="paymentMethod" value="wallet" class="form-radio text-primary-accent"
-                      onchange="handlePaymentMethodChange(this)" <%=wallet.balance < total ? 'disabled' : '' %>
-                    <%= wallet.balance>= total ? 'checked' : '' %>>
-                      <div class="ml-2 flex-grow">
-                        <span>Pay using Wallet</span>
-                        <span class="ml-2 text-sm text-gray-600">
-                          (Balance: ₹<%= wallet.balance.toFixed(2) %>)
-                        </span>
-                        <% if (wallet.balance < total) { %>
-                          <div class="flex items-center mt-1">
-                            <span class="text-sm text-red-500">
-                              Insufficient wallet balance
-                            </span>
-                            <a href="/wallet" class="ml-2 text-sm text-primary-accent hover:underline">
-                              Add Money to Wallet
-                            </a>
-                          </div>
-                          <% } %>
-                      </div>
+                    <input type="radio" name="paymentMethod" value="wallet" 
+                      class="form-radio text-primary-accent"
+                      onchange="handlePaymentMethodChange(this)" 
+                      <%=wallet.balance < total ? 'disabled' : '' %>
+                      <%= wallet.balance >= total ? 'checked' : '' %>>
+                    <div class="ml-2 flex-grow">
+                      <span>Pay using Wallet</span>
+                      <span class="ml-2 text-sm text-gray-600">
+                        (Balance: ₹<%= wallet.balance.toFixed(2) %>)
+                      </span>
+                      <% if (wallet.balance < total) { %>
+                        <div class="flex items-center mt-1">
+                          <span class="text-sm text-red-500">
+                            Insufficient wallet balance
+                          </span>
+                          <a href="/wallet" class="ml-2 text-sm text-primary-accent hover:underline">
+                            Add Money to Wallet
+                          </a>
+                        </div>
+                      <% } %>
+                    </div>
                   </label>
                 </div>
 
-                <!-- Existing payment options -->
+                <!-- COD Option -->
                 <div class="border rounded-lg p-4">
                   <label class="flex items-center">
-                    <input type="radio" name="paymentMethod" value="cod" class="form-radio text-primary-accent"
-                      onchange="handlePaymentMethodChange(this)" <%=wallet.balance>= total ? '' : 'checked' %>>
+                    <input type="radio" name="paymentMethod" value="cod" 
+                      class="form-radio text-primary-accent"
+                      onchange="handlePaymentMethodChange(this)" 
+                      <%= total > 1000 ? 'disabled' : '' %>
+                      <%= (wallet.balance < total && total <= 1000) ? 'checked' : '' %>>
                     <span class="ml-2">Cash on Delivery</span>
+                    <% if (total > 1000) { %>
+                      <span class="ml-2 text-sm text-red-500">
+                        (Not available for orders above ₹1,000)
+                      </span>
+                    <% } %>
                   </label>
                 </div>
+
+                <!-- Online Payment Option -->
                 <div class="border rounded-lg p-4">
                   <label class="flex items-center">
-                    <input type="radio" name="paymentMethod" value="online" class="form-radio text-primary-accent"
-                      onchange="handlePaymentMethodChange(this)">
+                    <input type="radio" name="paymentMethod" value="online" 
+                      class="form-radio text-primary-accent"
+                      onchange="handlePaymentMethodChange(this)"
+                      <%= (wallet.balance < total && total > 1000) ? 'checked' : '' %>>
                     <span class="ml-2">Pay Online (UPI/Card/NetBanking)</span>
                   </label>
                 </div>
@@ -424,6 +438,8 @@
     let razorpayInstance = null;
 
     function handlePaymentMethodChange(radio) {
+      if (radio.disabled) return;
+      
       const placeOrderBtn = document.querySelector('button[onclick="placeOrder()"]');
       placeOrderBtn.textContent = radio.value === 'cod' ? 'Place Order' : 'Proceed to Payment';
     }
@@ -688,6 +704,7 @@
           document.querySelector('[data-total]').textContent = `₹${newTotal.toFixed(2)}`;
           
           showToast(response.data.message, 'success');
+          updatePaymentMethods();
         }
       } catch (error) {
         const message = error.response?.data?.message || 'Error applying coupon';
@@ -714,6 +731,7 @@
           document.querySelector('[data-total]').textContent = `₹${originalTotal.toFixed(2)}`;
           
           showToast('Coupon removed successfully', 'success');
+          updatePaymentMethods();
         }
       } catch (error) {
         showToast('Error removing coupon', 'error');
@@ -727,6 +745,26 @@
         applyCoupon();
       }
     });
+
+    // When the page loads or when coupon is applied/removed, check payment methods
+    function updatePaymentMethods() {
+      const total = parseFloat(document.querySelector('[data-total]').textContent.replace('₹', ''));
+      const codRadio = document.querySelector('input[value="cod"]');
+      
+      if (total > 1000) {
+        codRadio.disabled = true;
+        if (codRadio.checked) {
+          // If COD was selected but now disabled, select online payment
+          document.querySelector('input[value="online"]').checked = true;
+          handlePaymentMethodChange(document.querySelector('input[value="online"]'));
+        }
+      } else {
+        codRadio.disabled = false;
+      }
+    }
+
+    // Call this function when page loads
+    document.addEventListener('DOMContentLoaded', updatePaymentMethods);
   </script>
 
   <%- include('../partials/footer') %>
