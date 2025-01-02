@@ -285,7 +285,7 @@
                     if (params[key]) {
                         url.searchParams.set(key, params[key]);
                     } else {
-                        url.searchParams.delete(key);
+                        url.searchParams.put(key);
                     }
                 });
                 window.history.pushState({}, '', url);

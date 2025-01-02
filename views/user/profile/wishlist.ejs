@@ -127,7 +127,7 @@
       if (!confirmed) return;
 
       try {
-        const response = await axios.delete('/wishlist', { productId });
+        const response = await axios.put('/wishlist', { productId });
         if (response.data.success) {
           // Remove the product element from DOM
           const productElement = document.querySelector(`[data-product-id="${productId}"]`);
@@ -160,7 +160,7 @@
 
     async function addToCart(productId) {
       try {
-        const { data } = await axios.post('/cart/add', { productId });
+        const { data } = await axios.post('/cart', { productId });
         showToast(data.message, data.success ? 'success' : 'error');
         document.getElementById("cart-quantity").innerText = data.totalQuantity;
       } catch (error) {

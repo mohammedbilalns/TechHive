@@ -86,6 +86,7 @@ const addToWishlist = async (req, res) => {
 
 const removeFromWishlist = async (req, res) => {
     try {
+        
         const { productId } = req.body;
         const userId = req.session.user.id;
 

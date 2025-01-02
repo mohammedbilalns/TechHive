@@ -81,7 +81,7 @@ router.route('/cart')
     .get(userCartController.getCart)
     .post(userCartController.addToCart)
     .patch(userCartController.updateQuantity)
-    .delete(userCartController.removeFromCart)
+    .put(userCartController.removeFromCart)
 router.post('/cart/apply-coupon', userCartController.applyCoupon)
 router.post('/cart/clear', userCartController.clearCart)
 router.post('/cart/apply-coupon', userCartController.applyCoupon);
@@ -103,7 +103,7 @@ router.get('/review/get', userReviewController.getReview);
 router.route('/wishlist')
     .get(userWishlistController.getWishlist)
     .post(userWishlistController.addToWishlist)
-    .delete(userWishlistController.removeFromWishlist)
+    .put(userWishlistController.removeFromWishlist)
     
 //---- user coupons ----
 router.get('/coupons', userCouponsController.getCoupons);

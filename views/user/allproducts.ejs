@@ -209,7 +209,7 @@
 
         async function removeFromWishlist(productId) {
             try {
-                const response = await axios.delete('/wishlist', { productId });
+                const response = await axios.put('/wishlist', { productId });
                 if (response.data.success) {
                     // Find all wishlist buttons for this product
                     const wishlistButtons = document.querySelectorAll(`button[onclick="removeFromWishlist('${productId}')"]`);

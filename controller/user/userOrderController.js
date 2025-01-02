@@ -346,15 +346,16 @@ const cancelOrderItem = async (req, res) => {
       const quantity = orderItem.quantity;
       const baseRefundAmount = (itemPrice * (1 - itemDiscount/100)) * quantity;
 
-      let couponDiscountPerItem = 0;
+      let couponDiscount = 0;
       if (order.coupon && order.coupon.discount > 0) {
-        // Distribute coupon discount equally among all items
-        const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
-        couponDiscountPerItem = (order.coupon.discount / totalItems) * quantity;
+        // Distribute coupon discount
+        const totalPrice = order.items.reduce((sum, item) => sum + (item.price*item.quantity), 0);          
+        couponDiscount = (orderItem.quantity * orderItem.price/totalPrice) * order.coupon.discount
+
       }
 
       // Final refund amount after deducting proportional coupon discount
-      const refundAmount = baseRefundAmount - couponDiscountPerItem;
+      const refundAmount = baseRefundAmount - couponDiscount;
 
       const walletTransactionId = 'WTX' + nanoid(8).toUpperCase();
 

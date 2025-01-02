@@ -495,7 +495,7 @@
 
         async function removeFromWishlist(productId) {
             try {
-                const response = await axios.delete('/wishlist', { productId });
+                const response = await axios.put('/wishlist', { productId });
                 if (response.data.success) {
                     window.wishlistItems = window.wishlistItems.filter(id => id !== productId);
 

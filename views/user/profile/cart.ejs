@@ -258,7 +258,7 @@
       const confirmed = await customConfirm('Are you sure you want to remove this item?');
       if (!confirmed) return;
 
-      axios.delete('/cart', { productId })
+      axios.put('/cart', { productId })
         .then(response => {
           if (response.data.success) {
             document.querySelector(`[data-product="${productId}"]`).remove();
