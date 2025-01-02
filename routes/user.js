@@ -59,59 +59,64 @@ router.get('/search', wishlistItems.fetchWishlistItems, averageRatings.calculate
 router.get('/api/search', userSearchController.searchProducts);
 
 // routes accessible only with session 
-router.use(auth.checkSession)
-router.get('/home', wishlistItems.fetchWishlistItems, averageRatings.calculateAverageRatings, userProductController.loadHome)
+
+router.get('/home',auth.checkSession, wishlistItems.fetchWishlistItems, averageRatings.calculateAverageRatings, userProductController.loadHome)
 
 //---- user Address management ---- 
 router.route('/addresses')
+    .all(auth.checkSession)
     .get(useraddressController.getAddresses)
     .post(useraddressController.addAddress)
 router.route('/address/:id')
+    .all(auth.checkSession)
     .put(useraddressController.updateAddress) // Update address
     .delete(useraddressController.deleteAddress) // Delete an address
     .get(useraddressController.getAddress); // Get single address details
 
 //---- user profile management ---- 
-router.get('/account', useraccountController.getAccountDetails)
-router.post('/account/update-profile', useraccountController.updateProfile)
-router.post('/account/change-password', useraccountController.changePassword);
+router.get('/account',auth.checkSession, useraccountController.getAccountDetails)
+router.post('/account/update-profile', auth.checkSession, useraccountController.updateProfile)
+router.post('/account/change-password',auth.checkSession, useraccountController.changePassword);
 
 //---- user cart management ---- 
 router.route('/cart')
+    .all(auth.checkSession)
     .get(userCartController.getCart)
     .post(userCartController.addToCart)
     .patch(userCartController.updateQuantity)
     .put(userCartController.removeFromCart)
-router.post('/cart/clear', userCartController.clearCart)
+router.post('/cart/clear',auth.checkSession, userCartController.clearCart)
 
 //---- user checkout/order management ----
-router.get('/checkout', userCheckController.getCheckout);
-router.post('/checkout/placeorder', userOrderController.placeOrder);
-router.post('/checkout/verifypayment', userOrderController.verifyPayment);
-router.get('/order/success/:orderId', userOrderController.getOrderSuccess);
-router.get('/orders/:orderId', userOrderController.getOrderDetails);
-router.post('/orders/:orderId/items/:itemId/cancel', userOrderController.cancelOrderItem);
-router.get('/orders', userOrderController.getOrders);
-router.post('/orders/:orderId/items/:itemId/return', userOrderController.returnOrderItem);
-router.post('/review/add', userReviewController.addReview);
-router.get('/review/get', userReviewController.getReview);
+router.get('/checkout',auth.checkSession, userCheckController.getCheckout);
+router.post('/checkout/placeorder',auth.checkSession, userOrderController.placeOrder);
+router.post('/checkout/verifypayment',auth.checkSession, userOrderController.verifyPayment);
+router.get('/order/success/:orderId', auth.checkSession, userOrderController.getOrderSuccess);
+router.get('/orders/:orderId', auth.checkSession, userOrderController.getOrderDetails);
+router.post('/orders/:orderId/items/:itemId/cancel',auth.checkSession, userOrderController.cancelOrderItem);
+router.get('/orders', auth.checkSession, userOrderController.getOrders);
+router.post('/orders/:orderId/items/:itemId/return', auth.checkSession, userOrderController.returnOrderItem);
+router.post('/review/add', auth.checkSession, userReviewController.addReview);
+router.get('/review/get', auth.checkSession, userReviewController.getReview);
 
 //---- wishlist management ----
 router.route('/wishlist')
+    .all(auth.checkSession)
     .get(userWishlistController.getWishlist)
     .post(userWishlistController.addToWishlist)
     .put(userWishlistController.removeFromWishlist)
     
 //---- user coupons ----
-router.get('/coupons', userCouponsController.getCoupons);
+router.get('/coupons',auth.checkSession, userCouponsController.getCoupons);
 
 //---- Wallet management ----
 router.route('/wallet')
+    .all(auth.checkSession)
     .get(userWalletController.getWallet)
     .post(userWalletController.addMoney)
-router.post('/wallet/verify-payment', userWalletController.verifyWalletPayment)
+router.post('/wallet/verify-payment',auth.checkSession, userWalletController.verifyWalletPayment)
 
-router.post('/checkout/apply-coupon', userCheckController.applyCoupon);
-router.post('/checkout/remove-coupon', userCheckController.removeCoupon);
+router.post('/checkout/apply-coupon',auth.checkSession, userCheckController.applyCoupon);
+router.post('/checkout/remove-coupon',auth.checkSession, userCheckController.removeCoupon);
 
 export default router

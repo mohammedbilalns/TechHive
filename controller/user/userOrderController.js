@@ -13,7 +13,7 @@ configDotenv()
 
 const placeOrder = async (req, res) => {
   try {
-    const { addressId, paymentMethod } = req.body;
+    const { addressId, paymentMethod, couponCode } = req.body;
     const userId = req.session.user.id;
 
     // Get  cart, address, and wallet
@@ -35,10 +35,24 @@ const placeOrder = async (req, res) => {
       return total + (discountedPrice * item.quantity);
     }, 0);
 
-    // Calculate totals after applying coupon 
-    let couponDiscount = cart.discount || 0;
-    let couponCode = cart.couponCode;
-    let finalAmount = totalAmount - couponDiscount;
+    // Calculate coupon discount if coupon code exists
+    let couponDiscount = 0;
+    let finalAmount = totalAmount;
+    
+    if (couponCode) {
+      const coupon = await couponModel.findOne({ code: couponCode });
+      if (coupon) {
+        if (coupon.discountType === 'PERCENTAGE') {
+          couponDiscount = Math.min(
+            (totalAmount * coupon.discountValue) / 100,
+            coupon.maxDiscount || Infinity
+          );
+        } else {
+          couponDiscount = coupon.discountValue;
+        }
+        finalAmount = totalAmount - couponDiscount;
+      }
+    }
 
     // Check wallet balance if payment method is wallet
     if (paymentMethod === 'wallet') {
@@ -100,7 +114,7 @@ const placeOrder = async (req, res) => {
       expectedDeliveryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       status: 'processing',
       paymentStatus: paymentMethod === 'cod' ? 'unpaid' : 'pending',
-      coupon: couponCode ? {
+      coupon: couponCode && couponDiscount > 0 ? {
         code: couponCode,
         discount: couponDiscount
       } : undefined
@@ -109,7 +123,7 @@ const placeOrder = async (req, res) => {
     await order.save();
 
     // Update coupon usage history if coupon was applied
-    if (couponCode) {
+    if (couponCode && couponDiscount > 0) {
       await couponModel.findOneAndUpdate(
         { code: couponCode },
         {
