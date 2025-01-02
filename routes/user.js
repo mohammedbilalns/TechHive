@@ -99,6 +99,10 @@ router.post('/orders/:orderId/items/:itemId/return', auth.checkSession, userOrde
 router.post('/review/add', auth.checkSession, userReviewController.addReview);
 router.get('/review/get', auth.checkSession, userReviewController.getReview);
 router.post('/orders/:orderId/retry-payment', auth.checkSession, userOrderController.retryPayment);
+router.get('/orders/:orderId/items/:itemId/invoice', 
+  auth.checkSession, 
+  userOrderController.downloadInvoice
+);
 
 //---- wishlist management ----
 router.route('/wishlist')

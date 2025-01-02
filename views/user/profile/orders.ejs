@@ -127,7 +127,7 @@
                             <% } %>
                           </p>
                           <div class="mt-2">
-                            <% if (![' delivered', 'cancelled' , 'returned' ].includes(item.status) && 
+                            <% if (['processing', 'shipped'].includes(item.status) && 
                                 !(order.paymentMethod === 'online' && order.paymentStatus === 'pending')) { %>
                               <button onclick="cancelOrderItem('<%= order._id %>', '<%= item._id %>')"
                                 class="text-red-600 text-sm hover:underline">
@@ -140,6 +140,12 @@
                                   Return Item
                                 </button>
                               <% } %>
+                                <% if (['delivered', 'return requested', 'returned'].includes(item.status)) { %>
+                                  <button onclick="downloadInvoice('<%= order._id %>', '<%= item._id %>')"
+                                    class="text-blue-600 text-sm hover:underline ml-2">
+                                    <i class="fas fa-file-invoice"></i> Download Invoice
+                                  </button>
+                                <% } %>
                                 <% if (['delivered', 'return requested' , 'returned'].includes(item.status)) { %>
                                   <button onclick="handleReviewClick('<%= item.name %>')"
                                     class="text-blue-600 text-sm hover:underline ml-2">
@@ -586,6 +592,26 @@
       } catch (error) {
         console.error('Error:', error);
         showToast('Payment verification failed', 'error');
+      }
+    }
+
+    async function downloadInvoice(orderId, itemId) {
+      try {
+        const response = await axios.get(
+          `/orders/${orderId}/items/${itemId}/invoice`,
+          { responseType: 'blob' }
+        );
+        
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `invoice-${orderId}-${itemId}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        showToast('Failed to download invoice', 'error');
       }
     }
   </script>

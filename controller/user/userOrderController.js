@@ -9,6 +9,7 @@ import razorpay from '../../utils/razorpayConfig.js';
 import crypto from 'crypto';
 import walletModel from '../../model/walletModel.js';
 import mongoose from 'mongoose';
+import PDFDocument from 'pdfkit';
 configDotenv()
 
 const placeOrder = async (req, res) => {
@@ -619,6 +620,236 @@ const getPaymentFailed = async (req, res) => {
   }
 };
 
+const downloadInvoice = async (req, res) => {
+  try {
+    const { orderId, itemId } = req.params;
+    const userId = req.session.user.id;
+
+    const order = await orderModel.findOne({ 
+      _id: orderId, 
+      userId 
+    }).populate('userId', 'fullname email');
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    const orderItem = order.items.id(itemId);
+    if (!orderItem) {
+      return res.status(404).json({ success: false, message: 'Order item not found' });
+    }
+
+    // Check if item status is valid for invoice
+    if (!['delivered', 'return requested', 'returned'].includes(orderItem.status)) {
+      return res.status(400).json({ success: false, message: 'Invoice not available for this item' });
+    }
+
+    // Calculate item amount
+    const itemPrice = orderItem.price;
+    const itemDiscount = orderItem.discount;
+    const quantity = orderItem.quantity;
+    const baseAmount = (itemPrice * (1 - itemDiscount/100)) * quantity;
+
+    // Calculate proportional coupon discount
+    let couponDiscount = 0;
+    if (order.coupon && order.coupon.discount > 0) {
+      const totalOrderPrice = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      couponDiscount = (orderItem.quantity * orderItem.price/totalOrderPrice) * order.coupon.discount;
+    }
+
+    // Final amount after all discounts
+    const finalAmount = baseAmount - couponDiscount;
+
+    // Generate PDF
+    const doc = new PDFDocument({ margin: 40, size: 'A4' });
+
+    // Set response headers
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=invoice-${order.orderId}-${itemId}.pdf`);
+
+    doc.pipe(res);
+
+    // Register fonts
+    doc.registerFont('NotoSans', 'static/fonts/NotoSans-Regular.ttf');
+    doc.registerFont('NotoSans-Bold', 'static/fonts/NotoSans-Bold.ttf');
+    doc.registerFont('NotoSans-Italic', 'static/fonts/NotoSans-Italic.ttf');
+
+    // Header
+    doc.fontSize(24)
+      .font('NotoSans-Bold')
+      .text('TechHive', 40, 40, { align: 'center' })
+      .moveDown(0.5);
+
+    // Invoice title
+    doc.fontSize(20)
+      .text('Tax Invoice', { align: 'center' })
+      .moveDown(1);
+
+    // Order and customer details
+    doc.fontSize(12)
+      .font('NotoSans')
+      .text(`Invoice Date: ${new Date().toLocaleDateString()}`)
+      .text(`Order ID: ${order.orderId}`)
+      .text(`Customer Name: ${order.userId.fullname}`)
+      .text(`Email: ${order.userId.email}`)
+      .moveDown(0.5);
+
+    // Shipping address
+    doc.fontSize(12)
+      .font('NotoSans-Bold')
+      .text('Shipping Address:')
+      .font('NotoSans')
+      .text(order.shippingAddress.name)
+      .text(order.shippingAddress.houseName)
+      .text(order.shippingAddress.localityStreet)
+      .text(`${order.shippingAddress.city}, ${order.shippingAddress.state}`)
+      .text(`PIN: ${order.shippingAddress.pincode}`)
+      .text(`Phone: ${order.shippingAddress.phone}`)
+      .moveDown(1);
+
+    // Item details table
+    const tableTop = doc.y + 20;
+    const columns = [
+      { header: 'Item', width: 200, align: 'left' },
+      { header: 'Quantity', width: 70, align: 'center' },
+      { header: 'Price', width: 80, align: 'right' },
+      { header: 'Discount', width: 80, align: 'right' },
+      { header: 'Total', width: 80, align: 'right' }
+    ];
+
+    const totalWidth = columns.reduce((sum, col) => sum + col.width, 0);
+    const rowHeight = 60; // Increased row height to accommodate 3 lines
+
+    // Draw table header background
+    doc.rect(40, tableTop - 5, totalWidth, 25) // Header height
+       .fillColor('#f3f4f6')
+       .fill();
+
+    // Draw table borders
+    doc.strokeColor('#d1d5db')
+       .lineWidth(1);
+
+    // Draw header row
+    let xPos = 40;
+    doc.fillColor('#000000').font('NotoSans-Bold').fontSize(10);
+    columns.forEach(column => {
+      doc.text(
+        column.header,
+        xPos + 4,
+        tableTop,
+        {
+          width: column.width - 8,
+          align: column.align
+        }
+      );
+      xPos += column.width;
+    });
+
+    // Draw horizontal line below header
+    doc.moveTo(40, tableTop + 20)
+       .lineTo(40 + totalWidth, tableTop + 20)
+       .stroke();
+
+    // Draw item row
+    const rowTop = tableTop + 25;
+    xPos = 40;
+    doc.font('NotoSans').fontSize(10);
+
+    const rowData = [
+      { 
+        text: orderItem.name, 
+        align: 'left',
+        options: { width: columns[0].width - 8, align: 'left', lineGap: 2 } // Added lineGap for better line spacing
+      },
+      { 
+        text: orderItem.quantity.toString(), 
+        align: 'center',
+        options: { width: columns[1].width - 8, align: 'center' }
+      },
+      { 
+        text: `₹${orderItem.price.toFixed(2)}`, 
+        align: 'right',
+        options: { width: columns[2].width - 8, align: 'right' }
+      },
+      { 
+        text: `${orderItem.discount}%`, 
+        align: 'right',
+        options: { width: columns[3].width - 8, align: 'right' }
+      },
+      { 
+        text: `₹${baseAmount.toFixed(2)}`, 
+        align: 'right',
+        options: { width: columns[4].width - 8, align: 'right' }
+      }
+    ];
+
+    // Draw vertical lines
+    columns.forEach((col, i) => {
+      const x = 40 + columns.slice(0, i).reduce((sum, col) => sum + col.width, 0);
+      doc.moveTo(x, tableTop - 5)
+         .lineTo(x, rowTop + rowHeight) // Increased height
+         .stroke();
+    });
+
+    // Draw last vertical line
+    doc.moveTo(40 + totalWidth, tableTop - 5)
+       .lineTo(40 + totalWidth, rowTop + rowHeight) // Increased height
+       .stroke();
+
+    // Draw row data
+    xPos = 40;
+    rowData.forEach((data, i) => {
+      doc.text(
+        data.text,
+        xPos + 4,
+        rowTop + 5, // Added padding from top
+        data.options
+      );
+      xPos += columns[i].width;
+    });
+
+    // Draw bottom border
+    doc.moveTo(40, rowTop + rowHeight)
+       .lineTo(40 + totalWidth, rowTop + rowHeight)
+       .stroke();
+
+    // Summary section
+    doc.y = rowTop + rowHeight + 20; // Adjust starting position for summary section
+    doc.moveDown(2);
+    doc.font('NotoSans-Bold')
+      .text('Summary', { underline: true })
+      .moveDown(0.5);
+
+    doc.font('NotoSans')
+      .text(`Subtotal: ₹${baseAmount.toFixed(2)}`)
+      .text(`Coupon Discount: ₹${couponDiscount.toFixed(2)}`)
+      .moveDown(0.5);
+
+    doc.font('NotoSans-Bold')
+      .text(`Final Amount: ₹${finalAmount.toFixed(2)}`, { color: 'blue' })
+      .moveDown(1);
+
+    // Footer
+    doc.fontSize(8)
+      .font('NotoSans-Italic')
+      .text(
+        'This is a computer generated invoice.',
+        40,
+        doc.page.height - 40,
+        { align: 'center' }
+      );
+
+    doc.end();
+
+  } catch (error) {
+    console.error('Download invoice error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to generate invoice' 
+    });
+  }
+};
+
 export default {
   placeOrder,
   getOrderSuccess,
@@ -628,5 +859,6 @@ export default {
   verifyPayment,
   returnOrderItem,
   retryPayment,
-  getPaymentFailed
+  getPaymentFailed,
+  downloadInvoice
 };
