@@ -9,6 +9,7 @@ import adminCustomersController from "../controller/admin/adminCustomersControll
 import adminCouponsController from "../controller/admin/adminCouponsController.js"
 import adminOfferController from "../controller/admin/adminOfferController.js"
 import adminSalesreportController from "../controller/admin/adminSalesreportController.js"
+import adminDashboardController from "../controller/admin/adminDashboardController.js"
 const router = Router()
 router.use(express.static('static'));
 
@@ -76,6 +77,9 @@ router.get('/customers', adminCustomersController.getCustomers)
 router.post('/customers/block/:customerid', adminCustomersController.blockCustomer)
 router.post('/customers/unblock/:customerid', adminCustomersController.unblockCustomer)
 
+// Dashboard routes
+router.get('/dashboard', adminDashboardController.renderDashboard)
+router.get('/dashboard/data', adminDashboardController.getDashboardData)
 
 export default router
 
