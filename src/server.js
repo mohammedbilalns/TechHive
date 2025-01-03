@@ -4,6 +4,7 @@ import { log } from "mercedlogger"
 import nocache from "nocache"
 import session from "express-session"
 import passport from "passport"
+import compression from "compression"
 import userRoutes from "../routes/user.js"
 import adminRoutes from "../routes/admin.js"
 import connnectDb from "../db/connect.js"
@@ -18,6 +19,7 @@ const PORT = process.env.PORT
 app.set("view engine", "ejs")
 
 // Middlewares
+app.use(compression())
 app.use(nocache())
 app.use(session({
     secret: process.env.SESSIONSECRET,

@@ -25,16 +25,17 @@ router.route('/login')
 router.use(adminAuth.checkSession)
 router.get('/logout', adminAuthController.logoutAdmin)
 
-
 //---- products routes ---- 
 router.get('/products', adminProductController.getProducts)
 router.delete('/products/delete/:productid', adminProductController.deleteProduct)
 router.post('/products/activate/:productid', adminProductController.activateProduct)
 router.post('/products/deactivate/:productid', adminProductController.deactivateProduct)
-router.get(`/products/add`, adminProductController.getAddProduct)
-router.post('/products/add', adminProductController.productUpload.array('mainImages', 4), adminProductController.addProduct);
-router.get('/products/edit/:productid', adminProductController.getEditProduct);
-router.post('/products/edit/:productid', adminProductController.productUpload.array('mainImages', 4), adminProductController.editProduct);
+router.route('/products/add')
+       .get(adminProductController.getAddProduct)
+       .post(adminProductController.productUpload.array('mainImages',4), adminProductController.addProduct)
+router.route('/products/edit/:productid')
+       .get(adminProductController.getEditProduct)
+       .post(adminProductController.productUpload.array('mainImages,4'), adminProductController.editProduct)
 
 
 //---- categories routes ----
@@ -52,19 +53,21 @@ router.post('/orders/:orderId/items/:itemId/update-status', adminOrderController
 
 //---- coupons routes ----
 router.get('/coupons', adminCouponsController.getCoupons)
-router.get('/coupons/:couponId', adminCouponsController.getCouponDetails)
 router.post('/coupons', adminCouponsController.addCoupon)
-router.put('/coupons/:couponId', adminCouponsController.updateCoupon)
+router.route('/coupons/:couponId')
+      .get(adminCouponsController.getCouponDetails)
+      .put(adminCouponsController.updateCoupon)
+      .delete(adminCouponsController.deleteCoupon)
 router.patch('/coupons/:couponId/toggle-status', adminCouponsController.toggleCouponStatus)
-router.delete('/coupons/:couponId', adminCouponsController.deleteCoupon)
 
 //---- offers routes ----
 router.get('/offers', adminOfferController.getOffers)
-router.get('/offers/:offerId', adminOfferController.getOfferDetails)
 router.post('/offers', adminOfferController.addOffer)
-router.put('/offers/:offerId', adminOfferController.updateOffer)
+router.route('/offers/:offerId')
+      .get(adminOfferController.getOfferDetails)
+      .put(adminOfferController.updateOffer)
+      .delete(adminOfferController.deleteOffer)
 router.patch('/offers/:offerId/toggle-status', adminOfferController.toggleOfferStatus)
-router.delete('/offers/:offerId', adminOfferController.deleteOffer)
 
 //---- sales report routes ----
 router.get('/sales-report', adminSalesreportController.renderSalesReport)
