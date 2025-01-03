@@ -10,6 +10,7 @@ import crypto from 'crypto';
 import walletModel from '../../model/walletModel.js';
 import mongoose from 'mongoose';
 import PDFDocument from 'pdfkit';
+import { log } from 'mercedlogger';
 configDotenv()
 
 const placeOrder = async (req, res) => {
@@ -173,12 +174,14 @@ const placeOrder = async (req, res) => {
           receipt: order._id.toString()
         });
 
+        log.cyan('Razorpayorder', razorpayOrder)
+
         order.paymentDetails = {
           razorpayOrderId: razorpayOrder.id
         };
-        await order.save();
 
-        // Clear cart regardless of payment status
+    
+        // Clear cart  
         await cartModel.findOneAndUpdate(
           { user: userId },
           { $set: { items: [], discount: 0, couponCode: null } }
@@ -196,7 +199,7 @@ const placeOrder = async (req, res) => {
         order.items.forEach(item => item.status = 'pending');
         await order.save();
 
-        // Clear cart
+        //Clear cart
         await cartModel.findOneAndUpdate(
           { user: userId },
           { $set: { items: [], discount: 0, couponCode: null } }
@@ -254,6 +257,56 @@ const placeOrder = async (req, res) => {
     res.json({ 
       success: false, 
       message: error.message || 'Failed to place order' 
+    });
+  }
+};
+
+
+const verifyPayment = async (req, res) => {
+  try {
+    const { 
+      razorpay_payment_id, 
+      razorpay_order_id,
+      razorpay_signature,
+      orderId 
+    } = req.body;
+
+
+    // Verify payment signature
+    const sign = razorpay_order_id + "|" + razorpay_payment_id;
+    const expectedSign = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(sign.toString())
+      .digest("hex");
+    if (razorpay_signature === expectedSign) {
+      // Find order and update payment status and details
+      const order = await orderModel.findById(orderId);
+      if (!order) {
+        return res.json({ success: false, message: 'Order not found' });
+      }
+
+      // Update order status and payment details
+      order.items.forEach(item => item.status = 'processing');
+      order.paymentStatus = 'paid';
+      order.paymentDetails = {
+        razorpayOrderId: razorpay_order_id,
+        razorpayPaymentId: razorpay_payment_id,
+        razorpaySignature: razorpay_signature
+      };
+      await order.save();
+
+      res.json({ success: true });
+    } else {
+      res.json({ 
+        success: false, 
+        message: 'Payment verification failed' 
+      });
+    }
+  } catch (error) {
+    console.error('Payment verification error:', error);
+    res.json({ 
+      success: false, 
+      message: 'Payment verification failed' 
     });
   }
 };
@@ -426,54 +479,6 @@ const cancelOrderItem = async (req, res) => {
   }
 };
 
-const verifyPayment = async (req, res) => {
-  try {
-    const { 
-      razorpay_payment_id, 
-      razorpay_order_id,
-      razorpay_signature,
-      orderId 
-    } = req.body;
-
-    // Verify payment signature
-    const sign = razorpay_order_id + "|" + razorpay_payment_id;
-    const expectedSign = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(sign.toString())
-      .digest("hex");
-
-    if (razorpay_signature === expectedSign) {
-      // Find order and update payment status and details
-      const order = await orderModel.findById(orderId);
-      if (!order) {
-        return res.json({ success: false, message: 'Order not found' });
-      }
-
-      // Update order status and payment details
-      order.items.forEach(item => item.status = 'processing');
-      order.paymentStatus = 'paid';
-      order.paymentDetails = {
-        razorpayOrderId: razorpay_order_id,
-        razorpayPaymentId: razorpay_payment_id,
-        razorpaySignature: razorpay_signature
-      };
-      await order.save();
-
-      res.json({ success: true });
-    } else {
-      res.json({ 
-        success: false, 
-        message: 'Payment verification failed' 
-      });
-    }
-  } catch (error) {
-    console.error('Payment verification error:', error);
-    res.json({ 
-      success: false, 
-      message: 'Payment verification failed' 
-    });
-  }
-};
 
 const returnOrderItem = async (req, res) => {
   try {

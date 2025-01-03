@@ -508,23 +508,34 @@
               name: "TechHive",
               description: "Order Payment",
               order_id: response.data.razorpayOrderId,
-              handler: function (response) {
-                verifyPayment({
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_signature: response.razorpay_signature,
-                  orderId: response.data.orderId
-                });
+              handler: async function (paymentResponse) {
+                try {
+                  const verificationResponse = await axios.post('/checkout/verifypayment', {
+                    razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                    razorpay_order_id: paymentResponse.razorpay_order_id,
+                    razorpay_signature: paymentResponse.razorpay_signature,
+                    orderId: response.data.orderId
+                  });
+
+                  if (verificationResponse.data.success) {
+                    window.location.href = `/order/success/${response.data.orderId}`;
+                  } else {
+                    window.location.href = `/payment/failed/${response.data.orderId}`;
+                  }
+                } catch (error) {
+                  console.error('Payment verification error:', error);
+                  window.location.href = `/payment/failed/${response.data.orderId}`;
+                }
               },
               modal: {
                 ondismiss: function() {
-                  // Redirect to payment failed page when modal is closed
                   window.location.href = `/payment/failed/${response.data.orderId}`;
                 }
               },
               prefill: {
                 name: "<%= user.name %>",
-                email: "<%= user.email %>"
+                email: "<%= user.email %>",
+                contact: "<%= addresses[0]?.phone %>"
               },
               theme: {
                 color: "#DA0037"
@@ -543,20 +554,6 @@
       } catch (error) {
         console.error('Error:', error);
         showToast(error.response?.data?.message || 'Failed to place order', 'error');
-      }
-    }
-
-    async function verifyPayment(paymentData) {
-      try {
-        const response = await axios.post('/checkout/verifypayment', paymentData);
-        if (response.data.success) {
-          window.location.href = `/order/success/${paymentData.orderId}`;
-        } else {
-          window.location.href = `/payment/failed/${paymentData.orderId}`;
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        window.location.href = `/payment/failed/${paymentData.orderId}`;
       }
     }
 
