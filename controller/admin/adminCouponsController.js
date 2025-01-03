@@ -13,7 +13,13 @@ const getCoupons = async (req, res) => {
         const coupons = await Coupon.find()
             .sort({ createdAt: -1 })
             .skip(skip)
-            .limit(limit);
+            .limit(limit)
+            .lean();
+
+        const now = new Date();
+        coupons.forEach(coupon => {
+            coupon.isExpired = new Date(coupon.expiryDate) < now;
+        });
 
         res.render('admin/coupons', {
             coupons,
@@ -156,7 +162,7 @@ const updateCoupon = async (req, res) => {
             expiryDate
         } = req.body;
 
-        // Add the same validations as in addCoupon
+        // Basic validations
         if (!/^[A-Za-z0-9]{1,10}$/.test(code)) {
             return res.status(400).json({
                 success: false,
@@ -186,6 +192,18 @@ const updateCoupon = async (req, res) => {
             }
         }
 
+        // Only validate that expiry date is after start date
+        const start = new Date(startDate);
+        const expiry = new Date(expiryDate);
+
+        if (expiry <= start) {
+            return res.status(400).json({
+                success: false,
+                message: 'Expiry date must be after start date'
+            });
+        }
+
+        // Check for duplicate coupon code
         const existingCoupon = await Coupon.findOne({
             code: code.toUpperCase(),
             _id: { $ne: req.params.couponId }

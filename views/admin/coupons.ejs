@@ -54,10 +54,16 @@
                   <td class="px-6 py-4 whitespace-nowrap">₹<%= coupon.minPurchase %></td>
                   <td class="px-6 py-4 whitespace-nowrap"><%= new Date(coupon.expiryDate).toLocaleDateString() %></td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                      <%= coupon.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
-                      <%= coupon.isActive ? 'Active' : 'Inactive' %>
-                    </span>
+                    <% if (coupon.isExpired) { %>
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                            Expired
+                        </span>
+                    <% } else { %>
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                            <%= coupon.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                            <%= coupon.isActive ? 'Active' : 'Inactive' %>
+                        </span>
+                    <% } %>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div class="flex space-x-2">
@@ -65,10 +71,12 @@
                         class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">
                         Edit
                       </button>
-                      <button onclick="toggleCouponStatus('<%= coupon._id %>', '<%= coupon.isActive %>')"
-                        class="<%= coupon.isActive ? 'bg-primary-accent' : 'bg-green-700' %> text-white px-3 py-2 rounded-md hover:<%= coupon.isActive ? 'bg-red-600' : 'bg-green-800' %>">
-                        <%= coupon.isActive ? 'Deactivate' : 'Activate' %>
-                      </button>
+                      <% if (!coupon.isExpired) { %>
+                        <button onclick="toggleCouponStatus('<%= coupon._id %>', '<%= coupon.isActive %>')"
+                          class="<%= coupon.isActive ? 'bg-primary-accent' : 'bg-green-700' %> text-white px-3 py-2 rounded-md hover:<%= coupon.isActive ? 'bg-red-600' : 'bg-green-800' %>">
+                          <%= coupon.isActive ? 'Deactivate' : 'Activate' %>
+                        </button>
+                      <% } %>
                       <button onclick="deleteCoupon('<%= coupon._id %>')"
                         class="bg-primary-accent text-white px-3 py-2 rounded-md hover:bg-red-600">
                         Delete
@@ -274,26 +282,22 @@
   document.getElementById('couponForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    // Validate coupon code
+    const couponId = document.getElementById('couponId').value;
     const code = document.getElementById('code').value.toUpperCase();
+    
+    // Validate coupon code
     if (!/^[A-Z0-9]+$/.test(code)) {
-      showToast('Coupon code can only contain letters and numbers', 'error');
-      return;
+        showToast('Coupon code can only contain letters and numbers', 'error');
+        return;
     }
 
     // Validate dates
     const startDate = new Date(document.getElementById('startDate').value);
     const expiryDate = new Date(document.getElementById('expiryDate').value);
-    const now = new Date();
-
-    if (startDate < now) {
-      showToast('Start date cannot be in the past', 'error');
-      return;
-    }
 
     if (expiryDate <= startDate) {
-      showToast('Expiry date must be after start date', 'error');
-      return;
+        showToast('Expiry date must be after start date', 'error');
+        return;
     }
 
     // Validate discount value
@@ -301,59 +305,79 @@
     const discountValue = Number(document.getElementById('discountValue').value);
     
     if (discountType === 'PERCENTAGE') {
-      if (discountValue < 1 || discountValue > 99) {
-        showToast('Percentage discount must be between 1 and 99', 'error');
-        return;
-      }
-      // Validate maximum discount for percentage type
-      const maxDiscount = Number(document.getElementById('maxDiscount').value);
-      if (maxDiscount < 100) {
-        showToast('Maximum discount amount must be at least ₹100', 'error');
-        return;
-      }
+        if (discountValue < 1 || discountValue > 99) {
+            showToast('Percentage discount must be between 1 and 99', 'error');
+            return;
+        }
+        // Validate maximum discount for percentage type
+        const maxDiscount = Number(document.getElementById('maxDiscount').value);
+        if (maxDiscount < 100) {
+            showToast('Maximum discount amount must be at least ₹100', 'error');
+            return;
+        }
     }
 
     const formData = {
-      code: code,
-      description: document.getElementById('description').value,
-      discountType: discountType,
-      discountValue: discountValue,
-      minPurchase: document.getElementById('minPurchase').value,
-      maxDiscount: discountType === 'PERCENTAGE' ? document.getElementById('maxDiscount').value : 0,
-      usageLimit: document.getElementById('usageLimit').value,
-      startDate: startDate.toISOString(),
-      expiryDate: expiryDate.toISOString()
+        code: code,
+        description: document.getElementById('description').value,
+        discountType: discountType,
+        discountValue: discountValue,
+        minPurchase: document.getElementById('minPurchase').value,
+        maxDiscount: discountType === 'PERCENTAGE' ? document.getElementById('maxDiscount').value : 0,
+        usageLimit: document.getElementById('usageLimit').value,
+        startDate: startDate.toISOString(),
+        expiryDate: expiryDate.toISOString()
     };
 
-    const couponId = document.getElementById('couponId').value;
-    const url = couponId ? `/admin/coupons/${couponId}` : '/admin/coupons';
-
     try {
-      const response = await axios[couponId ? 'put' : 'post'](url, formData);
-      if (response.data.success) {
-        closeModal();
-        
-        if (couponId) {
-          // Update existing row
-          const row = document.querySelector(`button[onclick="editCoupon('${couponId}')"]`).closest('tr');
-          updateCouponRow(row, formData, couponId);
-          showToast('Coupon updated successfully');
-        } else {
-          // Add new row at the top
-          const tbody = document.getElementById('couponsTable');
-          const newRow = createCouponRow(formData, response.data.couponId);
-          
-          if (tbody.querySelector('td[colspan="8"]')) {
-            tbody.innerHTML = newRow;
-          } else {
-            tbody.insertAdjacentHTML('afterbegin', newRow);
-            updateRowNumbers();
-          }
-          showToast('Coupon added successfully');
+        const response = await axios[couponId ? 'put' : 'post'](
+            couponId ? `/admin/coupons/${couponId}` : '/admin/coupons',
+            formData
+        );
+
+        if (response.data.success) {
+            closeModal();
+            
+            if (couponId) {
+                // Update existing row in the table
+                const row = document.querySelector(`button[onclick="editCoupon('${couponId}')"]`).closest('tr');
+                const isExpired = new Date(formData.expiryDate) < new Date();
+                
+                // Update the row cells
+                row.children[1].textContent = formData.code;
+                row.children[2].textContent = formData.discountType;
+                row.children[3].textContent = formData.discountType === 'PERCENTAGE' ? 
+                    formData.discountValue + '%' : '₹' + formData.discountValue;
+                row.children[4].textContent = '₹' + formData.minPurchase;
+                row.children[5].textContent = new Date(formData.expiryDate).toLocaleDateString();
+                
+                // Update status cell
+                const statusCell = row.children[6];
+                if (isExpired) {
+                    statusCell.innerHTML = `
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                            Expired
+                        </span>`;
+                }
+                
+                showToast('Coupon updated successfully');
+            } else {
+                // For new coupons, handle as before
+                const tbody = document.getElementById('couponsTable');
+                const newRow = createCouponRow(formData, response.data.couponId);
+                
+                if (tbody.querySelector('td[colspan="8"]')) {
+                    tbody.innerHTML = newRow;
+                } else {
+                    tbody.insertAdjacentHTML('afterbegin', newRow);
+                    updateRowNumbers();
+                }
+                
+                showToast('Coupon added successfully');
+            }
         }
-      }
     } catch (error) {
-      showToast(error.response?.data?.message || 'Failed to save coupon', 'error');
+        showToast(error.response?.data?.message || 'Failed to save coupon', 'error');
     }
   });
 
@@ -429,6 +453,9 @@
 
   // Helper function to create a new coupon row
   function createCouponRow(data, couponId) {
+    const now = new Date();
+    const isExpired = new Date(data.expiryDate) < now;
+    
     return `
         <tr>
             <td class="px-6 py-4 whitespace-nowrap">1</td>
@@ -440,9 +467,14 @@
             <td class="px-6 py-4 whitespace-nowrap">₹${data.minPurchase}</td>
             <td class="px-6 py-4 whitespace-nowrap">${new Date(data.expiryDate).toLocaleDateString()}</td>
             <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                    Active
-                </span>
+                ${isExpired ? 
+                    `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                        Expired
+                    </span>` :
+                    `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        Active
+                    </span>`
+                }
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                 <div class="flex space-x-2">
@@ -450,10 +482,12 @@
                         class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">
                         Edit
                     </button>
-                    <button onclick="toggleCouponStatus('${couponId}', 'true')"
-                        class="bg-primary-accent text-white px-3 py-2 rounded-md hover:bg-red-600">
-                        Deactivate
-                    </button>
+                    ${!isExpired ? 
+                        `<button onclick="toggleCouponStatus('${couponId}', 'true')"
+                            class="bg-primary-accent text-white px-3 py-2 rounded-md hover:bg-red-600">
+                            Deactivate
+                        </button>` : ''
+                    }
                     <button onclick="deleteCoupon('${couponId}')"
                         class="bg-primary-accent text-white px-3 py-2 rounded-md hover:bg-red-600">
                         Delete
