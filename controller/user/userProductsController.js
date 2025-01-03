@@ -172,7 +172,7 @@ const viewProduct = async (req, res) => {
             averageRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
         }
 
-        res.render('user/viewproduct', {
+        res.render('user/viewProduct', {
             product,
             relatedProducts,
             reviews: reviews || [], 
@@ -288,7 +288,7 @@ const viewCategory = async (req, res) => {
             });
         }
 
-        res.render('user/viewcategory', {
+        res.render('user/viewCategory', {
             category,
             products,
             productRatings: Object.fromEntries(ratingMap),

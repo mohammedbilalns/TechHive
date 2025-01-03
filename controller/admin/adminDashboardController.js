@@ -1,8 +1,8 @@
 import Order from '../../model/orderModel.js';
 import Product from '../../model/productModel.js';
 
-const adminDashboardController = {
-  async getDashboardData(req, res) {
+
+ const  getDashboardData = async (req, res)=> {
     try {
       const { filterType, startDate, endDate } = req.query;
       let dateFilter = {};
@@ -155,9 +155,9 @@ const adminDashboardController = {
         message: 'Error fetching dashboard data'
       });
     }
-  },
+  }
 
-  async renderDashboard(req, res) {
+ const renderDashboard = async(req, res)=>{
     try {
       res.render('admin/dashboard', {page:"dashboard"});
     } catch (error) {
@@ -165,6 +165,6 @@ const adminDashboardController = {
       res.status(500).send('Error loading dashboard');
     }
   }
-};
 
-export default adminDashboardController;
+
+export default { getDashboardData , renderDashboard};

@@ -41,7 +41,7 @@ app.use('/admin', adminRoutes)
 
 // 404 handler
 app.use((req, res) => {
-    res.status(404).render('notfound', {
+    res.status(404).render('notFound', {
         fullname: req.session.user ? req.session.user.fullname : null
     })
 })

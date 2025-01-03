@@ -273,7 +273,7 @@ const getOrderSuccess = async (req, res) => {
       return res.redirect('/home');
     }
 
-    res.render('user/order-success', { 
+    res.render('user/orderSuccess', { 
       orderId: order.orderId
     });
   } catch (error) {
@@ -329,36 +329,6 @@ const getOrders = async (req, res) => {
       message: 'Failed to load orders',
       alertType: 'error',
       page: 'orders'
-    });
-  }
-};
-
-const getOrderDetails = async (req, res) => {
-  try {
-    const orderId = req.params.orderId;
-    const userId = req.session.user.id;
-
-    const order = await orderModel.findOne({ _id: orderId, userId })
-      .populate({
-        path: 'items.product',
-        select: 'name images price'
-      })
-      .populate('shippingAddress');
-
-    if (!order) {
-      return res.render('user/order-details', {
-        message: 'Order not found',
-        alertType: 'error'
-      });
-    }
-
-    res.render('user/order-details', { order });
-
-  } catch (error) {
-    console.error('Get order details error:', error);
-    res.render('user/order-details', {
-      message: 'Failed to load order details',
-      alertType: 'error'
     });
   }
 };
@@ -611,7 +581,7 @@ const getPaymentFailed = async (req, res) => {
       return res.redirect('/home');
     }
 
-    res.render('user/payment-failed', { 
+    res.render('user/paymentFailed', { 
       orderId: order.orderId,
       user: req.session.user
     });
@@ -859,7 +829,6 @@ export default {
   placeOrder,
   getOrderSuccess,
   getOrders,
-  getOrderDetails,
   cancelOrderItem,
   verifyPayment,
   returnOrderItem,

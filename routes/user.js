@@ -7,18 +7,18 @@ import wishlistItems from "../middlewares/wishlistItems.js"
 import averageRatings from "../middlewares/averageRatings.js"
 // controllers
 import userAuthController from "../controller/user/userAuthController.js"
-import userProductController from "../controller/user/userProductController.js"
+import userProductController from "../controller/user/userProductsController.js"
 import useraddressController from "../controller/user/useraddressController.js"
-import useraccountController from "../controller/user/useraccountController.js"
-import userCartController from "../controller/user/userCartcontroller.js"
+import useraccountController from "../controller/user/userAccountController.js"
+import userCartController from "../controller/user/userCartController.js"
 import userCheckController from "../controller/user/userCheckoutController.js"
-import userOrderController from "../controller/user/userOrderController.js"
+import userOrderController from "../controller/user/userOrdersController.js"
 import userSearchController from "../controller/user/userSearchController.js"
 import userWishlistController from "../controller/user/userWishlistController.js"
 import userCouponsController from "../controller/user/userCouponsController.js"
 import userWalletController from "../controller/user/userWalletController.js"
-import userReviewController from "../controller/user/userReviewController.js"
-import notfoundController from "../controller/user/notfoundController.js"
+import userReviewController from "../controller/user/userReviewsController.js"
+import notfoundController from "../controller/user/notFoundController.js"
 
 const router = Router()
 
@@ -69,9 +69,9 @@ router.route('/addresses')
     .post(useraddressController.addAddress)
 router.route('/address/:id')
     .all(auth.checkSession)
-    .put(useraddressController.updateAddress) // Update address
-    .delete(useraddressController.deleteAddress) // Delete an address
-    .get(useraddressController.getAddress); // Get single address details
+    .put(useraddressController.updateAddress) 
+    .delete(useraddressController.deleteAddress) 
+    .get(useraddressController.getAddress); 
 
 //---- user profile management ---- 
 router.get('/account',auth.checkSession, useraccountController.getAccountDetails)
@@ -92,7 +92,6 @@ router.get('/checkout',auth.checkSession, userCheckController.getCheckout);
 router.post('/checkout/placeorder',auth.checkSession, userOrderController.placeOrder);
 router.post('/checkout/verifypayment',auth.checkSession, userOrderController.verifyPayment);
 router.get('/order/success/:orderId', auth.checkSession, userOrderController.getOrderSuccess);
-router.get('/orders/:orderId', auth.checkSession, userOrderController.getOrderDetails);
 router.post('/orders/:orderId/items/:itemId/cancel',auth.checkSession, userOrderController.cancelOrderItem);
 router.get('/orders', auth.checkSession, userOrderController.getOrders);
 router.post('/orders/:orderId/items/:itemId/return', auth.checkSession, userOrderController.returnOrderItem);
@@ -125,5 +124,4 @@ router.post('/checkout/apply-coupon',auth.checkSession, userCheckController.appl
 router.post('/checkout/remove-coupon',auth.checkSession, userCheckController.removeCoupon);
 
 router.get('/payment/failed/:orderId', auth.checkSession, userOrderController.getPaymentFailed);
-
 export default router

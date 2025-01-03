@@ -7,7 +7,7 @@ import { log } from "mercedlogger"
 
 const renderSalesReport = async (req, res) => {
   try {
-    res.render('admin/salesreport', {
+    res.render('admin/salesRseport', {
       page: "salesreport"
     });
   } catch (error) {
