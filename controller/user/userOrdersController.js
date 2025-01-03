@@ -277,7 +277,7 @@ const getOrderSuccess = async (req, res) => {
       orderId: order.orderId
     });
   } catch (error) {
-    console.error('Get order success error:', error);
+    log.red('GET_ORDER_SUCCESS_ERROR', error);
     res.redirect('/home');
   }
 };
@@ -323,7 +323,7 @@ const getOrders = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Get orders error:', error);
+    log.red('GET_ORDERS_ERROR', error);
     res.render('user/profile/orders', { 
       orders: [],
       message: 'Failed to load orders',
@@ -421,7 +421,7 @@ const cancelOrderItem = async (req, res) => {
     res.json({ success: true, message: 'Item cancelled successfully' });
 
   } catch (error) {
-    console.error('Cancel order item error:', error);
+    log.red('CANCEL_ORDER_ITEM_ERROR', error);
     res.json({ success: false, message: 'Failed to cancel item' });
   }
 };
@@ -517,7 +517,7 @@ const returnOrderItem = async (req, res) => {
     res.json({ success: true, message: 'Return request submitted successfully' });
 
   } catch (error) {
-    console.error('Return order item error:', error);
+    log.red('RETURN_ORDER_ITEM_ERROR', error);
     res.json({ success: false, message: 'Failed to process return request' });
   }
 };
@@ -558,7 +558,7 @@ const retryPayment = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Retry payment error:', error);
+    log.red('RETRY_PAYMENT_ERROR', error);
     res.json({ 
       success: false, 
       message: 'Failed to initialize payment' 
@@ -586,7 +586,7 @@ const getPaymentFailed = async (req, res) => {
       user: req.session.user
     });
   } catch (error) {
-    console.error('Get payment failed error:', error);
+    log.red('GET_PAYMENT', error);
     res.redirect('/home');
   }
 };

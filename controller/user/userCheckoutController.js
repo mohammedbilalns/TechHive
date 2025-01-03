@@ -3,6 +3,7 @@ import cartModel from '../../model/cartModel.js';
 import addressModel from '../../model/addressModel.js';
 import walletModel from '../../model/walletModel.js';
 import couponModel from '../../model/couponModel.js';
+import { log } from 'mercedlogger';
 
 const getCheckout = async (req, res) => {
   try {
@@ -53,7 +54,7 @@ const getCheckout = async (req, res) => {
       page: "cart"
     });
   } catch (error) {
-    console.error('Checkout error:', error);
+    log.red('CHECKOUT_ERROR', error);
     res.status(500).json({ 
       success: false, 
       message: 'Something went wrong. Please try again.' 
@@ -127,7 +128,7 @@ const applyCoupon = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Apply coupon error:', error);
+    log.red('APPLY_COUPON_ERROR', error);
     return res.status(500).json({
       success: false,
       message: 'Error applying coupon'
@@ -142,7 +143,7 @@ const removeCoupon = async (req, res) => {
       message: 'Coupon removed successfully'
     });
   } catch (error) {
-    console.error('Remove coupon error:', error);
+    log.red('REMOVE_COUPON_ERROR', error);
     return res.status(500).json({
       success: false,
       message: 'Error removing coupon'

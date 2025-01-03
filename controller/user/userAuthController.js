@@ -287,7 +287,6 @@ const resendOTP = async (req, res) => {
         const user = await userSchema.findOne({ email });
 
         if (user.otp.otpAttempts >= 3) {
-            console.log("295")
             await userSchema.findOneAndDelete({ email });
             return res.status(400).json({
                 success: false,

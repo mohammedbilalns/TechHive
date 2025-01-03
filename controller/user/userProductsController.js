@@ -117,7 +117,7 @@ const loadAllProducts = async (req, res) => {
             productRatings.map(item => [item._id.toString(), item.avgRating])
         );
 
-        res.render('user/allproducts', {
+        res.render('user/allProducts', {
             categoriesWithProducts,
             productRatings: Object.fromEntries(ratingMap),
             currentPage: page,
