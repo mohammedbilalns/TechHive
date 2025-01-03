@@ -49,10 +49,16 @@
                   <td class="px-6 py-4 whitespace-nowrap"><%= new Date(offer.startDate).toLocaleDateString() %></td>
                   <td class="px-6 py-4 whitespace-nowrap"><%= new Date(offer.endDate).toLocaleDateString() %></td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                      <%= offer.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
-                      <%= offer.isActive ? 'Active' : 'Inactive' %>
-                    </span>
+                    <% if (offer.isExpired) { %>
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                            Expired
+                        </span>
+                    <% } else { %>
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                            <%= offer.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                            <%= offer.isActive ? 'Active' : 'Inactive' %>
+                        </span>
+                    <% } %>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div class="flex space-x-2">
@@ -60,10 +66,12 @@
                         class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">
                         Edit
                       </button>
-                      <button onclick="toggleOfferStatus('<%= offer._id %>', '<%= offer.isActive %>')"
-                        class="<%= offer.isActive ? 'bg-primary-accent' : 'bg-green-700' %> text-white px-3 py-2 rounded-md hover:<%= offer.isActive ? 'bg-red-600' : 'bg-green-600' %>">
-                        <%= offer.isActive ? 'Deactivate' : 'Activate' %>
-                      </button>
+                      <% if (!offer.isExpired) { %>
+                        <button onclick="toggleOfferStatus('<%= offer._id %>', '<%= offer.isActive %>')"
+                          class="<%= offer.isActive ? 'bg-primary-accent' : 'bg-green-700' %> text-white px-3 py-2 rounded-md hover:<%= offer.isActive ? 'bg-red-600' : 'bg-green-600' %>">
+                          <%= offer.isActive ? 'Deactivate' : 'Activate' %>
+                        </button>
+                      <% } %>
                       <button onclick="deleteOffer('<%= offer._id %>')"
                         class="bg-primary-accent text-white px-3 py-2 rounded-md hover:bg-red-600">
                         Delete
@@ -385,8 +393,12 @@
               <td class="px-6 py-4 whitespace-nowrap">${new Date(formData.startDate).toLocaleDateString()}</td>
               <td class="px-6 py-4 whitespace-nowrap">${new Date(formData.endDate).toLocaleDateString()}</td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                  Active
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                    new Date(formData.endDate) < new Date() 
+                        ? 'bg-gray-100 text-gray-800'
+                        : 'bg-green-100 text-green-800'
+                }">
+                    ${new Date(formData.endDate) < new Date() ? 'Expired' : 'Active'}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -395,10 +407,12 @@
                     class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">
                     Edit
                   </button>
-                  <button onclick="toggleOfferStatus('${response.data.offerId}', 'true')"
-                    class="bg-primary-accent text-white px-3 py-2 rounded-md hover:bg-red-600">
-                    Deactivate
-                  </button>
+                  ${new Date(formData.endDate) > new Date() ? `
+                    <button onclick="toggleOfferStatus('${response.data.offerId}', 'true')"
+                      class="bg-primary-accent text-white px-3 py-2 rounded-md hover:bg-red-600">
+                      Deactivate
+                    </button>
+                  ` : ''}
                   <button onclick="deleteOffer('${response.data.offerId}')"
                     class="bg-primary-accent text-white px-3 py-2 rounded-md hover:bg-red-600">
                     Delete
@@ -445,14 +459,21 @@
         try {
             const response = await axios.patch(`/admin/offers/${offerId}/toggle-status`);
             if (response.data.success) {
-                // Find the row containing the offer
                 const row = document.querySelector(`button[onclick="toggleOfferStatus('${offerId}', '${currentStatus}')"]`).closest('tr');
-                
-                // Update status badge
                 const statusBadge = row.querySelector('td:nth-child(7) span');
-                const newStatus = currentStatus === 'true' ? false : true;
-                statusBadge.className = `px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${newStatus ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
-                statusBadge.textContent = newStatus ? 'Active' : 'Inactive';
+                
+                // Check if offer is expired
+                const endDateCell = row.querySelector('td:nth-child(6)').textContent;
+                const isExpired = new Date(endDateCell) < new Date();
+                
+                if (isExpired) {
+                    statusBadge.className = 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800';
+                    statusBadge.textContent = 'Expired';
+                } else {
+                    const newStatus = currentStatus === 'true' ? false : true;
+                    statusBadge.className = `px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${newStatus ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
+                    statusBadge.textContent = newStatus ? 'Active' : 'Inactive';
+                }
 
                 // Update toggle button
                 const toggleButton = row.querySelector(`button[onclick="toggleOfferStatus('${offerId}', '${currentStatus}')"]`);

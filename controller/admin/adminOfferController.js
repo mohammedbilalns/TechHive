@@ -48,7 +48,14 @@ const getOffers = async (req, res) => {
         const offers = await Offer.find()
             .sort({ createdAt: -1 })
             .skip(skip)
-            .limit(limit);
+            .limit(limit)
+            .lean(); 
+
+        // Add isExpired property to each offer
+        const currentDate = new Date();
+        offers.forEach(offer => {
+            offer.isExpired = new Date(offer.endDate) < currentDate;
+        });
 
         const totalOffers = await Offer.countDocuments();
         const totalPages = Math.ceil(totalOffers / limit);

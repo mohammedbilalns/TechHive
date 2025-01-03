@@ -52,4 +52,35 @@ const productSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
+productSchema.pre('find', async function() {
+  const now = new Date();
+
+  // Find all active offers that have expired
+  const Offer = mongoose.model('Offer');
+  const expiredOffers = await Offer.find({
+    isActive: true,
+    endDate: { $lt: now }
+  });
+
+  // If there are expired offers, update the products
+  if (expiredOffers.length > 0) {
+    for (const offer of expiredOffers) {
+      offer.isActive = false;
+      await offer.save();
+
+      if (offer.offerType === 'product') {
+        await this.model.updateMany(
+          { _id: { $in: offer.applicableProducts } },
+          { $set: { discount: 0 } }
+        );
+      } else if (offer.offerType === 'category') {
+        await this.model.updateMany(
+          { category: { $in: offer.applicableCategories } },
+          { $set: { discount: 0 } }
+        );
+      }
+    }
+  }
+});
+
 export default mongoose.model('Product', productSchema);
