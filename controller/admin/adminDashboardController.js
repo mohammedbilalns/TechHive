@@ -9,6 +9,15 @@ import Product from '../../model/productModel.js';
 
       // Create date filter based on selected type
       switch (filterType) {
+        case 'daily':
+          const today = new Date();
+          dateFilter = {
+            orderDate: {
+              $gte: new Date(today.getFullYear(), today.getMonth(), today.getDate()),
+              $lte: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59)
+            }
+          };
+          break;
         case 'yearly':
           const year = new Date().getFullYear();
           dateFilter = {

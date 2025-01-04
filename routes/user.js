@@ -82,7 +82,7 @@ router.route('/cart')
     .get(userCartController.getCart)
     .post(userCartController.addToCart)
     .patch(userCartController.updateQuantity)
-    .put(userCartController.removeFromCart)
+router.delete('/cart/:productId', auth.checkSession, userCartController.removeFromCart)
 router.post('/cart/clear',auth.checkSession, userCartController.clearCart)
 
 //---- user checkout/order management ----

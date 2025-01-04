@@ -158,7 +158,7 @@
 
 
     function updateQuantity(productId, action) {
-      // Get current quantity before making the request
+      // Get current quantity
       const quantitySpan = document.querySelector(`[data-product="${productId}"] .quantity-value`);
       const currentQuantity = parseInt(quantitySpan.textContent);
 
@@ -233,7 +233,7 @@
       const confirmed = await customConfirm('Are you sure you want to remove this item?');
       if (!confirmed) return;
 
-      axios.put('/cart', { productId })
+      axios.delete(`/cart/${productId}`)
         .then(response => {
           if (response.data.success) {
             document.querySelector(`[data-product="${productId}"]`).remove();

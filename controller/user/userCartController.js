@@ -136,7 +136,7 @@ const addToCart = async (req, res) => {
 
 const removeFromCart = async (req, res) => {
     try {
-        const { productId } = req.body;
+        const { productId } = req.params;
         const userId = req.session.user.id;
 
         const cart = await cartSchema.findOne({ user: userId })
