@@ -165,6 +165,12 @@ const placeOrder = async (req, res) => {
       ]);
     }
 
+    // Clear cart after creating order (moved from payment verification)
+    await cartModel.findOneAndUpdate(
+      { user: userId },
+      { $set: { items: [], discount: 0, couponCode: null } }
+    );
+
     // If payment method is online, create Razorpay order
     if (paymentMethod === 'online') {
       try {
@@ -295,19 +301,15 @@ const verifyPayment = async (req, res) => {
       };
       await order.save();
 
-      // Update product stock and clear cart
-      await Promise.all([
-        ...order.items.map(item => 
+      // Update product stock (removed cart clearing)
+      await Promise.all(
+        order.items.map(item => 
           productModel.findOneAndUpdate(
             { name: item.name },
             { $inc: { stock: -item.quantity } }
           )
-        ),
-        cartModel.findOneAndUpdate(
-          { user: order.userId },
-          { $set: { items: [], discount: 0, couponCode: null } }
         )
-      ]);
+      );
 
       res.json({ success: true });
     } else {
