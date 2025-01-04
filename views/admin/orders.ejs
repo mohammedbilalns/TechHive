@@ -144,7 +144,7 @@
                                           </span>
                                         </p>
                                         <div class="mt-2 flex items-center">
-                                          <% if (!['delivered', 'cancelled', 'returned'].includes(item.status)) { %>
+                                          <% if (!['delivered', 'cancelled', 'returned', 'pending'].includes(item.status)) { %>
                                             <select id="status-<%= order._id %>-<%= item._id %>"
                                               class="border rounded px-2 py-1 text-sm mr-2">
                                               <% if (item.status === 'pending') { %>
