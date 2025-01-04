@@ -661,6 +661,11 @@ const downloadInvoice = async (req, res) => {
     // Final amount after all discounts
     const finalAmount = baseAmount - couponDiscount;
 
+    // Calculate GST components (9% each for SGST and CGST)
+    const baseAmountBeforeTax = baseAmount / 1.18; // Since total tax is 18%
+    const sgst = baseAmountBeforeTax * 0.09;
+    const cgst = baseAmountBeforeTax * 0.09;
+
     // Generate PDF
     const doc = new PDFDocument({ margin: 40, size: 'A4' });
 
@@ -814,25 +819,68 @@ const downloadInvoice = async (req, res) => {
        .lineTo(40 + totalWidth, rowTop + rowHeight)
        .stroke();
 
-    // Summary section
-    doc.y = rowTop + rowHeight + 20; // Adjust starting position for summary section
-    doc.moveDown(2);
+    // Summary section - make it wider and better formatted
+    doc.y = rowTop + rowHeight + 20;
+    
+    // Create a summary box
+    const summaryWidth = 300; // Increased width
+    const summaryX = doc.page.width - summaryWidth - 40; // Align to right with margin
+    const summaryStartY = doc.y;
+    
+    // Draw summary box background
+    doc.rect(summaryX, summaryStartY, summaryWidth, 160) // Increased height
+       .fillColor('#f8f9fa')
+       .fill();
+    
+    // Reset position and color for text
+    doc.fillColor('#000000')
+       .fontSize(12);
+    
+    // Summary title
     doc.font('NotoSans-Bold')
-      .text('Summary', { underline: true })
-      .moveDown(0.5);
+       .text('Summary',
+         summaryX + 20,
+         summaryStartY + 15,
+         { width: summaryWidth - 40 }
+       )
+       .moveDown(0.5);
 
-    doc.font('NotoSans')
-      .text(`Subtotal: ₹${baseAmount.toFixed(2)}`);
+    // Summary content with aligned values
+    const leftColX = summaryX + 20;
+    const rightColX = summaryX + summaryWidth - 120;
+    let currentY = doc.y;
 
-    // Only show coupon discount if it exists and is greater than 0
+    // Helper function for summary rows
+    const addSummaryRow = (label, value, isBold = false) => {
+      doc.font(isBold ? 'NotoSans-Bold' : 'NotoSans')
+         .text(label, leftColX, currentY)
+         .text(value, rightColX, currentY, { align: 'right' });
+      currentY += 20;
+    };
+
+    // Add summary rows
+    addSummaryRow('Subtotal (before tax):', `₹${baseAmountBeforeTax.toFixed(2)}`);
+    addSummaryRow('SGST (9%):', `₹${sgst.toFixed(2)}`);
+    addSummaryRow('CGST (9%):', `₹${cgst.toFixed(2)}`);
+    addSummaryRow('Subtotal (inc. tax):', `₹${baseAmount.toFixed(2)}`);
+    
     if (couponDiscount > 0) {
-      doc.text(`Coupon Discount: ₹${couponDiscount.toFixed(2)}`);
+      addSummaryRow('Coupon Discount:', `- ₹${couponDiscount.toFixed(2)}`);
     }
-    doc.moveDown(0.5);
 
-    doc.font('NotoSans-Bold')
-      .text(`Final Amount: ₹${finalAmount.toFixed(2)}`, { color: 'blue' })
-      .moveDown(1);
+    // Draw a line before final amount
+    doc.moveTo(summaryX + 20, currentY)
+       .lineTo(summaryX + summaryWidth - 20, currentY)
+       .strokeColor('#000000')
+       .stroke();
+    
+    currentY += 10;
+    
+    // Final amount in bold
+    addSummaryRow('Final Amount:', `₹${finalAmount.toFixed(2)}`, true);
+
+    // Reset position for rest of the document
+    doc.moveDown(2);
 
     // Footer
     doc.fontSize(8)

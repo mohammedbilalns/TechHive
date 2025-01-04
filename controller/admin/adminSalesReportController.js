@@ -579,30 +579,43 @@ const downloadReport = async (req, res) => {
     dateFilter.status = 'Delivered'; // Only include delivered orders
     dateFilter.isReturned = { $ne: true }; // Exclude returned orders
 
-    // Fetch orders with date and status filter
-    const orders = await Order.find(dateFilter)
+    // Modify the query to find orders with at least one delivered item
+    const orders = await Order.find({
+      'items.status': 'delivered',  // At least one item is delivered
+      orderDate: dateFilter.orderDate // Keep existing date filter
+    })
       .populate('userId', 'fullname')
       .sort({ orderDate: -1 });
 
+    // Format orders to match report requirements
     const formattedOrders = orders.map(order => {
-      const couponDiscount = order.coupon?.discount || 0;
-      const offerDiscount = order.items.reduce((total, item) => {
-        // Calculate discount amount for each item based on percentage
+      // Filter only delivered items
+      const deliveredItems = order.items.filter(item => item.status === 'delivered');
+
+      // Calculate amounts only for delivered items
+      const itemTotals = deliveredItems.reduce((acc, item) => {
+        const itemOriginalAmount = item.price * item.quantity;
         const itemDiscountAmount = (item.price * (item.discount / 100)) * item.quantity;
-        return total + itemDiscountAmount;
-      }, 0);
-      const totalDiscount = couponDiscount + offerDiscount;
+        return {
+          originalAmount: acc.originalAmount + itemOriginalAmount,
+          offerDiscount: acc.offerDiscount + itemDiscountAmount
+        };
+      }, { originalAmount: 0, offerDiscount: 0 });
+
+      // Calculate coupon discount proportionally for delivered items
+      const orderTotalAmount = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const deliveredItemsRatio = itemTotals.originalAmount / orderTotalAmount;
+      const couponDiscount = order.coupon?.discount ? (order.coupon.discount * deliveredItemsRatio) : 0;
 
       return {
         orderId: order.orderId,
         orderDate: order.orderDate,
         customer: order.userId.fullname,
-        itemCount: order.items.length,
-        totalAmount: order.totalAmount + totalDiscount,
+        itemCount: deliveredItems.length,
+        totalAmount: itemTotals.originalAmount,
         couponDiscount: couponDiscount,
-        offerDiscount: offerDiscount,
-        totalDiscount: totalDiscount,
-        netAmount: order.totalAmount
+        offerDiscount: itemTotals.offerDiscount,
+        netAmount: itemTotals.originalAmount - (couponDiscount + itemTotals.offerDiscount)
       };
     });
 
@@ -612,7 +625,7 @@ const downloadReport = async (req, res) => {
       totalAmount: acc.totalAmount + order.totalAmount,
       totalCouponDiscounts: acc.totalCouponDiscounts + order.couponDiscount,
       totalOfferDiscounts: acc.totalOfferDiscounts + order.offerDiscount,
-      totalDiscounts: acc.totalDiscounts + order.totalDiscount,
+      totalDiscounts: acc.totalDiscounts + (order.couponDiscount + order.offerDiscount),
       netAmount: acc.netAmount + order.netAmount
     }), {
       totalOrders: 0,
@@ -624,17 +637,6 @@ const downloadReport = async (req, res) => {
     });
 
     if (format === 'excel') {
-      const fileName = `sales-report-${filterType}-${new Date().toISOString().split('T')[0]}.xlsx`;
-
-      res.setHeader(
-        'Content-Type',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      );
-      res.setHeader(
-        'Content-Disposition',
-        `attachment; filename=${fileName}`
-      );
-
       await generateExcelReport(res, formattedOrders, totals, filterType, startDate, endDate);
     } else if (format === 'pdf') {
       await generatePDFReport(res, formattedOrders, totals, filterType, startDate, endDate);
