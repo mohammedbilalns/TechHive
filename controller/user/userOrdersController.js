@@ -180,7 +180,6 @@ const placeOrder = async (req, res) => {
           razorpayOrderId: razorpayOrder.id
         };
 
-        // Remove cart clearing from here
         await order.save();
 
         return res.json({
@@ -269,10 +268,21 @@ const verifyPayment = async (req, res) => {
       .digest("hex");
 
     if (razorpay_signature === expectedSign) {
-      // Find order and update payment status and details
       const order = await orderModel.findById(orderId);
+
       if (!order) {
         return res.json({ success: false, message: 'Order not found' });
+      }
+
+      // Check stock availability for all items
+      for (const item of order.items) {
+        const product = await productModel.findOne({ name: item.name });
+        if (!product || product.stock < item.quantity) {
+          return res.json({
+            success: false,
+            message: `${item.name} is out of stock`
+          });
+        }
       }
 
       // Update order status and payment details
@@ -285,14 +295,11 @@ const verifyPayment = async (req, res) => {
       };
       await order.save();
 
-      // Get cart items to update product stock
-      const cart = await cartModel.findOne({ user: order.userId });
-      
       // Update product stock and clear cart
       await Promise.all([
-        ...cart.items.map(item => 
-          productModel.findByIdAndUpdate(
-            item.productId,
+        ...order.items.map(item => 
+          productModel.findOneAndUpdate(
+            { name: item.name },
             { $inc: { stock: -item.quantity } }
           )
         ),
@@ -547,6 +554,17 @@ const retryPayment = async (req, res) => {
 
     if (order.paymentStatus !== 'pending') {
       return res.json({ success: false, message: 'Payment already processed' });
+    }
+
+    // Check stock availability for all items before proceeding
+    for (const item of order.items) {
+      const product = await productModel.findOne({ name: item.name });
+      if (!product || product.stock < item.quantity) {
+        return res.json({
+          success: false,
+          message: `${item.name} is out of stock`
+        });
+      }
     }
 
     // Create new Razorpay order
