@@ -22,8 +22,6 @@ import notfoundController from "../controller/user/notFoundController.js"
 
 const router = Router()
 
-router.use(express.static('static'))
-
 //---- User Authentication ----
 router.route('/login') // login route
     .all(auth.isLogin)
@@ -124,4 +122,5 @@ router.post('/checkout/apply-coupon',auth.checkSession, userCheckController.appl
 router.post('/checkout/remove-coupon',auth.checkSession, userCheckController.removeCoupon);
 
 router.get('/payment/failed/:orderId', auth.checkSession, userOrderController.getPaymentFailed);
+
 export default router

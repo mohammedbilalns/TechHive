@@ -180,12 +180,8 @@ const placeOrder = async (req, res) => {
           razorpayOrderId: razorpayOrder.id
         };
 
-    
-        // Clear cart  
-        await cartModel.findOneAndUpdate(
-          { user: userId },
-          { $set: { items: [], discount: 0, couponCode: null } }
-        );
+        // Remove cart clearing from here
+        await order.save();
 
         return res.json({
           success: true,
@@ -194,16 +190,10 @@ const placeOrder = async (req, res) => {
           razorpayOrderId: razorpayOrder.id
         });
       } catch (error) {
-        // Save order with pending status and clear cart
+        // Save order with pending status
         order.paymentStatus = 'pending';
         order.items.forEach(item => item.status = 'pending');
         await order.save();
-
-        //Clear cart
-        await cartModel.findOneAndUpdate(
-          { user: userId },
-          { $set: { items: [], discount: 0, couponCode: null } }
-        );
 
         return res.json({
           success: false,
@@ -253,7 +243,7 @@ const placeOrder = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Place order error:', error);
+    log.red('PLACE_ORDER_ERROR', error);
     res.json({ 
       success: false, 
       message: error.message || 'Failed to place order' 
@@ -271,13 +261,13 @@ const verifyPayment = async (req, res) => {
       orderId 
     } = req.body;
 
-
     // Verify payment signature
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSign = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(sign.toString())
       .digest("hex");
+
     if (razorpay_signature === expectedSign) {
       // Find order and update payment status and details
       const order = await orderModel.findById(orderId);
@@ -294,6 +284,23 @@ const verifyPayment = async (req, res) => {
         razorpaySignature: razorpay_signature
       };
       await order.save();
+
+      // Get cart items to update product stock
+      const cart = await cartModel.findOne({ user: order.userId });
+      
+      // Update product stock and clear cart
+      await Promise.all([
+        ...cart.items.map(item => 
+          productModel.findByIdAndUpdate(
+            item.productId,
+            { $inc: { stock: -item.quantity } }
+          )
+        ),
+        cartModel.findOneAndUpdate(
+          { user: order.userId },
+          { $set: { items: [], discount: 0, couponCode: null } }
+        )
+      ]);
 
       res.json({ success: true });
     } else {
