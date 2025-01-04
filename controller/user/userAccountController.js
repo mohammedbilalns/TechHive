@@ -1,11 +1,19 @@
 import userSchema from "../../model/userModel.js";
 import { log } from "mercedlogger";
 import bcrypt from 'bcryptjs';
+import referralCodeUtils from '../../utils/referralCode.js';
 
 const getAccountDetails = async (req, res) => {
     try {
         let email = req.session.user.email
         let user = await userSchema.findOne({ email })
+        
+        // Generate referral code 
+        if (!user.referralCode) {
+            user.referralCode = referralCodeUtils.generateReferralCode();
+            await user.save();
+        }
+        
         res.render('user/profile/account', { user, page: "account" })
     } catch (error) {
         log.red("FETCH_ACCOUNT_DETAILS_ERROR", error)

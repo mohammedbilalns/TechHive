@@ -39,7 +39,11 @@ const userSchema = new mongoose.Schema(
             type: String,
             enum: ["Pending", "Active", "Blocked"],
         },
-        otp: otpSchema, 
+        otp: otpSchema,
+		referralCode : {
+			type: String,
+			unique: true 
+		}
     },
     { timestamps: true }
 );

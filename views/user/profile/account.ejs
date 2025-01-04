@@ -45,6 +45,15 @@
                       <%= user.phonenumber || 'Not provided' %>
                     </p>
                   </div>
+                  <div>
+                    <p class="text-gray-600">Referral Code</p>
+                    <div class="flex items-center space-x-2">
+                      <p class="text-lg font-semibold" id="referralCode"><%= user.referralCode %></p>
+                      <button onclick="copyReferralCode()" class="text-primary-accent hover:text-primary-accent/90">
+                        <i class="fas fa-copy"></i>
+                      </button>
+                    </div>
+                  </div>
                 </div>
                 <div class="mt-8 border-t pt-6">
                   <% if (user.password) { %>
@@ -218,6 +227,16 @@
         const errorMessage = error.response?.data?.message || 'Error changing password';
         showToast(errorMessage, 'error');
       }
+    }
+
+    async function copyReferralCode() {
+        const referralCode = document.getElementById('referralCode').textContent;
+        try {
+            await navigator.clipboard.writeText(referralCode);
+            showToast('Referral code copied to clipboard!');
+        } catch (err) {
+            showToast('Failed to copy referral code', 'error');
+        }
     }
   </script>
 
