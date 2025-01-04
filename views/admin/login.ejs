@@ -43,35 +43,50 @@
 </main>
 <%- include('../partials/adminfooter') %>
 
-<script >
- 
+<script>
+  if (window.history.replaceState) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
 
-  document.getElementById('adminLoginForm').addEventListener('submit', function (event) {
+  document.getElementById('adminLoginForm').addEventListener('submit', async function (event) {
     event.preventDefault();
     
-    closeCustomAlert();
+    if (typeof closeCustomAlert === 'function') {
+      closeCustomAlert();
+    }
     
     let isValid = true;
-    const email = document.getElementById('email');
-    const password = document.getElementById('password');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const email = emailInput.value.trim();
+    const password = passwordInput.value.trim();
 
-    // First check password since we want to show its specific message
-    if (!password.value.trim()) {
-      showToast('Password is required.', 'error');
+    if (!email) {
+      showToast("Email is required.", 'error');
       isValid = false;
       return;
     }
-
-    // Check email, but show generic message
-    if (!email.value.trim() || !/^[^@]+@[^@]+\.[a-zA-Z]{2,}$/.test(email.value)) {
-      showToast('Invalid credentials', 'error');
+    if (!password) {
+      showToast('Password is required.', 'error');
       isValid = false;
       return;
     }
 
     if (!isValid) return;
 
-    // Submit the form
-    this.submit();
+    try {
+      const response = await axios.post('/admin/login', {
+        email,
+        password
+      });
+
+      if (response.data.success) {
+        showToast(response.data.message, 'success');
+        window.location.href = response.data.redirectUrl;
+      }
+    } catch (error) {
+      const message = error.response?.data?.message || 'Something went wrong';
+      showToast(message, 'error');
+    }
   });
 </script>

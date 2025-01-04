@@ -15,15 +15,39 @@ const verifyLogin = async (req, res) => {
     let { email, password } = req.body
     email = email.trim()
     password = password.trim()
-    if (email != process.env.ADMIN_EMAIL || password != process.env.ADMIN_PASSWORD) {
-      return res.redirect(`/admin/login?message=Invalid+credentials&alertType=error&email=${email}`)
+    if (!email) {
+      return res.status(401).json({
+        success: false,
+        message: 'Email is required'
+      });
+    }
+    if (!password) {
+      return res.status(401).json({
+        success: false,
+        message: 'Password is required'
+      });
     }
 
-    req.session.admin = true
-    res.redirect('/admin/customers')
+    if (email != process.env.ADMIN_EMAIL || password != process.env.ADMIN_PASSWORD) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid credentials'
+      });
+    }
+
+    req.session.admin = true;
+    res.status(200).json({
+      success: true,
+      message: 'Login successful',
+      redirectUrl: '/admin/dashboard'
+    });
+
   } catch (error) {
     log.red("LOGIN ERROR", error)
-    res.render('admin/login', { message: "Something went wrong", alertType: "error" })
+    res.status(500).json({
+      success: false,
+      message: 'Something went wrong'
+    });
   }
 }
 
