@@ -1,6 +1,7 @@
 import { log } from "mercedlogger";
 import categorySchema from "../../model/categoryModel.js"
 import productSchema from "../../model/productModel.js"
+
 // Fetch the categories page
 const getCategories = async (req, res) => {
     try {
@@ -10,7 +11,7 @@ const getCategories = async (req, res) => {
         const limit = 10
         const search = req.query.search || ''
 
-        // Create search query
+        // search query
         const searchQuery = {
             name: { $regex: search, $options: 'i' }
         }
@@ -39,6 +40,7 @@ const getCategories = async (req, res) => {
         log.red('FETCH_CATEGORIES_ERROR', error)
     }
 }
+
 // Delete a category
 const deleteCategory = async (req, res) => {
     try {
@@ -55,6 +57,7 @@ const deleteCategory = async (req, res) => {
         });
     }
 }
+
 // Hide a category
 const hideCategory = async (req, res) => {
     try {
@@ -79,6 +82,7 @@ const hideCategory = async (req, res) => {
         });
     }
 }
+
 // Unhide a category
 const unhideCategory = async (req, res) => {
     try {

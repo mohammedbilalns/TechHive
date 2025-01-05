@@ -45,14 +45,14 @@ const getOffers = async (req, res) => {
         const limit = 10;
         const skip = (page - 1) * limit;
 
-        // Fetch offers with pagination
+        // Fetch offers 
         const offers = await Offer.find()
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
             .lean(); 
 
-        // Add isExpired property to each offer
+        
         const currentDate = new Date();
         offers.forEach(offer => {
             offer.isExpired = new Date(offer.endDate) < currentDate;
@@ -95,7 +95,7 @@ const getOffers = async (req, res) => {
             page: 'offers'
         });
     } catch (error) {
-        console.error('Error fetching offers:', error);
+        log.red('ERROR_FETCHING_OFFERS', error);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 }
@@ -134,7 +134,7 @@ const getOfferDetails = async (req, res) => {
 
         res.json(response);
     } catch (error) {
-        console.error('Error fetching offer details:', error);
+        log.red('ERROR_FETCHING_OFFER_DETAILS', error);
         res.status(500).json({
             success: false,
             message: 'Failed to fetch offer details',
@@ -292,7 +292,7 @@ const deleteOffer = async (req, res) => {
     }
 }
 
-// Add new function to update referral settings
+//  update referral settings
 const updateReferralSettings = async (req, res) => {
     try {
         const { referrerValue, refereeValue } = req.body;
@@ -343,7 +343,7 @@ const updateReferralSettings = async (req, res) => {
             message: 'Referral settings updated successfully'
         });
     } catch (error) {
-        console.error('Error updating referral settings:', error);
+        log.red('ERROR_UPDATE_REFERRAL_SETTINGS', error);
         res.status(500).json({
             success: false,
             message: 'Failed to update referral settings'

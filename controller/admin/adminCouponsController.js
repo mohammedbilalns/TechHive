@@ -1,6 +1,7 @@
 import { log } from "mercedlogger";
 import Coupon from "../../model/couponModel.js";
 
+// get the coupons page 
 const getCoupons = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;

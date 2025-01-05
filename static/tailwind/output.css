@@ -965,6 +965,10 @@ input::placeholder {
   min-height: 100vh;
 }
 
+.w-1\/2 {
+  width: 50%;
+}
+
 .w-10 {
   width: 2.5rem;
 }
@@ -1027,10 +1031,6 @@ input::placeholder {
 
 .w-full {
   width: 100%;
-}
-
-.w-1\/2 {
-  width: 50%;
 }
 
 .min-w-0 {

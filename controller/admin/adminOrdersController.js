@@ -40,7 +40,7 @@ const getOrders = async (req, res) => {
       search
     });
   } catch (error) {
-    console.error('Error fetching orders:', error);
+    log.red('ERROR_FETCHING_ORDERS', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching orders'
@@ -65,7 +65,7 @@ const updateOrderItemStatus = async (req, res) => {
 
     // Validate status transition
     const validTransitions = {
-      'pending': ['processing', 'shipped', 'delivered', 'cancelled'],
+      'pending': [],
       'processing': ['shipped', 'delivered', 'cancelled'],
       'shipped': ['delivered', 'cancelled'],
       'delivered': ['return requested'],
@@ -169,7 +169,7 @@ const updateOrderItemStatus = async (req, res) => {
 
     res.json({ success: true, message: 'Item status updated successfully' });
   } catch (error) {
-    console.error('Update order item status error:', error);
+    log.red('ERROR_UPDATE_ORDER_ITEM_STATUS', error);
     res.status(500).json({ success: false, message: 'Error updating item status' });
   }
 };

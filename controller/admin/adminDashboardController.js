@@ -1,5 +1,4 @@
 import Order from '../../model/orderModel.js';
-import Product from '../../model/productModel.js';
 
 
  const  getDashboardData = async (req, res)=> {

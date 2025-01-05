@@ -71,6 +71,7 @@ const getProducts = async (req, res) => {
         });
     } catch (error) {
         log.red("PRODUCT_FETCH_ERROR", error);
+        
     }
 }
 
@@ -86,18 +87,16 @@ const deleteProduct = async (req, res) => {
             });
         }
 
-        // if (product.images) {
-        //     // Delete each image file from the storage
-        //     product.images.forEach(image => {
-        //         const imagePath = path.join('static', image.path);
-        //         if (fs.existsSync(imagePath)) {
-        //             fs.unlinkSync(imagePath);
-        //         }
-        //     });
-        // }
-
-        // Delete the product from database
-        await productSchema.findByIdAndDelete(req.params.productid);
+        // Delete all images except the first one
+        if (product.images && product.images.length > 1) {
+            for (let i = 1; i < product.images.length; i++) {
+                const imagePath = path.join('static', product.images[i].path);
+                if (fs.existsSync(imagePath)) {
+                    fs.unlinkSync(imagePath);
+                }
+            }
+            
+        }
 
         res.json({
             success: true,
@@ -107,7 +106,7 @@ const deleteProduct = async (req, res) => {
         log.red('PRODUCT_DELETE_ERROR', error);
         res.status(500).json({
             success: false,
-            message: 'Failed to delete product'
+            message: 'Failed to delete product images'
         });
     }
 };
