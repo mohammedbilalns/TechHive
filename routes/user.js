@@ -123,4 +123,6 @@ router.post('/checkout/remove-coupon',auth.checkSession, userCheckController.rem
 
 router.get('/payment/failed/:orderId', auth.checkSession, userOrderController.getPaymentFailed);
 
+router.post('/apply-referral', auth.checkSession, userAuthController.applyReferral);
+
 export default router

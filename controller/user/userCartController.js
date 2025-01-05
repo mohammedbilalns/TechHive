@@ -4,18 +4,14 @@ import { log } from "mercedlogger"
 
 const getCart = async (req, res) => {
     try {
-        const cart = await cartSchema.findOne({ user: req.session.user.id })
+        let cart = await cartSchema.findOne({ user: req.session.user.id })
             .populate('items.productId');
 
+        // Create cart if not found
         if (!cart) {
-            return res.render('user/profile/cart', {
-                cart: null,
-                subtotal: "0.00",
-                shipping: "0.00",
-                total: "0.00",
-                originalPrice: "0.00",
-                totalDiscount: "0.00",
-                user: req.session.user
+            cart = await cartSchema.create({
+                user: req.session.user.id,
+                items: []
             });
         }
 

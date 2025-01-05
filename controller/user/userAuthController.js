@@ -5,6 +5,8 @@ import authUtils from "../../utils/authUtils.js";
 import { config } from "dotenv";
 import passport from "passport";
 import validation from "../../utils/validations.js"
+import referralSchema from "../../model/referralModel.js";
+import walletSchema from "../../model/walletModel.js";
 config();
 
 // ---- User Login ----  
@@ -244,7 +246,7 @@ const verifyOTP = async (req, res) => {
             user.otp = undefined;
             await user.save();
 
-            req.session.user = { fullname: user.fullname, email: user.email };
+            req.session.user = { id: user._id, fullname: user.fullname, email: user.email };
 
             return res.json({
                 success: true,
@@ -577,6 +579,83 @@ const resetPassword = async (req, res) => {
     }
 };
 
+const applyReferral = async (req, res) => {
+    try {
+        const { referralCode } = req.body;
+        log.cyan("REFERRAL CODE", referralCode)
+        const currentUser = await userSchema.findById(req.session.user.id);
+        log.cyan("CURRENT USER", )
+        // Find referrer
+        const referrer = await userSchema.findOne({ referralCode });
+        
+        if (!referrer) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid referral code"
+            });
+        }
+        
+        if (referrer._id.toString() === currentUser._id.toString()) {
+            return res.status(400).json({
+                success: false,
+                message: "You cannot use your own referral code"
+            });
+        }
+
+        // Get referral values
+        const referralValues = await referralSchema.findOne({});
+        const referrerAmount = referralValues.referrerValue;
+        const refereeAmount = referralValues.refereeValue;
+
+        // Handle referrer's wallet
+        let referrerWallet = await walletSchema.findOne({ userId: referrer._id });
+        if (!referrerWallet) {
+            referrerWallet = new walletSchema({
+                userId: referrer._id,
+                balance: 0
+            });
+        }
+        
+        referrerWallet.balance += referrerAmount;
+        referrerWallet.transactions.push({
+            transactionId: `REF${Date.now()}`,
+            type: "CREDIT",
+            amount: referrerAmount,
+            description: `Referral bonus for referring ${currentUser.fullname}`
+        });
+        await referrerWallet.save();
+
+        // Handle current user's wallet
+        let userWallet = await walletSchema.findOne({ userId: currentUser._id });
+        if (!userWallet) {
+            userWallet = new walletSchema({
+                userId: currentUser._id,
+                balance: 0
+            });
+        }
+        
+        userWallet.balance += refereeAmount;
+        userWallet.transactions.push({
+            transactionId: `REF${Date.now()}`,
+            type: "CREDIT",
+            amount: refereeAmount,
+            description: "Referral bonus for using referral code"
+        });
+        await userWallet.save();
+
+        return res.json({
+            success: true,
+            message: "Referral code applied successfully"
+        });
+
+    } catch (error) {
+        log.red("APPLY_REFERRAL_ERROR", error);
+        return res.status(500).json({
+            success: false,
+            message: "Something went wrong"
+        });
+    }
+};
 
 export default {
     loadLogin, verifyLogin,
@@ -584,7 +663,7 @@ export default {
     loadForgotpassword, processForgotPassword, verifyForgotPasswordOTP,
     resendForgotPasswordOTP, resetPassword,
     registerUser, authGoogle, authGoogleCallback,
-    logoutUser
+    logoutUser, applyReferral
 }
 
 

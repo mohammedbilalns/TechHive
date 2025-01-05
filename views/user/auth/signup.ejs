@@ -115,6 +115,34 @@
       </div>
     </div>
 
+    <div id="referralModal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center">
+      <div class="bg-primary-white rounded-lg shadow-lg max-w-md w-full p-6">
+        <div class="bg-gray-50 flex flex-col items-center text-center">
+          <p class="text-2xl font-semibold text-gray-800 mb-4">Enter Referral Code</p>
+          <p class="text-gray-600 mb-4">Have a referral code? Enter it below to get rewards!</p>
+          
+          <input type="text" id="referralCode" placeholder="Enter referral code" 
+            class="border w-full mb-4 px-3 py-2 rounded-md uppercase" />
+          
+          <div id="referralAlertMessage" class="mb-4 p-3 rounded-md hidden"></div>
+
+          <div class="flex gap-3 w-full">
+            <button type="button" id="skipReferral"
+              class="w-1/2 py-2 text-gray-600 bg-gray-200 rounded-md">
+              Skip
+            </button>
+            <button type="button" id="applyReferral"
+              class="w-1/2 py-2 text-white bg-primary-accent rounded-md flex items-center justify-center">
+              <span>Apply</span>
+              <div id="referralLoader" class="hidden ml-2">
+                <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script>
 
       document.getElementById('signupForm').addEventListener('submit', async function (event) {
@@ -313,7 +341,8 @@
           });
 
           if (response.data.success) {
-            window.location.href = '/home';
+            document.getElementById('otpModal').classList.replace("flex", "hidden");
+            document.getElementById('referralModal').classList.replace("hidden", "flex");
           }
         } catch (error) {
           const alertMessage = document.getElementById('otpAlertMessage');
@@ -385,6 +414,45 @@
         } finally {
           buttonText.textContent = 'Resend OTP';
           resendLoader.classList.add('hidden');
+        }
+      });
+
+      document.getElementById('skipReferral').addEventListener('click', () => {
+        window.location.href = '/home';
+      });
+
+      document.getElementById('applyReferral').addEventListener('click', async () => {
+        const referralButton = document.getElementById('applyReferral');
+        const referralLoader = document.getElementById('referralLoader');
+        const buttonText = referralButton.querySelector('span');
+        const alertMessage = document.getElementById('referralAlertMessage');
+        const code = document.getElementById('referralCode').value.trim().toUpperCase();
+
+        if (!code) {
+          alertMessage.textContent = 'Please enter a referral code';
+          alertMessage.classList.remove('hidden', 'bg-green-100', 'text-green-700');
+          alertMessage.classList.add('bg-red-100', 'text-red-700');
+          return;
+        }
+
+        try {
+          buttonText.textContent = 'Applying...';
+          referralLoader.classList.remove('hidden');
+          referralButton.disabled = true;
+
+          const response = await axios.post('/apply-referral', { referralCode: code });
+
+          if (response.data.success) {
+            window.location.href = '/home';
+          }
+        } catch (error) {
+          alertMessage.textContent = error.response?.data?.message || 'Failed to apply referral code';
+          alertMessage.classList.remove('hidden', 'bg-green-100', 'text-green-700');
+          alertMessage.classList.add('bg-red-100', 'text-red-700');
+        } finally {
+          buttonText.textContent = 'Apply';
+          referralLoader.classList.add('hidden');
+          referralButton.disabled = false;
         }
       });
 
