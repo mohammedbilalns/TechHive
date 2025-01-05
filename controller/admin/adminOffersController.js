@@ -310,7 +310,20 @@ const updateReferralSettings = async (req, res) => {
                 message: 'Referral values cannot be negative'
             });
         }
+        if(referrerValue > refereeValue){
+            return res.status(400).json({
+                success: false,
+                message: 'Referrer value cannot be greater than referee value'
+            });
+        }
 
+        if(referrerValue > 100 || refereeValue > 100){
+            return res.status(400).json({
+                success: false,
+                message: 'Referral values cannot be greater than 100'
+            });
+        }
+        
         let referralSettings = await Referral.findOne();
         
         if (!referralSettings) {
