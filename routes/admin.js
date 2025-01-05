@@ -10,6 +10,8 @@ import adminCouponsController from "../controller/admin/adminCouponsController.j
 import adminOfferController from "../controller/admin/adminOffersController.js"
 import adminSalesreportController from "../controller/admin/adminSalesReportController.js"
 import adminDashboardController from "../controller/admin/adminDashboardController.js"
+import adminOffersController from "../controller/admin/adminOffersController.js"
+
 const router = Router()
 router.use(express.static('static'));
 
@@ -83,6 +85,9 @@ router.post('/customers/unblock/:customerid', adminCustomersController.unblockCu
 // Dashboard routes
 router.get('/dashboard', adminDashboardController.renderDashboard)
 router.get('/dashboard/data', adminDashboardController.getDashboardData)
+
+// Add this new route
+router.post('/referral-settings', adminOffersController.updateReferralSettings);
 
 export default router
 

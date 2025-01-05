@@ -12,6 +12,41 @@
         </div>
       <% } %>
 
+      <div class="bg-primary-white rounded-lg shadow-lg w-full overflow-hidden mb-4">
+        <!-- Referral Settings Header -->
+        <div class="flex flex-col md:flex-row justify-between items-center bg-gray-50 px-4 md:px-6 py-4 border-b space-y-4 md:space-y-0">
+          <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Referral Settings</h1>
+        </div>
+
+        <!-- Referral Settings Form -->
+        <div class="p-6">
+          <form id="referralForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="referrerValue">
+                Referrer Reward Value (₹)
+              </label>
+              <input type="number" id="referrerValue" name="referrerValue" required min="0"
+                value="<%= referralSettings?.referrerValue || 100 %>"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div>
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="refereeValue">
+                Referee Reward Value (₹)
+              </label>
+              <input type="number" id="refereeValue" name="refereeValue" required min="0"
+                value="<%= referralSettings?.refereeValue || 50 %>"
+                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div class="md:col-span-2 flex justify-end">
+              <button type="submit"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Update Referral Settings
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
       <div class="bg-primary-white rounded-lg shadow-lg w-full overflow-hidden">
         <!-- Page Header -->
         <div class="flex flex-col md:flex-row justify-between items-center bg-gray-50 px-4 md:px-6 py-4 border-b space-y-4 md:space-y-0">
@@ -533,6 +568,24 @@
         }
     }
   }
+
+  document.getElementById('referralForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = {
+      referrerValue: parseInt(document.getElementById('referrerValue').value),
+      refereeValue: parseInt(document.getElementById('refereeValue').value)
+    };
+
+    try {
+      const response = await axios.post('/admin/referral-settings', formData);
+      if (response.data.success) {
+        showToast('Referral settings updated successfully');
+      }
+    } catch (error) {
+      showToast(error.response?.data?.message || 'Failed to update referral settings', 'error');
+    }
+  });
 
   document.addEventListener('DOMContentLoaded', function() {
     

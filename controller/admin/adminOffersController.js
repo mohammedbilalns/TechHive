@@ -1,6 +1,7 @@
 import Offer from '../../model/offerModel.js';
 import Category from '../../model/categoryModel.js';
 import Product from '../../model/productModel.js';
+import Referral from '../../model/referralModel.js';
 
 const updateProductDiscounts = async (offer, remove = false) => {
     if (!offer.isActive && !remove) return;
@@ -76,6 +77,12 @@ const getOffers = async (req, res) => {
             name: `${product.name} (${product.category.name}) - ₹${product.price}`,
         }));
 
+        // Fetch referral settings
+        let referralSettings = await Referral.findOne();
+        if (!referralSettings) {
+            referralSettings = await new Referral().save();
+        }
+
         res.render('admin/offers', {
             offers,
             currentPage: page,
@@ -83,8 +90,9 @@ const getOffers = async (req, res) => {
             hasNextPage: page < totalPages,
             hasPrevPage: page > 1,
             categories,
-            page: 'offers',
-            products: formattedProducts
+            products: formattedProducts,
+            referralSettings,
+            page: 'offers'
         });
     } catch (error) {
         console.error('Error fetching offers:', error);
@@ -284,6 +292,52 @@ const deleteOffer = async (req, res) => {
     }
 }
 
-export default { getOffers, getOfferDetails, addOffer, updateOffer, toggleOfferStatus, deleteOffer };
+// Add new function to update referral settings
+const updateReferralSettings = async (req, res) => {
+    try {
+        const { referrerValue, refereeValue } = req.body;
+
+        if (!referrerValue || !refereeValue) {
+            return res.status(400).json({
+                success: false,
+                message: 'Both referrer and referee values are required'
+            });
+        }
+
+        if (referrerValue < 0 || refereeValue < 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Referral values cannot be negative'
+            });
+        }
+
+        let referralSettings = await Referral.findOne();
+        
+        if (!referralSettings) {
+            referralSettings = new Referral({
+                referrerValue,
+                refereeValue
+            });
+        } else {
+            referralSettings.referrerValue = referrerValue;
+            referralSettings.refereeValue = refereeValue;
+        }
+
+        await referralSettings.save();
+
+        res.json({
+            success: true,
+            message: 'Referral settings updated successfully'
+        });
+    } catch (error) {
+        console.error('Error updating referral settings:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update referral settings'
+        });
+    }
+};
+
+export default { getOffers, getOfferDetails, addOffer, updateOffer, toggleOfferStatus, deleteOffer, updateReferralSettings };
 
 
