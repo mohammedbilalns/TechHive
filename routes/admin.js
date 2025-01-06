@@ -34,10 +34,10 @@ router.post('/products/activate/:productid', adminProductController.activateProd
 router.post('/products/deactivate/:productid', adminProductController.deactivateProduct)
 router.route('/products/add')
        .get(adminProductController.getAddProduct)
-       .post(adminProductController.productUpload.array('mainImages',4), adminProductController.addProduct)
+       .post(adminProductController.productUpload.array('mainImages', 4), adminProductController.addProduct)
 router.route('/products/edit/:productid')
        .get(adminProductController.getEditProduct)
-       .post(adminProductController.productUpload.array('mainImages,4'), adminProductController.editProduct)
+       .post(adminProductController.productUpload.array('mainImages', 4), adminProductController.editProduct)
 
 
 //---- categories routes ----

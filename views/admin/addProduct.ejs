@@ -240,14 +240,14 @@
                   dataTransfer.items.add(file);
                   currentImageInput.files = dataTransfer.files;
 
-                  // Show preview
+                  // Show preview and hide upload label
                   const previewContainer = document.getElementById(currentPreviewId);
                   const previewImg = previewContainer.querySelector('img');
                   const uploadLabel = document.getElementById(currentUploadLabelId);
 
                   previewImg.src = canvas.toDataURL();
                   previewContainer.classList.remove('hidden');
-                  uploadLabel.classList.add('hidden');
+                  uploadLabel.classList.add('hidden'); // Hide the upload label after successful upload
 
                   closeCropper();
                 });
@@ -257,8 +257,8 @@
             const alertMessage = document.getElementById("alertMessage");
             const alertText = document.getElementById("alertText");
 
-            addProductForm.addEventListener("submit", (event) => {
-              alertMessage.classList.add('hidden');
+            addProductForm.addEventListener("submit", async (event) => {
+              event.preventDefault();
               let isValid = true;
 
               const name = addProductForm.name.value.trim();
@@ -280,50 +280,39 @@
 
               // Validate required fields first
               if (!name) {
-                alertText.textContent = "Product name is required.";
-                alertMessage.classList.remove('hidden');
+                showToast("Product name is required.", "error");
                 isValid = false;
               } else if (name.length < nameBrandMinLength || name.length > nameBrandMaxLength) {
-                alertText.textContent = `Product name must be between ${nameBrandMinLength} and ${nameBrandMaxLength} characters.`;
-                alertMessage.classList.remove('hidden');
+                showToast(`Product name must be between ${nameBrandMinLength} and ${nameBrandMaxLength} characters.`, "error");
                 isValid = false;
               } else if (!brand) {
-                alertText.textContent = "Brand is required.";
-                alertMessage.classList.remove('hidden');
+                showToast("Brand is required.", "error");
                 isValid = false;
               } else if (brand.length < nameBrandMinLength || brand.length > nameBrandMaxLength) {
-                alertText.textContent = `Brand must be between ${nameBrandMinLength} and ${nameBrandMaxLength} characters.`;
-                alertMessage.classList.remove('hidden');
+                showToast(`Brand must be between ${nameBrandMinLength} and ${nameBrandMaxLength} characters.`, "error");
                 isValid = false;
               } else if (!description || description.replace(/\s/g, '').length === 0) {
-                alertText.textContent = "Product description is required and cannot be only spaces.";
-                alertMessage.classList.remove('hidden');
+                showToast("Product description is required", "error");
                 isValid = false;
               } else if (!category) {
-                alertText.textContent = "Please select a category.";
-                alertMessage.classList.remove('hidden');
+                showToast("Please select a category.", "error");
                 isValid = false;
               } else if (!price) {
-                alertText.textContent = "Price is required.";
-                alertMessage.classList.remove('hidden');
+                showToast("Price is required.", "error");
                 isValid = false;
               } else if (!stock) {
-                alertText.textContent = "Stock is required.";
-                alertMessage.classList.remove('hidden');
+                showToast("Stock is required.", "error");
                 isValid = false;
               } else if (!allImagesSelected) {
-                alertText.textContent = "All four images must be selected.";
-                alertMessage.classList.remove('hidden');
+                showToast("All four images must be selected.", "error");
                 isValid = false;
               }
 
               // Validate specifications
               if (isValid) {
                 const invalidSpecs = specifications.some(spec => !spec || spec.replace(/\s/g, '').length === 0);
-
                 if (invalidSpecs) {
-                  alertText.textContent = "All four specifications are required and cannot be only spaces.";
-                  alertMessage.classList.remove('hidden');
+                  showToast("All four specifications are required and cannot be only spaces.", "error");
                   isValid = false;
                 }
               }
@@ -334,12 +323,10 @@
                 const brandRegex = /^[A-Za-z0-9\s]+$/;
 
                 if (!nameRegex.test(name)) {
-                  alertText.textContent = "Product name can only contain letters, numbers, spaces, parentheses () and % symbol.";
-                  alertMessage.classList.remove('hidden');
+                  showToast("Product name can only contain letters, numbers, spaces, parentheses () and % symbol.", "error");
                   isValid = false;
                 } else if (!brandRegex.test(brand)) {
-                  alertText.textContent = "Brand can only contain letters, numbers, and spaces.";
-                  alertMessage.classList.remove('hidden');
+                  showToast("Brand can only contain letters, numbers, and spaces.", "error");
                   isValid = false;
                 }
               }
@@ -347,25 +334,54 @@
               // Validate numeric fields
               if (isValid) {
                 if (parseFloat(price) < 50) {
-                  alertText.textContent = "Price must be at least ₹50.";
-                  alertMessage.classList.remove('hidden');
+                  showToast("Price must be at least ₹50.", "error");
                   isValid = false;
                 } else if (parseInt(stock) < 0) {
-                  alertText.textContent = "Stock cannot be negative.";
-                  alertMessage.classList.remove('hidden');
+                  showToast("Stock cannot be negative.", "error");
                   isValid = false;
                 }
               }
 
               if (!isValid) {
-                event.preventDefault();
+                return;
+              }
+
+              try {
+                const formData = new FormData(addProductForm);
+                const response = await axios.post('/admin/products/add', formData, {
+                  headers: {
+                    'Content-Type': 'multipart/form-data'
+                  }
+                });
+
+                if (response.data.success) {
+                  showToast('Product added successfully');
+                  setTimeout(() => {
+                    window.location.href = '/admin/products';
+                  }, 1000);
+                } else {
+                  showToast(response.data.message || 'Failed to add product', 'error');
+                }
+              } catch (error) {
+                console.error('Error:', error);
+                showToast(error.response?.data?.message || 'Failed to add product', 'error');
               }
             });
             window.handleImageUpload = handleImageUpload;
             window.closeCropper = closeCropper;
             window.applyCrop = applyCrop;
+
+            // Add click handler to preview images to allow re-upload
+            document.querySelectorAll('[id^="preview"]').forEach(preview => {
+              preview.addEventListener('click', () => {
+                const inputId = preview.id.replace('preview', '');
+                document.querySelector(`input[onchange*="preview${inputId}"]`).click();
+              });
+            });
           });
         </script>
       </div>
     </main>
   </div>
+
+  <%- include('../partials/adminfooter') %>

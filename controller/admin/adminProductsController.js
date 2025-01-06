@@ -4,6 +4,7 @@ import productSchema from "../../model/productModel.js"
 import multer from "multer";
 import fs from "node:fs"
 import path from "node:path"
+import mongoose from 'mongoose';
 
 //  multer configuration for local storage
 const productStorage = multer.diskStorage({
@@ -89,14 +90,16 @@ const deleteProduct = async (req, res) => {
 
         // Delete all images except the first one
         if (product.images && product.images.length > 1) {
-            for (let i = 1; i < product.images.length; i++) {
-                const imagePath = path.join('static', product.images[i].path);
+            product.images.slice(1).forEach(image => {
+                const imagePath = path.join('static', image.path);
                 if (fs.existsSync(imagePath)) {
                     fs.unlinkSync(imagePath);
                 }
-            }
-            
+            });
         }
+
+        // Delete the product from database
+        await productSchema.findByIdAndDelete(req.params.productid);
 
         res.json({
             success: true,
@@ -106,7 +109,7 @@ const deleteProduct = async (req, res) => {
         log.red('PRODUCT_DELETE_ERROR', error);
         res.status(500).json({
             success: false,
-            message: 'Failed to delete product images'
+            message: 'Failed to delete product'
         });
     }
 };
@@ -218,11 +221,17 @@ const addProduct = async (req, res) => {
         });
 
         await newProduct.save();
-        res.redirect('/admin/products?message=Product+added+successfully&alertType=success');
+        res.json({
+            success: true,
+            message: 'Product added successfully'
+        });
 
     } catch (error) {
         log.red('ADD_PRODUCT_ERROR', error);
-        res.redirect('/admin/products?message=Something+went+wrong&alertType=error');
+        res.status(500).json({
+            success: false,
+            message: 'Failed to add product'
+        });
     }
 };
 
@@ -230,19 +239,42 @@ const addProduct = async (req, res) => {
 
 const getEditProduct = async (req, res) => {
     try {
-        const product = await productSchema.findById(req.params.productid)
-        const categories = await categorySchema.find({ status: "Active" })
-        res.render('admin/editProduct', { product, categories, page: 'products' })
+        const productId = req.params.productid;
+
+        // Validate if the ID is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.redirect('/notfound?message=Invalid+Product+ID&alertType=error');
+        }
+
+        const product = await productSchema.findById(productId);
+        
+        // Check if product exists
+        if (!product) {
+            return res.redirect('/notfound?message=Product+not+found&alertType=error');
+        }
+
+        const categories = await categorySchema.find({ status: "Active" });
+        res.render('admin/editProduct', { product, categories, page: 'products' });
+        
     } catch (error) {
-        log.red('FETCH_EDIT_PRODUCT_ERROR', error)
-        res.redirect('/admin/products?message=Something+went+wrong&alertType=error')
+        log.red('FETCH_EDIT_PRODUCT_ERROR', error);
+        res.redirect('/notfound?message=Error+loading+product&alertType=error');
     }
-}
+};
 
 
 const editProduct = async (req, res) => {
     try {
         const productId = req.params.productid;
+        if(!productId){
+            return res.redirect('/notfound?message=Invalid+Product+id&alertType=error');
+
+        };
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.redirect('/notfound?message=Invalid+Product+id&alertType=error');
+        
+        }
+
         let { name, description, price, stock, brand, category, specifications } = req.body;
 
         name = name.trim().split(' ')
@@ -258,18 +290,29 @@ const editProduct = async (req, res) => {
 
         // Basic validation
         if (!name || !description || !price || !stock || !brand || !category) {
-            return res.redirect('/admin/products?message=Required+fields+are+missing&alertType=error');
+            return res.status(400).json({
+                success: false,
+                message: 'Required fields are missing'
+            });
         }
 
         let existingproduct = await productSchema.findOne({
             name,
             _id: { $ne: productId }
         });
-        if (existingproduct) return res.redirect('/admin/products?message=Product+with+same+name+already+exists&alertType=error');
+        if (existingproduct) {
+            return res.status(400).json({
+                success: false,
+                message: 'Product with same name already exists'
+            });
+        }
 
         const product = await productSchema.findById(productId);
         if (!product) {
-            return res.redirect('/admin/products?message=Product+not+found&alertType=error');
+            return res.status(404).json({
+                success: false,
+                message: 'Product not found'
+            });
         }
 
         // Handle image updates
@@ -311,14 +354,23 @@ const editProduct = async (req, res) => {
         );
 
         if (!updatedProduct) {
-            return res.redirect('/admin/products?message=Failed+to+update+product&alertType=error');
+            return res.status(404).json({
+                success: false,
+                message: 'Failed to update product'
+            });
         }
 
-        res.redirect('/admin/products?message=Product+updated+successfully&alertType=success');
+        res.json({
+            success: true,
+            message: 'Product updated successfully'
+        });
 
     } catch (error) {
         log.red('EDIT_PRODUCT_ERROR', error);
-        res.redirect('/admin/products?message=Something+went+wrong&alertType=error');
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update product'
+        });
     }
 };
 
