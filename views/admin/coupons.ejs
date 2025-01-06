@@ -255,27 +255,36 @@
 
   async function editCoupon(couponId) {
     try {
-      const response = await axios.get(`/admin/coupons/${couponId}`);
-      const coupon = response.data.coupon;
+        const response = await axios.get(`/admin/coupons/${couponId}`);
+        const coupon = response.data.coupon;
 
-      document.getElementById('modalTitle').textContent = 'Edit Coupon';
-      document.getElementById('couponId').value = couponId;
-      document.getElementById('code').value = coupon.code;
-      document.getElementById('description').value = coupon.description;
-      document.getElementById('discountType').value = coupon.discountType;
-      document.getElementById('discountValue').value = coupon.discountValue;
-      document.getElementById('minPurchase').value = coupon.minPurchase;
-      document.getElementById('maxDiscount').value = coupon.maxDiscount || '';
-      document.getElementById('usageLimit').value = coupon.usageLimit;
-      document.getElementById('startDate').value = new Date(coupon.startDate).toISOString().slice(0, 16);
-      document.getElementById('expiryDate').value = new Date(coupon.expiryDate).toISOString().slice(0, 16);
+        document.getElementById('modalTitle').textContent = 'Edit Coupon';
+        document.getElementById('couponId').value = couponId;
+        document.getElementById('code').value = coupon.code;
+        document.getElementById('description').value = coupon.description;
+        document.getElementById('discountType').value = coupon.discountType;
+        document.getElementById('discountValue').value = coupon.discountValue;
+        document.getElementById('minPurchase').value = coupon.minPurchase;
+        document.getElementById('maxDiscount').value = coupon.maxDiscount || '';
+        document.getElementById('usageLimit').value = coupon.usageLimit;
 
-      updateDiscountValidation();
-      document.getElementById('descriptionCount').textContent = `${coupon.description.length}/100`;
+        // Convert UTC to IST
+        const startDate = new Date(coupon.startDate);
+        const expiryDate = new Date(coupon.expiryDate);
+        
+        // Add IST offset (UTC+5:30)
+        startDate.setMinutes(startDate.getMinutes() + 330);
+        expiryDate.setMinutes(expiryDate.getMinutes() + 330);
 
-      openModal();
+        document.getElementById('startDate').value = startDate.toISOString().slice(0, 16);
+        document.getElementById('expiryDate').value = expiryDate.toISOString().slice(0, 16);
+
+        updateDiscountValidation();
+        document.getElementById('descriptionCount').textContent = `${coupon.description.length}/100`;
+
+        openModal();
     } catch (error) {
-      showToast(error.response?.data?.message || 'Failed to fetch coupon details', 'error');
+        showToast(error.response?.data?.message || 'Failed to fetch coupon details', 'error');
     }
   }
 

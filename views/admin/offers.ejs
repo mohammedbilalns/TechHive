@@ -298,8 +298,17 @@
         document.getElementById('name').value = offer.name;
         document.getElementById('offerType').value = offer.offerType;
         document.getElementById('offerPercentage').value = offer.offerPercentage;
-        document.getElementById('startDate').value = new Date(offer.startDate).toISOString().slice(0, 16);
-        document.getElementById('endDate').value = new Date(offer.endDate).toISOString().slice(0, 16);
+
+        // Convert UTC to IST
+        const startDate = new Date(offer.startDate);
+        const endDate = new Date(offer.endDate);
+        
+        // Add IST offset (UTC+5:30)
+        startDate.setMinutes(startDate.getMinutes() + 330);
+        endDate.setMinutes(endDate.getMinutes() + 330);
+
+        document.getElementById('startDate').value = startDate.toISOString().slice(0, 16);
+        document.getElementById('endDate').value = endDate.toISOString().slice(0, 16);
 
         handleOfferTypeChange();
 
