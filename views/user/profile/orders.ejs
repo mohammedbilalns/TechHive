@@ -94,9 +94,16 @@
                           displayDate = order.orderDate;
                           statusColor = 'text-gray-600';
                         }
+
+                        // Format date as dd/mm/yy
+                        const formattedDate = new Date(displayDate).toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: '2-digit'
+                        });
                       %>
                       <p class="text-sm <%= statusColor %> mt-2">
-                        <%= statusDisplay %> on: <%= new Date(displayDate).toLocaleDateString() %>
+                        <%= statusDisplay %> on: <%= formattedDate %>
                       </p>
                     </div>
                   </div>

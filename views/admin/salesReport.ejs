@@ -171,7 +171,7 @@
       const row = `
         <tr>
           <td class="px-6 py-4 whitespace-nowrap">${order.orderId}</td>
-          <td class="px-6 py-4 whitespace-nowrap">${new Date(order.orderDate).toLocaleDateString()}</td>
+          <td class="px-6 py-4 whitespace-nowrap">${new Date(order.orderDate).toLocaleDateString('en-GB')}</td>
           <td class="px-6 py-4 whitespace-nowrap">${order.customer}</td>
           <td class="px-6 py-4 whitespace-nowrap">${order.itemCount}</td>
           <td class="px-6 py-4 whitespace-nowrap">₹${order.totalAmount.toFixed(2)}</td>
@@ -206,7 +206,7 @@
           : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       });
       
-      const fileName = `sales-report-${filterType}-${new Date().toISOString().split('T')[0]}.${format === 'excel' ? 'xlsx' : 'pdf'}`;
+      const fileName = `sales-report-${filterType}-${new Date().toLocaleDateString('en-GB')}.${format === 'excel' ? 'xlsx' : 'pdf'}`;
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;

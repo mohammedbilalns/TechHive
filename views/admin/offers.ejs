@@ -346,12 +346,16 @@
   document.getElementById('offerForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
+    const offerId = document.getElementById('offerId').value;
+    const isEditing = !!offerId;
+
     // Validate dates
     const startDate = new Date(document.getElementById('startDate').value);
     const endDate = new Date(document.getElementById('endDate').value);
     const now = new Date();
 
-    if (startDate < now) {
+    // Only check for past start date when adding a new offer
+    if (!isEditing && startDate < now) {
       showToast('Start date cannot be in the past', 'error');
       return;
     }
@@ -393,7 +397,6 @@
       products: products
     };
 
-    const offerId = document.getElementById('offerId').value;
     const url = offerId ? `/admin/offers/${offerId}` : '/admin/offers';
     const method = offerId ? 'put' : 'post';
 

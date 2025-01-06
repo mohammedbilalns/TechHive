@@ -74,7 +74,7 @@
                               <%= status==='Used' ? 'Used On:' : 'Valid Till:' %>
                             </span>
                             <span>
-                              <%= new Date(status==='Used' ? coupon.usedDate : coupon.expiryDate).toLocaleDateString()
+                              <%= new Date(status==='Used' ? coupon.usedDate : coupon.expiryDate).toLocaleDateString('en-GB')
                                 %>
                             </span>
                           </div>

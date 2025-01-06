@@ -139,7 +139,11 @@ const addCoupon = async (req, res) => {
         });
 
         await newCoupon.save();
-        res.json({ success: true, message: 'Coupon created successfully' });
+        res.json({ 
+            success: true, 
+            message: 'Coupon created successfully',
+            couponId: newCoupon._id
+        });
     } catch (error) {
         log.red('ADD_COUPON_ERROR', error);
         res.status(500).json({

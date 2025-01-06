@@ -18,8 +18,8 @@
         <div class="flex justify-between items-start">
           <div>
             <h1 class="text-2xl font-semibold text-gray-800">Order <%= order.orderId %></h1>
-            <p class="text-gray-600 mt-1">Placed on <%= new Date(order.orderDate).toLocaleDateString() %></p>
-            <p class="text-gray-600">Expected delivery by <%= new Date(order.expectedDeliveryDate).toLocaleDateString() %></p>
+            <p class="text-gray-600 mt-1">Placed on <%= new Date(order.orderDate).toLocaleDateString('en-GB') %></p>
+            <p class="text-gray-600">Expected delivery by <%= new Date(order.expectedDeliveryDate).toLocaleDateString('en-GB') %></p>
             <% if (order.paymentStatus === 'pending') { %>
               <p class="text-red-600 mt-2 font-medium">Payment Failed</p>
             <% } %>
@@ -131,21 +131,21 @@
 
               <!-- Status Dates -->
               <div class="mt-4 text-sm text-gray-600 space-y-1">
-                <p>Ordered on: <%= new Date(order.orderDate).toLocaleString() %></p>
+                <p>Ordered on: <%= new Date(order.orderDate).toLocaleString('en-GB') %></p>
                 <% if (item.shippedDate) { %>
-                  <p>Shipped on: <%= new Date(item.shippedDate).toLocaleString() %></p>
+                  <p>Shipped on: <%= new Date(item.shippedDate).toLocaleString('en-GB') %></p>
                 <% } %>
                 <% if (item.deliveredDate) { %>
-                  <p>Delivered on: <%= new Date(item.deliveredDate).toLocaleString() %></p>
+                  <p>Delivered on: <%= new Date(item.deliveredDate).toLocaleString('en-GB') %></p>
                 <% } %>
                 <% if (item.cancelledDate) { %>
-                  <p class="text-red-600">Cancelled on: <%= new Date(item.cancelledDate).toLocaleString() %></p>
+                  <p class="text-red-600">Cancelled on: <%= new Date(item.cancelledDate).toLocaleString('en-GB') %></p>
                 <% } %>
                 <% if (item.return && item.return.requestedAt) { %>
-                  <p class="text-yellow-600">Return requested on: <%= new Date(item.return.requestedAt).toLocaleString() %></p>
+                  <p class="text-yellow-600">Return requested on: <%= new Date(item.return.requestedAt).toLocaleString('en-GB') %></p>
                 <% } %>
                 <% if (item.returnedDate) { %>
-                  <p class="text-green-600">Returned on: <%= new Date(item.returnedDate).toLocaleString() %></p>
+                  <p class="text-green-600">Returned on: <%= new Date(item.returnedDate).toLocaleString('en-GB') %></p>
                 <% } %>
                 <% if (item.return && item.return.reason) { %>
                   <p class="mt-2">

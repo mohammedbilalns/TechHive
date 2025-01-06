@@ -2,7 +2,7 @@ import Offer from '../../model/offerModel.js';
 import Category from '../../model/categoryModel.js';
 import Product from '../../model/productModel.js';
 import Referral from '../../model/referralModel.js';
-
+import {log} from "mercedlogger"
 const updateProductDiscounts = async (offer, remove = false) => {
     if (!offer.isActive && !remove) return;
 
@@ -179,7 +179,11 @@ const addOffer = async (req, res) => {
 
         await newOffer.save();
         await updateProductDiscounts(newOffer);
-        res.json({ success: true, message: 'Offer added successfully' });
+        res.json({ 
+            success: true, 
+            message: 'Offer added successfully',
+            offerId: newOffer._id
+        });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Failed to add offer' });
     }
@@ -310,7 +314,7 @@ const updateReferralSettings = async (req, res) => {
                 message: 'Referral values cannot be negative'
             });
         }
-        if(referrerValue > refereeValue){
+        if(referrerValue <= refereeValue){
             return res.status(400).json({
                 success: false,
                 message: 'Referrer value cannot be greater than referee value'
