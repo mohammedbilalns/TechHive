@@ -19,6 +19,8 @@ const renderSalesReport = async (req, res) => {
 const getSalesReportData = async (req, res) => {
   try {
     const { filterType, startDate, endDate } = req.query;
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;  // Items per page
 
     //  date validation for custom range
     if (filterType === 'custom') {
@@ -93,47 +95,36 @@ const getSalesReportData = async (req, res) => {
     dateFilter.status = 'Delivered'; // Only include delivered orders
     dateFilter.isReturned = { $ne: true }; // Exclude returned orders
 
-    // Modify the query to find orders with at least one delivered item
-    const orders = await Order.find({
-      'items.status': 'delivered',  // At least one item is delivered
-      orderDate: dateFilter.orderDate // Keep existing date filter
-    })
-      .populate('userId', 'fullname')
-      .sort({ orderDate: -1 });
+    // First, get all orders to calculate overall totals
+    const allOrders = await Order.find({
+      'items.status': 'delivered',
+      orderDate: dateFilter.orderDate
+    }).populate('userId', 'fullname');
 
-    // Calculate summary
-    let totalSales = 0;
-    let totalDiscounts = 0;
+    // Calculate overall totals
+    let overallTotalSales = 0;
+    let overallTotalDiscounts = 0;
 
-    const formattedOrders = await Promise.all(orders.map(order => {
-      // Filter only delivered items
+    const processedOrders = await Promise.all(allOrders.map(order => {
       const deliveredItems = order.items.filter(item => item.status === 'delivered');
-
-      // Skip orders with no delivered items
       if (deliveredItems.length === 0) return null;
 
-      // Calculate amounts only for delivered items
       const itemTotals = deliveredItems.reduce((acc, item) => {
         const itemOriginalAmount = item.price * item.quantity;
         const itemDiscountAmount = (item.price * (item.discount / 100)) * item.quantity;
-
         acc.originalAmount += itemOriginalAmount;
         acc.offerDiscount += itemDiscountAmount;
         return acc;
       }, { originalAmount: 0, offerDiscount: 0 });
 
-      // Calculate coupon discount proportionally for delivered items
       const orderTotalAmount = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
       const deliveredItemsRatio = itemTotals.originalAmount / orderTotalAmount;
-      const couponDiscount = order.coupon?.discount
-        ? (order.coupon.discount * deliveredItemsRatio)
-        : 0;
+      const couponDiscount = order.coupon?.discount ? (order.coupon.discount * deliveredItemsRatio) : 0;
 
       const totalDiscount = couponDiscount + itemTotals.offerDiscount;
-      const netAmount = itemTotals.originalAmount - totalDiscount;
-
-      totalSales += itemTotals.originalAmount;
-      totalDiscounts += totalDiscount;
+      
+      overallTotalSales += itemTotals.originalAmount;
+      overallTotalDiscounts += totalDiscount;
 
       return {
         orderId: order.orderId,
@@ -146,19 +137,38 @@ const getSalesReportData = async (req, res) => {
           offer: itemTotals.offerDiscount,
           total: totalDiscount
         },
-        netAmount: netAmount
+        netAmount: itemTotals.originalAmount - totalDiscount
       };
     }));
 
-    // Filter out null values (orders with no delivered items)
-    const validOrders = formattedOrders.filter(order => order !== null);
+    // Filter out null values and get valid orders
+    const validAllOrders = processedOrders.filter(order => order !== null);
+
+    // Get paginated orders
+    const totalOrders = validAllOrders.length;
+    const totalPages = Math.ceil(totalOrders / limit);
+    const skip = (page - 1) * limit;
+    
+    // Get the orders for current page
+    const paginatedOrders = validAllOrders.slice(skip, skip + limit);
 
     res.json({
-      totalOrders: validOrders.length,
-      totalSales,
-      totalDiscounts,
-      netRevenue: totalSales - totalDiscounts,
-      orders: validOrders
+      // Overall totals (from all orders)
+      totalOrders: totalOrders,
+      totalSales: overallTotalSales,
+      totalDiscounts: overallTotalDiscounts,
+      netRevenue: overallTotalSales - overallTotalDiscounts,
+      
+      // Paginated orders for the table
+      orders: paginatedOrders,
+      
+      // Pagination metadata
+      pagination: {
+        currentPage: page,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1
+      }
     });
 
   } catch (error) {

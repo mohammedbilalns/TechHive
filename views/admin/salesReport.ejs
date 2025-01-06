@@ -82,6 +82,11 @@
             </tbody>
           </table>
         </div>
+
+        <!-- Add pagination controls -->
+        <div id="paginationControls" class="mt-8 flex justify-center items-center space-x-4">
+          <!-- Pagination will be populated by JavaScript -->
+        </div>
       </div>
     </div>
   </main>
@@ -182,6 +187,67 @@
       `;
       tableBody.innerHTML += row;
     });
+
+    // Update pagination controls
+    const paginationControls = document.getElementById('paginationControls');
+    if (data.pagination) {
+      let paginationHTML = '';
+      
+      if (data.pagination.hasPrevPage) {
+        paginationHTML += `
+          <button onclick="changePage(${data.pagination.currentPage - 1})" 
+            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+            Previous
+          </button>
+        `;
+      }
+
+      for (let i = 1; i <= data.pagination.totalPages; i++) {
+        paginationHTML += `
+          <button onclick="changePage(${i})" 
+            class="px-4 py-2 rounded-lg ${
+              data.pagination.currentPage === i 
+                ? 'bg-primary-accent text-white' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }">
+            ${i}
+          </button>
+        `;
+      }
+
+      if (data.pagination.hasNextPage) {
+        paginationHTML += `
+          <button onclick="changePage(${data.pagination.currentPage + 1})" 
+            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+            Next
+          </button>
+        `;
+      }
+
+      paginationControls.innerHTML = paginationHTML;
+    }
+  }
+
+  async function changePage(page) {
+    const filterType = document.getElementById('filterType').value;
+    let startDate = document.getElementById('startDate').value;
+    let endDate = document.getElementById('endDate').value;
+
+    try {
+      const response = await axios.get('/admin/sales-report/data', {
+        params: {
+          filterType,
+          startDate,
+          endDate,
+          page
+        }
+      });
+
+      updateDashboard(response.data);
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Failed to fetch sales report';
+      showToast(errorMessage, 'error');
+    }
   }
 
   async function downloadReport(format) {
