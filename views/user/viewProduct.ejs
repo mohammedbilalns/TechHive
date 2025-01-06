@@ -260,33 +260,39 @@
     <section class="mt-12">
       <h2 class="text-2xl mb-6">Customer Reviews</h2>
 
-      <% if (reviews.length> 0) { %>
-        <div class="space-y-6">
-          <% reviews.forEach(review=> { %>
+      <% if (reviews.length > 0) { %>
+        <div class="space-y-6" id="reviews-container">
+          <% reviews.forEach(review => { %>
             <div class="border-b pb-4">
               <div class="flex items-center mb-2">
                 <div class="flex text-yellow-400 mr-2">
                   <% for(let i=1; i <=5; i++) { %>
                     <i class="<%= i <= review.rating ? 'fas' : 'far' %> fa-star"></i>
-                    <% } %>
+                  <% } %>
                 </div>
-                <p class="font-semibold">
-                  <%= review.user.fullname %>
-                </p>
+                <p class="font-semibold"><%= review.user.fullname %></p>
                 <p class="text-gray-500 ml-4">
-                  <%= new Date(review.createdAt).toLocaleDateString('en-US', { year: 'numeric' , month: 'long' ,
-                    day: 'numeric' }) %>
+                  <%= new Date(review.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %>
                 </p>
               </div>
-              <p class="text-gray-600">
-                <%= review.comment %>
-              </p>
+              <p class="text-gray-600"><%= review.comment %></p>
             </div>
-            <% }); %>
+          <% }); %>
         </div>
-        <% } else { %>
-          <p class="text-gray-500">No reviews yet</p>
-          <% } %>
+        
+        <% if (hasMore) { %>
+          <div class="text-center mt-6">
+            <button id="load-more-reviews" 
+                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg transition-colors"
+                    data-page="<%= currentPage %>"
+                    data-product="<%= product._id %>">
+              Load More Reviews
+            </button>
+          </div>
+        <% } %>
+      <% } else { %>
+        <p class="text-gray-500">No reviews yet</p>
+      <% } %>
     </section>
   </main>
 
@@ -405,7 +411,61 @@
       }
     }
 
+    document.getElementById('load-more-reviews')?.addEventListener('click', async function() {
+        const button = this;
+        const nextPage = parseInt(button.dataset.page) + 1;
+        const productId = button.dataset.product;
 
+        // Disable button and show loading state
+        button.disabled = true;
+        button.innerHTML = 'Loading...';
+
+        try {
+            const response = await axios.get(`/product/${productId}`, {
+                params: { page: nextPage },
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+
+            const { reviews, hasMore } = response.data;
+
+            // Append new reviews
+            const container = document.getElementById('reviews-container');
+            reviews.forEach(review => {
+                const reviewElement = document.createElement('div');
+                reviewElement.className = 'border-b pb-4';
+                reviewElement.innerHTML = `
+                    <div class="flex items-center mb-2">
+                        <div class="flex text-yellow-400 mr-2">
+                            ${Array(5).fill(0).map((_, i) => 
+                                `<i class="${i < review.rating ? 'fas' : 'far'} fa-star"></i>`
+                            ).join('')}
+                        </div>
+                        <p class="font-semibold">${review.user.fullname}</p>
+                        <p class="text-gray-500 ml-4">
+                            ${new Date(review.createdAt).toLocaleDateString('en-US', 
+                                { year: 'numeric', month: 'long', day: 'numeric' })}
+                        </p>
+                    </div>
+                    <p class="text-gray-600">${review.comment}</p>
+                `;
+                container.appendChild(reviewElement);
+            });
+
+            // Update button
+            button.dataset.page = nextPage;
+            if (!hasMore) {
+                button.parentElement.remove();
+            } else {
+                button.disabled = false;
+                button.innerHTML = 'Load More Reviews';
+            }
+        } catch (error) {
+            console.error('Error loading more reviews:', error);
+            button.disabled = false;
+            button.innerHTML = 'Load More Reviews';
+            showToast(error.response?.data?.error || 'Error loading more reviews', 'error');
+        }
+    });
 
   </script>
 

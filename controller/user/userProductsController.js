@@ -139,50 +139,92 @@ const loadAllProducts = async (req, res) => {
 const viewProduct = async (req, res) => {
     try {
         const productId = req.params.id;
+        const page = parseInt(req.query.page) || 1;
+        const reviewsPerPage = 5;
         
-        // Validate if the ID is a valid  ObjectId
         if (!mongoose.Types.ObjectId.isValid(productId)) {
+            if (req.xhr) {
+                return res.status(400).json({ error: 'Invalid product ID' });
+            }
             return res.redirect('/notfound?message=Invalid+Product+id&alertType=error');
-
         }
         
-        // First fetch the product
-        const product = await productSchema?.findById(productId);
+        // Fetch reviews first
+        const reviews = await reviewModel.find({ product: productId })
+            .populate('user', 'fullname')
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * reviewsPerPage)
+            .limit(reviewsPerPage);
+
+        const totalReviews = await reviewModel.countDocuments({ product: productId });
+
+        // If it's an AJAX request, return only the reviews data
+        if (req.xhr) {
+            return res.json({
+                reviews,
+                hasMore: (page * reviewsPerPage) < totalReviews
+            });
+        }
+
+        // For regular page load, fetch the rest of the data
+        const product = await productSchema.findById(productId);
         
         if (!product || product.status !== "Active") {
             return res.redirect('/notfound?message=Product+not+found&alertType=error');
-
         }
 
-        //  fetch related products and reviews 
-        const [relatedProducts, reviews] = await Promise.all([
-            productSchema.find({
-                category: product.category,
-                _id: { $ne: product._id },
-                status: "Active"
-            }).limit(4),
-            reviewModel.find({ product: productId })
-                .populate('user', 'fullname')
-                .sort({ createdAt: -1 })
-        ]);
+        const relatedProducts = await productSchema.find({
+            category: product.category,
+            _id: { $ne: product._id },
+            status: "Active"
+        }).limit(4);
 
         // Calculate average rating
         let averageRating = 0;
-        if (reviews && reviews.length > 0) {
-            averageRating = reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
+        if (totalReviews > 0) {
+            const allRatings = await reviewModel.find({ product: productId });
+            averageRating = allRatings.reduce((sum, review) => sum + review.rating, 0) / totalReviews;
+        }
+
+        // Get product ratings for related products
+        const productRatings = await reviewModel.aggregate([
+            {
+                $group: {
+                    _id: "$product",
+                    avgRating: { $avg: "$rating" }
+                }
+            }
+        ]);
+
+        const ratingMap = new Map(
+            productRatings.map(item => [item._id.toString(), item.avgRating])
+        );
+
+        // Get user's wishlist if logged in
+        let wishlistItems = [];
+        if (req.session.user) {
+            const user = await mongoose.model('users').findById(req.session.user._id);
+            wishlistItems = user ? user.wishlist || [] : [];
         }
 
         res.render('user/viewProduct', {
             product,
             relatedProducts,
-            reviews: reviews || [], 
+            reviews,
             averageRating,
-            reviewCount: reviews ? reviews.length : 0,
-            fullname: req.session.user?.fullname
+            reviewCount: totalReviews,
+            currentPage: page,
+            hasMore: (page * reviewsPerPage) < totalReviews,
+            fullname: req.session.user?.fullname,
+            wishlistItems,
+            productRatings: Object.fromEntries(ratingMap)
         });
 
     } catch (error) {
-        log.red("VIEWPRODUCT_ERROR", error);
+        console.error("VIEWPRODUCT_ERROR:", error);
+        if (req.xhr) {
+            return res.status(500).json({ error: "Error loading reviews" });
+        }
         res.status(500).render('notfound', {
             message: "Error loading product",
             alertType: "error"
