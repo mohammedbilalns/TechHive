@@ -100,6 +100,7 @@ router.get('/orders/:orderId/items/:itemId/invoice',
   auth.checkSession, 
   userOrderController.downloadInvoice
 );
+router.get('/orders/:orderId', auth.checkSession, userOrderController.getOrderDetails);
 
 //---- wishlist management ----
 router.route('/wishlist')

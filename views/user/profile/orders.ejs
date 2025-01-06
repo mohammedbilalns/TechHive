@@ -1,619 +1,228 @@
 <%- include('../../partials/header') %>
 
-  <div class="flex flex-col md:flex-row">
-    <%- include('../../partials/usersidebar') %>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<div class="flex flex-col md:flex-row">
+  <%- include('../../partials/usersidebar') %>
 
-      <main class="flex-grow p-4 md:py-12">
-        <nav class="flex mb-6 text-sm">
-          <a href="/home" class="text-gray-500 hover:text-primary-accent">Home</a>
-          <span class="mx-2 text-gray-500">/</span>
+  <main class="flex-grow p-4 md:py-12">
+    <nav class="flex mb-6 text-sm">
+      <a href="/home" class="text-gray-500 hover:text-primary-accent">Home</a>
+      <span class="mx-2 text-gray-500">/</span>
+      <span class="text-gray-800">Orders</span>
+    </nav>
 
-          <span class="text-gray-800">Orders</span>
-        </nav>
-        <div class="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-6">
-          <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-            <h1 class="text-2xl font-semibold text-gray-800">My Orders</h1>
-            <div class="relative mt-4 md:mt-0">
-              <form action="/orders" method="GET">
-                <input type="text" name="search" value="<%= locals.search || '' %>"
-                  placeholder="Search by Order ID or Product" onblur="this.form.submit()"
-                  class="w-full md:w-64 border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-primary-accent focus:border-primary-accent">
-              </form>
-            </div>
-          </div>
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-semibold text-gray-800">My Orders</h1>
+        
+        <!-- Add Search Form -->
+        <form class="flex items-center space-x-2" id="searchForm">
+          <input 
+            type="search" 
+            name="search" 
+            placeholder="Search orders..." 
+            value="<%= locals.search || '' %>"
+            class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-accent focus:border-transparent"
+          >
+          <button 
+            type="submit"
+            class="px-4 py-2 bg-primary-accent text-white rounded-lg hover:bg-primary-accent/90"
+          >
+            <i class="fas fa-search"></i>
+          </button>
+        </form>
+      </div>
 
-          <% if (orders.length===0) { %>
-            <div class="text-center py-8">
-              <i class="fas fa-shopping-bag text-gray-400 text-4xl mb-4"></i>
-              <p class="text-gray-600">
-                <%= search ? `No orders found for "${search}" ` : 'No orders found' %>
-              </p>
-              <a href="/shop"
-                class="inline-block mt-4 bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-primary-accent/90">
-                Start Shopping
-              </a>
-            </div>
-            <% } else { %>
-              <div class="space-y-4">
-                <% orders.forEach(order=> { %>
-                  <div class="border rounded-lg overflow-hidden">
-                    <!--  Order Header -->
-                    <div class="bg-gray-50 p-4">
-                      <div class="flex justify-between items-center mb-2">
-                        <div>
-                          <p class="font-medium">Order <%= order.orderId %>
-                          </p>
-                          <p class="text-sm text-gray-600">
-                            <%= new Date(order.orderDate).toLocaleDateString() %>
-                          </p>
-                          <div class="mt-2 text-sm text-gray-600">
-                            <% const productNames=order.items.map(item=> item.name).join(', ') %>
-                              <%= productNames.length> 100 ? productNames.substring(0, 100) + '...' : productNames %>
+      <% if (orders && orders.length > 0) { %>
+        <div class="space-y-6">
+          <% orders.forEach(order => { %>
+            <a href="/orders/<%= order._id %>" class="block">
+              <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center">
+                  <div class="flex items-center space-x-4">
+                    <!-- Product Images Preview -->
+                    <div class="flex -space-x-2">
+                      <% if (order.items.length === 1) { %>
+                        <img src="<%= order.items[0].images[0].path %>" 
+                             alt="<%= order.items[0].name %>" 
+                             class="w-12 h-12 rounded-full border-2 border-white object-cover">
+                        <div class="w-12 h-12"></div>
+                      <% } else { %>
+                        <% order.items.slice(0, 2).forEach(item => { %>
+                          <img src="<%= item.images[0].path %>" 
+                               alt="<%= item.name %>" 
+                             class="w-12 h-12 rounded-full border-2 border-white object-cover">
+                        <% }) %>
+                        <% if (order.items.length > 2) { %>
+                          <div class="w-12 h-12 rounded-full border-2 border-white bg-gray-200 flex items-center justify-center text-sm font-medium">
+                            +<%= order.items.length - 2 %>
                           </div>
-                        </div>
-                        <div class="text-right">
-                          <% if (order.totalAmount < order.originalAmount) { %>
-                            <p class="text-sm text-gray-500 line-through">₹<%= order.originalAmount %>
-                            </p>
-                            <% } %>
-                              <p class="font-semibold">₹<%= order.totalAmount %>
-                              </p>
-                              <span
-                                class="inline-block px-3 py-1 text-sm rounded-full <%= order.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' %>">
-                                <%= order.paymentStatus %>
-                              </span>
-                        </div>
-                      </div>
-                      <button onclick="toggleOrderDetails('<%= order._id %>')"
-                        class="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium">
-                        <span id="toggle-text-<%= order._id %>">View Details</span>
-                      </button>
-                    </div>
-
-                    <!--  Detailed Section -->
-                    <div id="details-<%= order._id %>" class="hidden">
-                      <div class="p-4 border-t">
-                        <!-- Order Items -->
-                        <div class="space-y-4">
-                          <% order.items.forEach(item=> { %>
-                            <div class="flex items-center space-x-4 bg-gray-50 p-3 rounded-lg">
-                              <a href="/product/<%= item.productId %>">
-                                <img src="<%= item.images[0].path %>" alt="<%= item.name %>"
-                                  class="w-16 h-16 object-cover rounded hover:opacity-75 transition-opacity cursor-pointer">
-                              </a>
-                              <div class="flex-grow">
-                                <h5 class="font-medium">
-                                  <%= item.name %>
-                                </h5>
-                                <p class="text-sm text-gray-600">
-                                  Qty: <%= item.quantity %> ×
-                                    <% if (item.discount> 0) { %>
-                                      <span class="line-through text-gray-500">₹<%= item.price %></span>
-                                      <span class="text-gray-900">₹<%= (item.price * (1 - item.discount/100)).toFixed(2)
-                                          %></span>
-                                      <span class="text-green-600">(<%= item.discount %>% off)</span>
-                                      <% } else { %>
-                                        ₹<%= item.price %>
-                                          <% } %>
-                                </p>
-                                <p class="text-sm text-gray-600 mt-1">
-                                  Item Total:
-                                  <% const originalTotal=item.quantity * item.price %>
-                                    <% const discountedTotal=item.quantity * (item.price * (1 - item.discount/100)) %>
-                                      <% if (item.discount> 0) { %>
-                                        <span class="line-through text-gray-500">₹<%= originalTotal %></span>
-                                        <span class="text-gray-900">₹<%= discountedTotal.toFixed(2) %></span>
-                                        <% } else { %>
-                                          ₹<%= originalTotal %>
-                                            <% } %>
-                                </p>
-                                <p class="text-sm mt-1">
-                                  Status: <span
-                                    class="<%= item.status === 'delivered' ? 'text-green-600' : item.status === 'cancelled' ? 'text-red-600' : 'text-blue-600' %>">
-                                    <%= item.status %>
-                                  </span>
-                                  <% let statusDates=[]; if (item.deliveredDate) statusDates.push(`Delivered on ${new
-                                    Date(item.deliveredDate).toLocaleDateString()}`); if (item.shippedDate)
-                                    statusDates.push(`Shipped on ${new Date(item.shippedDate).toLocaleDateString()}`);
-                                    if (item.cancelledDate) statusDates.push(`Cancelled on ${new
-                                    Date(item.cancelledDate).toLocaleDateString()}`); if (item.returnedDate)
-                                    statusDates.push(`Returned on ${new Date(item.returnedDate).toLocaleDateString()}`);
-                                    %>
-                                    <% if (statusDates.length> 0) { %>
-                                      <span class="text-gray-600 ml-2">
-                                        (<%= statusDates.join(', ') %>)
-                              </span>
-                            <% } %>
-                          </p>
-                          <div class="mt-2">
-                            <% if (['processing', 'shipped'].includes(item.status) && 
-                                !(order.paymentMethod === 'online' && order.paymentStatus === 'pending')) { %>
-                              <button onclick="cancelOrderItem('<%= order._id %>', '<%= item._id %>')"
-                                class="text-red-600 text-sm hover:underline">
-                                Cancel Item
-                              </button>
-                            <% } %>
-                              <% if (item.status==='delivered' ) { %>
-                                <button onclick="openReturnModal('<%= order._id %>', '<%= item._id %>')"
-                                  class="text-blue-600 text-sm hover:underline ml-2">
-                                  Return Item
-                                </button>
-                              <% } %>
-                                <% if (['delivered', 'return requested', 'returned'].includes(item.status)) { %>
-                                  <button onclick="downloadInvoice('<%= order._id %>', '<%= item._id %>')"
-                                    class="text-blue-600 text-sm hover:underline ml-2">
-                                    <i class="fas fa-file-invoice"></i> Download Invoice
-                                  </button>
-                                <% } %>
-                                <% if (['delivered', 'return requested' , 'returned'].includes(item.status)) { %>
-                                  <button onclick="handleReviewClick('<%= item.name %>')"
-                                    class="text-blue-600 text-sm hover:underline ml-2">
-                                    Add/Edit Review
-                                  </button>
-                                <% } %>
-                          </div>
-                            </div>
-                        </div>
-                        <% }); %>
-                      </div>
-
-                      <!-- Shipping and Payment Info -->
-                      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                          <h4 class="font-medium text-gray-700 mb-2">Payment Information</h4>
-                          <div class="text-sm text-gray-600">
-                            <p>Method: <%= order.paymentMethod.toUpperCase() %>
-                            </p>
-                            <p>Status: <span
-                                class="<%= order.paymentStatus === 'paid' ? 'text-green-600' : 'text-red-600' %>">
-                                <%= order.paymentStatus %>
-                              </span></p>
-                          </div>
-                        </div>
-                        <div class="bg-gray-50 p-4 rounded-lg">
-                          <h4 class="font-medium text-gray-700 mb-2">Shipping Address</h4>
-                          <div class="text-sm text-gray-600">
-                            <p>
-                              <%= order.shippingAddress.name %>
-                            </p>
-                            <p>
-                              <%= order.shippingAddress.houseName %>
-                            </p>
-                            <p>
-                              <%= order.shippingAddress.localityStreet %>
-                            </p>
-                            <p>
-                              <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %>
-                            </p>
-                            <p>PIN: <%= order.shippingAddress.pincode %>
-                            </p>
-                            <p>Phone: <%= order.shippingAddress.phone %>
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <!--  Coupon Information -->
-                      <% if (order.coupon && order.coupon.code) { %>
-                        <div class="mt-4 bg-gray-50 p-4 rounded-lg">
-                          <h4 class="font-medium text-gray-700 mb-2">Applied Coupon</h4>
-                          <div class="text-sm text-gray-600">
-                            <p>Code: <span class="font-medium text-primary-accent">
-                                <%= order.coupon.code %>
-                              </span></p>
-                            <p>Discount Amount: <span class="text-green-600">-₹<%= order.coupon.discount %></span></p>
-                          </div>
-                        </div>
                         <% } %>
-
-                          <% if (order.paymentMethod==='online' && order.paymentStatus==='pending' ) { %>
-                            <div class="mt-4 bg-yellow-50 p-4 rounded-lg">
-                              <p class="text-yellow-800 mb-2">Payment pending for this order</p>
-                              <button onclick="retryPayment('<%= order._id %>')"
-                                class="bg-primary-accent text-white px-4 py-2 rounded hover:bg-primary-accent/90">
-                                Retry Payment
-                              </button>
-                            </div>
-                            <% } %>
+                      <% } %>
+                    </div>
+                    <div>
+                      <p class="font-medium">Order #<%= order.orderId %></p>
+                      <!-- Add Items List -->
+                      <div class="text-sm text-gray-600 mt-1">
+                        <% order.items.forEach((item, index) => { %>
+                          <%= item.name %><%= index < order.items.length - 1 ? ',' : '' %>
+                        <% }) %>
+                      </div>
+                      <% 
+                        let statusDisplay = '';
+                        let displayDate = null;
+                        let statusColor = '';
+                        
+                        // Determine final status and date for the order
+                        if (order.items.every(item => item.status === 'cancelled')) {
+                          statusDisplay = 'Cancelled';
+                          displayDate = order.items[0].cancelledDate;
+                          statusColor = 'text-red-600';
+                        } else if (order.items.every(item => item.status === 'returned')) {
+                          statusDisplay = 'Returned';
+                          displayDate = order.items[0].returnedDate;
+                          statusColor = 'text-blue-600';
+                        } else if (order.items.every(item => item.status === 'delivered')) {
+                          statusDisplay = 'Delivered';
+                          displayDate = order.items[0].deliveredDate;
+                          statusColor = 'text-green-600';
+                        } else if (order.items.every(item => item.status === 'shipped')) {
+                          statusDisplay = 'Shipped';
+                          displayDate = order.items[0].shippedDate;
+                          statusColor = 'text-orange-600';
+                        } else {
+                          statusDisplay = 'Ordered';
+                          displayDate = order.orderDate;
+                          statusColor = 'text-gray-600';
+                        }
+                      %>
+                      <p class="text-sm <%= statusColor %> mt-2">
+                        <%= statusDisplay %> on: <%= new Date(displayDate).toLocaleDateString() %>
+                      </p>
                     </div>
                   </div>
+                  <div class="text-right">
+                    <p class="font-semibold">₹<%= order.totalAmount %></p>
+                    <span class="inline-block px-3 py-1 text-sm rounded-full 
+                      <%= order.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 
+                          order.paymentStatus === 'pending' ? 'bg-red-100 text-red-800' :
+                          order.paymentStatus === 'refunded' ? 'bg-blue-100 text-blue-800' :
+                          'bg-yellow-100 text-yellow-800' %>">
+                      <%= order.paymentStatus === 'pending' ? 'Payment Failed' : order.paymentStatus %>
+                    </span>
+                  </div>
+                </div>
               </div>
-              <% }); %>
+            </a>
+          <% }) %>
         </div>
 
-        <!--  pagination controls -->
-        <% if (orders.length> 0 && totalPages > 1) { %>
+        <!-- Add Pagination Controls -->
+        <% if (totalPages > 1) { %>
           <div class="mt-8 flex justify-center items-center space-x-4">
             <% if (hasPrevPage) { %>
               <a href="/orders?page=<%= currentPage - 1 %><%= search ? `&search=${search}` : '' %>"
                 class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
                 Previous
               </a>
-              <% } %>
-
-                <% for(let i=1; i <=totalPages; i++) { %>
-                  <a href="/orders?page=<%= i %><%= search ? `&search=${search}` : '' %>"
-                    class="px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
-                    <%= i %>
-                  </a>
-                  <% } %>
-
-                    <% if (hasNextPage) { %>
-                      <a href="/orders?page=<%= currentPage + 1 %><%= search ? `&search=${search}` : '' %>"
-                        class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                        Next
-                      </a>
-                      <% } %>
-          </div>
-          <% } %>
             <% } %>
-  </div>
-  </main>
-  </div>
 
-  <!-- Return Modal -->
-  <div id="returnModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
-    <div class="bg-white p-6 rounded-lg shadow-xl w-96">
-      <h3 class="text-lg font-semibold mb-4">Return Item</h3>
-      <form id="returnForm" class="space-y-4">
-        <input type="hidden" id="returnOrderId">
-        <input type="hidden" id="returnItemId">
-        <div>
-          <label for="returnReason" class="block text-sm font-medium text-gray-700 mb-1">
-            Reason for Return
-          </label>
-          <textarea id="returnReason"
-            class="w-full border rounded-lg p-2 focus:ring-primary-accent focus:border-primary-accent" rows="3"
-            minlength="10" maxlength="300" required></textarea>
-          <p class="text-sm text-gray-500 mt-1">
-            <span id="charCount">0</span>/300 characters (minimum 10)
-          </p>
-        </div>
-        <div class="flex justify-end space-x-3">
-          <button type="button" onclick="closeReturnModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">
-            Cancel
-          </button>
-          <button type="submit" class="px-4 py-2 bg-primary-accent text-white rounded-lg hover:bg-primary-accent/90">
-            Submit Return
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+            <% for(let i = 1; i <= totalPages; i++) { %>
+              <a href="/orders?page=<%= i %><%= search ? `&search=${search}` : '' %>"
+                class="px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
+                <%= i %>
+              </a>
+            <% } %>
 
-  <!-- Review Modal -->
-  <div id="reviewModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
-    <div class="bg-white p-6 rounded-lg shadow-xl w-96">
-      <h3 class="text-lg font-semibold mb-4" id="reviewModalTitle">Add Review</h3>
-      <form id="reviewForm" class="space-y-4">
-        <input type="hidden" id="reviewProductId">
-
-        <!-- Rating Stars -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Rating</label>
-          <div class="flex space-x-2">
-            <% for(let i=1; i <=5; i++) { %>
-              <button type="button" class="rating-star text-2xl text-gray-300 hover:text-yellow-400"
-                data-rating="<%= i %>" onclick="setRating('<%= i %>')">
-                ★
-              </button>
-              <% } %>
+            <% if (hasNextPage) { %>
+              <a href="/orders?page=<%= currentPage + 1 %><%= search ? `&search=${search}` : '' %>"
+                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                Next
+              </a>
+            <% } %>
           </div>
+        <% } %>
+      <% } else { %>
+        <!-- Empty Orders -->
+        <div class="text-center py-8">
+          <i class="fas fa-shopping-bag text-gray-400 text-4xl mb-4"></i>
+          <p class="text-gray-600">You haven't placed any orders yet</p>
+          <a href="/home" 
+             class="inline-block mt-4 bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-primary-accent/90">
+            Start Shopping
+          </a>
         </div>
-
-        <!-- Review Text -->
-        <div>
-          <label for="reviewComment" class="block text-sm font-medium text-gray-700 mb-1">
-            Your Review
-          </label>
-          <textarea id="reviewComment"
-            class="w-full border rounded-lg p-2 focus:ring-primary-accent focus:border-primary-accent" rows="3"
-            minlength="10" maxlength="100" required></textarea>
-          <p class="text-sm text-gray-500 mt-1">
-            <span id="charCount">0</span>/100 characters (minimum 10)
-          </p>
-        </div>
-
-        <div class="flex justify-end space-x-3">
-          <button type="button" onclick="closeReviewModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">
-            Cancel
-          </button>
-          <button type="submit" class="px-4 py-2 bg-primary-accent text-white rounded-lg hover:bg-primary-accent/90">
-            Submit Review
-          </button>
-        </div>
-      </form>
+      <% } %>
     </div>
-  </div>
+  </main>
+</div>
 
-  <script>
-    function toggleOrderDetails(orderId) {
-      const detailsElement = document.getElementById(`details-${orderId}`);
-      const toggleText = document.getElementById(`toggle-text-${orderId}`);
-      if (detailsElement) {
-        detailsElement.classList.toggle('hidden');
-        toggleText.textContent = detailsElement.classList.contains('hidden') ? 'View Details' : 'Hide Details';
-      }
-    }
+<script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
+<script>
+  async function retryPayment(orderId) {
+    try {
+      const response = await axios.post(`/orders/${orderId}/retry-payment`);
 
-    async function cancelOrderItem(orderId, itemId) {
-      try {
-        const confirmed = await customConfirm('Are you sure you want to cancel this item?');
-        if (!confirmed) return;
-
-        const response = await axios.post(`/orders/${orderId}/items/${itemId}/cancel`);
-        if (response.data.success) {
-          showToast('Item cancelled successfully', 'success');
-          setTimeout(() => window.location.reload(), 1500);
-        } else {
-          showToast(response.data.message || 'Failed to cancel item', 'error');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        showToast('Failed to cancel item', 'error');
-      }
-    }
-
-    async function returnOrderItem(orderId, itemId) {
-      try {
-        const confirmed = await customConfirm('Are you sure you want to return this item?');
-        if (!confirmed) return;
-
-        const response = await axios.post(`/orders/${orderId}/items/${itemId}/return`);
-        if (response.data.success) {
-          showToast('Return request submitted successfully', 'success');
-          setTimeout(() => window.location.reload(), 1500);
-        } else {
-          showToast(response.data.message || 'Failed to submit return request', 'error');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        showToast('Failed to submit return request', 'error');
-      }
-    }
-
-    function openReturnModal(orderId, itemId) {
-      document.getElementById('returnModal').classList.remove('hidden');
-      document.getElementById('returnModal').classList.add('flex');
-      document.getElementById('returnOrderId').value = orderId;
-      document.getElementById('returnItemId').value = itemId;
-    }
-
-    function closeReturnModal() {
-      document.getElementById('returnModal').classList.add('hidden');
-      document.getElementById('returnModal').classList.remove('flex');
-      document.getElementById('returnForm').reset();
-    }
-
-    // Character count for return reason
-    document.getElementById('returnReason').addEventListener('input', function (e) {
-      document.getElementById('charCount').textContent = e.target.value.length;
-    });
-
-    // Handle return form submission
-    document.getElementById('returnForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
-
-      const orderId = document.getElementById('returnOrderId').value;
-      const itemId = document.getElementById('returnItemId').value;
-      const reason = document.getElementById('returnReason').value;
-
-      if (reason.length < 10) {
-        showToast('Return reason must be at least 10 characters long', 'error');
-        return;
-      }
-
-      try {
-        const response = await axios.post(`/orders/${orderId}/items/${itemId}/return`, {
-          reason: reason
-        });
-
-        if (response.data.success) {
-          showToast('Return request submitted successfully', 'success');
-          closeReturnModal();
-          setTimeout(() => window.location.reload(), 1500);
-        } else {
-          showToast(response.data.message || 'Failed to submit return request', 'error');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        showToast('Failed to submit return request', 'error');
-      }
-    });
-
-    let selectedRating = 0;
-
-    async function handleReviewClick(productName) {
-      try {
-        const response = await axios.get(`/review/get?productName=${encodeURIComponent(productName)}`);
-        if (response.data.success) {
-          // Review exists, open modal in edit mode
-          openReviewModal(productName, response.data.review);
-          document.getElementById('reviewModalTitle').textContent = 'Edit Review';
-        }
-      } catch (error) {
-        if (error.response?.status === 404) {
-          // No existing review, open modal in add mode
-          openReviewModal(productName);
-          document.getElementById('reviewModalTitle').textContent = 'Add Review';
-        } else {
-          showToast('Error fetching review details', 'error');
-        }
-      }
-    }
-
-    function openReviewModal(productName, existingReview = null) {
-      const modal = document.getElementById('reviewModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      document.getElementById('reviewProductId').value = productName;
-
-      if (existingReview) {
-        // Set existing rating and comment
-        selectedRating = existingReview.rating;
-        setRating(existingReview.rating);
-        const commentElement = document.getElementById('reviewComment');
-        commentElement.value = existingReview.comment;
-        document.getElementById('charCount').textContent = existingReview.comment.length;
-      } else {
-        // Reset form for new review
-        selectedRating = 0;
-        document.getElementById('reviewComment').value = '';
-        document.getElementById('charCount').textContent = '0';
-        document.querySelectorAll('.rating-star').forEach(star => {
-          star.classList.remove('text-yellow-400');
-          star.classList.add('text-gray-300');
-        });
-      }
-    }
-
-    function closeReviewModal() {
-      const modal = document.getElementById('reviewModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-      document.getElementById('reviewForm').reset();
-      selectedRating = 0;
-      document.querySelectorAll('.rating-star').forEach(star => {
-        star.classList.remove('text-yellow-400');
-        star.classList.add('text-gray-300');
-      });
-    }
-
-    function setRating(rating) {
-      selectedRating = rating;
-      document.querySelectorAll('.rating-star').forEach((star, index) => {
-        if (index < rating) {
-          star.classList.remove('text-gray-300');
-          star.classList.add('text-yellow-400');
-        } else {
-          star.classList.remove('text-yellow-400');
-          star.classList.add('text-gray-300');
-        }
-      });
-    }
-
-    // Character count for review
-    document.getElementById('reviewComment').addEventListener('input', function (e) {
-      document.getElementById('charCount').textContent = e.target.value.length;
-    });
-
-    // Handle review form submission
-    document.getElementById('reviewForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
-
-      const productName = document.getElementById('reviewProductId').value;
-      const comment = document.getElementById('reviewComment').value;
-
-      if (!selectedRating) {
-        showToast('Please select a rating', 'error');
-        return;
-      }
-
-      if (comment.length < 10) {
-        showToast('Review must be at least 10 characters long', 'error');
-        return;
-      }
-
-      try {
-        const response = await axios.post('/review/add', {
-          productName,
-          rating: selectedRating,
-          comment
-        });
-
-        if (response.data.success) {
-          showToast(response.data.message, 'success');
-          closeReviewModal();
-        } else {
-          showToast(response.data.message || 'Failed to submit review', 'error');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        showToast(error.response?.data?.message || 'Failed to submit review', 'error');
-      }
-    });
-
-    async function retryPayment(orderId) {
-      try {
-        const response = await axios.post(`/orders/${orderId}/retry-payment`);
-
-        if (response.data.success) {
-          // Initialize Razorpay payment
-          const options = {
-            key: '<%= process.env.RAZORPAY_KEY_ID %>',
-            amount: response.data.amount,
-            currency: "INR",
-            name: "TechHive",
-            description: "Order Payment",
-            order_id: response.data.razorpayOrderId,
-            handler: function (response) {
-              verifyPayment({
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-                orderId: orderId
-              });
-            },
-            modal: {
-              ondismiss: function () {
-                showToast('Payment failed', 'error');
-              }
-            },
-            prefill: {
-              name: "<%= user.name %>",
-              email: "<%= user.email %>"
-            },
-            theme: {
-              color: "#DA0037"
+      if (response.data.success) {
+        const options = {
+          key: '<%= process.env.RAZORPAY_KEY_ID %>',
+          amount: response.data.amount,
+          currency: "INR",
+          name: "TechHive",
+          description: "Order Payment",
+          order_id: response.data.razorpayOrderId,
+          handler: function (response) {
+            verifyPayment({
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+              orderId: orderId
+            });
+          },
+          modal: {
+            ondismiss: function () {
+              showToast('Payment failed', 'error');
             }
-          };
+          },
+          prefill: {
+            name: "<%= user.name %>",
+            email: "<%= user.email %>"
+          },
+          theme: {
+            color: "#DA0037"
+          }
+        };
 
-          const rzp = new Razorpay(options);
-          rzp.open();
-        } else {
-          showToast(response.data.message || 'Failed to initialize payment', 'error');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        showToast('Failed to initialize payment', 'error');
+        const rzp = new Razorpay(options);
+        rzp.open();
+      } else {
+        showToast(response.data.message || 'Failed to initialize payment', 'error');
       }
+    } catch (error) {
+      console.error('Error:', error);
+      showToast('Failed to initialize payment', 'error');
     }
+  }
 
-    async function verifyPayment(paymentData) {
-      try {
-        const response = await axios.post('/checkout/verifypayment', paymentData);
-        if (response.data.success) {
-          showToast('Payment successful', 'success');
-          setTimeout(() => window.location.reload(), 1500);
-        } else {
-          showToast('Payment verification failed', 'error');
-        }
-      } catch (error) {
-        console.error('Error:', error);
+  async function verifyPayment(paymentData) {
+    try {
+      const response = await axios.post('/checkout/verifypayment', paymentData);
+      if (response.data.success) {
+        showToast('Payment successful', 'success');
+        setTimeout(() => window.location.reload(), 1500);
+      } else {
         showToast('Payment verification failed', 'error');
       }
+    } catch (error) {
+      console.error('Error:', error);
+      showToast('Payment verification failed', 'error');
     }
+  }
 
-    async function downloadInvoice(orderId, itemId) {
-      try {
-        const response = await axios.get(
-          `/orders/${orderId}/items/${itemId}/invoice`,
-          { responseType: 'blob' }
-        );
-        
-        const blob = new Blob([response.data], { type: 'application/pdf' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `invoice-${orderId}-${itemId}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-      } catch (error) {
-        showToast('Failed to download invoice', 'error');
-      }
-    }
-  </script>
+  document.getElementById('searchForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const searchQuery = new URLSearchParams(new FormData(e.target)).toString();
+    window.location.href = `/orders?${searchQuery}`;
+  });
+</script>
 
-  <%- include('../../partials/footer') %>
+<%- include('../../partials/footer') %>

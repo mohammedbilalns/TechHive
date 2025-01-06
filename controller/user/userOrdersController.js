@@ -364,7 +364,8 @@ const getOrders = async (req, res) => {
       userId,
       $or: [
         { orderId: { $regex: search, $options: 'i' } },
-        { 'items.name': { $regex: search, $options: 'i' } }
+        { 'items.name': { $regex: search, $options: 'i' } },
+        { 'shippingAddress.name': { $regex: search, $options: 'i' } }
       ]
     };
 
@@ -377,8 +378,20 @@ const getOrders = async (req, res) => {
       .find(searchQuery)
       .sort({ orderDate: -1 })
       .skip(skip)
-      .limit(limit)
-      .populate('userId', 'fullname email');
+      .limit(limit);
+
+    if (req.xhr) {
+      return res.json({
+        success: true,
+        orders,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          hasNextPage: page < totalPages,
+          hasPrevPage: page > 1
+        }
+      });
+    }
 
     res.render('user/profile/orders', {
       user: req.session.user,
@@ -393,6 +406,9 @@ const getOrders = async (req, res) => {
 
   } catch (error) {
     log.red('GET_ORDERS_ERROR', error);
+    if (req.xhr) {
+      return res.status(500).json({ success: false, message: 'Error fetching orders' });
+    }
     res.render('user/profile/orders', { 
       orders: [],
       message: 'Failed to load orders',
@@ -423,8 +439,9 @@ const cancelOrderItem = async (req, res) => {
       return res.json({ success: false, message: 'Item cannot be cancelled' });
     }
 
-    // Update item status
+    // Update item status and set cancelled date
     orderItem.status = 'cancelled';
+    orderItem.cancelledDate = new Date();
 
     // Handle refund if payment was made
     if (order.paymentStatus === 'paid') {
@@ -905,6 +922,36 @@ const downloadInvoice = async (req, res) => {
   }
 };
 
+const getOrderDetails = async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const userId = req.session.user.id;
+
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+      return res.redirect('/notfound?message=Invalid+order+id&alertType=error');
+    }
+
+    const order = await orderModel.findOne({ 
+      _id: orderId, 
+      userId 
+    }).populate('userId', 'fullname email');
+
+    if (!order) {
+      return res.redirect('/notfound?message=Order not found');
+    }
+
+    res.render('user/profile/orderDetails', {
+      user: req.session.user,
+      order,
+      page: 'orders'
+    });
+
+  } catch (error) {
+    log.red('GET_ORDER_DETAILS_ERROR', error);
+    res.redirect('/orders');
+  }
+};
+
 export default {
   placeOrder,
   getOrderSuccess,
@@ -914,5 +961,6 @@ export default {
   returnOrderItem,
   retryPayment,
   getPaymentFailed,
-  downloadInvoice
+  downloadInvoice,
+  getOrderDetails
 };
