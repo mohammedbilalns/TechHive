@@ -34,7 +34,7 @@
         <!-- Sales Chart -->
         <div class="mb-8">
           <h2 class="text-xl font-semibold mb-4">Sales Overview</h2>
-          <div class="bg-white p-4 rounded-lg shadow">
+          <div class="bg-white p-4 rounded-lg shadow" style="height: 400px">
             <canvas id="salesChart"></canvas>
           </div>
         </div>
@@ -176,7 +176,7 @@ function updateSalesChart(salesData) {
   }
 
   salesChart = new Chart(ctx, {
-    type: 'line',
+    type: 'bar',
     data: {
       labels: salesData.map(item => {
         const date = new Date(item._id);
@@ -188,30 +188,23 @@ function updateSalesChart(salesData) {
       datasets: [{
         label: 'Revenue (₹)',
         data: salesData.map(item => item.totalSales),
-        borderColor: '#DA0037',
-        backgroundColor: '#DA003720',
-        tension: 0.3,
-        fill: true,
-        pointBackgroundColor: '#DA0037',
-        pointRadius: 4,
-        pointHoverRadius: 6
+        backgroundColor: '#DA0037',
+        borderRadius: 4
       }]
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
           position: 'top',
         },
         title: {
           display: true,
-          text: [
-            'Delivered Orders Revenue Trend',
-            `Total Revenue: ₹${totalRevenue.toLocaleString('en-IN', {
-              maximumFractionDigits: 2,
-              minimumFractionDigits: 2
-            })}`
-          ],
+          text: `Total Revenue: ₹${totalRevenue.toLocaleString('en-IN', {
+            maximumFractionDigits: 2,
+            minimumFractionDigits: 2
+          })}`,
           color: '#374151',
           font: {
             size: 16,
@@ -255,13 +248,7 @@ function updateTopList(elementId, data, nameKey, valueKey) {
     row.innerHTML = `
       <td class="px-4 py-2 text-sm text-gray-900">${item[nameKey]}</td>
       <td class="px-4 py-2 text-sm text-gray-900 text-right">
-        ₹${item.totalRevenue.toLocaleString('en-IN', {
-          maximumFractionDigits: 2,
-          minimumFractionDigits: 2
-        })}
-        <div class="text-xs text-gray-500">
-          ${item.totalQuantity} units
-        </div>
+        ${item.totalQuantity} units
       </td>
     `;
     tbody.appendChild(row);
