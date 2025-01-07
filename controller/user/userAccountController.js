@@ -2,6 +2,7 @@ import userSchema from "../../model/userModel.js";
 import { log } from "mercedlogger";
 import bcrypt from 'bcryptjs';
 import referralCodeUtils from '../../utils/referralCode.js';
+import referralModel from "../../model/referralModel.js";
 
 const getAccountDetails = async (req, res) => {
     try {
@@ -13,8 +14,18 @@ const getAccountDetails = async (req, res) => {
             user.referralCode = referralCodeUtils.generateReferralCode();
             await user.save();
         }
+
+        // Fetch referral values
+        const referralValues = await referralModel.findOne({}) || {
+            referrerValue: 100,  // Default values if none found
+            refereeValue: 50
+        };
         
-        res.render('user/profile/account', { user, page: "account" })
+        res.render('user/profile/account', { 
+            user, 
+            page: "account",
+            referralValues 
+        })
     } catch (error) {
         log.red("FETCH_ACCOUNT_DETAILS_ERROR", error)
         res.status(500).render("notfound")
