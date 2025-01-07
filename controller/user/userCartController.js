@@ -4,13 +4,17 @@ import { log } from "mercedlogger"
 
 const getCart = async (req, res) => {
     try {
-        let cart = await cartSchema.findOne({ user: req.session.user.id })
+        // Remove any existing coupon from session when viewing cart
+        delete req.session.coupon;
+        
+        const userId = req.session.user.id;
+        const cart = await cartSchema.findOne({ user: userId })
             .populate('items.productId');
 
         // Create cart if not found
         if (!cart) {
             cart = await cartSchema.create({
-                user: req.session.user.id,
+                user: userId,
                 items: []
             });
         }

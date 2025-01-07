@@ -16,6 +16,7 @@ const getCheckout = async (req, res) => {
     ]);
 
     if (!cart || cart.items.length === 0) {
+      delete req.session.coupon;
       return res.redirect('/profile/cart');
     }
 
@@ -41,8 +42,11 @@ const getCheckout = async (req, res) => {
     });
 
     const subtotal = originalPrice - totalSavings;
-    const total = subtotal;
+    let total = subtotal;
 
+    // Apply coupon from session if exists
+    const sessionCoupon = req.session.coupon;
+    
     res.render('user/checkout', {
       user,
       cart,
@@ -51,7 +55,8 @@ const getCheckout = async (req, res) => {
       total,
       totalSavings,
       wallet: wallet || { balance: 0 },
-      page: "cart"
+      page: "cart",
+      sessionCoupon
     });
   } catch (error) {
     log.red('CHECKOUT_ERROR', error);
@@ -120,6 +125,12 @@ const applyCoupon = async (req, res) => {
       discountAmount = coupon.discountValue;
     }
 
+    // Store coupon in session
+    req.session.coupon = {
+      code: couponCode,
+      discount: discountAmount
+    };
+
     return res.status(200).json({
       success: true,
       couponCode: couponCode,
@@ -138,6 +149,9 @@ const applyCoupon = async (req, res) => {
 
 const removeCoupon = async (req, res) => {
   try {
+    // Remove coupon from session
+    delete req.session.coupon;
+    
     return res.status(200).json({
       success: true,
       message: 'Coupon removed successfully'

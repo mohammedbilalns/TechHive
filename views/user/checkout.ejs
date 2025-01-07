@@ -796,7 +796,28 @@
       }
     }
 
-    
+    // Initialize coupon from session if exists
+    <% if (sessionCoupon) { %>
+      document.addEventListener('DOMContentLoaded', function() {
+        currentCouponCode = '<%= sessionCoupon.code %>';
+        currentCouponDiscount = <%= sessionCoupon.discount %>;
+        
+        // Update UI to show applied coupon
+        document.getElementById('couponInputSection').classList.add('hidden');
+        document.getElementById('appliedCouponSection').classList.remove('hidden');
+        document.getElementById('couponToggle').classList.add('hidden');
+        
+        document.getElementById('appliedCouponCode').textContent = currentCouponCode;
+        document.getElementById('couponDiscount').textContent = `-₹${currentCouponDiscount.toFixed(2)}`;
+        
+        // Update total amount
+        const newTotal = originalTotal - currentCouponDiscount;
+        document.querySelector('[data-total]').textContent = `₹${newTotal.toFixed(2)}`;
+        
+        updatePaymentMethods();
+      });
+    <% } %>
+
     document.addEventListener('DOMContentLoaded', updatePaymentMethods);
   </script>
 
