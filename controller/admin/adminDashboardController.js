@@ -6,7 +6,7 @@ import Order from '../../model/orderModel.js';
       const { filterType, startDate, endDate } = req.query;
       let dateFilter = {};
 
-      // Create date filter based on selected type
+      //  date filter based on selected type
       switch (filterType) {
         case 'daily':
           const today = new Date();
@@ -61,7 +61,7 @@ import Order from '../../model/orderModel.js';
           };
           break;
         default:
-          // Default to last 30 days
+          // Default to Monthly 
           dateFilter = {
             orderDate: {
               $gte: new Date(new Date().setDate(new Date().getDate() - 30))

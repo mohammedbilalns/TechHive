@@ -269,7 +269,7 @@
               const category = addProductForm.category.value.trim();
               const specifications = Array.from(addProductForm.querySelectorAll('input[name="specifications"]')).map(input => input.value.trim());
 
-              // Define minimum and maximum lengths for name and brand only
+              // Define minimum and maximum lengths for name and brand 
               const nameBrandMinLength = 2;
               const nameBrandMaxLength = 100;
 
@@ -278,7 +278,7 @@
               const imageFiles = Array.from(imageInputs).map(input => input.files[0]);
               const allImagesSelected = imageFiles.every(file => file !== undefined);
 
-              // Validate required fields first
+              // Validate required fields 
               if (!name) {
                 showToast("Product name is required.", "error");
                 isValid = false;
@@ -371,7 +371,7 @@
             window.closeCropper = closeCropper;
             window.applyCrop = applyCrop;
 
-            // Add click handler to preview images to allow re-upload
+            //  click handler to preview images to allow re-upload
             document.querySelectorAll('[id^="preview"]').forEach(preview => {
               preview.addEventListener('click', () => {
                 const inputId = preview.id.replace('preview', '');

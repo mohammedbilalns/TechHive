@@ -268,11 +268,10 @@
         document.getElementById('maxDiscount').value = coupon.maxDiscount || '';
         document.getElementById('usageLimit').value = coupon.usageLimit;
 
-        // Convert UTC to IST
+        
         const startDate = new Date(coupon.startDate);
         const expiryDate = new Date(coupon.expiryDate);
         
-        // Add IST offset (UTC+5:30)
         startDate.setMinutes(startDate.getMinutes() + 330);
         expiryDate.setMinutes(expiryDate.getMinutes() + 330);
 
@@ -460,7 +459,7 @@
     }
   }
 
-  // Helper function to create a new coupon row
+  //  create a new coupon row
   function createCouponRow(data, couponId) {
     const now = new Date();
     const isExpired = new Date(data.expiryDate) < now;
@@ -507,7 +506,7 @@
     `;
   }
 
-  // Helper function to update an existing coupon row
+  //  update an existing coupon row
   function updateCouponRow(row, data, couponId) {
     row.children[1].textContent = data.code;
     row.children[2].textContent = data.discountType;
@@ -517,7 +516,7 @@
     row.children[5].textContent = new Date(data.expiryDate).toLocaleDateString();
   }
 
-  // Helper function to update row numbers
+  //  function to update row numbers
   function updateRowNumbers() {
     const rows = document.querySelectorAll('#couponsTable tr');
     const currentPage = parseInt(new URLSearchParams(window.location.search).get('page')) || 1;
@@ -529,7 +528,7 @@
     });
   }
 
-  // Update validation based on discount type
+  //  validation based on discount type
   function updateDiscountValidation() {
     const discountType = document.getElementById('discountType').value;
     const discountValue = document.getElementById('discountValue');

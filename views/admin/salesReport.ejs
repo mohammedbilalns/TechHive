@@ -78,14 +78,12 @@
               </tr>
             </thead>
             <tbody id="salesTableBody" class="divide-y divide-gray-200">
-              <!-- Data will be populated dynamically -->
             </tbody>
           </table>
         </div>
 
         <!-- Add pagination controls -->
         <div id="paginationControls" class="mt-8 flex justify-center items-center space-x-4">
-          <!-- Pagination will be populated by JavaScript -->
         </div>
       </div>
     </div>
@@ -188,7 +186,7 @@
       tableBody.innerHTML += row;
     });
 
-    // Update pagination controls
+    //  pagination controls
     const paginationControls = document.getElementById('paginationControls');
     if (data.pagination) {
       let paginationHTML = '';
@@ -285,9 +283,9 @@
     }
   }
 
-  // Load initial data with monthly filter
+  // Load initial data 
   window.addEventListener('load', () => {
-    document.getElementById('filterType').value = 'monthly'; // Ensure monthly is selected
+    document.getElementById('filterType').value = 'monthly'; 
     applyFilter();
   });
 </script>
