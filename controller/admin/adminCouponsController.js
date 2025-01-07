@@ -197,7 +197,7 @@ const updateCoupon = async (req, res) => {
             }
         }
 
-        // Only validate that expiry date is after start date
+        //  validate  expiry date is after start date
         const start = new Date(startDate);
         const expiry = new Date(expiryDate);
 

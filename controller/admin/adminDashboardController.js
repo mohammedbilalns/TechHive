@@ -54,10 +54,10 @@ import Order from '../../model/orderModel.js';
 
       const baseFilter = {
         ...dateFilter,
-        'items.status': 'delivered'  // Only count delivered items
+        'items.status': 'delivered'  
       };
 
-      // Get sales data with proper calculations
+      //  sales data calculations
       const salesData = await Order.aggregate([
         { $match: baseFilter },
         { $unwind: "$items" },
@@ -148,7 +148,7 @@ import Order from '../../model/orderModel.js';
         { $limit: 10 }
       ]);
 
-      // Get top categories with proper calculations
+      // Get top categories 
       const topCategories = await Order.aggregate([
         { $match: baseFilter },
         { $unwind: "$items" },
@@ -202,7 +202,7 @@ import Order from '../../model/orderModel.js';
         { $limit: 10 }
       ]);
 
-      // Get top brands with proper calculations
+      // Get top brands 
       const topBrands = await Order.aggregate([
         { $match: baseFilter },
         { $unwind: "$items" },

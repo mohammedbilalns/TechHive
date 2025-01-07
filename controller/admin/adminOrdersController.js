@@ -87,7 +87,7 @@ const updateOrderItemStatus = async (req, res) => {
       const quantity = orderItem.quantity;
       const baseRefundAmount = (itemPrice * (1 - itemDiscount / 100)) * quantity;
 
-      // Calculate coupon discount per item if coupon was applied
+      // Calculate coupon discount per item 
       let couponDiscount = 0;
       if (order.coupon && order.coupon.discount > 0) {
         // Distribute coupon 

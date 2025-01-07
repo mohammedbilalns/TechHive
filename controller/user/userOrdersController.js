@@ -29,7 +29,7 @@ const placeOrder = async (req, res) => {
       return res.json({ success: false, message: 'Cart is empty' });
     }
 
-    // Check stock availability for all items before proceeding
+    // Check stock availability for all items 
     for (const item of cart.items) {
       if (item.productId.stock < item.quantity) {
         return res.json({
@@ -165,7 +165,7 @@ const placeOrder = async (req, res) => {
       ]);
     }
 
-    // Clear cart after creating order (moved from payment verification)
+    // Clear cart after creating order 
     await cartModel.findOneAndUpdate(
       { user: userId },
       { $set: { items: [], discount: 0, couponCode: null } }
@@ -301,7 +301,7 @@ const verifyPayment = async (req, res) => {
       };
       await order.save();
 
-      // Update product stock (removed cart clearing)
+      // Update product stock 
       await Promise.all(
         order.items.map(item => 
           productModel.findOneAndUpdate(
@@ -743,7 +743,7 @@ const downloadInvoice = async (req, res) => {
     ];
 
     const totalWidth = columns.reduce((sum, col) => sum + col.width, 0);
-    const rowHeight = 60; // Increased row height to accommodate 3 lines
+    const rowHeight = 60; 
 
     // Draw table header background
     doc.rect(40, tableTop - 5, totalWidth, 25) // Header height
@@ -812,13 +812,13 @@ const downloadInvoice = async (req, res) => {
     columns.forEach((col, i) => {
       const x = 40 + columns.slice(0, i).reduce((sum, col) => sum + col.width, 0);
       doc.moveTo(x, tableTop - 5)
-         .lineTo(x, rowTop + rowHeight) // Increased height
+         .lineTo(x, rowTop + rowHeight) 
          .stroke();
     });
 
     // Draw last vertical line
     doc.moveTo(40 + totalWidth, tableTop - 5)
-       .lineTo(40 + totalWidth, rowTop + rowHeight) // Increased height
+       .lineTo(40 + totalWidth, rowTop + rowHeight)
        .stroke();
 
     // Draw row data
@@ -838,16 +838,16 @@ const downloadInvoice = async (req, res) => {
        .lineTo(40 + totalWidth, rowTop + rowHeight)
        .stroke();
 
-    // Summary section - make it wider and better formatted
+    // Summary section 
     doc.y = rowTop + rowHeight + 20;
     
     // Create a summary box
     const summaryWidth = 300; // Increased width
-    const summaryX = doc.page.width - summaryWidth - 40; // Align to right with margin
+    const summaryX = doc.page.width - summaryWidth - 40; 
     const summaryStartY = doc.y;
     
     // Draw summary box background
-    doc.rect(summaryX, summaryStartY, summaryWidth, 160) // Increased height
+    doc.rect(summaryX, summaryStartY, summaryWidth, 160) 
        .fillColor('#f8f9fa')
        .fill();
     

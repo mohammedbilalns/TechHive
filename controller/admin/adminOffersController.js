@@ -3,6 +3,7 @@ import Category from '../../model/categoryModel.js';
 import Product from '../../model/productModel.js';
 import Referral from '../../model/referralModel.js';
 import {log} from "mercedlogger"
+
 const updateProductDiscounts = async (offer, remove = false) => {
     if (!offer.isActive && !remove) return;
 
@@ -71,7 +72,7 @@ const getOffers = async (req, res) => {
             .populate('category', 'name')
             .sort({ name: 1 });
 
-        // Format products to include category name
+        // Format products 
         const formattedProducts = products.map(product => ({
             _id: product._id,
             name: `${product.name} (${product.category.name}) - ₹${product.price}`,
@@ -240,7 +241,7 @@ const toggleOfferStatus = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Offer not found' });
         }
 
-        // Only check for conflicts when activating
+        //  check for conflicts when activating
         if (!offer.isActive) {
             const items = offer.offerType === 'category' ?
                 offer.applicableCategories :

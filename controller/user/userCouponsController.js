@@ -79,11 +79,9 @@ const getCoupons = async (req, res) => {
             ...categorizedCoupons.expired
         ];
 
-        // Calculate pagination
         const totalCoupons = combinedCoupons.length;
         const totalPages = Math.ceil(totalCoupons / limit);
 
-        // Get paginated coupons
         const paginatedCoupons = combinedCoupons.slice(skip, skip + limit);
 
         res.render('user/profile/coupons', {

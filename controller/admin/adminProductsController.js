@@ -241,7 +241,7 @@ const getEditProduct = async (req, res) => {
     try {
         const productId = req.params.productid;
 
-        // Validate if the ID is a valid ObjectId
+        
         if (!mongoose.Types.ObjectId.isValid(productId)) {
             return res.redirect('/notfound?message=Invalid+Product+ID&alertType=error');
         }

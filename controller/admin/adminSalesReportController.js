@@ -20,7 +20,7 @@ const getSalesReportData = async (req, res) => {
   try {
     const { filterType, startDate, endDate } = req.query;
     const page = parseInt(req.query.page) || 1;
-    const limit = 10;  // Items per page
+    const limit = 10;  
 
     //  date validation for custom range
     if (filterType === 'custom') {
@@ -91,7 +91,6 @@ const getSalesReportData = async (req, res) => {
         break;
     }
 
-    // Add delivered status to the filter
     dateFilter.status = 'Delivered'; // Only include delivered orders
     dateFilter.isReturned = { $ne: true }; // Exclude returned orders
 
@@ -162,7 +161,7 @@ const getSalesReportData = async (req, res) => {
       // Paginated orders for the table
       orders: paginatedOrders,
       
-      // Pagination metadata
+    
       pagination: {
         currentPage: page,
         totalPages,
@@ -220,7 +219,7 @@ const generateExcelReport = async (res, orders, totals, filterType, startDate, e
   worksheet.getCell('A3').font = { size: 10, italic: true };
   worksheet.getCell('A3').alignment = { horizontal: 'center' };
 
-  worksheet.addRow(['']);  // Empty row for spacing
+  worksheet.addRow(['']);  
   const headers = [
     'Order ID',
     'Date',
@@ -249,7 +248,7 @@ const generateExcelReport = async (res, orders, totals, filterType, startDate, e
   });
 
   // Add totals
-  worksheet.addRow(['']);  // Empty row for spacing
+  worksheet.addRow(['']);  
   worksheet.addRow([
     'TOTALS',
     '',
@@ -316,10 +315,10 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
     .text(`Generated on: ${new Date().toLocaleString()}`, { align: 'center' })
     .moveDown(2);
 
-  // Summary Cards Section - Adjusted widths and spacing
+  // Summary Cards Section=
   const summaryStartY = doc.y;
-  const cardWidth = 120;  // Reduced from 130
-  const cardSpacing = 10; // Reduced from 15
+  const cardWidth = 120;  
+  const cardSpacing = 10; 
   const cardHeight = 70;
 
   // Helper function to draw a card with text truncation
@@ -489,7 +488,6 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
     .lineWidth(1.5)
     .stroke();
 
-  // Totals section with improved design and adjusted positioning
   const totalsY = yPos + 10;
 
   // Draw totals box with adjusted width
@@ -497,7 +495,7 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
   doc.rect(40, totalsY, totalsBoxWidth, 120)
     .fill('#F8FAFC');
 
-  // Add totals with adjusted positioning and width
+  //  totals with adjusted positioning and width
   const addTotalLine = (label, value, lineY) => {
     doc.font('NotoSans-Bold')
       .fontSize(10)
@@ -534,7 +532,7 @@ const downloadReport = async (req, res) => {
     const { format, filterType, startDate, endDate } = req.query;
     let dateFilter = {};
 
-    // Set date filter based on filter type (same logic as getSalesReportData)
+    // Set date filter based on filter type 
     switch (filterType) {
       case 'daily':
         dateFilter = {
@@ -586,13 +584,13 @@ const downloadReport = async (req, res) => {
     }
 
     // Add delivered status to the filter
-    dateFilter.status = 'Delivered'; // Only include delivered orders
+    dateFilter.status = 'Delivered'; 
     dateFilter.isReturned = { $ne: true }; // Exclude returned orders
 
     // Modify the query to find orders with at least one delivered item
     const orders = await Order.find({
       'items.status': 'delivered',  // At least one item is delivered
-      orderDate: dateFilter.orderDate // Keep existing date filter
+      orderDate: dateFilter.orderDate 
     })
       .populate('userId', 'fullname')
       .sort({ orderDate: -1 });

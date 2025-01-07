@@ -61,7 +61,6 @@ const deleteCategory = async (req, res) => {
 // Hide a category
 const hideCategory = async (req, res) => {
     try {
-        // Update category status
         await categorySchema.findByIdAndUpdate(req.params.categoryid, { status: "Inactive" })
 
         // Update all products in this category to Inactive
@@ -86,7 +85,6 @@ const hideCategory = async (req, res) => {
 // Unhide a category
 const unhideCategory = async (req, res) => {
     try {
-        // Update category status
         await categorySchema.findByIdAndUpdate(req.params.categoryid, { status: "Active" })
 
         // Update all products in this category to Active
