@@ -97,11 +97,11 @@
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div class="flex space-x-2">
-                      <button onclick="editOffer('<%= offer._id %>')"
-                        class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">
-                        Edit
-                      </button>
                       <% if (!offer.isExpired) { %>
+                        <button onclick="editOffer('<%= offer._id %>')"
+                          class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">
+                          Edit
+                        </button>
                         <button onclick="toggleOfferStatus('<%= offer._id %>', '<%= offer.isActive %>')"
                           class="<%= offer.isActive ? 'bg-primary-accent' : 'bg-green-700' %> text-white px-3 py-2 rounded-md hover:<%= offer.isActive ? 'bg-red-600' : 'bg-green-600' %>">
                           <%= offer.isActive ? 'Deactivate' : 'Activate' %>

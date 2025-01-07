@@ -17,6 +17,23 @@ import Order from '../../model/orderModel.js';
             }
           };
           break;
+        case 'weekly':
+          const weekNow = new Date();
+          const startOfWeek = new Date(weekNow);
+          startOfWeek.setDate(weekNow.getDate() - weekNow.getDay()); // Start from Sunday
+          startOfWeek.setHours(0, 0, 0, 0);
+          
+          const endOfWeek = new Date(startOfWeek);
+          endOfWeek.setDate(startOfWeek.getDate() + 6); // End on Saturday
+          endOfWeek.setHours(23, 59, 59, 999);
+          
+          dateFilter = {
+            orderDate: {
+              $gte: startOfWeek,
+              $lte: endOfWeek
+            }
+          };
+          break;
         case 'yearly':
           const year = new Date().getFullYear();
           dateFilter = {
@@ -27,11 +44,11 @@ import Order from '../../model/orderModel.js';
           };
           break;
         case 'monthly':
-          const now = new Date();
+          const monthNow = new Date();
           dateFilter = {
             orderDate: {
-              $gte: new Date(now.getFullYear(), now.getMonth(), 1),
-              $lte: new Date(now.getFullYear(), now.getMonth() + 1, 0)
+              $gte: new Date(monthNow.getFullYear(), monthNow.getMonth(), 1),
+              $lte: new Date(monthNow.getFullYear(), monthNow.getMonth() + 1, 0)
             }
           };
           break;
