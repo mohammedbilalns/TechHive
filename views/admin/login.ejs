@@ -2,43 +2,61 @@
 <main class="min-h-[80vh] py-8 flex justify-center items-center">
   <div class="bg-primary-white rounded-lg shadow-lg flex flex-col lg:flex-row overflow-hidden max-w-4xl w-full">
     <!-- Image Section -->
-    <div class="bg-blue-100 p-6 hidden sm:flex justify-center items-center">
+    <div class="bg-blue-100 p-6 hidden sm:flex justify-center items-center lg:w-1/2">
       <img alt="Illustration of a laptop with a clock display and office supplies" src="./images/login2.png"
            class="object-cover max-w-full h-auto" />
     </div>
     <!-- Form Section -->
-    <form id="adminLoginForm" action="/admin/login" method="post" novalidate>
-      <div class="bg-gray-50 p-6 md:p-12 flex-1">
-        <p class="text-2xl font-semibold text-gray-800 mb-2">Admin Login</p>
+    <div class="flex-1 flex items-center justify-center">
+      <form id="adminLoginForm" action="/admin/login" method="post" novalidate class="w-full">
+        <div class="bg-gray-50 p-6 md:p-12">
+          <p class="text-2xl font-semibold text-gray-800 mb-6">Admin Login</p>
 
-        <input
-          type="text"
-          id="email"
-          name="email"
-          placeholder="Email"
-          value="<%= locals.email ? locals.email : '' %>"
-          class="border w-full mb-4 px-3 py-2 rounded-md"
-        />
-        <input
-          type="password"
-          id="password"
-          name="password"
-          placeholder="Password"
-          class="border w-full mb-6 px-3 py-2 rounded-md"
-        />
+          <div class="relative mb-4">
+            <div class="relative">
+              <span class="absolute inset-y-0 left-3 flex items-center text-gray-500">
+                <i class="fas fa-envelope"></i>
+              </span>
+              <input
+                type="text"
+                id="email"
+                name="email"
+                placeholder="Email"
+                value="<%= locals.email ? locals.email : '' %>"
+                class="border w-full pl-10 pr-3 py-2 rounded-md transition-colors"
+              />
+            </div>
+            <p class="text-red-500 text-sm mt-1 hidden" id="emailError"></p>
+          </div>
 
-        <% if (locals.message && locals.alertType) { %>
-          <script type="module">
-            import { showToast, closeCustomAlert } from '/js/util.js';
-            showToast('<%= message %>', '<%= alertType %>')
-            window.closeCustomAlert = closeCustomAlert;
-          </script>
-        <% } %>
-        <button type="submit" class="w-full py-2 mb-2 text-white bg-primary-accent rounded-md">
-          Log In
-        </button>
-      </div>
-    </form>
+          <div class="relative mb-6">
+            <div class="relative">
+              <span class="absolute inset-y-0 left-3 flex items-center text-gray-500">
+                <i class="fas fa-lock"></i>
+              </span>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Password"
+                class="border w-full pl-10 pr-10 py-2 rounded-md transition-colors"
+              />
+              <span class="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-600" id="togglePassword">
+                <i class="fas fa-eye"></i>
+              </span>
+            </div>
+            <p class="text-red-500 text-sm mt-1 hidden" id="passwordError"></p>
+          </div>
+
+          <button type="submit" id="loginButton" class="w-full py-2 mb-2 text-white bg-primary-accent rounded-md flex items-center justify-center">
+            <span>Log In</span>
+            <div id="loginLoader" class="hidden ml-2">
+              <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </main>
 <%- include('../partials/adminfooter') %>
@@ -51,30 +69,41 @@
   document.getElementById('adminLoginForm').addEventListener('submit', async function (event) {
     event.preventDefault();
     
-    if (typeof closeCustomAlert === 'function') {
-      closeCustomAlert();
-    }
+    // Reset all error states
+    resetErrors();
     
-    let isValid = true;
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const email = emailInput.value.trim();
-    const password = passwordInput.value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
 
+    let hasError = false;
+
+    // Validate email
     if (!email) {
-      showToast("Email is required.", 'error');
-      isValid = false;
-      return;
-    }
-    if (!password) {
-      showToast('Password is required.', 'error');
-      isValid = false;
-      return;
+      showError('email', 'Email is required');
+      hasError = true;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showError('email', 'Please enter a valid email address');
+      hasError = true;
     }
 
-    if (!isValid) return;
+    // Validate password
+    if (!password) {
+      showError('password', 'Password is required');
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    const loginButton = document.getElementById('loginButton');
+    const loginLoader = document.getElementById('loginLoader');
+    const buttonText = loginButton.querySelector('span');
 
     try {
+      // Show loading state
+      buttonText.textContent = 'Logging in...';
+      loginLoader.classList.remove('hidden');
+      loginButton.disabled = true;
+
       const response = await axios.post('/admin/login', {
         email,
         password
@@ -87,6 +116,56 @@
     } catch (error) {
       const message = error.response?.data?.message || 'Something went wrong';
       showToast(message, 'error');
+    } finally {
+      // Reset button state
+      buttonText.textContent = 'Log In';
+      loginLoader.classList.add('hidden');
+      loginButton.disabled = false;
+    }
+  });
+
+  function showError(fieldId, message) {
+    const input = document.getElementById(fieldId);
+    const errorElement = document.getElementById(`${fieldId}Error`);
+    
+    input.classList.add('border-red-500');
+    errorElement.textContent = message;
+    errorElement.classList.remove('hidden');
+  }
+
+  function resetErrors() {
+    const fields = ['email', 'password'];
+    fields.forEach(field => {
+      const input = document.getElementById(field);
+      const errorElement = document.getElementById(`${field}Error`);
+      
+      input.classList.remove('border-red-500');
+      errorElement.classList.add('hidden');
+      errorElement.textContent = '';
+    });
+  }
+
+  // Add input event listeners to clear errors when user starts typing
+  ['email', 'password'].forEach(field => {
+    document.getElementById(field).addEventListener('input', function() {
+      this.classList.remove('border-red-500');
+      document.getElementById(`${field}Error`).classList.add('hidden');
+    });
+  });
+
+  // Toggle password visibility
+  document.getElementById('togglePassword').addEventListener('click', function() {
+    const passwordInput = document.getElementById('password');
+    const eyeIcon = this.querySelector('i');
+
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      eyeIcon.classList.remove('fa-eye');
+      eyeIcon.classList.add('fa-eye-slash');
+    } else {
+      passwordInput.type = 'password';
+      eyeIcon.classList.remove('fa-eye-slash');
+      eyeIcon.classList.add('fa-eye');
     }
   });
 </script>

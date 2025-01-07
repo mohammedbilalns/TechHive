@@ -19,28 +19,53 @@
         <form id="signupForm" method="post" action="/signup" class="space-y-3" novalidate>
           <p class="text-2xl font-semibold text-gray-800 mb-1">Create an Account</p>
           <p class="text-gray-600 mb-4">Enter your details below</p>
-          <input type="text" id="fullname" placeholder="Full Name" value="<%= locals.fullname ? fullname : '' %>"
-            name="fullname" class="border w-full mb-3 px-3 py-2 rounded-md" />
-          <input type="tel" id="phonenumber" placeholder="Phone Number"
-            value="<%= locals.phonenumber ? phonenumber : '' %>" name="phonenumber"
-            class="border w-full mb-3 px-3 py-2 rounded-md" />
-          <input type="email" id="email" placeholder="Email" value="<%= locals.email ? email : '' %>" name="email"
-            class="border w-full mb-3 px-3 py-2 rounded-md" />
-          <div class="relative w-full mb-3">
-            <input type="password" id="password" placeholder="Password" name="password"
-              class="border w-full px-3 py-2 rounded-md pr-10" />
-            <span class="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-600" id="togglePassword">
-              <i class="fas fa-eye"></i>
-            </span>
+          
+          <div class="mb-3">
+            <input type="text" id="fullname" placeholder="Full Name" 
+              value="<%= locals.fullname ? fullname : '' %>"
+              name="fullname" 
+              class="border w-full px-3 py-2 rounded-md transition-colors" />
+            <p class="text-red-500 text-sm mt-1 hidden" id="fullnameError"></p>
           </div>
-          <div class="relative w-full mb-3">
-            <input type="password" id="confirmPassword" placeholder="Confirm Password" name="confirmPassword"
-              class="border w-full px-3 py-2 rounded-md pr-10" />
-            <span class="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-600"
-              id="toggleConfirmPassword">
-              <i class="fas fa-eye"></i>
-            </span>
+
+          <div class="mb-3">
+            <input type="tel" id="phonenumber" placeholder="Phone Number"
+              value="<%= locals.phonenumber ? phonenumber : '' %>"
+              name="phonenumber" 
+              class="border w-full px-3 py-2 rounded-md transition-colors" />
+            <p class="text-red-500 text-sm mt-1 hidden" id="phonenumberError"></p>
           </div>
+
+          <div class="mb-3">
+            <input type="email" id="email" placeholder="Email"
+              value="<%= locals.email ? email : '' %>"
+              name="email" 
+              class="border w-full px-3 py-2 rounded-md transition-colors" />
+            <p class="text-red-500 text-sm mt-1 hidden" id="emailError"></p>
+          </div>
+
+          <div class="relative w-full mb-3">
+            <div class="relative">
+              <input type="password" id="password" placeholder="Password" name="password"
+                class="border w-full px-3 py-2 rounded-md pr-10 transition-colors" />
+              <span class="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-600" id="togglePassword">
+                <i class="fas fa-eye"></i>
+              </span>
+            </div>
+            <p class="text-red-500 text-sm mt-1 hidden" id="passwordError"></p>
+          </div>
+
+          <div class="relative w-full mb-3">
+            <div class="relative">
+              <input type="password" id="confirmPassword" placeholder="Confirm Password" name="confirmPassword"
+                class="border w-full px-3 py-2 rounded-md pr-10 transition-colors" />
+              <span class="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-600" id="toggleConfirmPassword">
+                <i class="fas fa-eye"></i>
+              </span>
+            </div>
+            <p class="text-red-500 text-sm mt-1 hidden" id="confirmPasswordError"></p>
+          </div>
+
           <p class="text-xs text-gray-500 mb-3">
             Password must contain at least 8 characters, including uppercase, lowercase letters, numbers, and special
             characters.
@@ -147,22 +172,86 @@
 
       document.getElementById('signupForm').addEventListener('submit', async function (event) {
         event.preventDefault();
+        
+        // Reset all error states
+        resetErrors();
+
+        const fullname = document.getElementById('fullname').value.trim();
+        const phonenumber = document.getElementById('phonenumber').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+        let hasError = false;
+
+        // Validate fullname
+        if (!fullname) {
+          showError('fullname', 'Full name is required');
+          hasError = true;
+        } else if (!/^[a-zA-Z ]{3,30}$/.test(fullname)) {
+          showError('fullname', 'Full name should contain only alphabets (3-30 characters)');
+          hasError = true;
+        }
+
+        // Validate phone number
+        if (!phonenumber) {
+          showError('phonenumber', 'Phone number is required');
+          hasError = true;
+        } else if (!/^\d{10}$/.test(phonenumber)) {
+          showError('phonenumber', 'Phone number must be 10 digits');
+          hasError = true;
+        }
+
+        // Validate email
+        if (!email) {
+          showError('email', 'Email is required');
+          hasError = true;
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          showError('email', 'Please enter a valid email address');
+          hasError = true;
+        }
+
+        // Validate password
+        if (!password) {
+          showError('password', 'Password is required');
+          hasError = true;
+        } else {
+          // Check password length
+          const hasMinLength = password.length >= 8;
+          // Check for uppercase letter
+          const hasUpperCase = /[A-Z]/.test(password);
+          // Check for lowercase letter
+          const hasLowerCase = /[a-z]/.test(password);
+          // Check for number
+          const hasNumber = /\d/.test(password);
+          // Check for special character
+          const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+          if (!hasMinLength || !hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecialChar) {
+            showError('password', 'Password must contain at least 8 characters, including uppercase, lowercase letters, numbers, and special characters');
+            hasError = true;
+          }
+        }
+
+        // Validate confirm password
+        if (!confirmPassword) {
+          showError('confirmPassword', 'Please confirm your password');
+          hasError = true;
+        } else if (password !== confirmPassword) {
+          showError('confirmPassword', 'Passwords do not match');
+          hasError = true;
+        }
+
+        if (hasError) return;
 
         const signupButton = document.getElementById('signupButton');
         const signupLoader = document.getElementById('signupLoader');
         const buttonText = signupButton.querySelector('span');
 
         try {
-          // Show loading state
           buttonText.textContent = 'Signing up...';
           signupLoader.classList.remove('hidden');
           signupButton.disabled = true;
-
-          const fullname = document.getElementById('fullname').value.trim();
-          const phonenumber = document.getElementById('phonenumber').value.trim();
-          const email = document.getElementById('email').value.trim();
-          const password = document.getElementById('password').value.trim();
-          const confirmPassword = document.getElementById('confirmPassword').value.trim();
 
           const response = await axios.post('/signup', {
             fullname,
@@ -179,11 +268,39 @@
           const errorMessage = error.response?.data?.message || 'Signup failed';
           showToast(errorMessage, 'error');
         } finally {
-          // Reset loading state
           buttonText.textContent = 'Sign Up';
           signupLoader.classList.add('hidden');
           signupButton.disabled = false;
         }
+      });
+
+      function showError(fieldId, message) {
+        const input = document.getElementById(fieldId);
+        const errorElement = document.getElementById(`${fieldId}Error`);
+        
+        input.classList.add('border-red-500');
+        errorElement.textContent = message;
+        errorElement.classList.remove('hidden');
+      }
+
+      function resetErrors() {
+        const fields = ['fullname', 'phonenumber', 'email', 'password', 'confirmPassword'];
+        fields.forEach(field => {
+          const input = document.getElementById(field);
+          const errorElement = document.getElementById(`${field}Error`);
+          
+          input.classList.remove('border-red-500');
+          errorElement.classList.add('hidden');
+          errorElement.textContent = '';
+        });
+      }
+
+      // Add input event listeners to clear errors when user starts typing
+      ['fullname', 'phonenumber', 'email', 'password', 'confirmPassword'].forEach(field => {
+        document.getElementById(field).addEventListener('input', function() {
+          this.classList.remove('border-red-500');
+          document.getElementById(`${field}Error`).classList.add('hidden');
+        });
       });
 
       // Toggle password visibility
