@@ -71,9 +71,12 @@ const addToWishlist = async (req, res) => {
             await wishlist.save();
         }
 
-        res.json({ 
+        const totalQuantity = wishlist.products.length;
+
+        res.status(200).json({ 
             success: true, 
-            message: "Product added to wishlist successfully" 
+            message: "Product added to wishlist successfully",
+            totalQuantity
         });
     } catch (error) {
         log.red("ADD_TO_WISHLIST_ERROR", error);
@@ -106,9 +109,12 @@ const removeFromWishlist = async (req, res) => {
         
         await wishlist.save();
 
+        const totalQuantity = wishlist.products.length;
+
         res.json({ 
             success: true, 
-            message: "Product removed from wishlist successfully" 
+            message: "Product removed from wishlist successfully",
+            totalQuantity
         });
     } catch (error) {
         log.red("REMOVE_FROM_WISHLIST_ERROR", error);

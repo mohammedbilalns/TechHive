@@ -109,8 +109,7 @@
       </main>
   </div>
 
-  <script type="module">
-    import { customConfirm, showToast, closeCustomAlert } from '/js/util.js';
+  <script >
 
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
@@ -149,6 +148,8 @@
           }
 
           showToast('Product removed from wishlist successfully', 'success');
+          document.getElementById("wishlist-quantity").innerText = response.data.totalQuantity
+
         } else {
           showToast(response.data.message || 'Failed to remove item', 'error');
         }
@@ -168,12 +169,6 @@
         showToast(error.response?.data?.message || 'Error adding item to cart', 'error');
       }
     }
-
-    window.addToCart = addToCart;
-    window.removeFromWishlist = removeFromWishlist;
-    window.customConfirm = customConfirm;
-    window.showToast = showToast;
-    window.closeCustomAlert = closeCustomAlert;
   </script>
 
   <%- include('../../partials/footer') %>

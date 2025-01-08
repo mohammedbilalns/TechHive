@@ -479,6 +479,8 @@
                         button.parentNode.replaceChild(newButton, button);
                     });
                     showToast('Item added to wishlist successfully', 'success');
+                    document.getElementById("wishlist-quantity").innerText = data.totalQuantity
+
                 } else {
                     showToast(data.message || 'Failed to add item', 'error');
                 }
@@ -490,7 +492,8 @@
 
         async function removeFromWishlist(productId) {
             try {
-                const response = await axios.delete('/wishlist', { productId });
+                const response = await axios.put('/wishlist', { productId });
+                const data = response.data;
                 if (response.data.success) {
                     // Find all wishlist buttons for this product
                     const wishlistButtons = document.querySelectorAll(`button[onclick="removeFromWishlist('${productId}')"]`);
@@ -512,6 +515,8 @@
                         button.parentNode.replaceChild(newButton, button);
                     });
                     showToast('Product removed from wishlist successfully', 'success');
+                    document.getElementById("wishlist-quantity").innerText = data.totalQuantity
+
                 } else {
                     showToast(response.data.message || 'Failed to remove item', 'error');
                 }

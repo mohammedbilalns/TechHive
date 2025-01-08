@@ -325,6 +325,8 @@
                         });
                     }
                     showToast(data.message, data.success ? 'success' : 'error');
+                    document.getElementById("wishlist-quantity").innerText = data.totalQuantity
+
                 } catch (error) {
                     console.error('Error:', error);
                     showToast(error.response?.data?.message || 'Error adding item to wishlist', 'error');
@@ -355,6 +357,8 @@
                             button.parentNode.replaceChild(newButton, button);
                         });
                         showToast('Product removed from wishlist successfully', 'success');
+                        document.getElementById("wishlist-quantity").innerText = response.data.totalQuantity
+
                     } else {
                         showToast(response.data.message || 'Failed to remove item', 'error');
                     }
