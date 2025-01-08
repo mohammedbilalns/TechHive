@@ -20,13 +20,15 @@ const fetchWishlistItems = async (req, res, next)=>{
             
             
             res.locals.wishlistItems = wishlist.products.map(product => product._id)
+            res.locals.wishlistQuantity = wishlist.products.length 
            
         } else {
             res.locals.wishlistItems = []
+            res.locals.wishlistQuantity = 0 
         }
     } catch(error){
         log.red("FETCH_WISHLIST_ERROR")
-        res.locals.wishlistItems = [] // Fallback to empty array on error
+        res.locals.wishlistItems = [] 
     }
 
     next()

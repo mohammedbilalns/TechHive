@@ -2,7 +2,7 @@ import express from "express"
 import { Router } from "express"
 // middlewares
 import auth from "../middlewares/auth.js"
-import cartQuantity from "../middlewares/cartQuantity.js"
+import cartItems from "../middlewares/cartItems.js"
 import wishlistItems from "../middlewares/wishlistItems.js"
 import averageRatings from "../middlewares/averageRatings.js"
 // controllers
@@ -48,17 +48,18 @@ router.patch('/reset-password', auth.isLogin, userAuthController.resetPassword) 
 router.get('/notfound', notfoundController.loadNotfound)
 
 //---- user and product routes ---- 
-router.use(cartQuantity.fetchCartQuantity) // middleware to set the cart Quantity 
-router.get('/category/:id', wishlistItems.fetchWishlistItems, averageRatings.calculateAverageRatings, userProductController.viewCategory)
-router.get('/allproducts', wishlistItems.fetchWishlistItems, averageRatings.calculateAverageRatings, userProductController.loadAllProducts)
-router.get('/product/:id', wishlistItems.fetchWishlistItems, averageRatings.calculateAverageRatings, userProductController.viewProduct)
+router.use(cartItems.fetchCartItems) // middleware to set the cart Quantity 
+router.use(wishlistItems.fetchWishlistItems) // middleware to set the wishlist Quantity 
+router.get('/category/:id', averageRatings.calculateAverageRatings, userProductController.viewCategory)
+router.get('/allproducts', averageRatings.calculateAverageRatings, userProductController.loadAllProducts)
+router.get('/product/:id', averageRatings.calculateAverageRatings, userProductController.viewProduct)
 router.get('/', auth.isLogin, averageRatings.calculateAverageRatings, userProductController.loadLanding)
-router.get('/search', wishlistItems.fetchWishlistItems, averageRatings.calculateAverageRatings, userSearchController.searchProducts);
+router.get('/search', averageRatings.calculateAverageRatings, userSearchController.searchProducts);
 router.get('/api/search', userSearchController.searchProducts);
 
 // routes accessible only with session 
 
-router.get('/home',auth.checkSession, wishlistItems.fetchWishlistItems, averageRatings.calculateAverageRatings, userProductController.loadHome)
+router.get('/home',auth.checkSession, averageRatings.calculateAverageRatings, userProductController.loadHome)
 
 //---- user Address management ---- 
 router.route('/addresses')
