@@ -118,36 +118,31 @@
               <%=!product.stock ? 'disabled' : '' %>>
               Add to Cart
             </button>
+          <% } else { %>
+            <a href="/login" class="bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors text-center">
+              Add to Cart
+            </a>
+          <% } %>
+
+          <% if(locals.fullname) { %>
+            <% if(wishlistItems.some(id=> id.equals(product._id))) { %>
+              <button onclick="removeFromWishlist('<%= product._id %>')"
+                class="w-10 h-10 flex items-center justify-center rounded-full bg-primary-accent text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </button>
             <% } else { %>
-              <a href="/login"
-                class="bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors text-center">
-                Add to Cart
-              </a>
-              <% } %>
-
-                <% if(locals.fullname) { %>
-
-                  <% if(wishlistItems.some(id=> id.equals(product._id))) { %>
-                    <button onclick="removeFromWishlist('<%= product._id %>')"
-                      class="w-10 h-10 flex items-center justify-center rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                      </svg>
-                    </button>
-                    <% } else { %>
-                      <button onclick="addToWishlist('<%= product._id %>')"
-                        class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-600 hover:text-white hover:bg-red-600 transition-colors duration-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                          stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                      </button>
-                      <% } %>
-
-                        <% } %>
+              <button onclick="addToWishlist('<%= product._id %>')"
+                class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-primary-accent hover:text-black transition-colors duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </button>
+            <% } %>
+          <% } %>
         </div>
       </div>
     </section>
@@ -219,7 +214,7 @@
               <div class="flex justify-center gap-2 mt-3">
                 <% if (related.stock> 0) { %>
                   <button onclick="addToCart('<%= related._id %>')"
-                    class="p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
+                    class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                       stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -229,8 +224,8 @@
                   <% } %>
                     <% if(wishlistItems.some(id=> id.equals(related._id))) { %>
                       <button onclick="removeFromWishlist('<%= related._id %>')"
-                        class="p-2 rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        class="w-10 h-10 flex items-center justify-center rounded-full bg-primary-accent text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                           stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -238,8 +233,8 @@
                       </button>
                       <% } else { %>
                         <button onclick="addToWishlist('<%= related._id %>')"
-                          class="p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
-                          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                          class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-primary-accent hover:text-black transition-colors duration-300">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -364,13 +359,13 @@
           wishlistButtons.forEach(button => {
             const newButton = document.createElement('button');
             newButton.setAttribute('onclick', `removeFromWishlist('${productId}')`);
-            newButton.className = 'w-10 h-10 flex items-center justify-center rounded-full bg-red-600 text-white hover:bg-gray-100 hover:text-black transition-colors duration-300';
+            newButton.className = 'w-10 h-10 flex items-center justify-center rounded-full bg-primary-accent text-white hover:bg-gray-100 hover:text-black transition-colors duration-300';
 
             newButton.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                `;
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            `;
 
             button.parentNode.replaceChild(newButton, button);
           });
@@ -392,13 +387,13 @@
           wishlistButtons.forEach(button => {
             const newButton = document.createElement('button');
             newButton.setAttribute('onclick', `addToWishlist('${productId}')`);
-            newButton.className = 'w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300';
+            newButton.className = 'w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-primary-accent hover:text-black transition-colors duration-300';
 
             newButton.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                `;
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            `;
 
             button.parentNode.replaceChild(newButton, button);
           });
