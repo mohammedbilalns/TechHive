@@ -111,18 +111,7 @@
       </main>
   </div>
 
-  <script >
-
-    function toggleSidebar() {
-      const sidebar = document.getElementById('sidebar');
-      sidebar.classList.toggle('hidden');
-      sidebar.classList.toggle('fixed');
-      sidebar.classList.toggle('top-0');
-      sidebar.classList.toggle('left-0');
-      sidebar.classList.toggle('z-50');
-      sidebar.classList.toggle('h-full');
-    }
-
+  <script>
     async function removeFromWishlist(productId) {
       const confirmed = await customConfirm('Are you sure you want to remove this item from your wishlist?');
       if (!confirmed) return;

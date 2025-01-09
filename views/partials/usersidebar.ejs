@@ -1,5 +1,12 @@
 <aside id="sidebar"
-      class="bg-gray-100 w-3/4 md:w-72 min-h-screen hidden md:block transform transition-transform duration-300 ease-in-out">
+      class="bg-gray-100 w-3/4 md:w-72 min-h-screen transform md:transform-none transition-transform duration-300 ease-in-out md:block fixed md:static top-0 left-0 h-full md:h-auto z-40 md:z-0 -translate-x-full md:translate-x-0 hidden">
+      <!-- Close button - only visible on mobile -->
+      <div class="md:hidden p-4 flex justify-end">
+        <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900 p-2 rounded-lg">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+      
       <nav class="py-4">
         <div class="px-4 md:px-6">
           <div class="flex items-center space-x-4 mb-6">
@@ -77,22 +84,42 @@
 <script>
   function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('hidden');
-    sidebar.classList.toggle('fixed');
-    sidebar.classList.toggle('top-0');
-    sidebar.classList.toggle('left-0');
-    sidebar.classList.toggle('z-40');
-    sidebar.classList.toggle('h-full');
+    const isOpen = !sidebar.classList.contains('hidden');
     
-    //  overlay when sidebar is open
-    if (!sidebar.classList.contains('hidden')) {
+    if (!isOpen) {
+      // Opening the sidebar
+      sidebar.classList.remove('hidden');
+      // Trigger animation after adding the element
+      setTimeout(() => {
+        sidebar.classList.remove('-translate-x-full');
+      }, 10);
+      
+      // Add overlay with fade in
       const overlay = document.createElement('div');
       overlay.id = 'sidebar-overlay';
-      overlay.className = 'fixed inset-0 bg-black bg-opacity-50 z-30';
+      overlay.className = 'fixed inset-0 bg-black bg-opacity-0 transition-all duration-300 z-30 md:hidden';
       overlay.onclick = toggleSidebar;
       document.body.appendChild(overlay);
+      // Trigger fade in
+      setTimeout(() => {
+        overlay.classList.add('bg-opacity-50');
+      }, 10);
     } else {
-      document.getElementById('sidebar-overlay')?.remove();
+      // Closing the sidebar
+      sidebar.classList.add('-translate-x-full');
+      const overlay = document.getElementById('sidebar-overlay');
+      
+      // Fade out overlay
+      if (overlay) {
+        overlay.classList.remove('bg-opacity-50');
+        overlay.classList.add('bg-opacity-0');
+      }
+      
+      // Wait for animations to complete before removing elements
+      setTimeout(() => {
+        sidebar.classList.add('hidden');
+        overlay?.remove();
+      }, 300);
     }
   }
 </script>
