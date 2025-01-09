@@ -60,33 +60,30 @@
               <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
               <div class="space-y-4">
                 <% cart.items.forEach(item=> { %>
-                  <div class="cart-item flex items-center border rounded-lg p-4"
+                  <div class="cart-item flex flex-col sm:flex-row items-start border rounded-lg p-4 gap-4"
                     data-product="<%= item.productId._id %>">
-                    <div class="w-24 h-24 flex-shrink-0">
-                      <img src="<%= item.productId.images[0].path %>" alt="<%= item.productId.name %>"
-                        class="w-full h-full object-cover rounded">
-                    </div>
-                    <div class="ml-4 flex-grow">
-                      <div class="flex justify-between items-start">
-                        <div>
-                          <h3 class="font-semibold">
-                            <%= item.productId.name %>
-                          </h3>
-                          <p class="text-gray-600 text-sm item-price">
-                            ₹<%= (item.productId.price * (1 - item.productId.discount/100)).toFixed(2) %>
-                          </p>
-                        </div>
+                    <div class="flex gap-4 w-full sm:w-auto">
+                      <div class="w-20 h-20 flex-shrink-0">
+                        <img src="<%= item.productId.images[0].path %>" alt="<%= item.productId.name %>"
+                          class="w-full h-full object-contain rounded">
                       </div>
-                      <div class="mt-4 flex items-center">
-                        <span class="text-gray-600">Quantity: <%= item.quantity %></span>
-                        <p class="ml-auto font-semibold item-total">
-                          ₹<%= ((item.productId.price * (1 - item.productId.discount/100)) * item.quantity).toFixed(2)
-                            %>
+                      <div class="flex-grow min-w-0">
+                        <h3 class="font-semibold text-sm sm:text-base">
+                          <%= item.productId.name %>
+                        </h3>
+                        <p class="text-gray-600 text-sm item-price mt-1">
+                          ₹<%= (item.productId.price * (1 - item.productId.discount/100)).toFixed(2) %>
                         </p>
                       </div>
                     </div>
+                    <div class="flex justify-between items-center w-full sm:w-auto sm:ml-auto gap-4">
+                      <span class="text-gray-600 text-sm">Quantity: <%= item.quantity %></span>
+                      <p class="font-semibold text-sm sm:text-base item-total">
+                        ₹<%= ((item.productId.price * (1 - item.productId.discount/100)) * item.quantity).toFixed(2) %>
+                      </p>
+                    </div>
                   </div>
-                  <% }) %>
+                <% }) %>
               </div>
 
               <!-- Price Details -->
@@ -102,7 +99,7 @@
                     <span>Free</span>
                   </div>
 
-                  <!-- New Coupon Section -->
+                  <!-- Updated Coupon Section -->
                   <div class="border-t border-b py-3 my-2">
                     <div id="couponToggle">
                       <button onclick="toggleCouponInput()" class="text-primary-accent hover:underline flex items-center gap-2">
@@ -112,12 +109,12 @@
                     </div>
                     
                     <div id="couponInputSection" class="hidden mt-2">
-                      <div class="flex gap-2">
+                      <div class="flex flex-col sm:flex-row gap-2">
                         <input type="text" id="couponCode" 
-                          class="border rounded px-3 py-2 flex-grow focus:ring-2 focus:ring-primary-accent uppercase"
+                          class="border rounded px-3 py-2 w-full sm:w-auto flex-grow focus:ring-2 focus:ring-primary-accent uppercase"
                           placeholder="Enter coupon code">
                         <button onclick="applyCoupon()" 
-                          class="bg-primary-accent text-white px-4 py-2 rounded hover:bg-primary-accent/90">
+                          class="bg-primary-accent text-white px-4 py-2 rounded hover:bg-primary-accent/90 w-full sm:w-auto">
                           Apply
                         </button>
                       </div>

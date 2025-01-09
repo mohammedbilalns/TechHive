@@ -95,24 +95,24 @@
 
                 <!-- Pagination -->
                 <% if (totalPages> 1) { %>
-                  <div class="mt-8 flex justify-center items-center space-x-4">
+                  <div class="mt-8 flex flex-wrap justify-center items-center gap-2 px-4">
                     <% if (hasPrevPage) { %>
                       <a href="/coupons?page=<%= currentPage - 1 %>"
-                        class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                        class="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
                         Previous
                       </a>
                       <% } %>
 
                         <% for(let i=1; i <=totalPages; i++) { %>
                           <a href="/coupons?page=<%= i %>"
-                            class="px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
+                            class="px-3 py-1.5 text-sm rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
                             <%= i %>
                           </a>
                           <% } %>
 
                             <% if (hasNextPage) { %>
                               <a href="/coupons?page=<%= currentPage + 1 %>"
-                                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                                class="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
                                 Next
                               </a>
                               <% } %>

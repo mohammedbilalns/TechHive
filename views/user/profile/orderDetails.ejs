@@ -15,16 +15,16 @@
     <div class="bg-white rounded-lg shadow-lg p-6">
       <!-- Order Header -->
       <div class="border-b pb-6 mb-6">
-        <div class="flex justify-between items-start">
-          <div>
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+          <div class="space-y-1">
             <h1 class="text-2xl font-semibold text-gray-800">Order <%= order.orderId %></h1>
-            <p class="text-gray-600 mt-1">Placed on <%= new Date(order.orderDate).toLocaleDateString('en-GB') %></p>
+            <p class="text-gray-600">Placed on <%= new Date(order.orderDate).toLocaleDateString('en-GB') %></p>
             <p class="text-gray-600">Expected delivery by <%= new Date(order.expectedDeliveryDate).toLocaleDateString('en-GB') %></p>
             <% if (order.paymentStatus === 'pending') { %>
-              <p class="text-red-600 mt-2 font-medium">Payment Failed</p>
+              <p class="text-red-600 font-medium">Payment Failed</p>
             <% } %>
           </div>
-          <div class="text-right">
+          <div class="sm:text-right">
             <p class="text-lg font-semibold">₹<%= order.totalAmount.toFixed(2) %></p>
             <span class="inline-block px-3 py-1 text-sm rounded-full mt-2
                      <%= order.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 
@@ -40,13 +40,13 @@
       <div class="space-y-6">
         <h2 class="text-xl font-semibold mb-4">Order Items</h2>
         <% order.items.forEach(item => { %>
-          <div class="flex items-start space-x-4 p-4 border rounded-lg">
-            <a href="/product/<%= item.productId %>">
+          <div class="flex flex-col sm:flex-row sm:items-start space-y-4 sm:space-y-0 sm:space-x-4 p-4 border rounded-lg">
+            <a href="/product/<%= item.productId %>" class="self-center sm:self-start">
               <img src="<%= item.images[0].path %>" 
                    alt="<%= item.name %>" 
-                   class="w-24 h-24 object-cover rounded">
+                   class="w-32 h-32 object-contain rounded">
             </a>
-            <div class="flex-grow">
+            <div class="flex-grow space-y-4">
               <h3 class="font-medium"><%= item.name %></h3>
               <p class="text-gray-600">
                 Qty: <%= item.quantity %> × 
@@ -156,7 +156,7 @@
               </div>
 
               <!-- Action Buttons -->
-              <div class="mt-4 space-x-4">
+              <div class="flex flex-wrap gap-4 mt-4">
                 <% if (['processing', 'shipped'].includes(item.status) && 
                     !(order.paymentMethod === 'online' && order.paymentStatus === 'pending')) { %>
                   <button onclick="cancelOrderItem('<%= order._id %>', '<%= item._id %>')"

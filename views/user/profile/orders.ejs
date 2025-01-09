@@ -11,21 +11,21 @@
     </nav>
 
     <div class="bg-white rounded-lg shadow-lg p-6">
-      <div class="flex justify-between items-center mb-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h1 class="text-2xl font-semibold text-gray-800">My Orders</h1>
         
-        <!-- Add Search Form -->
-        <form class="flex items-center space-x-2" id="searchForm">
+        <!-- Updated Search Form -->
+        <form class="flex items-center space-x-2 w-full sm:w-auto" id="searchForm">
           <input 
             type="search" 
             name="search" 
             placeholder="Search orders..." 
             value="<%= locals.search || '' %>"
-            class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-accent focus:border-transparent"
+            class="w-full sm:w-auto px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-accent focus:border-transparent"
           >
           <button 
             type="submit"
-            class="px-4 py-2 bg-primary-accent text-white rounded-lg hover:bg-primary-accent/90"
+            class="flex-shrink-0 px-4 py-2 bg-primary-accent text-white rounded-lg hover:bg-primary-accent/90"
           >
             <i class="fas fa-search"></i>
           </button>
@@ -37,32 +37,32 @@
           <% orders.forEach(order => { %>
             <a href="/orders/<%= order._id %>" class="block">
               <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                <div class="flex justify-between items-center">
-                  <div class="flex items-center space-x-4">
-                    <!-- Product Images Preview -->
-                    <div class="flex -space-x-2">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div class="flex items-start sm:items-center space-x-4 w-full sm:w-auto">
+                    <!-- Updated Product Images Preview -->
+                    <div class="flex -space-x-2 flex-shrink-0">
                       <% if (order.items.length === 1) { %>
                         <img src="<%= order.items[0].images[0].path %>" 
                              alt="<%= order.items[0].name %>" 
-                             class="w-12 h-12 rounded-full border-2 border-white object-cover">
-                        <div class="w-12 h-12"></div>
+                             class="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-white object-cover">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12"></div>
                       <% } else { %>
                         <% order.items.slice(0, 2).forEach(item => { %>
                           <img src="<%= item.images[0].path %>" 
                                alt="<%= item.name %>" 
-                             class="w-12 h-12 rounded-full border-2 border-white object-cover">
+                               class="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-white object-cover">
                         <% }) %>
                         <% if (order.items.length > 2) { %>
-                          <div class="w-12 h-12 rounded-full border-2 border-white bg-gray-200 flex items-center justify-center text-sm font-medium">
+                          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-white bg-gray-200 flex items-center justify-center text-sm font-medium">
                             +<%= order.items.length - 2 %>
                           </div>
                         <% } %>
                       <% } %>
                     </div>
-                    <div>
-                      <p class="font-medium">Order #<%= order.orderId %></p>
-                      <!-- Add Items List -->
-                      <div class="text-sm text-gray-600 mt-1">
+                    <div class="flex-1 sm:min-w-[300px]">
+                      <p class="font-medium break-all sm:break-normal">Order #<%= order.orderId %></p>
+                      <!-- Updated Items List -->
+                      <div class="text-sm text-gray-600 mt-1 break-words sm:break-normal">
                         <% order.items.forEach((item, index) => { %>
                           <%= item.name %><%= index < order.items.length - 1 ? ',' : '' %>
                         <% }) %>
@@ -107,7 +107,7 @@
                       </p>
                     </div>
                   </div>
-                  <div class="text-right">
+                  <div class="text-left sm:text-right flex-shrink-0">
                     <p class="font-semibold">₹<%= order.totalAmount.toFixed(2) %></p>
                     <span class="inline-block px-3 py-1 text-sm rounded-full 
                       <%= order.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 
@@ -123,26 +123,28 @@
           <% }) %>
         </div>
 
-        <!-- Add Pagination Controls -->
+        <!-- Updated Pagination Controls -->
         <% if (totalPages > 1) { %>
-          <div class="mt-8 flex justify-center items-center space-x-4">
+          <div class="mt-8 flex flex-wrap justify-center items-center gap-2 px-4">
             <% if (hasPrevPage) { %>
               <a href="/orders?page=<%= currentPage - 1 %><%= search ? `&search=${search}` : '' %>"
-                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                class="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
                 Previous
               </a>
             <% } %>
 
-            <% for(let i = 1; i <= totalPages; i++) { %>
-              <a href="/orders?page=<%= i %><%= search ? `&search=${search}` : '' %>"
-                class="px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
-                <%= i %>
-              </a>
-            <% } %>
+            <div class="flex flex-wrap justify-center gap-2">
+              <% for(let i = 1; i <= totalPages; i++) { %>
+                <a href="/orders?page=<%= i %><%= search ? `&search=${search}` : '' %>"
+                  class="px-3 py-1.5 text-sm rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
+                  <%= i %>
+                </a>
+              <% } %>
+            </div>
 
             <% if (hasNextPage) { %>
               <a href="/orders?page=<%= currentPage + 1 %><%= search ? `&search=${search}` : '' %>"
-                class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                class="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
                 Next
               </a>
             <% } %>

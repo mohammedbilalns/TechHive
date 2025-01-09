@@ -1,13 +1,11 @@
 <%- include(locals.fullname ? '../partials/header' : '../partials/authheader' ) %>
 
-    <main class="mx-auto my-5 md:my-10 container px-4 md:px-0 w-[70%] min-h-[calc(100vh-200px)]">
+    <main class="mx-auto my-5 md:my-10 container px-4 md:px-0">
         <!-- Breadcrumbs -->
         <nav class="flex mb-4 text-sm">
             <a href="<%= locals.fullname ? '/home' : '/' %>" class="text-gray-500 hover:text-red-600">Home</a>
             <span class="mx-2 text-gray-500">/</span>
-            <span class="text-gray-800">
-                <%= category.name %>
-            </span>
+            <span class="text-gray-800"><%= category.name %></span>
         </nav>
 
         <!-- Category Header -->
@@ -22,11 +20,11 @@
         </div>
 
         <!-- Filters Section -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <!-- Sort Dropdown -->
             <div class="flex items-center space-x-2">
-                <label class="text-sm">Sort by:</label>
-                <select id="sortSelect" class="border rounded-md px-3 py-1 flex-1">
+                <label class="text-sm whitespace-nowrap">Sort by:</label>
+                <select id="sortSelect" class="border rounded-md px-3 py-1 w-full md:w-48">
                     <option value="newest">New Arrivals</option>
                     <option value="price_asc">Price: Low to High</option>
                     <option value="price_desc">Price: High to Low</option>
@@ -37,18 +35,18 @@
             </div>
 
             <!-- Price Range -->
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center justify-center space-x-2">
                 <input type="number" id="minPrice" placeholder="Min Price"
-                    class="border rounded-md px-3 py-2 w-32 text-sm" min="0">
+                    class="border rounded-md px-3 py-2 w-28 text-sm" min="0">
                 <span>-</span>
                 <input type="number" id="maxPrice" placeholder="Max Price"
-                    class="border rounded-md px-3 py-2 w-32 text-sm" min="0">
+                    class="border rounded-md px-3 py-2 w-28 text-sm" min="0">
             </div>
 
             <!-- Rating Filter -->
             <div class="flex items-center space-x-2">
-                <label class="text-sm">Min Rating:</label>
-                <select id="ratingSelect" class="border rounded-md px-3 py-1 flex-1">
+                <label class="text-sm whitespace-nowrap">Min Rating:</label>
+                <select id="ratingSelect" class="border rounded-md px-3 py-1 w-full md:w-48">
                     <option value="0">All Ratings</option>
                     <option value="4">4+ Stars</option>
                     <option value="3">3+ Stars</option>

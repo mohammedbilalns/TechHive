@@ -35,57 +35,57 @@
                     <!-- Cart Items -->
                     <div class="flex-grow space-y-4">
                       <% cart.items.forEach(item=> { %>
-                        <div class="cart-item flex items-center border rounded-lg p-4"
+                        <div class="cart-item flex flex-col sm:flex-row border rounded-lg p-4"
                           data-product="<%= item.productId._id %>">
-                          <div class="w-24 h-24 flex-shrink-0">
-                            <img src="<%= item.productId.images[0].path %>" alt="<%= item.productId.name %>"
-                              class="w-full h-full object-cover rounded">
-                          </div>
-                          <div class="ml-4 flex-grow">
-                            <div class="flex justify-between items-start">
-                              <div>
-                                <h3 class="font-semibold">
-                                  <%= item.productId.name %>
-                                </h3>
-                                <p class="text-gray-600 text-sm item-price" data-price="<%= item.productId.price %>"
-                                  data-discount="<%= item.productId.discount %>">
-                                  <% if (item.productId.discount> 0) { %>
-                                    ₹<%= (item.productId.price * (1 - item.productId.discount/100)).toFixed(2) %>
-                                      <span class="line-through text-gray-400">₹<%= item.productId.price.toFixed(2) %>
-                                          </span>
-                                      <% } else { %>
-                                        ₹<%= item.productId.price.toFixed(2) %>
-                                          <% } %>
-                                </p>
+                          <div class="flex items-center gap-4 mb-4 sm:mb-0">
+                            <div class="w-24 h-24 flex-shrink-0">
+                              <img src="<%= item.productId.images[0].path %>" alt="<%= item.productId.name %>"
+                                class="w-full h-full object-contain rounded">
+                            </div>
+                            <div class="flex-grow min-w-0">
+                              <div class="flex justify-between items-start">
+                                <div class="pr-8">
+                                  <h3 class="font-semibold">
+                                    <%= item.productId.name %>
+                                  </h3>
+                                  <p class="text-gray-600 text-sm item-price" data-price="<%= item.productId.price %>"
+                                    data-discount="<%= item.productId.discount %>">
+                                    <% if (item.productId.discount> 0) { %>
+                                      ₹<%= (item.productId.price * (1 - item.productId.discount/100)).toFixed(2) %>
+                                      <span class="line-through text-gray-400">₹<%= item.productId.price.toFixed(2) %></span>
+                                    <% } else { %>
+                                      ₹<%= item.productId.price.toFixed(2) %>
+                                    <% } %>
+                                  </p>
+                                </div>
+                                <button onclick="removeFromCart('<%= item.productId._id %>')"
+                                  class="text-red-600 hover:text-red-800 flex-shrink-0">
+                                  <i class="fas fa-trash"></i>
+                                </button>
                               </div>
-                              <button onclick="removeFromCart('<%= item.productId._id %>')"
-                                class="text-red-600 hover:text-red-800">
-                                <i class="fas fa-trash"></i>
+                            </div>
+                          </div>
+                          <div class="flex items-center justify-between sm:justify-end sm:flex-1 gap-4">
+                            <div class="flex items-center border rounded">
+                              <button onclick="updateQuantity('<%= item.productId._id %>', 'decrease')"
+                                class="decrease-btn px-3 py-1 hover:bg-gray-100 <%= item.quantity <= 1 ? 'text-gray-400' : '' %>"
+                                <%= item.quantity <= 1 ? 'disabled' : '' %>>
+                                -
+                              </button>
+                              <span class="quantity-value px-4 py-1 border-x">
+                                <%= item.quantity %>
+                              </span>
+                              <button onclick="updateQuantity('<%= item.productId._id %>', 'increase')"
+                                class="increase-btn px-3 py-1 hover:bg-gray-100 <%= item.quantity >= 4 ? 'text-gray-400' : '' %>">
+                                +
                               </button>
                             </div>
-                            <div class="mt-4 flex items-center">
-                              <div class="flex items-center border rounded">
-                                <button onclick="updateQuantity('<%= item.productId._id %>', 'decrease')"
-                                  class="decrease-btn px-3 py-1 hover:bg-gray-100 <%= item.quantity <= 1 ? 'text-gray-400' : '' %>"
-                                  <%=item.quantity <=1 ? 'disabled ' : '' %>>
-                                  -
-                                </button>
-                                <span class="quantity-value px-4 py-1 border-x">
-                                  <%= item.quantity %>
-                                </span>
-                                <button onclick="updateQuantity('<%= item.productId._id %>', 'increase')"
-                                  class="increase-btn px-3 py-1 hover:bg-gray-100 <%= item.quantity >= 4 ? 'text-gray-400' : '' %>">
-                                  +
-                                </button>
-                              </div>
-                              <p class="ml-auto font-semibold item-total">
-                                ₹<%= ((item.productId.price * (1 - item.productId.discount/100)) *
-                                  item.quantity).toFixed(2) %>
-                              </p>
-                            </div>
+                            <p class="font-semibold item-total">
+                              ₹<%= ((item.productId.price * (1 - item.productId.discount/100)) * item.quantity).toFixed(2) %>
+                            </p>
                           </div>
                         </div>
-                        <% }) %>
+                      <% }) %>
                     </div>
 
                     <!-- Cart Summary -->
