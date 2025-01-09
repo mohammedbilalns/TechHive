@@ -19,7 +19,6 @@
           <div class="space-y-1">
             <h1 class="text-2xl font-semibold text-gray-800">Order <%= order.orderId %></h1>
             <p class="text-gray-600">Placed on <%= new Date(order.orderDate).toLocaleDateString('en-GB') %></p>
-            <p class="text-gray-600">Expected delivery by <%= new Date(order.expectedDeliveryDate).toLocaleDateString('en-GB') %></p>
             <% if (order.paymentStatus === 'pending') { %>
               <p class="text-red-600 font-medium">Payment Failed</p>
             <% } %>
@@ -41,11 +40,11 @@
         <h2 class="text-xl font-semibold mb-4">Order Items</h2>
         <% order.items.forEach(item => { %>
           <div class="flex flex-col sm:flex-row sm:items-start space-y-4 sm:space-y-0 sm:space-x-4 p-4 border rounded-lg">
-            <a href="/product/<%= item.productId %>" class="self-center sm:self-start">
+            <div class="self-center sm:self-start">
               <img src="<%= item.images[0].path %>" 
                    alt="<%= item.name %>" 
                    class="w-32 h-32 object-contain rounded">
-            </a>
+            </div>
             <div class="flex-grow space-y-4">
               <h3 class="font-medium"><%= item.name %></h3>
               <p class="text-gray-600">

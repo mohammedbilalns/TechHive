@@ -11,24 +11,27 @@
           <h1 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Sales Report</h1>
           
           <!-- Filter Controls -->
-          <div class="flex flex-wrap gap-4">
-            <select id="filterType" class="border rounded-md px-3 py-2">
-              <option value="daily">Daily</option>
-              <option value="weekly">Weekly</option>
-              <option value="monthly" selected>Monthly</option>
-              <option value="yearly">Yearly</option>
-              <option value="custom">Custom Range</option>
-            </select>
+          <div class="flex flex-col items-center gap-4 w-full md:w-auto">
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+              <select id="filterType" class="border rounded-md px-3 py-2 w-full sm:w-auto">
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly" selected>Monthly</option>
+                <option value="yearly">Yearly</option>
+                <option value="custom">Custom Range</option>
+              </select>
 
-            <div id="customDateRange" class="hidden gap-2 items-center">
-              <input type="date" id="startDate" class="border rounded-md px-3 py-2">
-              <span>to</span>
-              <input type="date" id="endDate" class="border rounded-md px-3 py-2">
+              <div id="customDateRange" class="hidden gap-2 items-center w-full sm:w-auto">
+                <input type="date" id="startDate" class="border rounded-md px-3 py-2 w-full sm:w-auto">
+                <span>to</span>
+                <input type="date" id="endDate" class="border rounded-md px-3 py-2 w-full sm:w-auto">
+              </div>
+
+              <button onclick="applyFilter()" 
+                class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full sm:w-auto">
+                Apply Filter
+              </button>
             </div>
-
-            <button onclick="applyFilter()" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-              Apply Filter
-            </button>
           </div>
         </div>
 
