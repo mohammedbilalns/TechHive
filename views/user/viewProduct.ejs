@@ -23,7 +23,7 @@
           id="imageContainer">
           <img id="mainImage" src="<%= product.images[0].path %>" alt="<%= product.name %>"
             class="w-full h-full object-contain" />
-          <div id="zoomPane" class="hidden absolute bg-white pointer-events-none border w-[200px] h-[200px]">
+          <div id="zoomPane" class="hidden md:block absolute bg-white pointer-events-none border w-[200px] h-[200px] opacity-0">
           </div>
         </div>
         <!-- Thumbnail Images -->
@@ -297,39 +297,38 @@
     const mainImage = document.getElementById('mainImage');
     const zoomPane = document.getElementById('zoomPane');
 
-    container.addEventListener('mouseenter', function () {
-      zoomPane.style.display = 'block';
-    });
+    // Only initialize zoom functionality for larger screens
+    if (window.innerWidth >= 768) { // 768px is the default Tailwind md breakpoint
+      container.addEventListener('mouseenter', function () {
+        zoomPane.style.opacity = '1';
+      });
 
-    container.addEventListener('mouseleave', function () {
-      zoomPane.style.display = 'none';
-    });
+      container.addEventListener('mouseleave', function () {
+        zoomPane.style.opacity = '0';
+      });
 
-    container.addEventListener('mousemove', function (e) {
-      const rect = container.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+      container.addEventListener('mousemove', function (e) {
+        const rect = container.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
 
-      let zoomX = x - zoomPane.offsetWidth / 2;
-      let zoomY = y - zoomPane.offsetHeight / 2;
+        let zoomX = x - zoomPane.offsetWidth / 2;
+        let zoomY = y - zoomPane.offsetHeight / 2;
 
+        zoomX = Math.max(0, Math.min(zoomX, rect.width - zoomPane.offsetWidth));
+        zoomY = Math.max(0, Math.min(zoomY, rect.height - zoomPane.offsetHeight));
 
-      zoomX = Math.max(0, Math.min(zoomX, rect.width - zoomPane.offsetWidth));
-      zoomY = Math.max(0, Math.min(zoomY, rect.height - zoomPane.offsetHeight));
+        zoomPane.style.left = `${zoomX}px`;
+        zoomPane.style.top = `${zoomY}px`;
 
-      // Position zoom pane
-      zoomPane.style.left = `${zoomX}px`;
-      zoomPane.style.top = `${zoomY}px`;
+        const xPercent = (x / rect.width) * 100;
+        const yPercent = (y / rect.height) * 100;
 
-      // Calculate background position percentages
-      const xPercent = (x / rect.width) * 100;
-      const yPercent = (y / rect.height) * 100;
-
-      // Set background image and position
-      zoomPane.style.backgroundImage = `url(${mainImage.src})`;
-      zoomPane.style.backgroundSize = '250%';
-      zoomPane.style.backgroundPosition = `${xPercent}% ${yPercent}%`;
-    });
+        zoomPane.style.backgroundImage = `url(${mainImage.src})`;
+        zoomPane.style.backgroundSize = '250%';
+        zoomPane.style.backgroundPosition = `${xPercent}% ${yPercent}%`;
+      });
+    }
 
     function changeMainImage(src) {
       mainImage.src = src;
