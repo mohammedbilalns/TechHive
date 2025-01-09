@@ -6,129 +6,120 @@
       <!-- Main Content -->
       <main class="md:ml-64 w-full min-h-screen bg-gray-50 transition-all duration-300 ease-in-out">
         <div class="pt-14 md:pt-0 p-4">
-          <% if (locals.message && locals.alertType) { %>
-            <div id="alertMessage" class="mb-4 p-3 rounded-md 
-           <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
-              <%= message %>
-            </div>
-            <% } %>
 
-              <div class="bg-primary-white rounded-lg shadow-lg w-full overflow-hidden pb-3">
-                <!-- Page Header -->
-                <div
-                  class="flex flex-col md:flex-row justify-between items-center bg-gray-50 px-4 md:px-6 py-4 border-b space-y-4 md:space-y-0">
+          <div class="bg-primary-white rounded-lg shadow-lg w-full overflow-hidden pb-3">
+            <!-- Page Header -->
+            <div
+              class="flex flex-col md:flex-row justify-between items-center bg-gray-50 px-4 md:px-6 py-4 border-b space-y-4 md:space-y-0">
 
-                  <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Categories</h1>
+              <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Categories</h1>
 
-                  <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                    <div class="relative w-full sm:w-auto">
-                      <form action="/admin/categories" method="GET">
-                        <input type="text" 
-                            name="search" 
-                            value="<%= locals.search || '' %>"
-                            placeholder="Search categories..."
-                            onblur="this.form.submit()"
-                            class="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500">
-                      </form>
-                    </div>
-
-                    <button
-                      class="flex items-center bg-blue-500 text-white px-4 py-2 rounded-md shadow w-full sm:w-auto justify-center"
-                      onclick="addCategory()">
-                      <i class="fas fa-plus mr-2"></i> Add Category
-                    </button>
-                  </div>
+              <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+                <div class="relative w-full sm:w-auto">
+                  <form action="/admin/categories" method="GET">
+                    <input type="text" name="search" value="<%= locals.search || '' %>"
+                      placeholder="Search categories..." onblur="this.form.submit()"
+                      class="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                  </form>
                 </div>
 
-                <!-- Categories Table -->
-                <div class="overflow-x-auto">
-                  <table class="w-full table-auto bg-white">
-                    <thead class="text-left bg-gray-50 text-gray-600 font-semibold text-sm">
-                      <tr>
-                        <th class="px-4 md:px-6 py-4">#</th>
-                        <th class="px-4 md:px-6 py-4">Name</th>
-                        <th class="px-4 md:px-6 py-4">Status</th>
-                        <th class="px-4 md:px-6 py-4 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody id="categoryTableBody" class="text-gray-800 text-sm">
-                      <% categories.forEach((category, index)=> { %>
-                        <tr class="border-b hover:bg-gray-50">
-                          <td class="px-4 md:px-6 py-4">
-                            <%= (currentPage - 1) * 10 + index + 1 %>
-                          </td>
-                          <td class="px-4 md:px-6 py-4">
-                            <%= category.name %>
-                          </td>
-                          <td class="px-4 md:px-6 py-4">
-                            <span id="status-<%= category._id %>" class="px-4 py-2 rounded-md shadow 
+                <button
+                  class="flex items-center bg-blue-500 text-white px-4 py-2 rounded-md shadow w-full sm:w-auto justify-center"
+                  onclick="addCategory()">
+                  <i class="fas fa-plus mr-2"></i> Add Category
+                </button>
+              </div>
+            </div>
+
+            <!-- Categories Table -->
+            <div class="overflow-x-auto">
+              <table class="w-full table-auto bg-white">
+                <thead class="text-left bg-gray-50 text-gray-600 font-semibold text-sm">
+                  <tr>
+                    <th class="px-4 md:px-6 py-4">#</th>
+                    <th class="px-4 md:px-6 py-4">Name</th>
+                    <th class="px-4 md:px-6 py-4">Status</th>
+                    <th class="px-4 md:px-6 py-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="categoryTableBody" class="text-gray-800 text-sm">
+                  <% categories.forEach((category, index)=> { %>
+                    <tr class="border-b hover:bg-gray-50">
+                      <td class="px-4 md:px-6 py-4">
+                        <%= (currentPage - 1) * 10 + index + 1 %>
+                      </td>
+                      <td class="px-4 md:px-6 py-4">
+                        <%= category.name %>
+                      </td>
+                      <td class="px-4 md:px-6 py-4">
+                        <span id="status-<%= category._id %>" class="px-4 py-2 rounded-md shadow 
                     <%= category.status === 'Active' ? 'text-green-600' : 'text-primary-accent' %>">
-                              <%= category.status %>
-                            </span>
-                          </td>
-                          <td class="px-4 md:px-6 py-4 flex gap-2 justify-end">
-                            <% if (category.status==='Active' ) { %>
-                              <button onclick="toggleCategoryStatus('<%= category._id %>', 'hide')"
-                                class="bg-primary-accent text-white px-4 py-2 rounded-md shadow hover:bg-red-600"
-                                id="toggle-<%= category._id %>">
-                                Hide
+                          <%= category.status %>
+                        </span>
+                      </td>
+                      <td class="px-4 md:px-6 py-4 flex gap-2 justify-end">
+                        <% if (category.status==='Active' ) { %>
+                          <button onclick="toggleCategoryStatus('<%= category._id %>', 'hide')"
+                            class="bg-primary-accent text-white px-4 py-2 rounded-md shadow hover:bg-red-600"
+                            id="toggle-<%= category._id %>">
+                            Hide
+                          </button>
+                          <% } else { %>
+                            <button onclick="toggleCategoryStatus('<%= category._id %>', 'unhide')"
+                              class="bg-green-700 text-white px-4 py-2 rounded-md shadow hover:bg-green-800"
+                              id="toggle-<%= category._id %>">
+                              Unhide
+                            </button>
+                            <% } %>
+                              <button class="bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600"
+                                onclick="editCategory('<%= category._id %>', `<%= category.name %>`, `<%= category.description %>`)">
+                                Edit
                               </button>
-                              <% } else { %>
-                                <button onclick="toggleCategoryStatus('<%= category._id %>', 'unhide')"
-                                  class="bg-green-700 text-white px-4 py-2 rounded-md shadow hover:bg-green-800"
-                                  id="toggle-<%= category._id %>">
-                                  Unhide
-                                </button>
-                                <% } %>
-                                  <button class="bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600"
-                                    onclick="editCategory('<%= category._id %>', `<%= category.name %>`, `<%= category.description %>`)">
-                                    Edit
-                                  </button>
 
-                                  <button onclick="deleteCategory('<%= category._id %>')"
-                                    class="bg-primary-accent text-white px-4 py-2 rounded-md shadow hover:bg-red-600">
-                                    Delete
-                                  </button>
-                          </td>
-                        </tr>
-                        <% }); %>
-                    </tbody>
-                  </table>
+                              <button onclick="deleteCategory('<%= category._id %>')"
+                                class="bg-primary-accent text-white px-4 py-2 rounded-md shadow hover:bg-red-600">
+                                Delete
+                              </button>
+                      </td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+              </table>
 
-                  <!--  pagination controls -->
-                  <% if (categories.length> 0) { %>
-                    <div class="mt-8 flex justify-center items-center space-x-4">
-                      <% if (hasPrevPage) { %>
-                        <a href="/admin/categories?page=<%= currentPage - 1 %><%= search ? `&search=${search}` : '' %>"
-                          class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                          Previous
+              <!--  pagination controls -->
+              <% if (categories.length> 0) { %>
+                <div class="mt-8 flex justify-center items-center space-x-4">
+                  <% if (hasPrevPage) { %>
+                    <a href="/admin/categories?page=<%= currentPage - 1 %><%= search ? `&search=${search}` : '' %>"
+                      class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                      Previous
+                    </a>
+                    <% } %>
+
+                      <% for(let i=1; i <=totalPages; i++) { %>
+                        <a href="/admin/categories?page=<%= i %><%= search ? `&search=${search}` : '' %>"
+                          class="px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
+                          <%= i %>
                         </a>
                         <% } %>
 
-                          <% for(let i=1; i <=totalPages; i++) { %>
-                            <a href="/admin/categories?page=<%= i %><%= search ? `&search=${search}` : '' %>"
-                              class="px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
-                              <%= i %>
+                          <% if (hasNextPage) { %>
+                            <a href="/admin/categories?page=<%= currentPage + 1 %><%= search ? `&search=${search}` : '' %>"
+                              class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                              Next
                             </a>
                             <% } %>
-
-                              <% if (hasNextPage) { %>
-                                <a href="/admin/categories?page=<%= currentPage + 1 %><%= search ? `&search=${search}` : '' %>"
-                                  class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                                  Next
-                                </a>
-                                <% } %>
-                    </div>
-                    <% } %>
                 </div>
-              </div>
+                <% } %>
+            </div>
+          </div>
         </div>
       </main>
   </div>
 
 
   <!-- Add Category Modal -->
-  <div id="addCategoryModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50  items-center justify-center z-50">
+  <div id="addCategoryModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 items-center justify-center z-50">
     <div class="bg-white p-6 rounded-lg w-96">
       <h2 class="text-xl font-semibold mb-4">Add Category</h2>
       <form id="addCategoryForm" onsubmit="return false">
@@ -137,16 +128,15 @@
           <input type="text" id="name" name="name"
             class="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
             placeholder="Enter category name" />
+          <p class="text-red-500 text-sm mt-1 hidden" id="nameError"></p>
         </div>
         <div class="mb-4">
           <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
           <textarea id="description" name="description" rows="5"
             class="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
             placeholder="Enter category description"></textarea>
+          <p class="text-red-500 text-sm mt-1 hidden" id="descriptionError"></p>
         </div>
-
-        <!-- Error Message Display -->
-        <div id="alertMessageAdd" class="hidden mb-4 p-3 rounded-md bg-red-100 text-red-700"></div>
 
         <div class="flex justify-end">
           <button type="button" onclick="closeModal('addCategoryModal')"
@@ -160,7 +150,7 @@
 
 
   <!-- Edit Category Modal -->
-  <div id="editCategoryModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50  items-center justify-center z-50">
+  <div id="editCategoryModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 items-center justify-center z-50">
     <div class="bg-white p-6 rounded-lg w-96">
       <h2 class="text-xl font-semibold mb-4">Edit Category</h2>
       <form id="editCategoryForm" onsubmit="return false">
@@ -170,15 +160,16 @@
           <input type="text" id="editCategoryName" name="name"
             class="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
             placeholder="Enter category name" />
+          <p class="text-red-500 text-sm mt-1 hidden" id="editCategoryNameError"></p>
         </div>
         <div class="mb-4">
           <label for="editCategoryDescription" class="block text-sm font-medium text-gray-700">Description</label>
           <textarea id="editCategoryDescription" name="description" rows="5"
             class="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
             placeholder="Enter category description"></textarea>
+          <p class="text-red-500 text-sm mt-1 hidden" id="editCategoryDescriptionError"></p>
         </div>
 
-        <div id="alertMessageEdit" class="hidden mb-4 p-3 rounded-md bg-red-100 text-red-700"></div>
         <div class="flex justify-end">
           <button type="button" onclick="closeModal('editCategoryModal')"
             class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md">Cancel</button>
@@ -195,8 +186,8 @@
 
   <script>
 
- 
-   
+
+
 
     // show add category modal
     async function addCategory() {
@@ -210,54 +201,89 @@
 
       // set the category id in the hidden input field
       document.getElementById('editCategoryId').value = categoryId;
-
       document.getElementById('editCategoryName').value = categoryName;
       document.getElementById('editCategoryDescription').value = categoryDescription;
-      // Open the Edit Category modal
       openModal('editCategoryModal');
     }
 
 
-    // Function to open the modal
+    // function to open the modal
     function openModal(modalId) {
       document.getElementById(modalId).classList.replace('hidden', 'flex');
     }
 
-    // Function to close the modal
+    // function to close the modal
     function closeModal(modalId) {
       document.getElementById(modalId).classList.replace('flex', 'hidden');
     }
 
-    //  validation function for  add and edit forms
+    // form validations 
     function validateCategoryForm(nameId, descriptionId, alertId) {
       const name = document.getElementById(nameId).value.trim();
       const description = document.getElementById(descriptionId).value.trim();
       let isValid = true;
-      let errorMessage = '';
 
-      // Name validation
-      if (!name || name.length < 3 || name.length > 100 || /[^a-zA-Z\s&,]/.test(name) || /^[&,\s]+$/.test(name)) {
-        errorMessage += 'Category Name must be between 3 to 100 characters, can contain letters, spaces, & and , symbols, and cannot consist of only symbols. <br>';
+      // Reset previous errors
+      resetErrors(nameId, descriptionId);
+     
+      // Name validation - check each condition separately
+      if (!name) {
+        showError(nameId, 'Category Name is required');
+        isValid = false;
+      } else if (name.length < 3) {
+        showError(nameId, 'Category Name must be at least 3 characters');
+        isValid = false;
+      } else if (name.length > 100) {
+        showError(nameId, 'Category Name cannot exceed 100 characters');
+        isValid = false;
+      } else if (/[^a-zA-Z\s&,]/.test(name)) {
+        showError(nameId, 'Category Name can only contain letters, spaces, & and , symbols');
+        isValid = false;
+      } else if (/^[&,\s]+$/.test(name)) {
+        showError(nameId, 'Category Name cannot consist of only symbols');
         isValid = false;
       }
 
-      // Description validation
-      if (!description || description.length < 10 || description.length > 1000 ||
-        /[^a-zA-Z0-9\s.,'&,\/-]/.test(description) || /^[.,'&,\/-\s]+$/.test(description)) {
-        errorMessage += 'Description must be between 10 to 1000 characters, cannot be empty or contain only symbols, and can only contain letters, numbers, spaces, and the following characters: . , \' & / - <br>';
+      // Description validation - check each condition separately
+      if (!description) {
+        showError(descriptionId, 'Description is required');
         isValid = false;
-      }
-
-      // Display error message
-      const alertElement = document.getElementById(alertId);
-      if (!isValid) {
-        alertElement.innerHTML = errorMessage;
-        alertElement.classList.remove('hidden');
-      } else {
-        alertElement.classList.add('hidden');
+      } else if (description.length < 10) {
+        showError(descriptionId, 'Description must be at least 10 characters');
+        isValid = false;
+      } else if (description.length > 1000) {
+        showError(descriptionId, 'Description cannot exceed 1000 characters');
+        isValid = false;
+      } else if (/[^a-zA-Z0-9\s.,'&,\/-]/.test(description)) {
+        showError(descriptionId, 'Description can only contain letters, numbers, spaces, and the following characters: . , \' & / -');
+        isValid = false;
+      } else if (/^[.,'&,\/-\s]+$/.test(description)) {
+        showError(descriptionId, 'Description cannot consist of only symbols');
+        isValid = false;
       }
 
       return isValid;
+    }
+
+    function showError(fieldId, message) {
+      const input = document.getElementById(fieldId);
+      const errorElement = document.getElementById(`${fieldId}Error`);
+      
+      input.classList.add('border-red-500');
+      errorElement.textContent = message;
+      errorElement.classList.remove('hidden');
+    }
+
+    function resetErrors(nameId, descriptionId) {
+      const fields = [nameId, descriptionId];
+      fields.forEach(field => {
+        const input = document.getElementById(field);
+        const errorElement = document.getElementById(`${field}Error`);
+        
+        input.classList.remove('border-red-500');
+        errorElement.classList.add('hidden');
+        errorElement.textContent = '';
+      });
     }
 
     // Update the form validation calls
@@ -369,8 +395,6 @@
           // Clear form and close modal
           document.getElementById('addCategoryForm').reset();
           closeModal('addCategoryModal');
-
-
           // Show success message
           showToast('Category added successfully');
         }
@@ -416,7 +440,7 @@
       }
     }
 
-    // Modified delete category function
+    //  delete category function
     async function deleteCategory(id) {
       const confirmed = await customConfirm(
         'Are you sure you want to delete this category?',
@@ -448,9 +472,22 @@
       }
     }
 
-    // Update the form onsubmit handlers 
+    // form onsubmit handlers 
     document.getElementById('addCategoryForm').onsubmit = submitAddCategory;
     document.getElementById('editCategoryForm').onsubmit = submitEditCategory;
+
+    //  input event listeners to clear errors when user starts typing
+    document.addEventListener('DOMContentLoaded', function() {
+      const addFields = ['name', 'description'];
+      const editFields = ['editCategoryName', 'editCategoryDescription'];
+
+      [...addFields, ...editFields].forEach(field => {
+        document.getElementById(field).addEventListener('input', function() {
+          this.classList.remove('border-red-500');
+          document.getElementById(`${field}Error`).classList.add('hidden');
+        });
+      });
+    });
 
   </script>
 

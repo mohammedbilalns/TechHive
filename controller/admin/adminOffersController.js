@@ -198,9 +198,6 @@ const updateOffer = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Offer not found' });
         }
 
-        // Remove old discounts
-        await updateProductDiscounts(oldOffer, true);
-
         const {
             name,
             offerType,
@@ -210,6 +207,26 @@ const updateOffer = async (req, res) => {
             categories,
             products
         } = req.body;
+
+        // Check for existing offers, excluding the current offer being updated
+        const items = offerType === 'category' ? categories : products;
+        const existingOffer = await checkExistingOffers(
+            offerType, 
+            items, 
+            startDate, 
+            endDate,
+            req.params.offerId  // Pass the current offer ID to exclude it from the check
+        );
+
+        if (existingOffer) {
+            return res.status(400).json({
+                success: false,
+                message: `An active offer already exists for some of the selected ${offerType}s during this period`
+            });
+        }
+
+        // Remove old discounts
+        await updateProductDiscounts(oldOffer, true);
 
         const updatedOffer = await Offer.findByIdAndUpdate(
             req.params.offerId,
@@ -229,6 +246,7 @@ const updateOffer = async (req, res) => {
         await updateProductDiscounts(updatedOffer);
         res.json({ success: true, message: 'Offer updated successfully' });
     } catch (error) {
+        log.red('ERROR_UPDATING_OFFER', error);
         res.status(500).json({ success: false, message: 'Failed to update offer' });
     }
 }

@@ -130,11 +130,12 @@
             <div class="mb-4">
               <label class="block text-gray-700 text-sm font-bold mb-2" for="code">
                 Coupon Code <span class="text-red-500">*</span>
-                <span class="text-gray-500 text-xs font-normal">(Letters and numbers only, max 10 characters)</span>
+                <span class="text-gray-500 text-xs font-normal">(Letters and numbers only,  3-10 characters)</span>
               </label>
-              <input type="text" id="code" name="code" required maxlength="10" pattern="^[A-Za-z0-9]+$"
+              <input type="text" id="code" name="code" 
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 placeholder="Example: SUMMER24">
+              <p class="text-red-500 text-sm mt-1 hidden" id="codeError"></p>
             </div>
 
             <div class="mb-4">
@@ -142,21 +143,23 @@
                 Description <span class="text-red-500">*</span>
                 <span class="text-gray-500 text-xs font-normal">(10-100 characters)</span>
               </label>
-              <textarea id="description" name="description" required minlength="10" maxlength="100" rows="2"
+              <textarea id="description" name="description"   rows="2"
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 placeholder="Example: Get 20% off on all summer collection items"></textarea>
-              <span id="descriptionCount" class="text-xs text-gray-500">0/100</span>
+              <span id="descriptionCount" class="text-xs text-gray-500">0/100</span>  
+              <p class="text-red-500 text-sm mt-1 hidden" id="descriptionError"></p>
             </div>
 
             <div class="mb-4">
               <label class="block text-gray-700 text-sm font-bold mb-2" for="discountType">
                 Discount Type <span class="text-red-500">*</span>
               </label>
-              <select id="discountType" name="discountType" required onchange="updateDiscountValidation()"
+              <select id="discountType" name="discountType"  onchange="updateDiscountValidation()"
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                <option value="PERCENTAGE">Percentage</option>
+                <option value="PERCENTAGE">Percentage</option>  
                 <option value="FIXED">Fixed Amount</option>
               </select>
+              <p class="text-red-500 text-sm mt-1 hidden" id="discountTypeError"></p>
             </div>
 
             <div class="mb-4">
@@ -164,18 +167,20 @@
                 Discount Value <span class="text-red-500">*</span>
                 <span id="discountValueHint" class="text-gray-500 text-xs font-normal">(1-99 for percentage)</span>
               </label>
-              <input type="number" id="discountValue" name="discountValue" required min="1" max="99"
+                  <input type="number" id="discountValue" name="discountValue"  
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 placeholder="Example: 20">
+              <p class="text-red-500 text-sm mt-1 hidden" id="discountValueError"></p>
             </div>
 
             <div class="mb-4">
               <label class="block text-gray-700 text-sm font-bold mb-2" for="minPurchase">
                 Minimum Purchase Amount <span class="text-red-500">*</span>
               </label>
-              <input type="number" id="minPurchase" name="minPurchase" required min="0"
+              <input type="number" id="minPurchase" name="minPurchase"  
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 placeholder="Example: 1000">
+              <p class="text-red-500 text-sm mt-1 hidden" id="minPurchaseError"></p>
             </div>
           </div>
 
@@ -186,34 +191,38 @@
                 Maximum Discount Amount <span class="text-red-500">*</span>
                 <span class="text-gray-500 text-xs font-normal">(Minimum ₹100)</span>
               </label>
-              <input type="number" id="maxDiscount" name="maxDiscount" required 
+              <input type="number" id="maxDiscount" name="maxDiscount"  
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 placeholder="Example: 2000">
+              <p class="text-red-500 text-sm mt-1 hidden" id="maxDiscountError"></p>
             </div>
 
             <div class="mb-4">
               <label class="block text-gray-700 text-sm font-bold mb-2" for="usageLimit">
                 Usage Limit Per User <span class="text-red-500">*</span>
               </label>
-              <input type="number" id="usageLimit" name="usageLimit" required min="1"
+              <input type="number" id="usageLimit" name="usageLimit"  
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 placeholder="Example: 1">
+              <p class="text-red-500 text-sm mt-1 hidden" id="usageLimitError"></p>
             </div>
 
             <div class="mb-4">
               <label class="block text-gray-700 text-sm font-bold mb-2" for="startDate">
                 Start Date <span class="text-red-500">*</span>
               </label>
-              <input type="datetime-local" id="startDate" name="startDate" required
+              <input type="datetime-local" id="startDate" name="startDate" 
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+              <p class="text-red-500 text-sm mt-1 hidden" id="startDateError"></p>
             </div>
 
             <div class="mb-4">
               <label class="block text-gray-700 text-sm font-bold mb-2" for="expiryDate">
                 Expiry Date <span class="text-red-500">*</span>
               </label>
-              <input type="datetime-local" id="expiryDate" name="expiryDate" required
+              <input type="datetime-local" id="expiryDate" name="expiryDate" 
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+              <p class="text-red-500 text-sm mt-1 hidden" id="expiryDateError"></p>
             </div>
           </div>
         </div>
@@ -287,105 +296,239 @@
     }
   }
 
+  function showError(fieldId, message) {
+    const input = document.getElementById(fieldId);
+    const errorElement = document.getElementById(`${fieldId}Error`);
+    
+    input.classList.add('border-red-500');
+    errorElement.textContent = message;
+    errorElement.classList.remove('hidden');
+  }
+
+  function resetErrors() {
+    const fields = ['code', 'description', 'discountType', 'discountValue', 'minPurchase', 'maxDiscount', 'usageLimit', 'startDate', 'expiryDate'];
+    fields.forEach(field => {
+      const input = document.getElementById(field);
+      const errorElement = document.getElementById(`${field}Error`);
+      
+      if (input && errorElement) {
+        input.classList.remove('border-red-500');
+        errorElement.classList.add('hidden');
+        errorElement.textContent = '';
+      }
+    });
+  }
+
   document.getElementById('couponForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-
-    const couponId = document.getElementById('couponId').value;
-    const code = document.getElementById('code').value.toUpperCase();
+    resetErrors();
     
+    let hasErrors = false;
+
     // Validate coupon code
-    if (!/^[A-Z0-9]+$/.test(code)) {
-        showToast('Coupon code can only contain letters and numbers', 'error');
-        return;
+    const code = document.getElementById('code').value.toUpperCase();
+    if (!code) {
+      showError('code', 'Coupon code is required');
+      hasErrors = true;
+    } else if (!/^[A-Z0-9]+$/.test(code)) {
+      showError('code', 'Coupon code can only contain letters and numbers');
+      hasErrors = true;
+    } else if (code.length < 3) {
+      showError('code', 'Coupon code must be at least 3 characters');
+      hasErrors = true;
+    } else if (code.length > 10) {
+      showError('code', 'Coupon code cannot exceed 10 characters');
+      hasErrors = true;
     }
 
-    // Validate dates
-    const startDate = new Date(document.getElementById('startDate').value);
-    const expiryDate = new Date(document.getElementById('expiryDate').value);
-
-    if (expiryDate <= startDate) {
-        showToast('Expiry date must be after start date', 'error');
-        return;
+    // Validate description
+    const description = document.getElementById('description').value.trim();
+    if (!description) {
+      showError('description', 'Description is required');
+      hasErrors = true;
+    } else if (description.length < 10) {
+      showError('description', 'Description must be at least 10 characters');
+      hasErrors = true;
+    } else if (description.length > 100) {
+      showError('description', 'Description cannot exceed 100 characters');
+      hasErrors = true;
     }
 
     // Validate discount value
     const discountType = document.getElementById('discountType').value;
     const discountValue = Number(document.getElementById('discountValue').value);
     
-    if (discountType === 'PERCENTAGE') {
-        if (discountValue < 1 || discountValue > 99) {
-            showToast('Percentage discount must be between 1 and 99', 'error');
-            return;
-        }
-        // Validate maximum discount for percentage type
-        const maxDiscount = Number(document.getElementById('maxDiscount').value);
-        if (maxDiscount < 100) {
-            showToast('Maximum discount amount must be at least ₹100', 'error');
-            return;
-        }
+    if (!discountValue) {
+      showError('discountValue', 'Discount value is required');
+      hasErrors = true;
+    } else if (discountType === 'PERCENTAGE' && (discountValue < 1 || discountValue > 99)) {
+      showError('discountValue', 'Percentage discount must be between 1 and 99');
+      hasErrors = true;
     }
 
+    // Validate minimum purchase
+    const minPurchase = document.getElementById('minPurchase').value;
+    if (!minPurchase && minPurchase !== '0') {
+      showError('minPurchase', 'Minimum purchase amount is required');
+      hasErrors = true;
+    } else if (Number(minPurchase) < 0) {
+      showError('minPurchase', 'Minimum purchase cannot be negative');
+      hasErrors = true;
+    }
+
+    // Validate maximum discount for percentage type
+    if (discountType === 'PERCENTAGE') {
+      const maxDiscount = Number(document.getElementById('maxDiscount').value);
+      if (!maxDiscount) {
+        showError('maxDiscount', 'Maximum discount amount is required for percentage discounts');
+        hasErrors = true;
+      } else if (maxDiscount < 100) {
+        showError('maxDiscount', 'Maximum discount amount must be at least ₹100');
+        hasErrors = true;
+      }
+    }
+
+    // Validate usage limit
+    const usageLimit = Number(document.getElementById('usageLimit').value);
+    if (!usageLimit) {
+      showError('usageLimit', 'Usage limit is required');
+      hasErrors = true;
+    } else if (usageLimit < 1) {
+      showError('usageLimit', 'Usage limit must be at least 1');
+      hasErrors = true;
+    }
+
+    // Validate dates
+    const startDate = new Date(document.getElementById('startDate').value);
+    const expiryDate = new Date(document.getElementById('expiryDate').value);
+    const now = new Date();
+
+    if (!document.getElementById('startDate').value) {
+      showError('startDate', 'Start date is required');
+      hasErrors = true;
+    } else if (isNaN(startDate.getTime())) {
+      showError('startDate', 'Please enter a valid start date');
+      hasErrors = true;
+    } else if (!document.getElementById('couponId').value && startDate < now) {
+      showError('startDate', 'Start date cannot be in the past');
+      hasErrors = true;
+    }
+
+    if (!document.getElementById('expiryDate').value) {
+      showError('expiryDate', 'Expiry date is required');
+      hasErrors = true;
+    } else if (isNaN(expiryDate.getTime())) {
+      showError('expiryDate', 'Please enter a valid expiry date');
+      hasErrors = true;
+    } else if (expiryDate <= startDate) {
+      showError('expiryDate', 'Expiry date must be after start date');
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
+      return;
+    }
+
+    // Get the coupon ID if it exists
+    const couponId = document.getElementById('couponId').value;
+
+    // Continue with form submission
     const formData = {
-        code: code,
-        description: document.getElementById('description').value,
-        discountType: discountType,
-        discountValue: discountValue,
-        minPurchase: document.getElementById('minPurchase').value,
-        maxDiscount: discountType === 'PERCENTAGE' ? document.getElementById('maxDiscount').value : 0,
-        usageLimit: document.getElementById('usageLimit').value,
-        startDate: startDate.toISOString(),
-        expiryDate: expiryDate.toISOString()
+      code: code,
+      description: description,
+      discountType: discountType,
+      discountValue: discountValue,
+      minPurchase: Number(minPurchase),
+      maxDiscount: discountType === 'PERCENTAGE' ? document.getElementById('maxDiscount').value : 0,
+      usageLimit: usageLimit,
+      startDate: startDate.toISOString(),
+      expiryDate: expiryDate.toISOString()
     };
 
     try {
-        const response = await axios[couponId ? 'put' : 'post'](
-            couponId ? `/admin/coupons/${couponId}` : '/admin/coupons',
-            formData
-        );
+      let response;
+      
+      if (couponId) {
+        // If couponId exists, it's an update
+        response = await axios.put(`/admin/coupons/${couponId}`, formData);
+      } else {
+        // If no couponId, it's a new coupon
+        response = await axios.post('/admin/coupons', formData);
+      }
 
-        if (response.data.success) {
-            closeModal();
-            
-            if (couponId) {
-                // Update existing row in the table
-                const row = document.querySelector(`button[onclick="editCoupon('${couponId}')"]`).closest('tr');
-                const isExpired = new Date(formData.expiryDate) < new Date();
-                
-                // Update the row cells
-                row.children[1].textContent = formData.code;
-                row.children[2].textContent = formData.discountType;
-                row.children[3].textContent = formData.discountType === 'PERCENTAGE' ? 
-                    formData.discountValue + '%' : '₹' + formData.discountValue;
-                row.children[4].textContent = '₹' + formData.minPurchase;
-                row.children[5].textContent = new Date(formData.expiryDate).toLocaleDateString();
-                
-                // Update status cell
-                const statusCell = row.children[6];
-                if (isExpired) {
-                    statusCell.innerHTML = `
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                            Expired
-                        </span>`;
-                }
-                
-                showToast('Coupon updated successfully');
-            } else {
-                // For new coupons, handle as before
-                const tbody = document.getElementById('couponsTable');
-                const newRow = createCouponRow(formData, response.data.couponId);
-                
-                if (tbody.querySelector('td[colspan="8"]')) {
-                    tbody.innerHTML = newRow;
-                } else {
-                    tbody.insertAdjacentHTML('afterbegin', newRow);
-                    updateRowNumbers();
-                }
-                
-                showToast('Coupon added successfully');
-            }
+      if (response.data.success) {
+        closeModal();
+        
+        if (couponId) {
+          // Update existing row logic
+          const row = document.querySelector(`button[onclick="editCoupon('${couponId}')"]`).closest('tr');
+          
+          // Update the row cells
+          row.children[1].textContent = formData.code;
+          row.children[2].textContent = formData.discountType;
+          row.children[3].textContent = formData.discountType === 'PERCENTAGE' ? 
+            formData.discountValue + '%' : '₹' + formData.discountValue;
+          row.children[4].textContent = '₹' + formData.minPurchase;
+          row.children[5].textContent = new Date(formData.expiryDate).toLocaleDateString();
+          
+          showToast('Coupon updated successfully');
+        } else {
+          // For new coupons, add new row at the top
+          const tbody = document.getElementById('couponsTable');
+          const newRow = `
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap">1</td>
+              <td class="px-6 py-4 whitespace-nowrap">${formData.code}</td>
+              <td class="px-6 py-4 whitespace-nowrap">${formData.discountType}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                ${formData.discountType === 'PERCENTAGE' ? formData.discountValue + '%' : '₹' + formData.discountValue}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">₹${formData.minPurchase}</td>
+              <td class="px-6 py-4 whitespace-nowrap">${new Date(formData.expiryDate).toLocaleDateString()}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                  Active
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <div class="flex space-x-2">
+                  <button onclick="editCoupon('${response.data.couponId}')"
+                    class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">
+                    Edit
+                  </button>
+                  <button onclick="toggleCouponStatus('${response.data.couponId}', 'true')"
+                    class="bg-primary-accent text-white px-3 py-2 rounded-md hover:bg-red-600">
+                    Deactivate
+                  </button>
+                  <button onclick="deleteCoupon('${response.data.couponId}')"
+                    class="bg-primary-accent text-white px-3 py-2 rounded-md hover:bg-red-600">
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+          
+          if (tbody.querySelector('td[colspan="8"]')) {
+            tbody.innerHTML = newRow;
+          } else {
+            tbody.insertAdjacentHTML('afterbegin', newRow);
+            // Update row numbers
+            const rows = tbody.getElementsByTagName('tr');
+            Array.from(rows).forEach((row, index) => {
+              const numberCell = row.querySelector('td:first-child');
+              if (numberCell) {
+                const currentPage = parseInt(new URLSearchParams(window.location.search).get('page')) || 1;
+                numberCell.textContent = ((currentPage - 1) * 10) + index + 1;
+              }
+            });
+          }
+          
+          showToast('Coupon added successfully');
         }
+      }
     } catch (error) {
-        showToast(error.response?.data?.message || 'Failed to save coupon', 'error');
+      showToast(error.response?.data?.message || `Failed to ${couponId ? 'update' : 'add'} coupon`, 'error');
     }
   });
 
@@ -555,6 +698,24 @@
   document.getElementById('description').addEventListener('input', function() {
     const count = this.value.length;
     document.getElementById('descriptionCount').textContent = `${count}/100`;
+  });
+
+  // Add input event listeners to clear errors when user starts typing
+  document.addEventListener('DOMContentLoaded', function() {
+    const fields = ['code', 'description', 'discountType', 'discountValue', 'minPurchase', 'maxDiscount', 'usageLimit', 'startDate', 'expiryDate'];
+    
+    fields.forEach(field => {
+      const element = document.getElementById(field);
+      if (element) {
+        element.addEventListener('input', function() {
+          this.classList.remove('border-red-500');
+          const errorElement = document.getElementById(`${field}Error`);
+          if (errorElement) {
+            errorElement.classList.add('hidden');
+          }
+        });
+      }
+    });
   });
 </script>
 

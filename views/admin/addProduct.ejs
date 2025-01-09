@@ -27,6 +27,7 @@
               <input type="text" name="name"
                 class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500"
                 placeholder="Enter product name">
+              <p class="text-red-500 text-sm mt-1 hidden" id="nameError"></p>
             </div>
 
             <!-- Product Description -->
@@ -35,6 +36,7 @@
               <textarea name="description"
                 class="w-full h-24 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500"
                 placeholder="Enter product description"></textarea>
+              <p class="text-red-500 text-sm mt-1 hidden" id="descriptionError"></p>
             </div>
 
             <!-- Price -->
@@ -43,6 +45,7 @@
               <input type="number" name="price"
                 class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500"
                 placeholder="Enter product price" step="0.01">
+              <p class="text-red-500 text-sm mt-1 hidden" id="priceError"></p>
             </div>
 
             <!-- Stock -->
@@ -51,6 +54,7 @@
               <input type="number" name="stock"
                 class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500"
                 placeholder="Enter stock quantity" min="0">
+              <p class="text-red-500 text-sm mt-1 hidden" id="stockError"></p>
             </div>
 
             <!-- Brand -->
@@ -59,6 +63,7 @@
               <input type="text" name="brand"
                 class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500"
                 placeholder="Enter brand name">
+              <p class="text-red-500 text-sm mt-1 hidden" id="brandError"></p>
             </div>
 
             <!-- Category -->
@@ -73,6 +78,7 @@
                   </option>
                   <% }); %>
               </select>
+              <p class="text-red-500 text-sm mt-1 hidden" id="categoryError"></p>
             </div>
 
             <!-- Specifications -->
@@ -85,7 +91,8 @@
                     placeholder="Enter specification <%= i+1 %>">
                   <% } %>
               </div>
-              <small class="text-gray-500">Add up to 4 key specifications for the product</small>
+              <small class="text-gray-500">Add  4 key specifications for the product</small>
+              <p class="text-red-500 text-sm mt-1 hidden" id="specificationsError"></p>
             </div>
 
             <!-- Main Image -->
@@ -146,7 +153,9 @@
                 </div>
               </div>
               <small class="text-gray-500">Please upload 4 images.</small>
+              <p class="text-red-500 text-sm mt-1 hidden" id="mainImagesError"></p>
             </div>
+
             <!-- Error Message -->
             <div id="alertMessage" class="mb-4 p-3 rounded-md hidden bg-red-100 text-red-700">
               <span id="alertText"></span>
@@ -257,9 +266,12 @@
             const alertMessage = document.getElementById("alertMessage");
             const alertText = document.getElementById("alertText");
 
-            addProductForm.addEventListener("submit", async (event) => {
-              event.preventDefault();
+            // Form validation function
+            function validateProductForm() {
               let isValid = true;
+              
+              // Reset all previous errors
+              resetErrors();
 
               const name = addProductForm.name.value.trim();
               const brand = addProductForm.brand.value.trim();
@@ -268,81 +280,149 @@
               const stock = addProductForm.stock.value.trim();
               const category = addProductForm.category.value.trim();
               const specifications = Array.from(addProductForm.querySelectorAll('input[name="specifications"]')).map(input => input.value.trim());
+              
+              // Name validation
+              if (!name) {
+                showError('name', 'Product name is required');
+                isValid = false;
+              } else if (name.length < 2 || name.length > 100) {
+                showError('name', 'Product name must be between 2 and 100 characters');
+                isValid = false;
+              } else if (!/^[A-Za-z0-9\s()%]+$/.test(name)) {
+                showError('name', 'Product name can only contain letters, numbers, spaces, parentheses () and % symbol');
+                isValid = false;
+              }
 
-              // Define minimum and maximum lengths for name and brand 
-              const nameBrandMinLength = 2;
-              const nameBrandMaxLength = 100;
+              // Brand validation
+              if (!brand) {
+                showError('brand', 'Brand is required');
+                isValid = false;
+              } else if (brand.length < 2 || brand.length > 100) {
+                showError('brand', 'Brand must be between 2 and 100 characters');
+                isValid = false;
+              } else if (!/^[A-Za-z0-9\s]+$/.test(brand)) {
+                showError('brand', 'Brand can only contain letters, numbers, and spaces');
+                isValid = false;
+              }
 
-              // Check if all four images are selected
+              // Description validation
+              if (!description || description.replace(/\s/g, '').length === 0) {
+                showError('description', 'Product description is required');
+                isValid = false;
+              }
+              if(description.length > 200 || description.length < 10){
+                showError('description', 'Product description must be between 10 and 200 characters');
+                isValid = false;
+              }
+
+              // Category validation
+              if (!category) {
+                showError('category', 'Please select a category');
+                isValid = false;
+              }
+
+              // Price validation
+              if (!price) {
+                showError('price', 'Price is required');
+                isValid = false;
+              } else if (parseFloat(price) < 50 ) {
+                showError('price', 'Price must be at least ₹50');
+                isValid = false;
+              }
+
+              // Stock validation
+              if (!stock) {
+                showError('stock', 'Stock is required');
+                isValid = false;
+              } else if (parseInt(stock) < 0) {
+                showError('stock', 'Stock cannot be negative');
+                isValid = false;
+              }
+
+              // Specifications validation
+              const invalidSpecs = specifications.some(spec => !spec || spec.replace(/\s/g, '').length === 0);
+              const invalidSpecLength = specifications.some(spec => spec.length < 2 || spec.length > 100);
+              if (invalidSpecs  ) {
+                showError('specifications', 'All four specifications are required ');
+                isValid = false;
+              }else if(invalidSpecLength){
+                showError('specifications', 'Specifications must be between 2 and 100 characters');
+                isValid = false;
+              }
+
+              // Image validation
               const imageInputs = addProductForm.querySelectorAll('input[type="file"]');
               const imageFiles = Array.from(imageInputs).map(input => input.files[0]);
               const allImagesSelected = imageFiles.every(file => file !== undefined);
-
-              // Validate required fields 
-              if (!name) {
-                showToast("Product name is required.", "error");
-                isValid = false;
-              } else if (name.length < nameBrandMinLength || name.length > nameBrandMaxLength) {
-                showToast(`Product name must be between ${nameBrandMinLength} and ${nameBrandMaxLength} characters.`, "error");
-                isValid = false;
-              } else if (!brand) {
-                showToast("Brand is required.", "error");
-                isValid = false;
-              } else if (brand.length < nameBrandMinLength || brand.length > nameBrandMaxLength) {
-                showToast(`Brand must be between ${nameBrandMinLength} and ${nameBrandMaxLength} characters.`, "error");
-                isValid = false;
-              } else if (!description || description.replace(/\s/g, '').length === 0) {
-                showToast("Product description is required", "error");
-                isValid = false;
-              } else if (!category) {
-                showToast("Please select a category.", "error");
-                isValid = false;
-              } else if (!price) {
-                showToast("Price is required.", "error");
-                isValid = false;
-              } else if (!stock) {
-                showToast("Stock is required.", "error");
-                isValid = false;
-              } else if (!allImagesSelected) {
-                showToast("All four images must be selected.", "error");
+              
+              if (!allImagesSelected) {
+                showError('mainImages', 'All four images must be selected');
                 isValid = false;
               }
 
-              // Validate specifications
-              if (isValid) {
-                const invalidSpecs = specifications.some(spec => !spec || spec.replace(/\s/g, '').length === 0);
-                if (invalidSpecs) {
-                  showToast("All four specifications are required and cannot be only spaces.", "error");
-                  isValid = false;
+              return isValid;
+            }
+
+            function showError(fieldId, message) {
+              const input = document.querySelector(`[name="${fieldId}"]`);
+              let errorElement = document.getElementById(`${fieldId}Error`);
+              
+              // Create error element
+              if (!errorElement) {
+                errorElement = document.createElement('p');
+                errorElement.id = `${fieldId}Error`;
+                errorElement.className = 'text-red-500 text-sm mt-1';
+                input.parentNode.appendChild(errorElement);
+              }
+              
+              input.classList.add('border-red-500');
+              errorElement.textContent = message;
+              errorElement.classList.remove('hidden');
+            }
+
+            function resetErrors() {
+              const fields = ['name', 'brand', 'description', 'price', 'stock', 'category', 'specifications', 'mainImages'];
+              fields.forEach(field => {
+                const inputs = document.getElementsByName(field);
+                const errorElement = document.getElementById(`${field}Error`);
+                
+                inputs.forEach(input => input.classList.remove('border-red-500'));
+                if (errorElement) {
+                  errorElement.classList.add('hidden');
+                  errorElement.textContent = '';
                 }
-              }
+              });
+            }
 
-              // Validate text fields for allowed characters
-              if (isValid) {
-                const nameRegex = /^[A-Za-z0-9\s()%]+$/;
-                const brandRegex = /^[A-Za-z0-9\s]+$/;
-
-                if (!nameRegex.test(name)) {
-                  showToast("Product name can only contain letters, numbers, spaces, parentheses () and % symbol.", "error");
-                  isValid = false;
-                } else if (!brandRegex.test(brand)) {
-                  showToast("Brand can only contain letters, numbers, and spaces.", "error");
-                  isValid = false;
+            // Add input event listeners to clear errors when user starts typing
+            const fields = ['name', 'brand', 'description', 'price', 'stock', 'category'];
+            fields.forEach(field => {
+              const input = document.querySelector(`[name="${field}"]`);
+              input.addEventListener('input', function() {
+                this.classList.remove('border-red-500');
+                const errorElement = document.getElementById(`${field}Error`);
+                if (errorElement) {
+                  errorElement.classList.add('hidden');
                 }
-              }
+              });
+            });
 
-              // Validate numeric fields
-              if (isValid) {
-                if (parseFloat(price) < 50) {
-                  showToast("Price must be at least ₹50.", "error");
-                  isValid = false;
-                } else if (parseInt(stock) < 0) {
-                  showToast("Stock cannot be negative.", "error");
-                  isValid = false;
+            // Add event listeners for specifications
+            document.querySelectorAll('input[name="specifications"]').forEach(input => {
+              input.addEventListener('input', function() {
+                this.classList.remove('border-red-500');
+                const errorElement = document.getElementById('specificationsError');
+                if (errorElement) {
+                  errorElement.classList.add('hidden');
                 }
-              }
+              });
+            });
 
-              if (!isValid) {
+            // Update the form submit handler
+            addProductForm.addEventListener("submit", async (event) => {
+              event.preventDefault();
+              
+              if (!validateProductForm()) {
                 return;
               }
 

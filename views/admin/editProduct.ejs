@@ -24,44 +24,62 @@
           <!-- Product Name -->
           <div class="form-group mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
-            <input type="text" name="name" value="<%= product.name %>" class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" placeholder="Enter product name">
+            <input type="text" name="name" value="<%= product.name %>" 
+              class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" 
+              placeholder="Enter product name">
+            <p class="text-red-500 text-sm mt-1 hidden" id="nameError"></p>
           </div>
           
           <!-- Product Description -->
           <div class="form-group mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Product Description</label>
-            <textarea name="description" class="w-full h-24 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" placeholder="Enter product description"><%= product.description %></textarea>
+            <textarea name="description" 
+              class="w-full h-24 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" 
+              placeholder="Enter product description"><%= product.description %></textarea>
+            <p class="text-red-500 text-sm mt-1 hidden" id="descriptionError"></p>
           </div>
           
           <!-- Price -->
           <div class="form-group mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Price</label>
-            <input type="number" name="price" value="<%= product.price %>" class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" placeholder="Enter product price" step="0.01">
+            <input type="number" name="price" value="<%= product.price %>" 
+              class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" 
+              placeholder="Enter product price" step="0.01">
+            <p class="text-red-500 text-sm mt-1 hidden" id="priceError"></p>
           </div>
           
           <!-- Stock -->
           <div class="form-group mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
-            <input type="number" value="<%= product.stock %>" name="stock" class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" placeholder="Enter stock quantity" min="0">
+            <input type="number" name="stock" value="<%= product.stock %>" 
+              class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" 
+              placeholder="Enter stock quantity" min="0">
+            <p class="text-red-500 text-sm mt-1 hidden" id="stockError"></p>
           </div>
           
           <!-- Brand -->
           <div class="form-group mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
-            <input type="text" value="<%= product.brand %>" name="brand" class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" placeholder="Enter brand name">
+            <input type="text" name="brand" value="<%= product.brand %>" 
+              class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" 
+              placeholder="Enter brand name">
+            <p class="text-red-500 text-sm mt-1 hidden" id="brandError"></p>
           </div>
           
           <!-- Category -->
           <div class="form-group mb-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-            <select name="category" class="w-full h-12 px-4 py-2 rounded-lg border border-gray-300 focus:border-blue-500">
+            <select name="category" 
+              class="w-full h-12 px-4 py-2 rounded-lg border border-gray-300 focus:border-blue-500">
               <option value="">Select Category</option>
               <% categories.forEach(category => { %>
-                <option value="<%= category._id %>" <%= category._id.toString() === product.category.toString() ? 'selected' : '' %>>
+                <option value="<%= category._id %>" 
+                  <%= category._id.toString() === product.category.toString() ? 'selected' : '' %>>
                   <%= category.name %>
                 </option>
               <% }); %>
             </select>
+            <p class="text-red-500 text-sm mt-1 hidden" id="categoryError"></p>
           </div>
           
           <!-- Specifications -->
@@ -69,13 +87,13 @@
             <label class="block text-sm font-medium text-gray-700 mb-2">Specifications (up to 4)</label>
             <div class="space-y-2">
               <% for(let i = 0; i < 4; i++) { %>
-                <input type="text" 
-                       name="specifications" 
-                       value="<%= product.specifications[i] || '' %>"
-                       class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" 
-                       placeholder="Enter specification <%= i+1 %>">
+                <input type="text" name="specifications" 
+                  value="<%= product.specifications[i] || '' %>"
+                  class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" 
+                  placeholder="Enter specification <%= i+1 %>">
               <% } %>
             </div>
+            <p class="text-red-500 text-sm mt-1 hidden" id="specificationsError"></p>
             <small class="text-gray-500">Add up to 4 key specifications for the product</small>
           </div>
           
@@ -152,6 +170,174 @@
           let currentPreviewId;
           let currentUploadLabelId;
 
+          // Form validation function
+          function validateProductForm() {
+            let isValid = true;
+            
+            // Reset all previous errors
+            resetErrors();
+
+            const name = addProductForm.name.value.trim();
+            const brand = addProductForm.brand.value.trim();
+            const description = addProductForm.description.value.trim();
+            const price = addProductForm.price.value.trim();
+            const stock = addProductForm.stock.value.trim();
+            const category = addProductForm.category.value.trim();
+            const specifications = Array.from(addProductForm.querySelectorAll('input[name="specifications"]')).map(input => input.value.trim());
+            
+            // Name validation
+            if (!name) {
+              showError('name', 'Product name is required');
+              isValid = false;
+            } else if (name.length < 2 || name.length > 100) {
+              showError('name', 'Product name must be between 2 and 100 characters');
+              isValid = false;
+            } else if (!/^[A-Za-z0-9\s()%]+$/.test(name)) {
+              showError('name', 'Product name can only contain letters, numbers, spaces, parentheses () and % symbol');
+              isValid = false;
+            }
+
+            // Brand validation
+            if (!brand) {
+              showError('brand', 'Brand is required');
+              isValid = false;
+            } else if (brand.length < 2 || brand.length > 100) {
+              showError('brand', 'Brand must be between 2 and 100 characters');
+              isValid = false;
+            } else if (!/^[A-Za-z0-9\s]+$/.test(brand)) {
+              showError('brand', 'Brand can only contain letters, numbers, and spaces');
+              isValid = false;
+            }
+
+            // Description validation
+            if (!description || description.replace(/\s/g, '').length === 0) {
+              showError('description', 'Product description is required');
+              isValid = false;
+            }
+
+            // Category validation
+            if (!category) {
+              showError('category', 'Please select a category');
+              isValid = false;
+            }
+
+            // Price validation
+            if (!price) {
+              showError('price', 'Price is required');
+              isValid = false;
+            } else if (parseFloat(price) < 50) {
+              showError('price', 'Price must be at least ₹50');
+              isValid = false;
+            }
+
+            // Stock validation
+            if (!stock) {
+              showError('stock', 'Stock is required');
+              isValid = false;
+            } else if (parseInt(stock) < 0) {
+              showError('stock', 'Stock cannot be negative');
+              isValid = false;
+            }
+
+            // Specifications validation
+            const invalidSpecs = specifications.some(spec => !spec || spec.replace(/\s/g, '').length === 0);
+            if (invalidSpecs) {
+              showError('specifications', 'All four specifications are required and cannot be only spaces');
+              isValid = false;
+            }
+
+            return isValid;
+          }
+
+          function showError(fieldId, message) {
+            const input = document.querySelector(`[name="${fieldId}"]`);
+            let errorElement = document.getElementById(`${fieldId}Error`);
+            
+            // Create error element if it doesn't exist
+            if (!errorElement) {
+              errorElement = document.createElement('p');
+              errorElement.id = `${fieldId}Error`;
+              errorElement.className = 'text-red-500 text-sm mt-1';
+              input.parentNode.appendChild(errorElement);
+            }
+            
+            input.classList.add('border-red-500');
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+          }
+
+          function resetErrors() {
+            const fields = ['name', 'brand', 'description', 'price', 'stock', 'category', 'specifications'];
+            fields.forEach(field => {
+              const inputs = document.getElementsByName(field);
+              const errorElement = document.getElementById(`${field}Error`);
+              
+              inputs.forEach(input => input.classList.remove('border-red-500'));
+              if (errorElement) {
+                errorElement.classList.add('hidden');
+                errorElement.textContent = '';
+              }
+            });
+          }
+
+          // Add input event listeners to clear errors when user starts typing
+          const fields = ['name', 'brand', 'description', 'price', 'stock', 'category'];
+          fields.forEach(field => {
+            const input = document.querySelector(`[name="${field}"]`);
+            if (input) {
+              input.addEventListener('input', function() {
+                this.classList.remove('border-red-500');
+                const errorElement = document.getElementById(`${field}Error`);
+                if (errorElement) {
+                  errorElement.classList.add('hidden');
+                }
+              });
+            }
+          });
+
+          // Add event listeners for specifications
+          document.querySelectorAll('input[name="specifications"]').forEach(input => {
+            input.addEventListener('input', function() {
+              this.classList.remove('border-red-500');
+              const errorElement = document.getElementById('specificationsError');
+              if (errorElement) {
+                errorElement.classList.add('hidden');
+              }
+            });
+          });
+
+          // Update the form submit handler
+          addProductForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            
+            if (!validateProductForm()) {
+              return;
+            }
+
+            try {
+              const formData = new FormData(addProductForm);
+              const productId = window.location.pathname.split('/').pop();
+              const response = await axios.post(`/admin/products/edit/${productId}`, formData, {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                }
+              });
+
+              if (response.data.success) {
+                showToast('Product updated successfully');
+                setTimeout(() => {
+                  window.location.href = '/admin/products';
+                }, 1000);
+              } else {
+                showToast(response.data.message || 'Failed to update product', 'error');
+              }
+            } catch (error) {
+              console.error('Error:', error);
+              showToast(error.response?.data?.message || 'Failed to update product', 'error');
+            }
+          });
+
+          // Image handling functions
           function handleImageUpload(input, previewId, uploadLabelId, modalId, cropperImageId) {
             if (input.files && input.files[0]) {
               const reader = new FileReader();
@@ -163,7 +349,6 @@
                 const cropperImg = document.getElementById(cropperImageId);
                 cropperImg.src = e.target.result;
                 
-                // Show the cropper modal
                 document.getElementById(modalId).style.display = 'flex';
                 
                 if (cropper) {
@@ -211,7 +396,6 @@
                 }
                 previewImg.src = canvas.toDataURL();
                 
-                // Show preview, hide upload label
                 previewContainer.classList.remove('hidden');
                 const uploadLabel = document.getElementById(currentUploadLabelId);
                 if (uploadLabel) {
@@ -222,113 +406,6 @@
               });
             }
           }
-
-          const alertMessage = document.getElementById("alertMessage");
-          const alertText = document.getElementById("alertText");
-
-          addProductForm.addEventListener("submit", async (event) => {
-            event.preventDefault();
-            let isValid = true;
-
-            const name = addProductForm.name.value.trim();
-            const brand = addProductForm.brand.value.trim();
-            const description = addProductForm.description.value.trim();
-            const price = addProductForm.price.value.trim();
-            const stock = addProductForm.stock.value.trim();
-            const category = addProductForm.category.value.trim();
-            const specifications = Array.from(addProductForm.querySelectorAll('input[name="specifications"]')).map(input => input.value.trim());
-
-            //  minimum and maximum lengths for name and brand 
-            const nameBrandMinLength = 2;
-            const nameBrandMaxLength = 100;
-
-            // Validate required fields first
-            if (!name) {
-              showToast("Product name is required.", "error");
-              isValid = false;
-            } else if (name.length < nameBrandMinLength || name.length > nameBrandMaxLength) {
-              showToast(`Product name must be between ${nameBrandMinLength} and ${nameBrandMaxLength} characters.`, "error");
-              isValid = false;
-            } else if (!brand) {
-              showToast("Brand is required.", "error");
-              isValid = false;
-            } else if (brand.length < nameBrandMinLength || brand.length > nameBrandMaxLength) {
-              showToast(`Brand must be between ${nameBrandMinLength} and ${nameBrandMaxLength} characters.`, "error");
-              isValid = false;
-            } else if (!description || description.replace(/\s/g, '').length === 0) {
-              showToast("Product description is required and cannot be only spaces.", "error");
-              isValid = false;
-            } else if (!category) {
-              showToast("Please select a category.", "error");
-              isValid = false;
-            } else if (!price) {
-              showToast("Price is required.", "error");
-              isValid = false;
-            } else if (!stock) {
-              showToast("Stock is required.", "error");
-              isValid = false;
-            }
-
-            // Validate specifications
-            if (isValid) {
-              const invalidSpecs = specifications.some(spec => !spec || spec.replace(/\s/g, '').length === 0);
-              if (invalidSpecs) {
-                showToast("All four specifications are required and cannot be only spaces.", "error");
-                isValid = false;
-              }
-            }
-
-            // Validate text fields for allowed characters
-            if (isValid) {
-              const nameRegex = /^[A-Za-z0-9\s()%]+$/;
-              const brandRegex = /^[A-Za-z0-9\s]+$/;
-
-              if (!nameRegex.test(name)) {
-                showToast("Product name can only contain letters, numbers, spaces, parentheses () and % symbol.", "error");
-                isValid = false;
-              } else if (!brandRegex.test(brand)) {
-                showToast("Brand can only contain letters, numbers, and spaces.", "error");
-                isValid = false;
-              }
-            }
-
-            // Validate numeric fields
-            if (isValid) {
-              if (parseFloat(price) < 50) {
-                showToast("Price must be at least ₹50.", "error");
-                isValid = false;
-              } else if (parseInt(stock) < 0) {
-                showToast("Stock cannot be negative.", "error");
-                isValid = false;
-              }
-            }
-
-            if (!isValid) {
-              return;
-            }
-
-            try {
-              const formData = new FormData(addProductForm);
-              const productId = window.location.pathname.split('/').pop();
-              const response = await axios.post(`/admin/products/edit/${productId}`, formData, {
-                headers: {
-                  'Content-Type': 'multipart/form-data'
-                }
-              });
-
-              if (response.data.success) {
-                showToast('Product updated successfully');
-                setTimeout(() => {
-                  window.location.href = '/admin/products';
-                }, 1000);
-              } else {
-                showToast(response.data.message || 'Failed to update product', 'error');
-              }
-            } catch (error) {
-              console.error('Error:', error);
-              showToast(error.response?.data?.message || 'Failed to update product', 'error');
-            }
-          });
 
           window.handleImageUpload = handleImageUpload;
           window.closeCropper = closeCropper;

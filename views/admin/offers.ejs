@@ -25,7 +25,7 @@
               <label class="block text-gray-700 text-sm font-bold mb-2" for="referrerValue">
                 Referrer Reward Value (₹)
               </label>
-              <input type="number" id="referrerValue" name="referrerValue" required min="0"
+              <input type="number" id="referrerValue" name="referrerValue"  
                 value="<%= referralSettings?.referrerValue || 100 %>"
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
             </div>
@@ -33,7 +33,7 @@
               <label class="block text-gray-700 text-sm font-bold mb-2" for="refereeValue">
                 Referee Reward Value (₹)
               </label>
-              <input type="number" id="refereeValue" name="refereeValue" required min="0"
+              <input type="number" id="refereeValue" name="refereeValue" 
                 value="<%= referralSettings?.refereeValue || 50 %>"
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
             </div>
@@ -160,27 +160,30 @@
               <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
                 Offer Name <span class="text-red-500">*</span>
               </label>
-              <input type="text" id="name" name="name" required
+              <input type="text" id="name" name="name" 
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+              <p class="text-red-500 text-sm mt-1 hidden" id="nameError"></p>
             </div>
 
             <div class="mb-4">
               <label class="block text-gray-700 text-sm font-bold mb-2" for="offerType">
                 Offer Type <span class="text-red-500">*</span>
               </label>
-              <select id="offerType" name="offerType" required onchange="handleOfferTypeChange()"
+              <select id="offerType" name="offerType" onchange="handleOfferTypeChange()"
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                 <option value="category">Category</option>
                 <option value="product">Product</option>
               </select>
+              <p class="text-red-500 text-sm mt-1 hidden" id="offerTypeError"></p>
             </div>
 
             <div class="mb-4">
               <label class="block text-gray-700 text-sm font-bold mb-2" for="offerPercentage">
                 Offer Percentage <span class="text-red-500">*</span>
               </label>
-              <input type="number" id="offerPercentage" name="offerPercentage" required min="1" max="99"
+              <input type="number" id="offerPercentage" name="offerPercentage"  
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+              <p class="text-red-500 text-sm mt-1 hidden" id="offerPercentageError"></p>
             </div>
           </div>
           <!-- Right Column -->
@@ -199,6 +202,7 @@
                   <option value="" disabled>No active categories available</option>
                 <% } %>
               </select>
+              <p class="text-red-500 text-sm mt-1 hidden" id="categoriesError"></p>
               <p class="text-sm text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple categories</p>
             </div>
 
@@ -216,6 +220,7 @@
                   <option value="" disabled>No active products available</option>
                 <% } %>
               </select>
+              <p class="text-red-500 text-sm mt-1 hidden" id="productsError"></p>
               <p class="text-sm text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple products</p>
             </div>
 
@@ -223,16 +228,18 @@
               <label class="block text-gray-700 text-sm font-bold mb-2" for="startDate">
                 Start Date <span class="text-red-500">*</span>
               </label>
-              <input type="datetime-local" id="startDate" name="startDate" required
+              <input type="datetime-local" id="startDate" name="startDate" 
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+              <p class="text-red-500 text-sm mt-1 hidden" id="startDateError"></p>
             </div>
 
             <div class="mb-4">
               <label class="block text-gray-700 text-sm font-bold mb-2" for="endDate">
                 End Date <span class="text-red-500">*</span>
               </label>
-              <input type="datetime-local" id="endDate" name="endDate" required
+              <input type="datetime-local" id="endDate" name="endDate" 
                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+              <p class="text-red-500 text-sm mt-1 hidden" id="endDateError"></p>
             </div>
           </div>
         </div>
@@ -303,7 +310,7 @@
         const startDate = new Date(offer.startDate);
         const endDate = new Date(offer.endDate);
         
-        // Add IST offset (UTC+5:30)
+        //  IST offset (UTC+5:30)
         startDate.setMinutes(startDate.getMinutes() + 330);
         endDate.setMinutes(endDate.getMinutes() + 330);
 
@@ -352,33 +359,82 @@
     modal.classList.add('hidden');
   }
 
+  function showError(fieldId, message) {
+    const input = document.getElementById(fieldId);
+    const errorElement = document.getElementById(`${fieldId}Error`);
+    
+    input.classList.add('border-red-500');
+    errorElement.textContent = message;
+    errorElement.classList.remove('hidden');
+  }
+
+  function resetErrors() {
+    const fields = ['name', 'offerType', 'offerPercentage', 'categories', 'products', 'startDate', 'endDate'];
+    fields.forEach(field => {
+      const input = document.getElementById(field);
+      const errorElement = document.getElementById(`${field}Error`);
+      
+      if (input && errorElement) {
+        input.classList.remove('border-red-500');
+        errorElement.classList.add('hidden');
+        errorElement.textContent = '';
+      }
+    });
+  }
+
   document.getElementById('offerForm').addEventListener('submit', async function(e) {
     e.preventDefault();
+    resetErrors();
+    
+    let hasErrors = false;
+    
+    // Required field validation
+    const offerName = document.getElementById('name').value.trim();
+    if (!offerName) {
+      showError('name', 'Offer Name is required');
+      hasErrors = true;
+    } else if (offerName.length < 10 || offerName.length > 100) {
+      showError('name', 'Offer name must be between 10 and 100 characters');
+      hasErrors = true;
+    }
 
-    const offerId = document.getElementById('offerId').value;
-    const isEditing = !!offerId;
+    const offerPercentage = Number(document.getElementById('offerPercentage').value);
+    if (!offerPercentage) {
+      showError('offerPercentage', 'Offer Percentage is required');
+      hasErrors = true;
+    } else if (isNaN(offerPercentage) || !Number.isInteger(offerPercentage)) {
+      showError('offerPercentage', 'Offer percentage must be a whole number');
+      hasErrors = true;
+    } else if (offerPercentage < 1 || offerPercentage > 99) {
+      showError('offerPercentage', 'Offer percentage must be between 1 and 99');
+      hasErrors = true;
+    }
 
     // Validate dates
     const startDate = new Date(document.getElementById('startDate').value);
     const endDate = new Date(document.getElementById('endDate').value);
     const now = new Date();
 
-    // Only check for past start date when adding a new offer
-    if (!isEditing && startDate < now) {
-      showToast('Start date cannot be in the past', 'error');
-      return;
+    if (!document.getElementById('startDate').value) {
+      showError('startDate', 'Start Date is required');
+      hasErrors = true;
+    } else if (isNaN(startDate.getTime())) {
+      showError('startDate', 'Please enter a valid start date');
+      hasErrors = true;
+    } else if (!document.getElementById('offerId').value && startDate < now) {
+      showError('startDate', 'Start date cannot be in the past');
+      hasErrors = true;
     }
 
-    if (endDate <= startDate) {
-      showToast('End date must be after start date', 'error');
-      return;
-    }
-
-    // Validate offer percentage
-    const offerPercentage = Number(document.getElementById('offerPercentage').value);
-    if (offerPercentage < 1 || offerPercentage > 99) {
-      showToast('Offer percentage must be between 1 and 99', 'error');
-      return;
+    if (!document.getElementById('endDate').value) {
+      showError('endDate', 'End Date is required');
+      hasErrors = true;
+    } else if (isNaN(endDate.getTime())) {
+      showError('endDate', 'Please enter a valid end date');
+      hasErrors = true;
+    } else if (endDate <= startDate) {
+      showError('endDate', 'End date must be after start date');
+      hasErrors = true;
     }
 
     // Validate selections based on offer type
@@ -387,17 +443,21 @@
     const products = Array.from(document.getElementById('products').selectedOptions).map(opt => opt.value);
 
     if (offerType === 'category' && categories.length === 0) {
-      showToast('Please select at least one category', 'error');
-      return;
+      showError('categories', 'Please select at least one category');
+      hasErrors = true;
     }
-
     if (offerType === 'product' && products.length === 0) {
-      showToast('Please select at least one product', 'error');
+      showError('products', 'Please select at least one product');
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
       return;
     }
 
+    // If no validation errors, proceed with form submission
     const formData = {
-      name: document.getElementById('name').value,
+      name: offerName,
       offerType: offerType,
       offerPercentage: offerPercentage,
       startDate: startDate.toISOString(),
@@ -406,8 +466,10 @@
       products: products
     };
 
-    const url = offerId ? `/admin/offers/${offerId}` : '/admin/offers';
-    const method = offerId ? 'put' : 'post';
+    const url = document.getElementById('offerId').value ? 
+      `/admin/offers/${document.getElementById('offerId').value}` : 
+      '/admin/offers';
+    const method = document.getElementById('offerId').value ? 'put' : 'post';
 
     try {
       const response = await axios[method](url, formData);
@@ -415,8 +477,8 @@
         closeModal();
         
         if (method === 'put') {
-          // Update existing row logic remains the same
-          const row = document.querySelector(`button[onclick="editOffer('${offerId}')"]`).closest('tr');
+          // Update existing row logic
+          const row = document.querySelector(`button[onclick="editOffer('${document.getElementById('offerId').value}')"]`).closest('tr');
           
           row.children[1].textContent = formData.name;
           row.children[2].textContent = formData.offerType;
@@ -429,7 +491,6 @@
           // For new offers, add new row at the top
           const tbody = document.getElementById('offersTable');
           
-          // Create new row with the offer data
           const newRow = `
             <tr>
               <td class="px-6 py-4 whitespace-nowrap">1</td>
@@ -439,12 +500,8 @@
               <td class="px-6 py-4 whitespace-nowrap">${new Date(formData.startDate).toLocaleDateString()}</td>
               <td class="px-6 py-4 whitespace-nowrap">${new Date(formData.endDate).toLocaleDateString()}</td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    new Date(formData.endDate) < new Date() 
-                        ? 'bg-gray-100 text-gray-800'
-                        : 'bg-green-100 text-green-800'
-                }">
-                    ${new Date(formData.endDate) < new Date() ? 'Expired' : 'Active'}
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                  Active
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -453,12 +510,10 @@
                     class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">
                     Edit
                   </button>
-                  ${new Date(formData.endDate) > new Date() ? `
-                    <button onclick="toggleOfferStatus('${response.data.offerId}', 'true')"
-                      class="bg-primary-accent text-white px-3 py-2 rounded-md hover:bg-red-600">
-                      Deactivate
-                    </button>
-                  ` : ''}
+                  <button onclick="toggleOfferStatus('${response.data.offerId}', 'true')"
+                    class="bg-primary-accent text-white px-3 py-2 rounded-md hover:bg-red-600">
+                    Deactivate
+                  </button>
                   <button onclick="deleteOffer('${response.data.offerId}')"
                     class="bg-primary-accent text-white px-3 py-2 rounded-md hover:bg-red-600">
                     Delete
@@ -490,7 +545,7 @@
         }
       }
     } catch (error) {
-      showToast(error.response?.data?.message || 'Failed to save offer', 'error');
+      showToast(error.response?.data?.message || `Failed to ${method === 'put' ? 'update' : 'add'} offer`, 'error');
     }
   });
 
@@ -507,29 +562,22 @@
             if (response.data.success) {
                 const row = document.querySelector(`button[onclick="toggleOfferStatus('${offerId}', '${currentStatus}')"]`).closest('tr');
                 const statusBadge = row.querySelector('td:nth-child(7) span');
+                const toggleButton = row.querySelector(`button[onclick*="toggleOfferStatus('${offerId}"]`);
                 
-                // Check if offer is expired
-                const endDateCell = row.querySelector('td:nth-child(6)').textContent;
-                const isExpired = new Date(endDateCell) < new Date();
-                
-                if (isExpired) {
-                    statusBadge.className = 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800';
-                    statusBadge.textContent = 'Expired';
-                } else {
-                    const newStatus = currentStatus === 'true' ? false : true;
-                    statusBadge.className = `px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${newStatus ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
-                    statusBadge.textContent = newStatus ? 'Active' : 'Inactive';
-                }
+                // Update status badge
+                const newStatus = currentStatus === 'true' ? false : true;
+                statusBadge.className = `px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${newStatus ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
+                statusBadge.textContent = newStatus ? 'Active' : 'Inactive';
 
                 // Update toggle button
-                const toggleButton = row.querySelector(`button[onclick="toggleOfferStatus('${offerId}', '${currentStatus}')"]`);
-                toggleButton.className = `${newStatus ? 'bg-primary-accent hover:bg-red-600' : 'bg-green-700 hover:bg-green-600'} text-white px-3 py-2 rounded-md`;
                 toggleButton.textContent = newStatus ? 'Deactivate' : 'Activate';
+                toggleButton.className = `${newStatus ? 'bg-primary-accent hover:bg-red-600' : 'bg-green-700 hover:bg-green-600'} text-white px-3 py-2 rounded-md`;
                 toggleButton.setAttribute('onclick', `toggleOfferStatus('${offerId}', '${newStatus}')`);
 
                 showToast(response.data.message);
             }
         } catch (error) {
+            console.error('Error:', error);
             showToast(error.response?.data?.message || `Failed to ${action} offer`, 'error');
         }
     }
@@ -600,7 +648,20 @@
   });
 
   document.addEventListener('DOMContentLoaded', function() {
+    const fields = ['name', 'offerType', 'offerPercentage', 'categories', 'products', 'startDate', 'endDate'];
     
+    fields.forEach(field => {
+      const element = document.getElementById(field);
+      if (element) {
+        element.addEventListener('input', function() {
+          this.classList.remove('border-red-500');
+          const errorElement = document.getElementById(`${field}Error`);
+          if (errorElement) {
+            errorElement.classList.add('hidden');
+          }
+        });
+      }
+    });
   });
 </script>
 
