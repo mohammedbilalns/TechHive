@@ -250,10 +250,8 @@
         <textarea id="returnReason" 
                   class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-primary-accent focus:border-primary-accent"
                   rows="4"
-                  required
-                  minlength="10"
-                  maxlength="500"
                   placeholder="Please explain why you want to return this item..."></textarea>
+        <p class="text-red-500 text-sm mt-1 hidden" id="returnReasonError"></p>
         <p class="text-sm text-gray-500 mt-1">
           <span id="charCount">0</span>/500 characters
         </p>
@@ -283,19 +281,19 @@
       <!-- Star Rating -->
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-2">Rating</label>
-        <div class="flex space-x-2">
+        <div class="flex space-x-2 mb-1">
           <% for(let i = 1; i <= 5; i++) { %>
             <button type="button" 
                     onclick="setRating('<%= i %>')"
                     class="star-btn text-2xl transition-colors duration-200 ease-in-out text-gray-300 hover:text-yellow-400 focus:outline-none group"
                     data-rating="<%- i %>">
               <span class="group-hover:text-yellow-400 peer">★</span>
-              <!-- This creates the effect where subsequent stars return to gray -->
               <span class="peer-hover:text-gray-300"></span>
             </button>
           <% } %>
         </div>
-        <input type="hidden" id="ratingInput" required>
+        <input type="hidden" id="ratingInput">
+        <p class="text-red-500 text-sm mt-1 hidden" id="ratingInputError"></p>
       </div>
 
       <!-- Review Comment -->
@@ -306,10 +304,8 @@
         <textarea id="reviewComment" 
                   class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-primary-accent focus:border-primary-accent"
                   rows="4"
-                  required
-                  minlength="10"
-                  maxlength="100"
                   placeholder="Share your experience with this product..."></textarea>
+        <p class="text-red-500 text-sm mt-1 hidden" id="reviewCommentError"></p>
         <p class="text-sm text-gray-500 mt-1">
           <span id="reviewCharCount">0</span>/100 characters
         </p>
@@ -370,18 +366,49 @@
     document.getElementById('charCount').textContent = count;
   });
 
-  // Handle return form submission
+  // Add these validation helper functions
+  function showError(fieldId, message) {
+    const input = document.getElementById(fieldId);
+    const errorElement = document.getElementById(`${fieldId}Error`);
+    
+    input.classList.add('border-red-500');
+    errorElement.textContent = message;
+    errorElement.classList.remove('hidden');
+  }
+
+  function resetErrors(formId) {
+    const form = document.getElementById(formId);
+    const inputs = form.querySelectorAll('input, textarea');
+    inputs.forEach(input => {
+      input.classList.remove('border-red-500');
+      const errorElement = document.getElementById(`${input.id}Error`);
+      if (errorElement) {
+        errorElement.classList.add('hidden');
+        errorElement.textContent = '';
+      }
+    });
+  }
+
+  // Update return form submission
   document.getElementById('returnForm').addEventListener('submit', async function(e) {
     e.preventDefault();
+    resetErrors('returnForm');
+
+    const reason = document.getElementById('returnReason').value.trim();
+    let hasError = false;
+
+    if (!reason) {
+      showError('returnReason', 'Return reason is required');
+      hasError = true;
+    } else if (reason.length < 10) {
+      showError('returnReason', 'Return reason must be at least 10 characters long');
+      hasError = true;
+    }
+
+    if (hasError) return;
 
     const orderId = document.getElementById('returnOrderId').value;
     const itemId = document.getElementById('returnItemId').value;
-    const reason = document.getElementById('returnReason').value;
-
-    if (reason.length < 10) {
-      showToast('Return reason must be at least 10 characters long', 'error');
-      return;
-    }
 
     try {
       const response = await axios.post(`/orders/${orderId}/items/${itemId}/return`, {
@@ -509,6 +536,10 @@
     currentRating = rating;
     document.getElementById('ratingInput').value = rating;
     
+    // Clear error when rating is selected
+    document.getElementById('ratingInput').classList.remove('border-red-500');
+    document.getElementById('ratingInputError').classList.add('hidden');
+    
     // Update star colors
     const stars = document.querySelectorAll('.star-btn');
     stars.forEach((star, index) => {
@@ -548,23 +579,30 @@
     }
   }
 
-  // Handle review form submission
+  // Update review form submission
   document.getElementById('reviewForm').addEventListener('submit', async function(e) {
     e.preventDefault();
+    resetErrors('reviewForm');
 
     const productName = document.getElementById('reviewProductName').value;
     const rating = currentRating;
-    const comment = document.getElementById('reviewComment').value;
+    const comment = document.getElementById('reviewComment').value.trim();
+    let hasError = false;
 
     if (!rating) {
-      showToast('Please select a rating', 'error');
-      return;
+      showError('ratingInput', 'Please select a rating');
+      hasError = true;
     }
 
-    if (comment.length < 10) {
-      showToast('Review must be at least 10 characters long', 'error');
-      return;
+    if (!comment) {
+      showError('reviewComment', 'Review comment is required');
+      hasError = true;
+    } else if (comment.length < 10) {
+      showError('reviewComment', 'Review must be at least 10 characters long');
+      hasError = true;
     }
+
+    if (hasError) return;
 
     try {
       const response = await axios.post('/review/add', {
@@ -583,6 +621,17 @@
       console.error('Error:', error);
       showToast(error.response?.data?.message || 'Failed to submit review', 'error');
     }
+  });
+
+  // Add input event listeners to clear errors when user starts typing
+  document.getElementById('returnReason').addEventListener('input', function() {
+    this.classList.remove('border-red-500');
+    document.getElementById('returnReasonError').classList.add('hidden');
+  });
+
+  document.getElementById('reviewComment').addEventListener('input', function() {
+    this.classList.remove('border-red-500');
+    document.getElementById('reviewCommentError').classList.add('hidden');
   });
 </script>
 

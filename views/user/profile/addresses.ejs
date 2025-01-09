@@ -51,21 +51,25 @@
                         <label class="block text-gray-600 mb-2">Name</label>
                         <input type="text" name="name"
                           class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                        <p class="text-red-500 text-sm mt-1 hidden" id="editNameError"></p>
                       </div>
                       <div>
                         <label class="block text-gray-600 mb-2">House Name</label>
                         <input type="text" name="houseName"
                           class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                        <p class="text-red-500 text-sm mt-1 hidden" id="editHouseNameError"></p>
                       </div>
                       <div>
                         <label class="block text-gray-600 mb-2">Locality/Street</label>
                         <input type="text" name="localityStreet"
                           class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                        <p class="text-red-500 text-sm mt-1 hidden" id="editLocalityStreetError"></p>
                       </div>
                       <div>
                         <label class="block text-gray-600 mb-2">City</label>
                         <input type="text" name="city"
                           class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                        <p class="text-red-500 text-sm mt-1 hidden" id="editCityError"></p>
                       </div>
                       <div>
                         <label class="block text-gray-600 mb-2">State</label>
@@ -110,16 +114,19 @@
                           <option value="Ladakh">Ladakh</option>
                           <option value="Jammu and Kashmir">Jammu and Kashmir</option>
                         </select>
+                        <p class="text-red-500 text-sm mt-1 hidden" id="editStateError"></p>
                       </div>
                       <div>
                         <label class="block text-gray-600 mb-2">Pincode</label>
                         <input type="text" name="pincode"
                           class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                        <p class="text-red-500 text-sm mt-1 hidden" id="editPincodeError"></p>
                       </div>
                       <div>
                         <label class="block text-gray-600 mb-2">Phone</label>
                         <input type="tel" name="phone"
                           class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+                        <p class="text-red-500 text-sm mt-1 hidden" id="editPhoneError"></p>
                       </div>
                       <div>
                         <label class="block text-gray-600 mb-2">Alternate Phone (Optional)</label>
@@ -194,20 +201,24 @@
           <div>
             <label class="block text-gray-600 mb-2">Name</label>
             <input type="text" name="name" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <p class="text-red-500 text-sm mt-1 hidden" id="addNameError"></p>
           </div>
           <div>
             <label class="block text-gray-600 mb-2">House Name</label>
             <input type="text" name="houseName"
               class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <p class="text-red-500 text-sm mt-1 hidden" id="addHouseNameError"></p>
           </div>
           <div>
             <label class="block text-gray-600 mb-2">Locality/Street</label>
             <input type="text" name="localityStreet"
               class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <p class="text-red-500 text-sm mt-1 hidden" id="addLocalityStreetError"></p>
           </div>
           <div>
             <label class="block text-gray-600 mb-2">City</label>
             <input type="text" name="city" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <p class="text-red-500 text-sm mt-1 hidden" id="addCityError"></p>
           </div>
           <div>
             <label class="block text-gray-600 mb-2">State</label>
@@ -250,15 +261,18 @@
               <option value="Ladakh">Ladakh</option>
               <option value="Jammu and Kashmir">Jammu and Kashmir</option>
             </select>
+            <p class="text-red-500 text-sm mt-1 hidden" id="addStateError"></p>
           </div>
           <div>
             <label class="block text-gray-600 mb-2">Pincode</label>
             <input type="text" name="pincode"
               class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <p class="text-red-500 text-sm mt-1 hidden" id="addPincodeError"></p>
           </div>
           <div>
             <label class="block text-gray-600 mb-2">Phone</label>
             <input type="tel" name="phone" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <p class="text-red-500 text-sm mt-1 hidden" id="addPhoneError"></p>
           </div>
           <div>
             <label class="block text-gray-600 mb-2">Alternate Phone (Optional)</label>
@@ -325,25 +339,84 @@
     async function submitEditAddress() {
       try {
         const form = document.getElementById('editAddressForm');
+        resetErrors('edit');
+
         const addressId = form.querySelector('[name="addressId"]').value;
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
+        
+        let hasError = false;
+        
+        // Name validation
+        if (!data.name?.trim()) {
+          showError('name', 'Name is required', 'edit');
+          hasError = true;
+        } else if (data.name.trim().length < 3 || data.name.trim().length > 50) {
+          showError('name', 'Name must be between 3 and 50 characters', 'edit');
+          hasError = true;
+        }
+        
+        // House name validation
+        if (!data.houseName?.trim()) {
+          showError('houseName', 'House name is required', 'edit');
+          hasError = true;
+        } else if (data.houseName.trim().length < 3 || data.houseName.trim().length > 50) {
+          showError('houseName', 'House name must be between 3 and 50 characters', 'edit');
+          hasError = true;
+        }
+        
+        // Locality/Street validation
+        if (!data.localityStreet?.trim()) {
+          showError('localityStreet', 'Locality/Street is required', 'edit');
+          hasError = true;
+        } else if (data.localityStreet.trim().length < 3 || data.localityStreet.trim().length > 50) {
+          showError('localityStreet', 'Locality/Street must be between 3 and 50 characters', 'edit');
+          hasError = true;
+        }
+        
+        // City validation
+        if (!data.city?.trim()) {
+          showError('city', 'City is required', 'edit');
+          hasError = true;
+        } else if (data.city.trim().length < 3 || data.city.trim().length > 50) {
+          showError('city', 'City must be between 3 and 50 characters', 'edit');
+          hasError = true;
+        }
+        
+        // ... rest of the validations ...
+        if (!data.state) {
+          showError('state', 'Please select a state', 'edit');
+          hasError = true;
+        }
+        
+        if (!data.pincode?.trim()) {
+          showError('pincode', 'Pincode is required', 'edit');
+          hasError = true;
+        } else if (!/^\d{6}$/.test(data.pincode)) {
+          showError('pincode', 'Please enter a valid 6-digit pincode', 'edit');
+          hasError = true;
+        }
+        
+        if (!data.phone?.trim()) {
+          showError('phone', 'Phone number is required', 'edit');
+          hasError = true;
+        } else if (!/^\d{10}$/.test(data.phone)) {
+          showError('phone', 'Please enter a valid 10-digit phone number', 'edit');
+          hasError = true;
+        }
 
-        if (!validateAddressForm(data)) return;
+        if (hasError) return;
+
         const response = await axios.put(`/address/${addressId}`, data);
-
         if (response.data.success) {
-          toggleEditAddress(); // Close the modal 
+          toggleEditAddress();
           showToast('Address updated successfully', 'success');
-          setTimeout(() => {
-            window.location.reload();
-          }, 1500);
-        } else {
-          showToast(response.data.message || 'Failed to update address', 'error');
+          setTimeout(() => window.location.reload(), 1500);
         }
       } catch (error) {
-        console.error('Error updating address:', error);
-        showToast('Failed to update address', 'error');
+        console.error('Edit Address Error:', error);
+        const errorMessage = error.response?.data?.message || 'Failed to update address';
+        showToast(errorMessage, 'error');
       }
     }
     async function deleteAddress(addressId) {
@@ -437,20 +510,81 @@
     async function submitAddAddress() {
       try {
         const form = document.getElementById('addAddressForm');
+        resetErrors('add');
+
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
-        if (!validateAddressForm(data)) return;
+        
+        let hasError = false;
+        
+        // Name validation
+        if (!data.name?.trim()) {
+          showError('name', 'Name is required', 'add');
+          hasError = true;
+        } else if (data.name.trim().length < 3 || data.name.trim().length > 50) {
+          showError('name', 'Name must be between 3 and 50 characters', 'add');
+          hasError = true;
+        }
+        
+        // House name validation
+        if (!data.houseName?.trim()) {
+          showError('houseName', 'House name is required', 'add');
+          hasError = true;
+        } else if (data.houseName.trim().length < 3 || data.houseName.trim().length > 50) {
+          showError('houseName', 'House name must be between 3 and 50 characters', 'add');
+          hasError = true;
+        }
+        
+        // Locality/Street validation
+        if (!data.localityStreet?.trim()) {
+          showError('localityStreet', 'Locality/Street is required', 'add');
+          hasError = true;
+        } else if (data.localityStreet.trim().length < 3 || data.localityStreet.trim().length > 50) {
+          showError('localityStreet', 'Locality/Street must be between 3 and 50 characters', 'add');
+          hasError = true;
+        }
+        
+        // City validation
+        if (!data.city?.trim()) {
+          showError('city', 'City is required', 'add');
+          hasError = true;
+        } else if (data.city.trim().length < 3 || data.city.trim().length > 50) {
+          showError('city', 'City must be between 3 and 50 characters', 'add');
+          hasError = true;
+        }
+        
+        // ... rest of the validations ...
+        if (!data.state) {
+          showError('state', 'Please select a state', 'add');
+          hasError = true;
+        }
+        
+        if (!data.pincode?.trim()) {
+          showError('pincode', 'Pincode is required', 'add');
+          hasError = true;
+        } else if (!/^\d{6}$/.test(data.pincode)) {
+          showError('pincode', 'Please enter a valid 6-digit pincode', 'add');
+          hasError = true;
+        }
+        
+        if (!data.phone?.trim()) {
+          showError('phone', 'Phone number is required', 'add');
+          hasError = true;
+        } else if (!/^\d{10}$/.test(data.phone)) {
+          showError('phone', 'Please enter a valid 10-digit phone number', 'add');
+          hasError = true;
+        }
+
+        if (hasError) return;
+
         const response = await axios.post('/addresses', data);
         if (response.data.success) {
-          toggleAddAddress(); // Close the modal first
+          toggleAddAddress();
           showToast('Address added successfully', 'success');
-          setTimeout(() => {
-            window.location.reload();
-          }, 1500);
-        } else {
-          showToast(response.data.message || 'Failed to add address', 'error');
+          setTimeout(() => window.location.reload(), 1500);
         }
       } catch (error) {
+        console.error('Add Address Error:', error);
         const errorMessage = error.response?.data?.message || 'Failed to add address';
         showToast(errorMessage, 'error');
       }
@@ -469,5 +603,72 @@
       const addressCount = document.querySelectorAll('.border.rounded-lg.p-4').length;
       return addressCount >= 5;
     }
+    function showError(fieldId, message, formType) {
+      const errorId = `${formType}${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}Error`;
+      const input = document.querySelector(`#${formType}AddressForm [name="${fieldId}"]`);
+      const errorElement = document.getElementById(errorId);
+      
+      if (input && errorElement) {
+        input.classList.add('border-red-500');
+        errorElement.textContent = message;
+        errorElement.classList.remove('hidden');
+      } else {
+        console.error(`Element not found: input=${fieldId}, error=${errorId}`);
+      }
+    }
+    function resetErrors(formType) {
+      const form = document.getElementById(`${formType}AddressForm`);
+      const inputs = form.querySelectorAll('input, select');
+      inputs.forEach(input => {
+        input.classList.remove('border-red-500');
+        const fieldName = input.getAttribute('name');
+        const errorId = `${formType}${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}Error`;
+        const errorElement = document.getElementById(errorId);
+        if (errorElement) {
+          errorElement.classList.add('hidden');
+          errorElement.textContent = '';
+        }
+      });
+    }
+    document.querySelectorAll('#addAddressForm input, #addAddressForm select').forEach(input => {
+      input.addEventListener('input', function() {
+        this.classList.remove('border-red-500');
+        const errorId = `add${this.name.charAt(0).toUpperCase() + this.name.slice(1)}Error`;
+        const errorElement = document.getElementById(errorId);
+        if (errorElement) {
+          errorElement.classList.add('hidden');
+        }
+      });
+    });
+    document.querySelectorAll('#editAddressForm input, #editAddressForm select').forEach(input => {
+      input.addEventListener('input', function() {
+        this.classList.remove('border-red-500');
+        const errorId = `edit${this.name.charAt(0).toUpperCase() + this.name.slice(1)}Error`;
+        const errorElement = document.getElementById(errorId);
+        if (errorElement) {
+          errorElement.classList.add('hidden');
+        }
+      });
+    });
+    function addInputListeners(formType) {
+      const form = document.getElementById(`${formType}AddressForm`);
+      const inputs = form.querySelectorAll('input, select');
+      
+      inputs.forEach(input => {
+        input.addEventListener('input', function() {
+          this.classList.remove('border-red-500');
+          const fieldName = this.getAttribute('name');
+          const errorId = `${formType}${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}Error`;
+          const errorElement = document.getElementById(errorId);
+          if (errorElement) {
+            errorElement.classList.add('hidden');
+          }
+        });
+      });
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      addInputListeners('add');
+      addInputListeners('edit');
+    });
   </script>
   <%- include('../../partials/footer') %>
