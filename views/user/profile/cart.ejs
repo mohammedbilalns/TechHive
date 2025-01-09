@@ -94,14 +94,6 @@
                         <h2 class="text-lg font-semibold mb-4">Order Summary</h2>
                         <div class="space-y-2">
                           <div class="flex justify-between">
-                            <span class="text-gray-600">Original Price</span>
-                            <span id="originalPrice">₹<%= originalPrice %></span>
-                          </div>
-                          <div class="flex justify-between text-green-600">
-                            <span>Item Discount</span>
-                            <span id="itemDiscount">-₹<%= totalDiscount %></span>
-                          </div>
-                          <div class="flex justify-between">
                             <span class="text-gray-600">Subtotal</span>
                             <span id="subtotal">₹<%= subtotal %></span>
                           </div>
@@ -114,13 +106,13 @@
                               <span>Coupon Discount</span>
                               <span id="couponDiscount">-₹<%= cart.discount %></span>
                             </div>
-                            <% } %>
-                              <div class="border-t pt-2 mt-2">
-                                <div class="flex justify-between font-semibold">
-                                  <span>Total</span>
-                                  <span id="total">₹<%= total %></span>
-                                </div>
-                              </div>
+                          <% } %>
+                          <div class="border-t pt-2 mt-2">
+                            <div class="flex justify-between font-semibold">
+                              <span>Total</span>
+                              <span id="total">₹<%= total %></span>
+                            </div>
+                          </div>
                         </div>
 
                         <!-- Checkout Button -->
@@ -203,8 +195,6 @@
             document.querySelector(`[data-product="${productId}"] .item-total`).textContent = `₹${itemTotal}`;
 
             // Update cart summary values
-            document.getElementById('originalPrice').textContent = `₹${response.data.originalPrice}`;
-            document.getElementById('itemDiscount').textContent = `-₹${response.data.totalDiscount}`;
             document.getElementById('subtotal').textContent = `₹${response.data.subtotal}`;
             document.getElementById('total').textContent = `₹${response.data.total}`;
 
@@ -240,8 +230,6 @@
             showToast('Item removed from cart successfully', 'success');
 
             // Update cart summary values
-            document.getElementById('originalPrice').textContent = `₹${response.data.originalPrice}`;
-            document.getElementById('itemDiscount').textContent = `-₹${response.data.totalDiscount}`;
             document.getElementById('subtotal').textContent = `₹${response.data.subtotal}`;
             document.getElementById('total').textContent = `₹${response.data.total}`;
 

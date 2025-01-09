@@ -73,12 +73,7 @@
                             <%= item.productId.name %>
                           </h3>
                           <p class="text-gray-600 text-sm item-price">
-                            <% if (item.productId.discount> 0) { %>
-                              ₹<%= (item.productId.price * (1 - item.productId.discount/100)).toFixed(2) %>
-                                <span class="line-through text-gray-400">₹<%= item.productId.price.toFixed(2) %></span>
-                                <% } else { %>
-                                  ₹<%= item.productId.price.toFixed(2) %>
-                                    <% } %>
+                            ₹<%= (item.productId.price * (1 - item.productId.discount/100)).toFixed(2) %>
                           </p>
                         </div>
                       </div>
@@ -99,17 +94,12 @@
                 <h3 class="font-semibold mb-2">Price Details</h3>
                 <div class="space-y-2">
                   <div class="flex justify-between">
-                    <span>Original Price</span>
-                    <span data-subtotal>₹<%= originalPrice.toFixed(2) %></span>
+                    <span>Subtotal</span>
+                    <span data-subtotal>₹<%= total.toFixed(2) %></span>
                   </div>
                   <div class="flex justify-between">
                     <span>Shipping</span>
                     <span>Free</span>
-                  </div>
-
-                  <div class="flex justify-between text-green-600">
-                    <span>Items discount</span>
-                    <span data-total-savings>₹<%= totalSavings.toFixed(2) %></span>
                   </div>
 
                   <!-- New Coupon Section -->
