@@ -85,8 +85,16 @@
           </table>
         </div>
 
-        <!-- Add pagination controls -->
-        <div id="paginationControls" class="mt-8 flex justify-center items-center space-x-4">
+        <!-- Add margin/padding between table and pagination -->
+        <div class="pb-6"></div>
+
+        <!-- Pagination with horizontal scroll for mobile -->
+        <div id="paginationControls" class="mt-8 flex justify-center">
+          <div class="overflow-x-auto max-w-full">
+            <div class="flex items-center space-x-4 px-4">
+              <!-- Pagination will be dynamically inserted here by JavaScript -->
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -189,7 +197,6 @@
       tableBody.innerHTML += row;
     });
 
-    //  pagination controls
     const paginationControls = document.getElementById('paginationControls');
     if (data.pagination) {
       let paginationHTML = '';
@@ -197,7 +204,7 @@
       if (data.pagination.hasPrevPage) {
         paginationHTML += `
           <button onclick="changePage(${data.pagination.currentPage - 1})" 
-            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+            class="flex-shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
             Previous
           </button>
         `;
@@ -206,7 +213,7 @@
       for (let i = 1; i <= data.pagination.totalPages; i++) {
         paginationHTML += `
           <button onclick="changePage(${i})" 
-            class="px-4 py-2 rounded-lg ${
+            class="flex-shrink-0 px-4 py-2 rounded-lg ${
               data.pagination.currentPage === i 
                 ? 'bg-primary-accent text-white' 
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -219,13 +226,15 @@
       if (data.pagination.hasNextPage) {
         paginationHTML += `
           <button onclick="changePage(${data.pagination.currentPage + 1})" 
-            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+            class="flex-shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
             Next
           </button>
         `;
       }
 
-      paginationControls.innerHTML = paginationHTML;
+      const paginationContainer = paginationControls.querySelector('.flex');
+      paginationContainer.className = 'flex items-center space-x-4 px-4';
+      paginationContainer.innerHTML = paginationHTML;
     }
   }
 

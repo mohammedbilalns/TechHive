@@ -119,25 +119,34 @@
           </table>
         </div>
 
-        <!-- Pagination -->
+        <div class="pb-6"></div>
+
         <% if (offers.length > 0) { %>
-          <div class="px-6 py-4 flex justify-center">
-            <nav class="flex space-x-2">
-              <% if (hasPrevPage) { %>
-                <a href="/admin/offers?page=<%= currentPage - 1 %>" class="px-3 py-1 rounded-md bg-primary-accent text-white hover:bg-red-600">Previous</a>
-              <% } %>
-              
-              <% for(let i = 1; i <= totalPages; i++) { %>
-                <a href="/admin/offers?page=<%= i %>" 
-                  class="px-3 py-1 rounded-md <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-primary-accent text-white hover:bg-red-600' %>">
-                  <%= i %>
-                </a>
-              <% } %>
-              
-              <% if (hasNextPage) { %>
-                <a href="/admin/offers?page=<%= currentPage + 1 %>" class="px-3 py-1 rounded-md bg-primary-accent text-white hover:bg-red-600">Next</a>
-              <% } %>
-            </nav>
+          <div class="mt-8 mb-4 flex justify-center">
+            <div class="overflow-x-auto max-w-full">
+              <div class="flex items-center space-x-4 px-4">
+                <% if (hasPrevPage) { %>
+                  <a href="/admin/offers?page=<%= currentPage - 1 %>"
+                    class="flex-shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                    Previous
+                  </a>
+                <% } %>
+
+                <% for(let i=1; i <=totalPages; i++) { %>
+                  <a href="/admin/offers?page=<%= i %>"
+                    class="flex-shrink-0 px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
+                    <%= i %>
+                  </a>
+                <% } %>
+
+                <% if (hasNextPage) { %>
+                  <a href="/admin/offers?page=<%= currentPage + 1 %>"
+                    class="flex-shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                    Next
+                  </a>
+                <% } %>
+              </div>
+            </div>
           </div>
         <% } %>
       </div>

@@ -86,31 +86,38 @@
                 </tbody>
               </table>
 
-              <!--  pagination controls -->
-              <% if (categories.length> 0) { %>
-                <div class="mt-8 flex justify-center items-center space-x-4">
-                  <% if (hasPrevPage) { %>
-                    <a href="/admin/categories?page=<%= currentPage - 1 %><%= search ? `&search=${search}` : '' %>"
-                      class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                      Previous
-                    </a>
-                    <% } %>
+              <!-- Add margin/padding between table and pagination -->
+              <div class="pb-6"></div>
+
+              <!-- Pagination with horizontal scroll for mobile -->
+              <% if (categories.length > 0) { %>
+                <div class="mt-8 flex justify-center">
+                  <div class="overflow-x-auto max-w-full">
+                    <div class="flex items-center space-x-4 px-4">
+                      <% if (hasPrevPage) { %>
+                        <a href="/admin/categories?page=<%= currentPage - 1 %><%= search ? `&search=${search}` : '' %>"
+                          class="flex-shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                          Previous
+                        </a>
+                      <% } %>
 
                       <% for(let i=1; i <=totalPages; i++) { %>
                         <a href="/admin/categories?page=<%= i %><%= search ? `&search=${search}` : '' %>"
-                          class="px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
+                          class="flex-shrink-0 px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
                           <%= i %>
                         </a>
-                        <% } %>
+                      <% } %>
 
-                          <% if (hasNextPage) { %>
-                            <a href="/admin/categories?page=<%= currentPage + 1 %><%= search ? `&search=${search}` : '' %>"
-                              class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                              Next
-                            </a>
-                            <% } %>
+                      <% if (hasNextPage) { %>
+                        <a href="/admin/categories?page=<%= currentPage + 1 %><%= search ? `&search=${search}` : '' %>"
+                          class="flex-shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                          Next
+                        </a>
+                      <% } %>
+                    </div>
+                  </div>
                 </div>
-                <% } %>
+              <% } %>
             </div>
           </div>
         </div>
