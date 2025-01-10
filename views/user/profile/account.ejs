@@ -185,7 +185,6 @@
 
     function validatePassword(input) {
       const password = input.value;
-      //  regex for password validation 
       const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&]).{8,}$/;
 
       if (!passwordRegex.test(password)) {
@@ -238,10 +237,29 @@
 
     async function copyReferralCode() {
         const referralCode = document.getElementById('referralCode').textContent;
+        
+        if (navigator.clipboard && window.isSecureContext) {
+            try {
+                await navigator.clipboard.writeText(referralCode);
+                showToast('Referral code copied to clipboard!');
+                return;
+            } catch (err) {
+                console.error('Clipboard API failed:', err);
+            }
+        }
+        
         try {
-            await navigator.clipboard.writeText(referralCode);
+            const textarea = document.createElement('textarea');
+            textarea.value = referralCode;
+            textarea.style.position = 'fixed'; 
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
             showToast('Referral code copied to clipboard!');
         } catch (err) {
+            console.error('Fallback copy method failed:', err);
             showToast('Failed to copy referral code', 'error');
         }
     }

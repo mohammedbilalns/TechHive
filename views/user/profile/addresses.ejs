@@ -347,7 +347,7 @@
         
         let hasError = false;
         
-        // Name validation
+        // validations 
         if (!data.name?.trim()) {
           showError('name', 'Name is required', 'edit');
           hasError = true;
@@ -356,7 +356,6 @@
           hasError = true;
         }
         
-        // House name validation
         if (!data.houseName?.trim()) {
           showError('houseName', 'House name is required', 'edit');
           hasError = true;
@@ -365,7 +364,6 @@
           hasError = true;
         }
         
-        // Locality/Street validation
         if (!data.localityStreet?.trim()) {
           showError('localityStreet', 'Locality/Street is required', 'edit');
           hasError = true;
@@ -374,7 +372,6 @@
           hasError = true;
         }
         
-        // City validation
         if (!data.city?.trim()) {
           showError('city', 'City is required', 'edit');
           hasError = true;
@@ -383,7 +380,6 @@
           hasError = true;
         }
         
-        // ... rest of the validations ...
         if (!data.state) {
           showError('state', 'Please select a state', 'edit');
           hasError = true;
@@ -409,7 +405,7 @@
 
         const response = await axios.put(`/address/${addressId}`, data);
         if (response.data.success) {
-          // Update the address card in the DOM
+          // Update the address card 
           const addressCard = document.querySelector(`[data-address-id="${addressId}"]`);
           if (addressCard) {
             addressCard.innerHTML = `
@@ -450,7 +446,7 @@
         const response = await axios.delete(`/address/${addressId}`);
 
         if (response.data.success) {
-          // Remove the address card from DOM
+          // Remove the address card 
           const addressCard = document.querySelector(`[data-address-id="${addressId}"]`);
           if (addressCard) {
             addressCard.remove();
@@ -494,40 +490,34 @@
         return false;
       }
 
-      // Regex for alphanumeric with hyphen and space
+      // validations 
       const alphanumericRegex = /^[a-zA-Z0-9\s-]{3,50}$/;
 
-      // Validate name
       if (!alphanumericRegex.test(trimmedData.name)) {
         showToast('Name must be 3-50 characters long and can only contain letters, numbers, spaces, and hyphens', 'error');
         return false;
       }
 
-      // Validate house name
       if (!alphanumericRegex.test(trimmedData.houseName)) {
         showToast('House name must be 3-50 characters long and can only contain letters, numbers, spaces, and hyphens', 'error');
         return false;
       }
 
-      // Validate locality/street
       if (!alphanumericRegex.test(trimmedData.localityStreet)) {
         showToast('Locality/Street must be 3-50 characters long and can only contain letters, numbers, spaces, and hyphens', 'error');
         return false;
       }
 
-      // Validate city
       if (!alphanumericRegex.test(trimmedData.city)) {
         showToast('City must be 3-50 characters long and can only contain letters, numbers, spaces, and hyphens', 'error');
         return false;
       }
 
-      // Pincode validation (6 digits)
       if (!/^\d{6}$/.test(trimmedData.pincode)) {
         showToast('Please enter a valid 6-digit pincode', 'error');
         return false;
       }
 
-      // Phone number validation (10 digits)
       if (!/^\d{10}$/.test(trimmedData.phone)) {
         showToast('Please enter a valid 10-digit phone number', 'error');
         return false;
@@ -556,7 +546,7 @@
         
         let hasError = false;
         
-        // Name validation
+        //  validations
         if (!data.name?.trim()) {
           showError('name', 'Name is required', 'add');
           hasError = true;
@@ -565,7 +555,6 @@
           hasError = true;
         }
         
-        // House name validation
         if (!data.houseName?.trim()) {
           showError('houseName', 'House name is required', 'add');
           hasError = true;
@@ -574,7 +563,6 @@
           hasError = true;
         }
         
-        // Locality/Street validation
         if (!data.localityStreet?.trim()) {
           showError('localityStreet', 'Locality/Street is required', 'add');
           hasError = true;
@@ -583,7 +571,6 @@
           hasError = true;
         }
         
-        // City validation
         if (!data.city?.trim()) {
           showError('city', 'City is required', 'add');
           hasError = true;
@@ -592,7 +579,6 @@
           hasError = true;
         }
         
-        // ... rest of the validations ...
         if (!data.state) {
           showError('state', 'Please select a state', 'add');
           hasError = true;

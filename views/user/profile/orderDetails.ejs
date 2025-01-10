@@ -62,7 +62,6 @@
               <div class="mt-4">
                 <div class="flex items-center space-x-4">
                   <% 
-                    // For cancelled orders, only include statuses that have dates
                     let statusOrder = ['processing'];
                     if (item.shippedDate) statusOrder.push('shipped');
                     if (item.deliveredDate) statusOrder.push('delivered');
