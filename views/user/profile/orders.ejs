@@ -165,67 +165,8 @@
   </main>
 </div>
 
-<script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
 <script>
-  async function retryPayment(orderId) {
-    try {
-      const response = await axios.post(`/orders/${orderId}/retry-payment`);
-
-      if (response.data.success) {
-        const options = {
-          key: '<%= process.env.RAZORPAY_KEY_ID %>',
-          amount: response.data.amount,
-          currency: "INR",
-          name: "TechHive",
-          description: "Order Payment",
-          order_id: response.data.razorpayOrderId,
-          handler: function (response) {
-            verifyPayment({
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_signature: response.razorpay_signature,
-              orderId: orderId
-            });
-          },
-          modal: {
-            ondismiss: function () {
-              showToast('Payment failed', 'error');
-            }
-          },
-          prefill: {
-            name: "<%= user.name %>",
-            email: "<%= user.email %>"
-          },
-          theme: {
-            color: "#DA0037"
-          }
-        };
-
-        const rzp = new Razorpay(options);
-        rzp.open();
-      } else {
-        showToast(response.data.message || 'Failed to initialize payment', 'error');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      showToast('Failed to initialize payment', 'error');
-    }
-  }
-
-  async function verifyPayment(paymentData) {
-    try {
-      const response = await axios.post('/checkout/verifypayment', paymentData);
-      if (response.data.success) {
-        showToast('Payment successful', 'success');
-        setTimeout(() => window.location.reload(), 1500);
-      } else {
-        showToast('Payment verification failed', 'error');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      showToast('Payment verification failed', 'error');
-    }
-  }
+  
 
   document.getElementById('searchForm').addEventListener('submit', async (e) => {
     e.preventDefault();
