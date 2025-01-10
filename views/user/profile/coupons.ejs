@@ -41,9 +41,16 @@
                         class="bg-white rounded-lg border-2 <%= borderColor %> p-6 <%= status === 'Expired' ? 'opacity-75' : '' %>">
                         <div class="flex justify-between items-start mb-4">
                           <div>
-                            <h3 class="text-lg font-bold text-gray-800">
-                              <%= coupon.code %>
-                            </h3>
+                            <div class="flex items-center space-x-2">
+                              <h3 class="text-lg font-bold text-gray-800" id="couponCode-<%= coupon._id %>">
+                                <%= coupon.code %>
+                              </h3>
+                              <% if (status === 'Active') { %>
+                                <button onclick="copyCouponCode('<%= coupon._id %>')" class="text-primary-accent hover:text-primary-accent/90">
+                                  <i class="fas fa-copy"></i>
+                                </button>
+                              <% } %>
+                            </div>
                             <p class="text-gray-600 text-sm">
                               <%= coupon.description %>
                             </p>
@@ -123,5 +130,36 @@
         </div>
       </main>
   </div>
+
+  <script>
+    async function copyCouponCode(couponId) {
+      const couponCode = document.getElementById(`couponCode-${couponId}`).textContent.trim();
+      
+      if (navigator.clipboard && window.isSecureContext) {
+        try {
+          await navigator.clipboard.writeText(couponCode);
+          showToast('Coupon code copied to clipboard!');
+          return;
+        } catch (err) {
+          console.error('Clipboard API failed:', err);
+        }
+      }
+      
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = couponCode;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast('Coupon code copied to clipboard!');
+      } catch (err) {
+        console.error('Fallback copy method failed:', err);
+        showToast('Failed to copy coupon code', 'error');
+      }
+    }
+  </script>
 
   <%- include('../../partials/footer') %>
