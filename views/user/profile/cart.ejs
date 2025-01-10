@@ -206,6 +206,7 @@
               }
             }
             document.getElementById("cart-quantity").innerText = response.data.totalQuantity;
+            document.getElementById("cart-quantity-mobile").innerText = response.data.totalQuantity;
 
           } else {
             const errorMessage = response.data.message || 'Error updating quantity';
@@ -238,6 +239,7 @@
               showEmptyCart();
             }
             document.getElementById("cart-quantity").innerText = response.data.totalQuantity;
+            document.getElementById("cart-quantity-mobile").innerText = response.data.totalQuantity;  
           } else {
             showToast(response.data.message || 'Failed to remove item', 'error');
           }
@@ -303,6 +305,7 @@
             showEmptyCart();
             document.getElementById("clear-cart-button").classList.add('hidden');
             document.getElementById("cart-quantity").innerText = "0";
+            document.getElementById("cart-quantity-mobile").innerText = "0";
             showToast('Cart cleared successfully', 'success');
           } else {
             showToast(response.data.message || 'Failed to clear cart', 'error');

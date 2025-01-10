@@ -169,6 +169,7 @@
                 // Use custom alert
                 showToast(data.message, data.success ? 'success' : 'error');
                 document.getElementById("cart-quantity").innerText = data.totalQuantity
+                document.getElementById("cart-quantity-mobile").innerText = data.totalQuantity
 
             } catch (error) {
                 console.error('Error:', error);
@@ -202,6 +203,7 @@
                 }
                 showToast(data.message, data.success ? 'success' : 'error');
                 document.getElementById("wishlist-quantity").innerText = data.totalQuantity
+                document.getElementById("wishlist-quantity-mobile").innerText = data.totalQuantity
 
             } catch (error) {
                 console.error('Error:', error);
@@ -232,6 +234,7 @@
                     });
                     showToast('Product removed from wishlist successfully', 'success');
                     document.getElementById("wishlist-quantity").innerText =response.data.totalQuantity
+                    document.getElementById("wishlist-quantity-mobile").innerText = response.data.totalQuantity
 
                 } else {
                     showToast(response.data.message || 'Failed to remove item', 'error');

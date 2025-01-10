@@ -452,6 +452,7 @@
                 const { data } = await axios.post('/cart', { productId });
                 showToast(data.message, data.success ? 'success' : 'error');
                 document.getElementById("cart-quantity").innerText = data.totalQuantity;
+                document.getElementById("cart-quantity-mobile").innerText = data.totalQuantity
             } catch (error) {
                 console.error('Error:', error);
                 showToast(error.response?.data?.message || 'Error adding item to cart', 'error');
@@ -482,6 +483,7 @@
 
                     showToast(data.message, 'success');
                     document.getElementById("wishlist-quantity").innerText = data.totalQuantity
+                    document.getElementById("wishlist-quantity-mobile").innerText = data.totalQuantity
 
                 } else {
                     showToast(data.message, 'error');
@@ -513,6 +515,7 @@
 
                     showToast('Product removed from wishlist successfully', 'success');
                     document.getElementById("wishlist-quantity").innerText = response.data.totalQuantity
+                    document.getElementById("wishlist-quantity-mobile").innerText = response.data.totalQuantity
 
                 } else {
                     showToast(response.data.message || 'Failed to remove item', 'error');
