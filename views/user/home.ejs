@@ -11,7 +11,7 @@
         <section class="mb-6 md:mb-10">
             <div class="flex justify-between items-center mb-3 md:mb-5">
                 <p class="text-xl md:text-2xl">New Arrival</p>
-                <a href="/allproducts" class="text-sm text-red-600 hover:text-red-700">View All</a>
+                <a href="/allproducts" class="text-sm text-primary-accent hover:text-red-600">View All</a>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 justify-items-center">
 
@@ -65,14 +65,14 @@
                                 </div>
                                 <% if (product.discount> 0) { %>
                                     <div class="flex items-center gap-2">
-                                        <p class="text-red-600 text-sm font-bold">₹<%= (product.price * (1 -
+                                        <p class="text-primary-accent text-sm font-bold">₹<%= (product.price * (1 -
                                                 product.discount/100)).toFixed(2) %>
                                         </p>
                                         <p class="text-gray-400 line-through text-xs">₹<%= product.price.toFixed(2) %>
                                         </p>
                                     </div>
                                     <% } else { %>
-                                        <p class="text-red-600 text-sm font-bold">₹<%= product.price.toFixed(2) %>
+                                        <p class="text-primary-accent text-sm font-bold">₹<%= product.price.toFixed(2) %>
                                         </p>
                                         <% } %>
                             </div>
@@ -120,7 +120,7 @@
         <section class="mb-6 md:mb-10">
             <div class="flex justify-between items-center mb-3 md:mb-5">
                 <p class="text-xl md:text-2xl">View All Products</p>
-                <a href="/allproducts" class="text-sm text-red-600 hover:text-red-700">View All</a>
+                <a href="/allproducts" class="text-sm text-primary-accent hover:text-red-600">View All</a>
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-5">
                 <% allProducts.forEach(product=> { %>

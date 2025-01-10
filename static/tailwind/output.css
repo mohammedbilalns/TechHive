@@ -1061,6 +1061,14 @@ input::placeholder {
   min-width: 100%;
 }
 
+.min-w-\[20px\] {
+  min-width: 20px;
+}
+
+.min-w-\[18px\] {
+  min-width: 18px;
+}
+
 .max-w-2xl {
   max-width: 42rem;
 }
@@ -1709,6 +1717,11 @@ input::placeholder {
   padding-bottom: 2rem;
 }
 
+.px-1 {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
 .pb-3 {
   padding-bottom: 0.75rem;
 }
@@ -1816,6 +1829,10 @@ input::placeholder {
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
+}
+
+.text-\[10px\] {
+  font-size: 10px;
 }
 
 .font-bold {
@@ -2302,6 +2319,11 @@ input::placeholder {
 .hover\:text-yellow-400:hover {
   --tw-text-opacity: 1;
   color: rgb(250 204 21 / var(--tw-text-opacity, 1));
+}
+
+.hover\:text-red-900:hover {
+  --tw-text-opacity: 1;
+  color: rgb(127 29 29 / var(--tw-text-opacity, 1));
 }
 
 .hover\:underline:hover {
