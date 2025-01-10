@@ -39,7 +39,7 @@
                       <%= address.name %>
                     </h3>
                     <p class="text-gray-600">
-                      <%= address.houseName %>,<%= address.localitystreet %><br>
+                      <%= address.houseName %> <%= address.localitystreet %><br>
                           <%= address.city %>, <%= address.state %>
                               <%= address.pincode %><br>
                                 Phone: <%= address.phone %>
@@ -681,11 +681,22 @@
         const response = await axios.post('/addresses', data);
 
         if (response.data.success) {
+          // Update DOM with new address
+          const addressesContainer = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.gap-4');
+          const isFirstAddress = addressesContainer.children.length === 0;
+          const newAddressCard = createAddressCard(response.data.address, isFirstAddress);
+          
+          // Add the new address card to the grid
+          addressesContainer.insertAdjacentHTML('beforeend', newAddressCard);
+          
+          // Update the "Add New Address" button visibility
+          const addAddressBtn = document.querySelector('button[onclick="toggleAddAddress()"]');
+          if (addressesContainer.children.length >= 4) {
+            addAddressBtn.style.display = 'none';
+          }
+
           toggleAddAddress();
           showToast('Address added successfully', 'success');
-          setTimeout(() => {
-            window.location.reload();
-          }, 150);
         } else {
           showToast(response.data.message || 'Failed to add address', 'error');
         }
@@ -806,9 +817,16 @@
 
         const response = await axios.put(`/address/${addressId}`, data);
         if (response.data.success) {
+          // Find and update the existing address card
+          const addressCard = document.querySelector(`input[value="${addressId}"]`).closest('.border.rounded-lg');
+          const wasChecked = addressCard.querySelector('input[type="radio"]').checked;
+          const newAddressCard = createAddressCard(response.data.address, wasChecked);
+          
+          // Replace the old card with the new one
+          addressCard.outerHTML = newAddressCard;
+
           toggleEditAddress();
           showToast('Address updated successfully', 'success');
-          setTimeout(() => window.location.reload(), 1500);
         }
       } catch (error) {
         console.error('Edit Address Error:', error);
@@ -1021,6 +1039,31 @@
         });
       }
     });
+
+    // Add this function to create an address card
+    function createAddressCard(address, isFirstAddress = false) {
+      return `
+        <div class="border rounded-lg p-4 relative">
+          <input type="radio" name="selectedAddress" value="${address._id}" class="absolute right-4 top-4"
+            ${isFirstAddress ? 'checked' : ''}>
+          <h3 class="font-semibold">
+            ${address.name}
+          </h3>
+          <p class="text-gray-600">
+            ${address.houseName},<br>
+            ${address.city}, ${address.state}
+            ${address.pincode}<br>
+            Phone: ${address.phone}
+          </p>
+          <div class="mt-2">
+            <button onclick="editAddress('${address._id}')"
+              class="text-primary-accent hover:underline mr-2">
+              Edit
+            </button>
+          </div>
+        </div>
+      `;
+    }
   </script>
 
   <%- include('../partials/footer') %>
