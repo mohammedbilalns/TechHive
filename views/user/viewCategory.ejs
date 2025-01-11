@@ -565,12 +565,10 @@
             paginationContainer.innerHTML = paginationHTML;
         }
 
-        // Add this to your existing fetchProducts function after updating the products grid
         function updatePaginationInFetchProducts() {
-            // Inside your fetchProducts function, after updating the products grid:
             if (data.totalPages > 0) {
                 updatePagination(data.currentPage, data.totalPages, data.hasNextPage, data.hasPrevPage);
             }
         }
     </script>
-    <%- include('../partials/footer') %>
+    <%- include(locals.fullname ? '../partials/footer' : '../partials/authfooter') %>
