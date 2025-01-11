@@ -7,6 +7,7 @@ import passport from "passport";
 import validation from "../../utils/validations.js"
 import referralSchema from "../../model/referralModel.js";
 import walletSchema from "../../model/walletModel.js";
+import referralUtils from "../../utils/referralCode.js";
 config();
 
 // ---- User Login ----  
@@ -78,7 +79,6 @@ const verifyLogin = async (req, res) => {
             });
         }
 
-        // Store user information in the session upon successful login
         req.session.user = {
             id: user._id,
             fullname: user.fullname,
@@ -179,6 +179,17 @@ const registerUser = async (req, res) => {
         // Hash the password 
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Generate a unique referral code
+        let referralCode;
+        let isUnique = false;
+        while (!isUnique) {
+            referralCode = referralUtils.generateReferralCode();
+            const existingUserWithCode = await userSchema.findOne({ referralCode });
+            if (!existingUserWithCode) {
+                isUnique = true;
+            }
+        }
+
         // Create a new user document
         const newUser = new userSchema({
             fullname,
@@ -187,6 +198,7 @@ const registerUser = async (req, res) => {
             password: hashedPassword,
             status: "Pending",
             createdAt: new Date(),
+            referralCode,
             otp: {
                 otpValue: otp,
                 otpExpiresAt: Date.now() + 60000,
