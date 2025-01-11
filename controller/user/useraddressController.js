@@ -16,8 +16,7 @@ const getAddresses = async (req, res) => {
         res.status(500).render("notfound")
     }
 }
-let a = 10 
-let b = 15 
+
 // Add a new address
 const addAddress = async (req, res) => {
     try {
@@ -30,7 +29,11 @@ const addAddress = async (req, res) => {
             });
         }
 
-        const { name, houseName, localityStreet, city, state, pincode, phone, alternatePhone } = req.body;
+        const { state, pincode, phone, alternatePhone } = req.body;
+        const name = req.body.name.trim()
+        const houseName = req.body.houseName.trim()
+        const localityStreet = req.body.localityStreet.trim()
+        const city = req.body.city.trim()
 
         // Validate required fields
         if (!name || !houseName || !localityStreet || !city || !state || !pincode || !phone) {
@@ -40,6 +43,44 @@ const addAddress = async (req, res) => {
             });
         }
 
+        if (name.length < 3 || name.length > 50) {
+            return res.status(400).json({
+                success: false,
+                message: "Name must be between 3 and 50 characters"
+            })
+        }
+
+        if (houseName.length < 3 || houseName.length > 50) {
+            return res.status(400).json({
+                success: false,
+                message: "House name must be between 3 and 50 characters"
+            })
+        }
+
+        if (localityStreet.length < 3 || localityStreet.length > 50) {
+            return res.status(400).json({
+                success: false,
+                message: "Locality/Street must be between 3 and 50 characters"
+            })
+        }
+        if (city.length < 3 || city.length > 50) {
+            return res.status(400).json({
+                success: false,
+                message: 'City must be between 3 and 50 characters'
+            })
+        }
+        if (!/^\d{6}$/.test(pincode)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please enter a valid pincode'
+            })
+        }
+        if (!/^\d{10}$/.test(phone)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please enter a 10-digit valid Phone number'
+            })
+        }
         const newAddress = new addressSchema({
             userId: req.session.user.id,
             name,
@@ -60,7 +101,7 @@ const addAddress = async (req, res) => {
             address: savedAddress
         });
     } catch (error) {
-        log.red("ADD_ADDRESS_ERROR", error); 
+        log.red("ADD_ADDRESS_ERROR", error);
         res.status(500).json({
             success: false,
             message: "Failed to add address: " + error.message,
@@ -81,6 +122,43 @@ const updateAddress = async (req, res) => {
             });
         }
 
+        if (name.length < 3 || name.length > 50) {
+            return res.status(400).json({
+                success: false,
+                message: "Name must be between 3 and 50 characters"
+            })
+        }
+
+        if (houseName.length < 3 || houseName.length > 50) {
+            return res.status(400).json({
+                success: false,
+                message: "House name must be between 3 and 50 characters"
+            })
+        }
+        if (localityStreet.length < 3 || localityStreet.length > 50) {
+            return res.status(400).json({
+                success: false,
+                message: "Locality/Street must be between 3 and 50 characters"
+            })
+        }
+        if (city.length < 3 || city.length > 50) {
+            return res.status(400).json({
+                success: false,
+                message: 'City must be between 3 and 50 characters'
+            })
+        }
+        if (!/^\d{6}$/.test(pincode)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please enter a valid pincode'
+            })
+        }
+        if (!/^\d{10}$/.test(phone)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please enter a 10-digit valid Phone number'
+            })
+        }
         const address = await addressSchema.findOneAndUpdate(
             {
                 _id: req.params.id,
