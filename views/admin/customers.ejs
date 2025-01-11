@@ -20,10 +20,13 @@
                   <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Customers Dashboard</h1>
                   <div class="flex gap-4">
                     <div class="relative">
-                      <input type="text" id="searchInput" placeholder="Search customers..."
-                        class="w-full md:w-64 border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"
-                        oninput="filterCustomers()" />
-                      <i class="fas fa-search absolute top-3 right-4 text-gray-400"></i>
+                      <form action="/admin/customers" method="GET">
+                        <input type="text" name="search" 
+                          value="<%= locals.search || '' %>"
+                          placeholder="Search customers..." 
+                          onblur="this.form.submit()"
+                          class="w-full md:w-64 border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                      </form>
                     </div>
                   </div>
                 </div>
@@ -45,7 +48,9 @@
                       <% if (customers.length===0) { %>
                         <tr>
                           <td colspan="6" class="text-center py-10">
-                            <h2 class="text-xl font-semibold text-gray-600">No customers found</h2>
+                            <h2 class="text-xl font-semibold text-gray-600">
+                              <%= search ? `No customers found for "${search}"` : 'No customers found' %>
+                            </h2>
                           </td>
                         </tr>
                         <% } else { %>
@@ -103,21 +108,21 @@
                     <div class="overflow-x-auto max-w-full">
                       <div class="flex items-center space-x-4 px-4">
                         <% if (hasPrevPage) { %>
-                          <a href="/admin/customers?page=<%= currentPage - 1 %>"
+                          <a href="/admin/customers?page=<%= currentPage - 1 %><%= search ? `&search=${search}` : '' %>"
                             class="flex-shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
                             Previous
                           </a>
                         <% } %>
 
                         <% for(let i=1; i <=totalPages; i++) { %>
-                          <a href="/admin/customers?page=<%= i %>"
+                          <a href="/admin/customers?page=<%= i %><%= search ? `&search=${search}` : '' %>"
                             class="flex-shrink-0 px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
                             <%= i %>
                           </a>
                         <% } %>
 
                         <% if (hasNextPage) { %>
-                          <a href="/admin/customers?page=<%= currentPage + 1 %>"
+                          <a href="/admin/customers?page=<%= currentPage + 1 %><%= search ? `&search=${search}` : '' %>"
                             class="flex-shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
                             Next
                           </a>
@@ -175,33 +180,6 @@
       } catch (error) {
         console.error('Error:', error);
         showToast('Something went wrong. Please try again.', 'error');
-      }
-    };
-
-    window.filterCustomers = function () {
-      const input = document.getElementById('searchInput');
-      const filter = input.value.toLowerCase();
-      const tbody = document.querySelector('tbody');
-      const rows = tbody.getElementsByTagName('tr');
-
-      for (let row of rows) {
-        const nameCell = row.cells[1];
-        const phoneCell = row.cells[2];
-        const emailCell = row.cells[3];
-
-        if (nameCell && phoneCell && emailCell) {
-          const name = nameCell.textContent || nameCell.innerText;
-          const phone = phoneCell.textContent || phoneCell.innerText;
-          const email = emailCell.textContent || emailCell.innerText;
-
-          if (name.toLowerCase().includes(filter) ||
-            phone.toLowerCase().includes(filter) ||
-            email.toLowerCase().includes(filter)) {
-            row.style.display = '';
-          } else {
-            row.style.display = 'none';
-          }
-        }
       }
     };
 

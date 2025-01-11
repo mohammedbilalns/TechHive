@@ -4,23 +4,28 @@ configDotenv()
 
 //---- Admin Login----
 const loadLogin = (req, res) => {
+
   const message = req.query.message
   const alertType = req.query.alertType
   const email = req.query.email
   res.render("admin/login", { message, alertType, email })
+
 }
 
 const verifyLogin = async (req, res) => {
   try {
+
     let { email, password } = req.body
     email = email.trim()
     password = password.trim()
+
     if (!email) {
       return res.status(401).json({
         success: false,
         message: 'Email is required'
       });
     }
+
     if (!password) {
       return res.status(401).json({
         success: false,
@@ -55,10 +60,10 @@ const logoutAdmin = (req, res) => {
   try {
     delete req.session.admin
     res.redirect('/admin/login?message=logged+out+successfully&alertType=success');
+
   } catch (error) {
     log.red('ADMIN_LOGOUT_ERROR', error)
   }
-
 }
 
 export default {

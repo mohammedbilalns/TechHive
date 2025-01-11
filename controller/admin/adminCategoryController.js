@@ -38,6 +38,7 @@ const getCategories = async (req, res) => {
         });
     } catch (error) {
         log.red('FETCH_CATEGORIES_ERROR', error)
+        res.status(500).send("Error fetching categories")
     }
 }
 
@@ -112,6 +113,26 @@ const addCategory = async (req, res) => {
         name = name.trim()[0].toUpperCase() + name.trim().slice(1).toLowerCase()
         description = description.trim()
 
+        if(!name || !description){
+            return res.status(400).json({
+                success: false,
+                message: 'Category name and description are required'
+            });
+        }
+        if( name.length<3 || name.length >100){
+            return res.status(400).json({
+                success: false,
+                message: 'Category name must be between 3-100 characters'
+            });
+        }
+
+        if(description.length< 10 || description.length>500){
+            return res.status(400).json({
+                success: false,
+                message: 'Description  must be between 3-100 characters'
+            });
+        }
+
         const existingCategory = await categorySchema.findOne({ name })
         if (existingCategory) {
             return res.status(400).json({
@@ -148,6 +169,27 @@ const editCategory = async (req, res) => {
 
         name = name.trim()[0].toUpperCase() + name.trim().slice(1).toLowerCase();
         description = description.trim();
+
+
+        if(!name || !description){
+            return res.status(400).json({
+                success: false,
+                message: 'Category name and description are required'
+            });
+        }
+        if( name.length<3 || name.length >100){
+            return res.status(400).json({
+                success: false,
+                message: 'Category name must be between 3-100 characters'
+            });
+        }
+
+        if(description.length< 10 || description.length>500){
+            return res.status(400).json({
+                success: false,
+                message: 'Description  must be between 3-100 characters'
+            });
+        }
 
         // find if another category exists with name
         const existingCategory = await categorySchema.findOne({

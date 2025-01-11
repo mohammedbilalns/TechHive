@@ -233,15 +233,11 @@
       // Reset previous errors
       resetErrors(nameId, descriptionId);
      
-      // Name validation - check each condition separately
       if (!name) {
         showError(nameId, 'Category Name is required');
         isValid = false;
-      } else if (name.length < 3) {
-        showError(nameId, 'Category Name must be at least 3 characters');
-        isValid = false;
-      } else if (name.length > 100) {
-        showError(nameId, 'Category Name cannot exceed 100 characters');
+      } else if (name.length < 3 || name.length >100) {
+        showError(nameId, 'Category Name must be between 3-100 characters');
         isValid = false;
       } else if (/[^a-zA-Z\s&,]/.test(name)) {
         showError(nameId, 'Category Name can only contain letters, spaces, & and , symbols');
@@ -251,15 +247,11 @@
         isValid = false;
       }
 
-      // Description validation - check each condition separately
       if (!description) {
         showError(descriptionId, 'Description is required');
         isValid = false;
-      } else if (description.length < 10) {
-        showError(descriptionId, 'Description must be at least 10 characters');
-        isValid = false;
-      } else if (description.length > 1000) {
-        showError(descriptionId, 'Description cannot exceed 1000 characters');
+      } else if (description.length < 10 || description.length >500) {
+        showError(descriptionId, 'Description must be between 10-500 characters');
         isValid = false;
       } else if (/[^a-zA-Z0-9\s.,'&,\/-]/.test(description)) {
         showError(descriptionId, 'Description can only contain letters, numbers, spaces, and the following characters: . , \' & / -');

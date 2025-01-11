@@ -15,14 +15,11 @@ import adminOffersController from "../controller/admin/adminOffersController.js"
 const router = Router()
 router.use(express.static('static'));
 
-
-
 //---- login routes ----
-
 router.route('/login')
-    .all(adminAuth.isLogin)
-    .get(adminAuthController.loadLogin)
-    .post(adminAuthController.verifyLogin)
+      .all(adminAuth.isLogin)
+      .get(adminAuthController.loadLogin)
+      .post(adminAuthController.verifyLogin)
 
 router.use(adminAuth.checkSession)
 router.get('/logout', adminAuthController.logoutAdmin)
@@ -33,12 +30,11 @@ router.delete('/products/delete/:productid', adminProductController.deleteProduc
 router.post('/products/activate/:productid', adminProductController.activateProduct)
 router.post('/products/deactivate/:productid', adminProductController.deactivateProduct)
 router.route('/products/add')
-       .get(adminProductController.getAddProduct)
-       .post(adminProductController.productUpload.array('mainImages', 4), adminProductController.addProduct)
+      .get(adminProductController.getAddProduct)
+      .post(adminProductController.productUpload.array('mainImages', 4), adminProductController.addProduct)
 router.route('/products/edit/:productid')
-       .get(adminProductController.getEditProduct)
-       .post(adminProductController.productUpload.array('mainImages', 4), adminProductController.editProduct)
-
+      .get(adminProductController.getEditProduct)
+      .post(adminProductController.productUpload.array('mainImages', 4), adminProductController.editProduct)
 
 //---- categories routes ----
 router.get('/categories', adminCategoryController.getCategories)
@@ -47,7 +43,6 @@ router.post('/categories/hide/:categoryid', adminCategoryController.hideCategory
 router.post('/categories/unhide/:categoryid', adminCategoryController.unhideCategory)
 router.post('/categories/new', adminCategoryController.addCategory)
 router.post('/categories/edit/:categoryid', adminCategoryController.editCategory)
-
 
 //---- orders routes ----
 router.get('/orders', adminOrderController.getOrders)
@@ -70,12 +65,12 @@ router.route('/offers/:offerId')
       .put(adminOfferController.updateOffer)
       .delete(adminOfferController.deleteOffer)
 router.patch('/offers/:offerId/toggle-status', adminOfferController.toggleOfferStatus)
+router.post('/referral-settings', adminOffersController.updateReferralSettings);
 
 //---- sales report routes ----
 router.get('/sales-report', adminSalesreportController.renderSalesReport)
 router.get('/sales-report/data', adminSalesreportController.getSalesReportData)
 router.get('/sales-report/download', adminSalesreportController.downloadReport)
-
 
 //---- customers routes ----
 router.get('/customers', adminCustomersController.getCustomers)
@@ -86,8 +81,4 @@ router.post('/customers/unblock/:customerid', adminCustomersController.unblockCu
 router.get('/dashboard', adminDashboardController.renderDashboard)
 router.get('/dashboard/data', adminDashboardController.getDashboardData)
 
-// Add this new route
-router.post('/referral-settings', adminOffersController.updateReferralSettings);
-
 export default router
-

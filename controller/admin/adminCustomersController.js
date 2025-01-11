@@ -5,15 +5,22 @@ const getCustomers = async (req, res) => {
   try {
     let message = req.query.message
     let alertType = req.query.alertType
-    //  pagination
     const page = parseInt(req.query.page) || 1
     const limit = 10
     const skip = (page - 1) * limit
+    const search = req.query.search || ''
 
-    const totalCustomers = await userSchema.countDocuments()
+    const searchQuery = {
+      $or: [
+        { fullname: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } }
+      ]
+    }
+
+    const totalCustomers = await userSchema.countDocuments(searchQuery)
     const totalPages = Math.ceil(totalCustomers / limit)
 
-    const customers = await userSchema.find()
+    const customers = await userSchema.find(searchQuery)
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 })
@@ -26,11 +33,13 @@ const getCustomers = async (req, res) => {
       currentPage: page,
       totalPages,
       hasNextPage: page < totalPages,
-      hasPrevPage: page > 1
+      hasPrevPage: page > 1,
+      search
     })
 
   } catch (error) {
     log.red('FETCH_USERS_ERROR', error)
+    res.status(500).send("Error fetching customers")
   }
 }
 
@@ -46,7 +55,7 @@ const blockCustomer = async (req, res) => {
     if (req.session.user?.id == customer._id) {
       delete req.session.user
     }
-    res.json({
+    res.status(200).json({
       success: true,
       message: 'Customer blocked successfully',
       customer
@@ -67,7 +76,7 @@ const unblockCustomer = async (req, res) => {
       { status: "Active" },
       { new: true }
     );
-    res.json({
+    res.status(200).json({
       success: true,
       message: 'Customer unblocked successfully',
       customer
