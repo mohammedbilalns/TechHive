@@ -341,12 +341,12 @@
 
               // Specifications validation
               const invalidSpecs = specifications.some(spec => !spec || spec.replace(/\s/g, '').length === 0);
-              const invalidSpecLength = specifications.some(spec => spec.length < 2 || spec.length > 100);
+              const invalidSpecLength = specifications.some(spec => spec.length < 10 || spec.length > 100);
               if (invalidSpecs  ) {
                 showError('specifications', 'All four specifications are required ');
                 isValid = false;
               }else if(invalidSpecLength){
-                showError('specifications', 'Specifications must be between 2 and 100 characters');
+                showError('specifications', 'Specifications must be between 10 and 100 characters');
                 isValid = false;
               }
 

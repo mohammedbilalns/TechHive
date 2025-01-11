@@ -236,8 +236,8 @@
       if (!name) {
         showError(nameId, 'Category Name is required');
         isValid = false;
-      } else if (name.length < 3 || name.length >100) {
-        showError(nameId, 'Category Name must be between 3-100 characters');
+      } else if (name.length < 3 || name.length >50) {
+        showError(nameId, 'Category Name must be between 3-50 characters');
         isValid = false;
       } else if (/[^a-zA-Z\s&,]/.test(name)) {
         showError(nameId, 'Category Name can only contain letters, spaces, & and , symbols');
@@ -250,8 +250,8 @@
       if (!description) {
         showError(descriptionId, 'Description is required');
         isValid = false;
-      } else if (description.length < 10 || description.length >500) {
-        showError(descriptionId, 'Description must be between 10-500 characters');
+      } else if (description.length < 10 || description.length >100) {
+        showError(descriptionId, 'Description must be between 10-100 characters');
         isValid = false;
       } else if (/[^a-zA-Z0-9\s.,'&,\/-]/.test(description)) {
         showError(descriptionId, 'Description can only contain letters, numbers, spaces, and the following characters: . , \' & / -');

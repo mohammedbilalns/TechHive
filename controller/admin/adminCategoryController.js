@@ -126,10 +126,10 @@ const addCategory = async (req, res) => {
             });
         }
 
-        if(description.length< 10 || description.length>500){
+        if(description.length< 10 || description.length>100){
             return res.status(400).json({
                 success: false,
-                message: 'Description  must be between 3-100 characters'
+                message: 'Description  must be between 10-100 characters'
             });
         }
 
