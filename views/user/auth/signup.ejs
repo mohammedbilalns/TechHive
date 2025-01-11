@@ -184,7 +184,7 @@
 
         let hasError = false;
 
-        // Validate fullname
+        // Validations
         if (!fullname) {
           showError('fullname', 'Full name is required');
           hasError = true;
@@ -193,7 +193,6 @@
           hasError = true;
         }
 
-        // Validate phone number
         if (!phonenumber) {
           showError('phonenumber', 'Phone number is required');
           hasError = true;
@@ -202,7 +201,6 @@
           hasError = true;
         }
 
-        // Validate email
         if (!email) {
           showError('email', 'Email is required');
           hasError = true;
@@ -211,20 +209,14 @@
           hasError = true;
         }
 
-        // Validate password
         if (!password) {
           showError('password', 'Password is required');
           hasError = true;
         } else {
-          // Check password length
           const hasMinLength = password.length >= 8;
-          // Check for uppercase letter
           const hasUpperCase = /[A-Z]/.test(password);
-          // Check for lowercase letter
           const hasLowerCase = /[a-z]/.test(password);
-          // Check for number
           const hasNumber = /\d/.test(password);
-          // Check for special character
           const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
           if (!hasMinLength || !hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecialChar) {
@@ -233,7 +225,6 @@
           }
         }
 
-        // Validate confirm password
         if (!confirmPassword) {
           showError('confirmPassword', 'Please confirm your password');
           hasError = true;
