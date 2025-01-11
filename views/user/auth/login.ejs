@@ -4,7 +4,6 @@
       <!-- Image Section -->
       <div class="bg-blue-100 p-6 hidden sm:flex justify-center items-center lg:w-1/2">
         <img alt="Illustration of a laptop with a clock display and office supplies" src="./images/login2.png"
-          loading="lazy"
           class="object-cover max-w-full h-auto" />
       </div>
       <!-- Form Section -->
@@ -140,7 +139,7 @@
         });
       }
 
-      // Add input event listeners to clear errors when user starts typing
+      // input event listeners to clear errors when user starts typing
       ['email', 'password'].forEach(field => {
         document.getElementById(field).addEventListener('input', function() {
           this.classList.remove('border-red-500');

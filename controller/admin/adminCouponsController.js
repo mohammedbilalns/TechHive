@@ -53,7 +53,6 @@ const getCouponDetails = async (req, res) => {
 const addCoupon = async (req, res) => {
     try {
         const {
-            code,
             description,
             discountType,
             discountValue,
@@ -63,7 +62,25 @@ const addCoupon = async (req, res) => {
             startDate,
             expiryDate
         } = req.body;
-
+        const code = req.body.code.toUpperCase().trim()
+        if(!code || !description || !discountType || !discountValue || !minPurchase || !maxDiscount || !usageLimit || !startDate || !expiryDate){
+            return res.status(400).json({
+                success: false,
+                message: 'All fields are required'
+            });
+        }
+        if(code.length < 3 || code.length > 10){
+            return res.status(400).json({
+                success: false,
+                message: 'Coupon code must be between 3 and 10 characters'
+            });
+        }
+        if(/^\d+$/.test(code)){
+            return res.status(400).json({
+                success: false,
+                message: 'Coupon code cannot contain numbers only'
+            });
+        }
         // Validate coupon code format and length 
         if (!/^[A-Za-z0-9]{1,10}$/.test(code)) {
             return res.status(400).json({
@@ -95,6 +112,18 @@ const addCoupon = async (req, res) => {
                     message: 'Maximum discount must be at least ₹100'
                 });
             }
+        }
+        if(minPurchase < 0){
+            return res.status(400).json({
+                success: false,
+                message: 'Minimum purchase cannot be negative'
+            });
+        }
+        if(usageLimit < 1){
+            return res.status(400).json({
+                success: false,
+                message: 'Usage limit must be at least 1'
+            });
         }
 
         // Validate dates
@@ -155,8 +184,7 @@ const addCoupon = async (req, res) => {
 
 const updateCoupon = async (req, res) => {
     try {
-        const {
-            code,
+        const { 
             description,
             discountType,
             discountValue,
@@ -166,8 +194,26 @@ const updateCoupon = async (req, res) => {
             startDate,
             expiryDate
         } = req.body;
+        const code = req.body.code.toUpperCase().trim()
 
-        // Basic validations
+        if (!code || !description || !discountType || !discountValue || !minPurchase || !maxDiscount || !usageLimit || !startDate || !expiryDate){
+            return res.status(400).json({
+                success: false,
+                message: 'All fields are required'
+            });
+        }
+        if(code.length < 3 || code.length > 10){
+            return res.status(400).json({
+                success: false,
+                message: 'Coupon code must be between 3 and 10 characters'
+            });
+        }
+        if(/^\d+$/.test(code)){
+            return res.status(400).json({
+                success: false,
+                message: 'Coupon code cannot contain numbers only'
+            });
+        }
         if (!/^[A-Za-z0-9]{1,10}$/.test(code)) {
             return res.status(400).json({
                 success: false,
@@ -179,6 +225,18 @@ const updateCoupon = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: 'Description must be between 10 and 100 characters'
+            });
+        }
+        if(minPurchase < 0){
+            return res.status(400).json({
+                success: false,
+                message: 'Minimum purchase cannot be negative'
+            });
+        }
+        if(usageLimit < 1){
+            return res.status(400).json({
+                success: false,
+                message: 'Usage limit must be at least 1'
             });
         }
 

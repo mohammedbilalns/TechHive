@@ -402,8 +402,8 @@
     if (!offerName) {
       showError('name', 'Offer Name is required');
       hasErrors = true;
-    } else if (offerName.length < 10 || offerName.length > 100) {
-      showError('name', 'Offer name must be between 10 and 100 characters');
+    } else if (offerName.length < 10 || offerName.length > 50) {
+      showError('name', 'Offer name must be between 10 and 50 characters');
       hasErrors = true;
     }
 

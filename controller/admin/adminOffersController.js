@@ -148,7 +148,6 @@ const getOfferDetails = async (req, res) => {
 const addOffer = async (req, res) => {
     try {
         const {
-            name,
             offerType,
             offerPercentage,
             startDate,
@@ -156,7 +155,38 @@ const addOffer = async (req, res) => {
             categories,
             products
         } = req.body;
-
+        const name = req.body.name.trim()
+        if(!name || !offerType || !offerPercentage || !startDate || !endDate || !categories || !products){
+            return res.status(400).json({
+                success: false,
+                message: 'All fields are required'
+            });
+        }
+        if(name.length < 3|| name.length>50){
+            return res.status(400).json({
+                success: false,
+                message: 'Offer name must be between 3 and 50 characters'
+            });
+        }
+        if(offerPercentage < 1 || offerPercentage > 99){
+            return res.status(400).json({
+                success: false,
+                message: 'Offer percentage must be between 1 and 99'
+            });
+        }
+        if(startDate > endDate){
+            return res.status(400).json({
+                success: false,
+                message: 'Start date cannot be greater than end date'
+            });
+        }
+        if(startDate < new Date()){
+            return res.status(400).json({
+                success: false,
+                message: 'Start date cannot be in the past'
+            });
+        }
+    
         // Check for existing active offers
         const items = offerType === 'category' ? categories : products;
         const existingOffer = await checkExistingOffers(offerType, items, startDate, endDate);
@@ -199,7 +229,6 @@ const updateOffer = async (req, res) => {
         }
 
         const {
-            name,
             offerType,
             offerPercentage,
             startDate,
@@ -207,7 +236,31 @@ const updateOffer = async (req, res) => {
             categories,
             products
         } = req.body;
-
+        const name = req.body.name.trim()
+        if(!name || !offerType || !offerPercentage || !startDate || !endDate || !categories || !products){
+            return res.status(400).json({
+                success: false,
+                message: 'All fields are required'
+            });
+        }
+        if(name.length < 3|| name.length>50){
+            return res.status(400).json({
+                success: false,
+                message: 'Offer name must be between 3 and 50 characters'
+            });
+        }
+        if(offerPercentage < 1 || offerPercentage > 99){
+            return res.status(400).json({
+                success: false,
+                message: 'Offer percentage must be between 1 and 99'
+            });
+        }
+        if(startDate > endDate){
+            return res.status(400).json({
+                success: false,
+                message: 'Start date cannot be greater than end date'
+            });
+        }
         // Check for existing offers, excluding the current offer being updated
         const items = offerType === 'category' ? categories : products;
         const existingOffer = await checkExistingOffers(
@@ -215,7 +268,7 @@ const updateOffer = async (req, res) => {
             items, 
             startDate, 
             endDate,
-            req.params.offerId  // Pass the current offer ID to exclude it from the check
+            req.params.offerId  
         );
 
         if (existingOffer) {
