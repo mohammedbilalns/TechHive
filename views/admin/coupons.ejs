@@ -342,11 +342,11 @@
     } else if (!/^[A-Z0-9]+$/.test(code)) {
       showError('code', 'Coupon code can only contain letters and numbers');
       hasErrors = true;
-    }else if (/^\d+$/.test(couponCode)){
+    }else if (/^\d+$/.test(code)){
       showError('code', 'Coupon code cannot contain numbers only')
       hasErrors = true 
     }
-     else if (code.length < 3 || cod.length > 10) {
+     else if (code.length < 3 || code.length > 10) {
       showError('code', 'Coupon code must be between 3-10 characters');
       hasErrors = true;
     } 
