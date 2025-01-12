@@ -7,7 +7,7 @@ const getCart = async (req, res) => {
         delete req.session.coupon;
         
         const userId = req.session.user.id;
-        const cart = await cartSchema.findOne({ user: userId })
+        let cart = await cartSchema.findOne({ user: userId })
             .populate('items.productId');
 
         // Create cart if not found
