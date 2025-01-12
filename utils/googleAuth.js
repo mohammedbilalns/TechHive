@@ -2,7 +2,21 @@ import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import userSchema from "../model/userModel.js";
 import { configDotenv } from "dotenv";
+import referralUtils from "./referralCode.js";
 configDotenv();
+
+async function generateUniqueReferralCode() {
+    let referralCode;
+    let isUnique = false;
+    while (!isUnique) {
+        referralCode = referralUtils.generateReferralCode();
+        const existingUserWithCode = await userSchema.findOne({ referralCode });
+        if (!existingUserWithCode) {
+            isUnique = true;
+        }
+    }
+    return referralCode;
+}
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
@@ -35,10 +49,18 @@ async (token, tokenSecret, profile, done) => {
             email: profile.emails[0].value,
             googleId: profile.id,
             status: "Active",
+            referralCode: await generateUniqueReferralCode(),
         });
         await newUser.save();
         
-        return done(null, newUser);
+        // Create session data before returning
+        const sessionUser = {
+            id: newUser._id,
+            fullname: newUser.fullname,
+            email: newUser.email
+        };
+        
+        return done(null, sessionUser);  
 
     } catch (error) {
         return done(error, null);

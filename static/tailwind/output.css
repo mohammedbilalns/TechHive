@@ -1037,10 +1037,6 @@ input::placeholder {
   width: 200px;
 }
 
-.w-\[70\%\] {
-  width: 70%;
-}
-
 .w-\[800px\] {
   width: 800px;
 }
@@ -2571,10 +2567,6 @@ input::placeholder {
 
   .md\:h-auto {
     height: auto;
-  }
-
-  .md\:w-40 {
-    width: 10rem;
   }
 
   .md\:w-48 {
