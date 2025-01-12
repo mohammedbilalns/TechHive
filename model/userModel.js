@@ -21,7 +21,8 @@ const userSchema = new mongoose.Schema(
             required: true,
         },
         phonenumber: {
-            type: Number
+            type: Number,
+            sparse: true
         },
         email: {
             type: String,
@@ -48,7 +49,6 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.index({ email: 1 });
-userSchema.index({ phonenumber: 1 });
 
 export default mongoose.model("users", userSchema);
 
