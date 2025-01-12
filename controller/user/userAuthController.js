@@ -346,21 +346,38 @@ const authGoogle = (req, res) => {
 const authGoogleCallback = (req, res) => {
     passport.authenticate("google", { failureRedirect: "/login" }, (err, user, info) => {
         if (err) {
+            console.error("Google Auth Callback Error:", err);
             return res.redirect("/login?message=Something+went+wrong&alertType=error");
         }
 
         if (!user) {
-            // Handle blocked user case
-            return res.redirect("/login?message=Your+account+is+currently+blocked&alertType=error");
+            const message = info?.message || "Authentication failed";
+            return res.redirect(`/login?message=${message}&alertType=error`);
         }
 
-        req.session.user = {
-            id: user._id,
-            fullname: user.fullname,
-            email: user.email,
-        };
+        // Explicitly log in the user
+        req.logIn(user, (err) => {
+            if (err) {
+                console.error("Session Error:", err);
+                return res.redirect("/login?message=Session+error&alertType=error");
+            }
 
-        res.redirect('/home');
+            // Set session data
+            req.session.user = {
+                id: user.id,
+                fullname: user.fullname,
+                email: user.email
+            };
+
+            // Ensure session is saved before redirect
+            req.session.save((err) => {
+                if (err) {
+                    console.error("Session Save Error:", err);
+                    return res.redirect("/login?message=Session+save+error&alertType=error");
+                }
+                res.redirect('/home');
+            });
+        });
     })(req, res);
 };
 

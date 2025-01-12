@@ -28,14 +28,11 @@ async (token, tokenSecret, profile, done) => {
         // Check if user exists with the same email
         const existingUser = await userSchema.findOne({ email: profile.emails[0].value });
 
-        // If user exists, check their status
         if (existingUser) {
-            // Check if user is not Active
             if (existingUser.status !== "Active") {
                 return done(null, false, { message: "Your account is currently blocked" });
             }
 
-            // Update googleId if not present
             if (!existingUser.googleId) {
                 existingUser.googleId = profile.id;
                 await existingUser.save();
@@ -51,32 +48,33 @@ async (token, tokenSecret, profile, done) => {
             status: "Active",
             referralCode: await generateUniqueReferralCode(),
         });
-        await newUser.save();
+
+        const savedUser = await newUser.save();
         
-        // Create session data before returning
-        const sessionUser = {
-            id: newUser._id,
-            fullname: newUser.fullname,
-            email: newUser.email
-        };
-        
-        return done(null, sessionUser);  
+        if (!savedUser) {
+            return done(new Error("Failed to save user"), null);
+        }
+
+        return done(null, savedUser);
 
     } catch (error) {
+        console.error("Google Strategy Error:", error);
         return done(error, null);
     }
 }));
 
-// save user into the session 
+// Modify serialization to handle both new and existing users
 passport.serializeUser((user, done) => {
-    done(null, user._id);  // Store the user's ID in the session
+    done(null, user.id); // Use user.id instead of user._id
 });
 
-// Deserialize user 
 passport.deserializeUser(async (id, done) => {
     try {
         const user = await userSchema.findById(id);
-        done(null, user);  
+        if (!user) {
+            return done(null, false);
+        }
+        done(null, user);
     } catch (error) {
         done(error, null);
     }
