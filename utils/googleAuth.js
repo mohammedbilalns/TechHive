@@ -63,9 +63,9 @@ async (token, tokenSecret, profile, done) => {
     }
 }));
 
-// Modify serialization to handle both new and existing users
+// = serialization 
 passport.serializeUser((user, done) => {
-    done(null, user.id); // Use user.id instead of user._id
+    done(null, user.id); 
 });
 
 passport.deserializeUser(async (id, done) => {
