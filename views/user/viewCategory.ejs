@@ -70,12 +70,11 @@
                 </div>
                 <% } else { %>
                     <% products.forEach(product=> { %>
-                        <div
-                            class="bg-white rounded-lg text-center p-4 md:p-5 hover:opacity-90 transition-opacity border border-gray-200">
+                        <div class="bg-white rounded-lg text-center p-4 md:p-5 border border-gray-200 transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
                             <a href="/product/<%= product._id %>">
                                 <div class="aspect-square rounded-lg overflow-hidden mb-2">
                                     <img src="<%= product.images[0].path %>" alt="<%= product.name %>"
-                                        class="w-full h-full object-contain" />
+                                        class="w-full h-full object-contain transition-transform duration-300 hover:scale-110" />
                                 </div>
                                 <p class="text-gray-800 text-sm md:text-base truncate">
                                     <%= product.name %>

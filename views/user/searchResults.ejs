@@ -57,11 +57,11 @@
         <!-- Products Grid -->
         <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6" id="productsGrid">
             <% products.forEach(product=> { %>
-                <div class="border rounded-lg p-4 hover:shadow-lg transition-shadow">
+                <div class="border rounded-lg p-4 transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
                     <a href="/product/<%= product._id %>">
                         <div class="aspect-square rounded-lg overflow-hidden mb-4">
                             <img src="<%= product.images[0].path %>" alt="<%= product.name %>"
-                                class="w-full h-full object-contain" />
+                                class="w-full h-full object-contain transition-transform duration-300 hover:scale-110" />
                         </div>
                         <h2 class="text-lg font-semibold mb-2 truncate">
                             <%= product.name %>
@@ -235,12 +235,12 @@
                             window.wishlistItems.includes(product._id);
 
                         productsHTML += `
-                    <div class="border rounded-lg p-4 hover:shadow-lg transition-shadow">
+                    <div class="border rounded-lg p-4 transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
                         <a href="/product/${product._id}">
                             <div class="aspect-square rounded-lg overflow-hidden mb-4">
                                 <img src="${product.images[0].path}" 
                                      alt="${product.name}" 
-                                     class="w-full h-full object-contain"/>
+                                     class="w-full h-full object-contain transition-transform duration-300 hover:scale-110"/>
                             </div>
                             <h2 class="text-lg font-semibold mb-2 truncate">${product.name}</h2>
                             

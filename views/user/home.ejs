@@ -16,11 +16,11 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 justify-items-center">
 
                 <% newArrivals.slice(0, 4).forEach(product=> { %>
-                    <div class="w-full max-w-[300px] bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100">
+                    <div class="w-full max-w-[300px] bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 transform hover:-translate-y-1">
                         <a href="/product/<%= product._id %>" class="block">
                             <div class="aspect-square rounded-t-lg overflow-hidden p-4 bg-gray-50">
                                 <img alt="<%= product.name %>" src="<%= product.images[0].path %>"
-                                    class="w-full h-full object-contain" />
+                                    class="w-full h-full object-contain transition-transform duration-300 hover:scale-110" />
                             </div>
                             <div class="p-4">
                                 <p class="text-gray-800 text-sm font-medium truncate mb-2">
@@ -124,11 +124,11 @@
             </div>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-5">
                 <% allProducts.forEach(product=> { %>
-                    <div class="col-span-1">
+                    <div class="col-span-1 transform hover:-translate-y-1 transition-transform duration-300">
                         <a href="/product/<%= product._id %>" class="hover:opacity-90 transition-opacity block">
                             <div class="aspect-square rounded-lg overflow-hidden">
                                 <img alt="<%= product.name %>" src="<%= product.images[0].path %>"
-                                    class="w-full h-full object-contain" />
+                                    class="w-full h-full object-contain transition-transform duration-300 hover:scale-110" />
                             </div>
                             <div class="flex flex-col h-[100px]">
                                 <p class="text-black text-sm mt-2 truncate">
