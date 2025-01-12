@@ -16,7 +16,8 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 justify-items-center">
 
                 <% newArrivals.slice(0, 4).forEach(product=> { %>
-                    <div class="w-full max-w-[300px] bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 transform hover:-translate-y-1">
+                    <div
+                        class="w-full max-w-[300px] bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 transform hover:-translate-y-1">
                         <a href="/product/<%= product._id %>" class="block">
                             <div class="aspect-square rounded-t-lg overflow-hidden p-4 bg-gray-50">
                                 <img alt="<%= product.name %>" src="<%= product.images[0].path %>"
@@ -72,7 +73,8 @@
                                         </p>
                                     </div>
                                     <% } else { %>
-                                        <p class="text-primary-accent text-sm font-bold">₹<%= product.price.toFixed(2) %>
+                                        <p class="text-primary-accent text-sm font-bold">₹<%= product.price.toFixed(2)
+                                                %>
                                         </p>
                                         <% } %>
                             </div>
@@ -299,16 +301,15 @@
                 }
             }
 
-
             async function addToWishlist(productId) {
                 try {
                     const { data } = await axios.post('/wishlist', { productId });
                     if (data.success) {
-                        // Find all wishlist buttons for this product (in case it appears multiple times on page)
+                        // Find all wishlist buttons for this product 
                         const wishlistButtons = document.querySelectorAll(`button[onclick="addToWishlist('${productId}')"]`);
 
                         wishlistButtons.forEach(button => {
-                            // Create the new button with "remove" functionality
+                            // Create the new button with 
                             const newButton = document.createElement('button');
                             newButton.setAttribute('onclick', `removeFromWishlist('${productId}')`);
                             newButton.className = 'p-2 rounded-full bg-primary-accent text-white hover:bg-gray-100 hover:text-black transition-colors duration-300';
@@ -319,7 +320,6 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
                 `;
-
                             // Replace the old button with the new one
                             button.parentNode.replaceChild(newButton, button);
                         });
@@ -343,7 +343,7 @@
                         const wishlistButtons = document.querySelectorAll(`button[onclick="removeFromWishlist('${productId}')"]`);
 
                         wishlistButtons.forEach(button => {
-                            // Create the new button with "add" functionality
+                            // Create the new button with 
                             const newButton = document.createElement('button');
                             newButton.setAttribute('onclick', `addToWishlist('${productId}')`);
                             newButton.className = 'p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300';
@@ -370,6 +370,4 @@
                     showToast('Error removing item from wishlist', 'error');
                 }
             }
-
-
         </script>

@@ -78,7 +78,6 @@ const updateOrderItemStatus = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid status transition' });
     }
 
-    // Handle return approval or cancellation refund
     if ((status === 'returned' && orderItem.status === 'return requested') ||
       (status === 'cancelled' && order.paymentStatus === 'paid')) {
       // Calculate base refund amount 
@@ -92,7 +91,7 @@ const updateOrderItemStatus = async (req, res) => {
       if (order.coupon && order.coupon.discount > 0) {
         // Distribute coupon 
         const totalPrice = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        couponDiscount = (orderItem.quantity * orderItem.price/totalPrice) * order.coupon.discount
+        couponDiscount = (orderItem.quantity * orderItem.price / totalPrice) * order.coupon.discount
 
       }
 

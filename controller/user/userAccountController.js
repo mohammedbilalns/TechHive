@@ -8,7 +8,7 @@ const getAccountDetails = async (req, res) => {
     try {
         let email = req.session.user.email
         let user = await userSchema.findOne({ email })
-        
+
         // Generate referral code 
         if (!user.referralCode) {
             user.referralCode = referralCodeUtils.generateReferralCode();
@@ -17,14 +17,14 @@ const getAccountDetails = async (req, res) => {
 
         // Fetch referral values
         const referralValues = await referralModel.findOne({}) || {
-            referrerValue: 100,  // Default values if none found
+            referrerValue: 100,
             refereeValue: 50
         };
-        
-        res.render('user/profile/account', { 
-            user, 
+
+        res.render('user/profile/account', {
+            user,
             page: "account",
-            referralValues 
+            referralValues
         })
     } catch (error) {
         log.red("FETCH_ACCOUNT_DETAILS_ERROR", error)

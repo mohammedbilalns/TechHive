@@ -17,12 +17,14 @@
                         <h2 class="text-xl md:text-2xl">
                             <%= category.name %>
                         </h2>
-                        <a href="/category/<%= category._id %>" class="text-sm text-primary-accent hover:text-red-700">View
+                        <a href="/category/<%= category._id %>"
+                            class="text-sm text-primary-accent hover:text-red-700">View
                             All</a>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
                         <% category.products.slice(0, 4).forEach(product=> { %>
-                            <div class="bg-white rounded-lg text-center p-4 md:p-5 border border-gray-200 transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+                            <div
+                                class="bg-white rounded-lg text-center p-4 md:p-5 border border-gray-200 transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
                                 <a href="/product/<%= product._id %>">
                                     <div class="aspect-square rounded-lg overflow-hidden mb-2">
                                         <img src="<%= product.images[0].path %>" alt="<%= product.name %>"
@@ -165,8 +167,6 @@
         async function addToCart(productId) {
             try {
                 const { data } = await axios.post('/cart', { productId });
-
-                // Use custom alert
                 showToast(data.message, data.success ? 'success' : 'error');
                 document.getElementById("cart-quantity").innerText = data.totalQuantity
                 document.getElementById("cart-quantity-mobile").innerText = data.totalQuantity
@@ -181,11 +181,11 @@
             try {
                 const { data } = await axios.post('/wishlist', { productId });
                 if (data.success) {
-                    // Find all wishlist buttons for this product (in case it appears multiple times on page)
+                    // Find all wishlist buttons for this product 
                     const wishlistButtons = document.querySelectorAll(`button[onclick="addToWishlist('${productId}')"]`);
 
                     wishlistButtons.forEach(button => {
-                        // Create the new button with "remove" functionality
+                        // Create the new button 
                         const newButton = document.createElement('button');
                         newButton.setAttribute('onclick', `removeFromWishlist('${productId}')`);
                         newButton.className = 'p-2 rounded-full bg-primary-accent text-white hover:bg-gray-100 hover:text-black transition-colors duration-300';
@@ -233,7 +233,7 @@
                         button.parentNode.replaceChild(newButton, button);
                     });
                     showToast('Product removed from wishlist successfully', 'success');
-                    document.getElementById("wishlist-quantity").innerText =response.data.totalQuantity
+                    document.getElementById("wishlist-quantity").innerText = response.data.totalQuantity
                     document.getElementById("wishlist-quantity-mobile").innerText = response.data.totalQuantity
 
                 } else {
@@ -244,7 +244,6 @@
                 showToast('Error removing item from wishlist', 'error');
             }
         }
-
     </script>
 
-    <%- include(locals.fullname ? '../partials/footer' : '../partials/authfooter') %>
+    <%- include(locals.fullname ? '../partials/footer' : '../partials/authfooter' ) %>

@@ -10,9 +10,14 @@ const getWishlist = async (req, res) => {
 
         const userId = req.session.user.id;
 
+        // Find or create wishlist
+        let wishlist = await wishlistSchema.findOne({ userId });
+        if (!wishlist) {
+            wishlist = await wishlistSchema.create({ userId, products: [] });
+        }
+
         // Get total count for pagination
-        const wishlist = await wishlistSchema.findOne({ userId });
-        const totalProducts = wishlist ? wishlist.products.length : 0;
+        const totalProducts = wishlist.products.length;
         const totalPages = Math.ceil(totalProducts / limit);
 
         // Get paginated wishlist

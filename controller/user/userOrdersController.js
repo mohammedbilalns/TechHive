@@ -43,14 +43,14 @@ const placeOrder = async (req, res) => {
     const totalAmount = cart.items.reduce((total, item) => {
       const price = item.productId.price;
       const discount = item.productId.discount;
-      const discountedPrice = price * (1 - discount/100);
+      const discountedPrice = price * (1 - discount / 100);
       return total + (discountedPrice * item.quantity);
     }, 0);
 
     // Calculate coupon discount if coupon code exists
     let couponDiscount = 0;
     let finalAmount = totalAmount;
-    
+
     if (couponCode) {
       const coupon = await couponModel.findOne({ code: couponCode });
       if (coupon) {
@@ -68,18 +68,18 @@ const placeOrder = async (req, res) => {
 
     // Check if COD is allowed for this order amount
     if (paymentMethod === 'cod' && finalAmount > 1000) {
-      return res.json({ 
-        success: false, 
-        message: 'Cash on Delivery is not available for orders above ₹1,000' 
+      return res.json({
+        success: false,
+        message: 'Cash on Delivery is not available for orders above ₹1,000'
       });
     }
 
     // Check wallet balance if payment method is wallet
     if (paymentMethod === 'wallet') {
       if (!wallet || wallet.balance < finalAmount) {
-        return res.json({ 
-          success: false, 
-          message: 'Insufficient wallet balance' 
+        return res.json({
+          success: false,
+          message: 'Insufficient wallet balance'
         });
       }
     }
@@ -97,8 +97,8 @@ const placeOrder = async (req, res) => {
     // Generate order ID 
     const date = new Date();
     const dateString = date.getFullYear().toString() +
-                      (date.getMonth() + 1).toString().padStart(2, '0') +
-                      date.getDate().toString().padStart(2, '0');
+      (date.getMonth() + 1).toString().padStart(2, '0') +
+      date.getDate().toString().padStart(2, '0');
     const orderId = 'ORD' + dateString + nanoid(6).toUpperCase();
 
     // Create new order
@@ -152,7 +152,7 @@ const placeOrder = async (req, res) => {
     // Update product stock and clear cart 
     if (paymentMethod === 'cod' || paymentMethod === 'wallet') {
       await Promise.all([
-        ...cart.items.map(item => 
+        ...cart.items.map(item =>
           productModel.findByIdAndUpdate(
             item.productId._id,
             { $inc: { stock: -item.quantity } }
@@ -212,7 +212,7 @@ const placeOrder = async (req, res) => {
     if (paymentMethod === 'wallet') {
       // Deduct amount from wallet
       const walletTransactionId = 'WTX' + nanoid(8).toUpperCase();
-      
+
       await walletModel.findOneAndUpdate(
         { userId },
         {
@@ -233,25 +233,25 @@ const placeOrder = async (req, res) => {
       await order.save();
 
 
-      return res.json({ 
-        success: true, 
+      return res.json({
+        success: true,
         orderId: order._id,
         displayOrderId: order.orderId
       });
     }
 
-    
-    res.json({ 
-      success: true, 
+
+    res.json({
+      success: true,
       orderId: order._id,
       displayOrderId: order.orderId
     });
 
   } catch (error) {
     log.red('PLACE_ORDER_ERROR', error);
-    res.json({ 
-      success: false, 
-      message: error.message || 'Failed to place order' 
+    res.json({
+      success: false,
+      message: error.message || 'Failed to place order'
     });
   }
 };
@@ -259,11 +259,11 @@ const placeOrder = async (req, res) => {
 
 const verifyPayment = async (req, res) => {
   try {
-    const { 
-      razorpay_payment_id, 
+    const {
+      razorpay_payment_id,
       razorpay_order_id,
       razorpay_signature,
-      orderId 
+      orderId
     } = req.body;
 
     // Verify payment signature
@@ -303,7 +303,7 @@ const verifyPayment = async (req, res) => {
 
       // Update product stock 
       await Promise.all(
-        order.items.map(item => 
+        order.items.map(item =>
           productModel.findOneAndUpdate(
             { name: item.name },
             { $inc: { stock: -item.quantity } }
@@ -313,16 +313,16 @@ const verifyPayment = async (req, res) => {
 
       res.json({ success: true });
     } else {
-      res.json({ 
-        success: false, 
-        message: 'Payment verification failed' 
+      res.json({
+        success: false,
+        message: 'Payment verification failed'
       });
     }
   } catch (error) {
     console.error('Payment verification error:', error);
-    res.json({ 
-      success: false, 
-      message: 'Payment verification failed' 
+    res.json({
+      success: false,
+      message: 'Payment verification failed'
     });
   }
 };
@@ -330,19 +330,19 @@ const verifyPayment = async (req, res) => {
 const getOrderSuccess = async (req, res) => {
   try {
     const orderId = req.params.orderId;
-    
+
     // Validate if orderId is a valid  ObjectId
     if (!mongoose.Types.ObjectId.isValid(orderId)) {
       return res.redirect('/notfound?alertType=error&message=Invalid+order+id');
     }
 
     const order = await orderModel.findById(orderId);
-    
+
     if (!order) {
       return res.redirect('/home');
     }
 
-    res.render('user/orderSuccess', { 
+    res.render('user/orderSuccess', {
       orderId: order.orderId
     });
   } catch (error) {
@@ -409,7 +409,7 @@ const getOrders = async (req, res) => {
     if (req.xhr) {
       return res.status(500).json({ success: false, message: 'Error fetching orders' });
     }
-    res.render('user/profile/orders', { 
+    res.render('user/profile/orders', {
       orders: [],
       message: 'Failed to load orders',
       alertType: 'error',
@@ -449,13 +449,13 @@ const cancelOrderItem = async (req, res) => {
       const itemPrice = orderItem.price;
       const itemDiscount = orderItem.discount;
       const quantity = orderItem.quantity;
-      const baseRefundAmount = (itemPrice * (1 - itemDiscount/100)) * quantity;
+      const baseRefundAmount = (itemPrice * (1 - itemDiscount / 100)) * quantity;
 
       let couponDiscount = 0;
       if (order.coupon && order.coupon.discount > 0) {
         // Distribute coupon discount
-        const totalPrice = order.items.reduce((sum, item) => sum + (item.price*item.quantity), 0);          
-        couponDiscount = (orderItem.quantity * orderItem.price/totalPrice) * order.coupon.discount
+        const totalPrice = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        couponDiscount = (orderItem.quantity * orderItem.price / totalPrice) * order.coupon.discount
 
       }
 
@@ -488,7 +488,7 @@ const cancelOrderItem = async (req, res) => {
     await order.save();
 
     // Check if all items are cancelled/returned
-    const allItemsCancelledOrReturned = order.items.every(item => 
+    const allItemsCancelledOrReturned = order.items.every(item =>
       ['cancelled', 'returned'].includes(item.status)
     );
 
@@ -521,9 +521,9 @@ const returnOrderItem = async (req, res) => {
 
     // Validate return reason length
     if (!reason || reason.length < 10 || reason.length > 300) {
-      return res.json({ 
-        success: false, 
-        message: 'Return reason must be between 10 and 300 characters' 
+      return res.json({
+        success: false,
+        message: 'Return reason must be between 10 and 300 characters'
       });
     }
 
@@ -608,9 +608,9 @@ const retryPayment = async (req, res) => {
 
   } catch (error) {
     log.red('RETRY_PAYMENT_ERROR', error);
-    res.json({ 
-      success: false, 
-      message: 'Failed to initialize payment' 
+    res.json({
+      success: false,
+      message: 'Failed to initialize payment'
     });
   }
 };
@@ -618,19 +618,19 @@ const retryPayment = async (req, res) => {
 const getPaymentFailed = async (req, res) => {
   try {
     const orderId = req.params.orderId;
-    
+
     // Validate if orderId is a valid ObjectId
     if (!mongoose.Types.ObjectId.isValid(orderId)) {
       return res.redirect('/notfound?alertType=error&message=Invalid+order+id');
     }
 
     const order = await orderModel.findById(orderId);
-    
+
     if (!order) {
       return res.redirect('/home');
     }
 
-    res.render('user/paymentFailed', { 
+    res.render('user/paymentFailed', {
       orderId: order.orderId,
       user: req.session.user
     });
@@ -645,9 +645,9 @@ const downloadInvoice = async (req, res) => {
     const { orderId, itemId } = req.params;
     const userId = req.session.user.id;
 
-    const order = await orderModel.findOne({ 
-      _id: orderId, 
-      userId 
+    const order = await orderModel.findOne({
+      _id: orderId,
+      userId
     }).populate('userId', 'fullname email');
 
     if (!order) {
@@ -668,13 +668,13 @@ const downloadInvoice = async (req, res) => {
     const itemPrice = orderItem.price;
     const itemDiscount = orderItem.discount;
     const quantity = orderItem.quantity;
-    const baseAmount = (itemPrice * (1 - itemDiscount/100)) * quantity;
+    const baseAmount = (itemPrice * (1 - itemDiscount / 100)) * quantity;
 
     // Calculate proportional coupon discount
     let couponDiscount = 0;
     if (order.coupon && order.coupon.discount > 0) {
       const totalOrderPrice = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      couponDiscount = (orderItem.quantity * orderItem.price/totalOrderPrice) * order.coupon.discount;
+      couponDiscount = (orderItem.quantity * orderItem.price / totalOrderPrice) * order.coupon.discount;
     }
 
     // Final amount after all discounts
@@ -743,16 +743,16 @@ const downloadInvoice = async (req, res) => {
     ];
 
     const totalWidth = columns.reduce((sum, col) => sum + col.width, 0);
-    const rowHeight = 60; 
+    const rowHeight = 60;
 
     // Draw table header background
     doc.rect(40, tableTop - 5, totalWidth, 25) // Header height
-       .fillColor('#f3f4f6')
-       .fill();
+      .fillColor('#f3f4f6')
+      .fill();
 
     // Draw table borders
     doc.strokeColor('#d1d5db')
-       .lineWidth(1);
+      .lineWidth(1);
 
     // Draw header row
     let xPos = 40;
@@ -772,8 +772,8 @@ const downloadInvoice = async (req, res) => {
 
     // Draw horizontal line below header
     doc.moveTo(40, tableTop + 20)
-       .lineTo(40 + totalWidth, tableTop + 20)
-       .stroke();
+      .lineTo(40 + totalWidth, tableTop + 20)
+      .stroke();
 
     // Draw item row
     const rowTop = tableTop + 25;
@@ -781,28 +781,28 @@ const downloadInvoice = async (req, res) => {
     doc.font('NotoSans').fontSize(10);
 
     const rowData = [
-      { 
-        text: orderItem.name, 
+      {
+        text: orderItem.name,
         align: 'left',
         options: { width: columns[0].width - 8, align: 'left', lineGap: 2 } // Added lineGap for better line spacing
       },
-      { 
-        text: orderItem.quantity.toString(), 
+      {
+        text: orderItem.quantity.toString(),
         align: 'center',
         options: { width: columns[1].width - 8, align: 'center' }
       },
-      { 
-        text: `₹${orderItem.price.toFixed(2)}`, 
+      {
+        text: `₹${orderItem.price.toFixed(2)}`,
         align: 'right',
         options: { width: columns[2].width - 8, align: 'right' }
       },
-      { 
-        text: `${orderItem.discount}%`, 
+      {
+        text: `${orderItem.discount}%`,
         align: 'right',
         options: { width: columns[3].width - 8, align: 'right' }
       },
-      { 
-        text: `₹${baseAmount.toFixed(2)}`, 
+      {
+        text: `₹${baseAmount.toFixed(2)}`,
         align: 'right',
         options: { width: columns[4].width - 8, align: 'right' }
       }
@@ -812,14 +812,14 @@ const downloadInvoice = async (req, res) => {
     columns.forEach((col, i) => {
       const x = 40 + columns.slice(0, i).reduce((sum, col) => sum + col.width, 0);
       doc.moveTo(x, tableTop - 5)
-         .lineTo(x, rowTop + rowHeight) 
-         .stroke();
+        .lineTo(x, rowTop + rowHeight)
+        .stroke();
     });
 
     // Draw last vertical line
     doc.moveTo(40 + totalWidth, tableTop - 5)
-       .lineTo(40 + totalWidth, rowTop + rowHeight)
-       .stroke();
+      .lineTo(40 + totalWidth, rowTop + rowHeight)
+      .stroke();
 
     // Draw row data
     xPos = 40;
@@ -835,34 +835,34 @@ const downloadInvoice = async (req, res) => {
 
     // Draw bottom border
     doc.moveTo(40, rowTop + rowHeight)
-       .lineTo(40 + totalWidth, rowTop + rowHeight)
-       .stroke();
+      .lineTo(40 + totalWidth, rowTop + rowHeight)
+      .stroke();
 
     // Summary section 
     doc.y = rowTop + rowHeight + 20;
-    
+
     // Create a summary box
     const summaryWidth = 300; // Increased width
-    const summaryX = doc.page.width - summaryWidth - 40; 
+    const summaryX = doc.page.width - summaryWidth - 40;
     const summaryStartY = doc.y;
-    
+
     // Draw summary box background
-    doc.rect(summaryX, summaryStartY, summaryWidth, 160) 
-       .fillColor('#f8f9fa')
-       .fill();
-    
+    doc.rect(summaryX, summaryStartY, summaryWidth, 160)
+      .fillColor('#f8f9fa')
+      .fill();
+
     // Reset position and color for text
     doc.fillColor('#000000')
-       .fontSize(12);
-    
+      .fontSize(12);
+
     // Summary title
     doc.font('NotoSans-Bold')
-       .text('Summary',
-         summaryX + 20,
-         summaryStartY + 15,
-         { width: summaryWidth - 40 }
-       )
-       .moveDown(0.5);
+      .text('Summary',
+        summaryX + 20,
+        summaryStartY + 15,
+        { width: summaryWidth - 40 }
+      )
+      .moveDown(0.5);
 
     // Summary content with aligned values
     const leftColX = summaryX + 20;
@@ -872,8 +872,8 @@ const downloadInvoice = async (req, res) => {
     // Helper function for summary rows
     const addSummaryRow = (label, value, isBold = false) => {
       doc.font(isBold ? 'NotoSans-Bold' : 'NotoSans')
-         .text(label, leftColX, currentY)
-         .text(value, rightColX, currentY, { align: 'right' });
+        .text(label, leftColX, currentY)
+        .text(value, rightColX, currentY, { align: 'right' });
       currentY += 20;
     };
 
@@ -882,19 +882,19 @@ const downloadInvoice = async (req, res) => {
     addSummaryRow('SGST (9%):', `₹${sgst.toFixed(2)}`);
     addSummaryRow('CGST (9%):', `₹${cgst.toFixed(2)}`);
     addSummaryRow('Subtotal (inc. tax):', `₹${baseAmount.toFixed(2)}`);
-    
+
     if (couponDiscount > 0) {
       addSummaryRow('Coupon Discount:', `- ₹${couponDiscount.toFixed(2)}`);
     }
 
     // Draw a line before final amount
     doc.moveTo(summaryX + 20, currentY)
-       .lineTo(summaryX + summaryWidth - 20, currentY)
-       .strokeColor('#000000')
-       .stroke();
-    
+      .lineTo(summaryX + summaryWidth - 20, currentY)
+      .strokeColor('#000000')
+      .stroke();
+
     currentY += 10;
-    
+
     // Final amount in bold
     addSummaryRow('Final Amount:', `₹${finalAmount.toFixed(2)}`, true);
 
@@ -915,9 +915,9 @@ const downloadInvoice = async (req, res) => {
 
   } catch (error) {
     console.error('Download invoice error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to generate invoice' 
+    res.status(500).json({
+      success: false,
+      message: 'Failed to generate invoice'
     });
   }
 };
@@ -931,9 +931,9 @@ const getOrderDetails = async (req, res) => {
       return res.redirect('/notfound?message=Invalid+order+id&alertType=error');
     }
 
-    const order = await orderModel.findOne({ 
-      _id: orderId, 
-      userId 
+    const order = await orderModel.findOne({
+      _id: orderId,
+      userId
     }).populate('userId', 'fullname email');
 
     if (!order) {

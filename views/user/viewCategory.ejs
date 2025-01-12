@@ -5,7 +5,9 @@
         <nav class="flex mb-4 text-sm">
             <a href="<%= locals.fullname ? '/home' : '/' %>" class="text-gray-500 hover:">Home</a>
             <span class="mx-2 text-gray-500">/</span>
-            <span class="text-gray-800"><%= category.name %></span>
+            <span class="text-gray-800">
+                <%= category.name %>
+            </span>
         </nav>
 
         <!-- Category Header -->
@@ -70,7 +72,8 @@
                 </div>
                 <% } else { %>
                     <% products.forEach(product=> { %>
-                        <div class="bg-white rounded-lg text-center p-4 md:p-5 border border-gray-200 transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+                        <div
+                            class="bg-white rounded-lg text-center p-4 md:p-5 border border-gray-200 transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
                             <a href="/product/<%= product._id %>">
                                 <div class="aspect-square rounded-lg overflow-hidden mb-2">
                                     <img src="<%= product.images[0].path %>" alt="<%= product.name %>"
@@ -122,8 +125,7 @@
                                 <!-- Price section -->
                                 <% if (product.discount> 0) { %>
                                     <div class="flex items-center justify-center gap-2">
-                                        <p class="">₹<%= (product.price * (1 -
-                                                product.discount/100)).toFixed(2) %>
+                                        <p class="">₹<%= (product.price * (1 - product.discount/100)).toFixed(2) %>
                                         </p>
                                         <p class="text-gray-400 line-through text-sm">₹<%= product.price.toFixed(2) %>
                                         </p>
@@ -217,7 +219,7 @@
 
         async function fetchProducts() {
             try {
-                const categoryId = '<%= category._id %>'; // Get category ID from EJS
+                const categoryId = '<%= category._id %>'; // Get category ID
                 const params = {
                     ...currentFilters
                 };
@@ -363,7 +365,7 @@
             fetchProducts();
         });
 
-        // Debounce function for price inputs
+        //  function for price inputs
         let priceTimeout;
         function handlePriceChange() {
             clearTimeout(priceTimeout);
@@ -371,7 +373,7 @@
                 const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
                 const maxPrice = parseFloat(document.getElementById('maxPrice').value) || 0;
 
-                // Only fetch products if there's no validation error
+                //  fetch products
                 if (!maxPrice || minPrice <= maxPrice) {
                     currentFilters.minPrice = minPrice || '';
                     currentFilters.maxPrice = maxPrice || '';
@@ -381,7 +383,7 @@
             }, 500);
         }
 
-        // Add blur event listeners for price validation
+        // event listeners for price validation
         document.getElementById('minPrice').addEventListener('blur', validatePriceRange);
         document.getElementById('maxPrice').addEventListener('blur', validatePriceRange);
 
@@ -389,7 +391,7 @@
             const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
             const maxPrice = parseFloat(document.getElementById('maxPrice').value) || 0;
 
-            // Only show error if max price is set and is less than min price
+            // show error if max price is set and is less than min price
             if (maxPrice && minPrice > maxPrice) {
                 showToast('Maximum price cannot be less than minimum price', 'error');
                 // Clear the max price field
@@ -435,14 +437,14 @@
                 const data = response.data;
 
                 if (data.success) {
-                    // Update cart count in header if it exists
+                    // Update cart count in header 
                     const cartCountElement = document.getElementById('cartCount');
                     if (cartCountElement) {
                         cartCountElement.textContent = data.cartCount;
                     }
                     showToast('Item added to cart successfully', 'success');
-                    document.getElementById("cart-quantity").innerText = data.totalQuantity 
-                    document.getElementById("cart-quantity-mobile").innerText = data.totalQuantity 
+                    document.getElementById("cart-quantity").innerText = data.totalQuantity
+                    document.getElementById("cart-quantity-mobile").innerText = data.totalQuantity
                 } else {
                     showToast(data.message, 'error');
                 }
@@ -462,7 +464,7 @@
                     const wishlistButtons = document.querySelectorAll(`button[onclick="addToWishlist('${productId}')"]`);
 
                     wishlistButtons.forEach(button => {
-                        // Create the new button with "remove" functionality
+                        // Create the new button 
                         const newButton = document.createElement('button');
                         newButton.setAttribute('onclick', `removeFromWishlist('${productId}')`);
                         newButton.className = 'p-2 rounded-full bg-primary-accent text-white hover:bg-gray-100 hover:text-black transition-colors duration-300';
@@ -499,7 +501,7 @@
                     const wishlistButtons = document.querySelectorAll(`button[onclick="removeFromWishlist('${productId}')"]`);
 
                     wishlistButtons.forEach(button => {
-                        // Create the new button with "add" functionality
+                        // Create the new button 
                         const newButton = document.createElement('button');
                         newButton.setAttribute('onclick', `addToWishlist('${productId}')`);
                         newButton.className = 'p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300';
@@ -526,7 +528,7 @@
             }
         }
 
-        // Add this function for pagination
+        //  function for pagination
         function changePage(page) {
             currentFilters.page = page;
             fetchProducts();
@@ -570,4 +572,4 @@
             }
         }
     </script>
-    <%- include(locals.fullname ? '../partials/footer' : '../partials/authfooter') %>
+    <%- include(locals.fullname ? '../partials/footer' : '../partials/authfooter' ) %>

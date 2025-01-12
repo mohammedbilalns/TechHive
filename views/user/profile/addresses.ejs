@@ -26,8 +26,8 @@
                     <i class="fas fa-plus mr-2"></i> Add New Address
                   </button>
                   <% } else { %>
-                    <button class="bg-gray-400 text-white px-4 py-2 rounded-lg cursor-not-allowed w-full sm:w-auto" disabled
-                      title="Maximum limit of 5 addresses reached">
+                    <button class="bg-gray-400 text-white px-4 py-2 rounded-lg cursor-not-allowed w-full sm:w-auto"
+                      disabled title="Maximum limit of 5 addresses reached">
                       <i class="fas fa-plus mr-2"></i> Add New Address
                     </button>
                     <% } %>
@@ -344,9 +344,9 @@
         const addressId = form.querySelector('[name="addressId"]').value;
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
-        
+
         let hasError = false;
-        
+
         // validations 
         if (!data.name?.trim()) {
           showError('name', 'Name is required', 'edit');
@@ -355,7 +355,7 @@
           showError('name', 'Name must be between 3 and 50 characters', 'edit');
           hasError = true;
         }
-        
+
         if (!data.houseName?.trim()) {
           showError('houseName', 'House name is required', 'edit');
           hasError = true;
@@ -363,7 +363,7 @@
           showError('houseName', 'House name must be between 3 and 50 characters', 'edit');
           hasError = true;
         }
-        
+
         if (!data.localityStreet?.trim()) {
           showError('localityStreet', 'Locality/Street is required', 'edit');
           hasError = true;
@@ -371,7 +371,7 @@
           showError('localityStreet', 'Locality/Street must be between 3 and 50 characters', 'edit');
           hasError = true;
         }
-        
+
         if (!data.city?.trim()) {
           showError('city', 'City is required', 'edit');
           hasError = true;
@@ -379,12 +379,12 @@
           showError('city', 'City must be between 3 and 50 characters', 'edit');
           hasError = true;
         }
-        
+
         if (!data.state) {
           showError('state', 'Please select a state', 'edit');
           hasError = true;
         }
-        
+
         if (!data.pincode?.trim()) {
           showError('pincode', 'Pincode is required', 'edit');
           hasError = true;
@@ -392,7 +392,7 @@
           showError('pincode', 'Please enter a valid 6-digit pincode', 'edit');
           hasError = true;
         }
-        
+
         if (!data.phone?.trim()) {
           showError('phone', 'Phone number is required', 'edit');
           hasError = true;
@@ -428,7 +428,7 @@
               <p class="text-gray-600">Phone: ${data.phone}</p>
             `;
           }
-          
+
           toggleEditAddress();
           showToast('Address updated successfully', 'success');
         }
@@ -441,7 +441,7 @@
     async function deleteAddress(addressId) {
       const confirmed = await customConfirm('Are you sure you want to delete this address?');
       if (!confirmed) return;
-      
+
       try {
         const response = await axios.delete(`/address/${addressId}`);
 
@@ -450,7 +450,7 @@
           const addressCard = document.querySelector(`[data-address-id="${addressId}"]`);
           if (addressCard) {
             addressCard.remove();
-            
+
             // Update the Add Address button state
             const addressGrid = document.getElementById('address-grid');
             if (addressGrid.children.length < 5) {
@@ -543,9 +543,9 @@
 
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
-        
+
         let hasError = false;
-        
+
         //  validations
         if (!data.name?.trim()) {
           showError('name', 'Name is required', 'add');
@@ -554,7 +554,7 @@
           showError('name', 'Name must be between 3 and 50 characters', 'add');
           hasError = true;
         }
-        
+
         if (!data.houseName?.trim()) {
           showError('houseName', 'House name is required', 'add');
           hasError = true;
@@ -562,7 +562,7 @@
           showError('houseName', 'House name must be between 3 and 50 characters', 'add');
           hasError = true;
         }
-        
+
         if (!data.localityStreet?.trim()) {
           showError('localityStreet', 'Locality/Street is required', 'add');
           hasError = true;
@@ -570,7 +570,7 @@
           showError('localityStreet', 'Locality/Street must be between 3 and 50 characters', 'add');
           hasError = true;
         }
-        
+
         if (!data.city?.trim()) {
           showError('city', 'City is required', 'add');
           hasError = true;
@@ -578,12 +578,12 @@
           showError('city', 'City must be between 3 and 50 characters', 'add');
           hasError = true;
         }
-        
+
         if (!data.state) {
           showError('state', 'Please select a state', 'add');
           hasError = true;
         }
-        
+
         if (!data.pincode?.trim()) {
           showError('pincode', 'Pincode is required', 'add');
           hasError = true;
@@ -591,7 +591,7 @@
           showError('pincode', 'Please enter a valid 6-digit pincode', 'add');
           hasError = true;
         }
-        
+
         if (!data.phone?.trim()) {
           showError('phone', 'Phone number is required', 'add');
           hasError = true;
@@ -629,10 +629,10 @@
             <p class="text-gray-600">Phone: ${data.phone}</p>
           `;
           addressGrid.appendChild(newAddressCard);
-          
+
           toggleAddAddress();
           showToast('Address added successfully', 'success');
-          
+
           // Update the Add Address button state if limit reached
           if (addressGrid.children.length >= 5) {
             const addButton = document.querySelector('button[disabled][title="Maximum limit of 5 addresses reached"]');
@@ -670,7 +670,7 @@
       const errorId = `${formType}${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}Error`;
       const input = document.querySelector(`#${formType}AddressForm [name="${fieldId}"]`);
       const errorElement = document.getElementById(errorId);
-      
+
       if (input && errorElement) {
         input.classList.add('border-red-500');
         errorElement.textContent = message;
@@ -694,7 +694,7 @@
       });
     }
     document.querySelectorAll('#addAddressForm input, #addAddressForm select').forEach(input => {
-      input.addEventListener('input', function() {
+      input.addEventListener('input', function () {
         this.classList.remove('border-red-500');
         const errorId = `add${this.name.charAt(0).toUpperCase() + this.name.slice(1)}Error`;
         const errorElement = document.getElementById(errorId);
@@ -704,7 +704,7 @@
       });
     });
     document.querySelectorAll('#editAddressForm input, #editAddressForm select').forEach(input => {
-      input.addEventListener('input', function() {
+      input.addEventListener('input', function () {
         this.classList.remove('border-red-500');
         const errorId = `edit${this.name.charAt(0).toUpperCase() + this.name.slice(1)}Error`;
         const errorElement = document.getElementById(errorId);
@@ -716,9 +716,9 @@
     function addInputListeners(formType) {
       const form = document.getElementById(`${formType}AddressForm`);
       const inputs = form.querySelectorAll('input, select');
-      
+
       inputs.forEach(input => {
-        input.addEventListener('input', function() {
+        input.addEventListener('input', function () {
           this.classList.remove('border-red-500');
           const fieldName = this.getAttribute('name');
           const errorId = `${formType}${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}Error`;
@@ -729,7 +729,7 @@
         });
       });
     }
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       addInputListeners('add');
       addInputListeners('edit');
     });

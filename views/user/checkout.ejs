@@ -1,5 +1,5 @@
 <%- include("../partials/header") %>
-<script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
 
   <div class="flex flex-col md:flex-row">
     <%- include('../partials/usersidebar') %>
@@ -39,7 +39,8 @@
                       <%= address.name %>
                     </h3>
                     <p class="text-gray-600">
-                      <%= address.houseName %> <%= address.localitystreet %><br>
+                      <%= address.houseName %>
+                        <%= address.localitystreet %><br>
                           <%= address.city %>, <%= address.state %>
                               <%= address.pincode %><br>
                                 Phone: <%= address.phone %>
@@ -83,7 +84,7 @@
                       </p>
                     </div>
                   </div>
-                <% }) %>
+                  <% }) %>
               </div>
 
               <!-- Price Details -->
@@ -102,18 +103,19 @@
                   <!-- Updated Coupon Section -->
                   <div class="border-t border-b py-3 my-2">
                     <div id="couponToggle">
-                      <button onclick="toggleCouponInput()" class="text-primary-accent hover:underline flex items-center gap-2">
+                      <button onclick="toggleCouponInput()"
+                        class="text-primary-accent hover:underline flex items-center gap-2">
                         <i class="fas fa-tag"></i>
                         Have a coupon code?
                       </button>
                     </div>
-                    
+
                     <div id="couponInputSection" class="hidden mt-2">
                       <div class="flex flex-col sm:flex-row gap-2">
-                        <input type="text" id="couponCode" 
+                        <input type="text" id="couponCode"
                           class="border rounded px-3 py-2 w-full sm:w-auto flex-grow focus:ring-2 focus:ring-primary-accent uppercase"
                           placeholder="Enter coupon code">
-                        <button onclick="applyCoupon()" 
+                        <button onclick="applyCoupon()"
                           class="bg-primary-accent text-white px-4 py-2 rounded hover:bg-primary-accent/90 w-full sm:w-auto">
                           Apply
                         </button>
@@ -126,8 +128,7 @@
                           <span class="font-medium text-primary-accent" id="appliedCouponCode"></span>
                           <span class="text-green-600 text-sm ml-2">applied</span>
                         </div>
-                        <button onclick="removeCoupon()" 
-                          class="text-red-500 hover:text-red-600 text-sm">
+                        <button onclick="removeCoupon()" class="text-red-500 hover:text-red-600 text-sm">
                           Remove
                         </button>
                       </div>
@@ -155,54 +156,49 @@
                 <!-- Add Wallet Option -->
                 <div class="border rounded-lg p-4">
                   <label class="flex items-center">
-                    <input type="radio" name="paymentMethod" value="wallet" 
-                      class="form-radio text-primary-accent"
-                      onchange="handlePaymentMethodChange(this)" 
-                      <%=wallet.balance < total ? 'disabled' : '' %>
-                      <%= wallet.balance >= total ? 'checked' : '' %>>
-                    <div class="ml-2 flex-grow">
-                      <span>Pay using Wallet</span>
-                      <span class="ml-2 text-sm text-gray-600">
-                        (Balance: ₹<%= wallet.balance.toFixed(2) %>)
-                      </span>
-                      <% if (wallet.balance < total) { %>
-                        <div class="flex items-center mt-1">
-                          <span class="text-sm text-red-500">
-                            Insufficient wallet balance
-                          </span>
-                          <a href="/wallet" class="ml-2 text-sm text-primary-accent hover:underline">
-                            Add Money to Wallet
-                          </a>
-                        </div>
-                      <% } %>
-                    </div>
+                    <input type="radio" name="paymentMethod" value="wallet" class="form-radio text-primary-accent"
+                      onchange="handlePaymentMethodChange(this)" <%=wallet.balance < total ? 'disabled' : '' %>
+                    <%= wallet.balance>= total ? 'checked' : '' %>>
+                      <div class="ml-2 flex-grow">
+                        <span>Pay using Wallet</span>
+                        <span class="ml-2 text-sm text-gray-600">
+                          (Balance: ₹<%= wallet.balance.toFixed(2) %>)
+                        </span>
+                        <% if (wallet.balance < total) { %>
+                          <div class="flex items-center mt-1">
+                            <span class="text-sm text-red-500">
+                              Insufficient wallet balance
+                            </span>
+                            <a href="/wallet" class="ml-2 text-sm text-primary-accent hover:underline">
+                              Add Money to Wallet
+                            </a>
+                          </div>
+                          <% } %>
+                      </div>
                   </label>
                 </div>
 
                 <!-- COD Option -->
                 <div class="border rounded-lg p-4">
                   <label class="flex items-center">
-                    <input type="radio" name="paymentMethod" value="cod" 
-                      class="form-radio text-primary-accent"
-                      onchange="handlePaymentMethodChange(this)" 
-                      <%= total > 1000 ? 'disabled' : '' %>
-                      <%= (wallet.balance < total && total <= 1000) ? 'checked' : '' %>>
-                    <span class="ml-2">Cash on Delivery</span>
-                    <% if (total > 1000) { %>
-                      <span class="ml-2 text-sm text-red-500">
-                        (Not available for orders above ₹1,000)
-                      </span>
-                    <% } %>
+                    <input type="radio" name="paymentMethod" value="cod" class="form-radio text-primary-accent"
+                      onchange="handlePaymentMethodChange(this)" <%=total> 1000 ? 'disabled' : '' %>
+                    <%= (wallet.balance < total && total <=1000) ? 'checked' : '' %>>
+                      <span class="ml-2">Cash on Delivery</span>
+                      <% if (total> 1000) { %>
+                        <span class="ml-2 text-sm text-red-500">
+                          (Not available for orders above ₹1,000)
+                        </span>
+                        <% } %>
                   </label>
                 </div>
 
                 <!-- Online Payment Option -->
                 <div class="border rounded-lg p-4">
                   <label class="flex items-center">
-                    <input type="radio" name="paymentMethod" value="online" 
-                      class="form-radio text-primary-accent"
-                      onchange="handlePaymentMethodChange(this)"
-                      <%= (wallet.balance < total && total > 1000) ? 'checked' : '' %>>
+                    <input type="radio" name="paymentMethod" value="online" class="form-radio text-primary-accent"
+                      onchange="handlePaymentMethodChange(this)" <%=(wallet.balance < total && total> 1000) ? 'checked'
+                    : '' %>>
                     <span class="ml-2">Pay Online (UPI/Card/NetBanking)</span>
                   </label>
                 </div>
@@ -238,12 +234,14 @@
           </div>
           <div>
             <label class="block text-gray-600 mb-2">House Name</label>
-            <input type="text" name="houseName" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <input type="text" name="houseName"
+              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
             <p class="text-red-500 text-sm mt-1 hidden" id="addHouseNameError"></p>
           </div>
           <div>
             <label class="block text-gray-600 mb-2">Locality/Street</label>
-            <input type="text" name="localityStreet" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <input type="text" name="localityStreet"
+              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
             <p class="text-red-500 text-sm mt-1 hidden" id="addLocalityStreetError"></p>
           </div>
           <div>
@@ -296,7 +294,8 @@
           </div>
           <div>
             <label class="block text-gray-600 mb-2">Pincode</label>
-            <input type="text" name="pincode" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <input type="text" name="pincode"
+              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
             <p class="text-red-500 text-sm mt-1 hidden" id="addPincodeError"></p>
           </div>
           <div>
@@ -306,7 +305,8 @@
           </div>
           <div>
             <label class="block text-gray-600 mb-2">Alternate Phone (Optional)</label>
-            <input type="tel" name="alternatePhone" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <input type="tel" name="alternatePhone"
+              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
             <p class="text-red-500 text-sm mt-1 hidden" id="addAlternatePhoneError"></p>
           </div>
         </div>
@@ -342,12 +342,14 @@
           </div>
           <div>
             <label class="block text-gray-600 mb-2">House Name</label>
-            <input type="text" name="houseName" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <input type="text" name="houseName"
+              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
             <p class="text-red-500 text-sm mt-1 hidden" id="editHouseNameError"></p>
           </div>
           <div>
             <label class="block text-gray-600 mb-2">Locality/Street</label>
-            <input type="text" name="localityStreet" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <input type="text" name="localityStreet"
+              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
             <p class="text-red-500 text-sm mt-1 hidden" id="editLocalityStreetError"></p>
           </div>
           <div>
@@ -400,7 +402,8 @@
           </div>
           <div>
             <label class="block text-gray-600 mb-2">Pincode</label>
-            <input type="text" name="pincode" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <input type="text" name="pincode"
+              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
             <p class="text-red-500 text-sm mt-1 hidden" id="editPincodeError"></p>
           </div>
           <div>
@@ -410,7 +413,8 @@
           </div>
           <div>
             <label class="block text-gray-600 mb-2">Alternate Phone (Optional)</label>
-            <input type="tel" name="alternatePhone" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+            <input type="tel" name="alternatePhone"
+              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
             <p class="text-red-500 text-sm mt-1 hidden" id="editAlternatePhoneError"></p>
           </div>
         </div>
@@ -427,14 +431,14 @@
   </div>
 
   <!-- Add Razorpay Script -->
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
 
   <script>
     let razorpayInstance = null;
 
     function handlePaymentMethodChange(radio) {
       if (radio.disabled) return;
-      
+
       const placeOrderBtn = document.querySelector('button[onclick="placeOrder()"]');
       placeOrderBtn.textContent = radio.value === 'cod' ? 'Place Order' : 'Proceed to Payment';
     }
@@ -523,7 +527,7 @@
                 }
               },
               modal: {
-                ondismiss: function() {
+                ondismiss: function () {
                   window.location.href = `/payment/failed/${response.data.orderId}`;
                 }
               },
@@ -578,31 +582,26 @@
     // validate address forms
 
     function validateAddressForm(data) {
-      // Basic validation
       if (!data.name || !data.houseName || !data.localityStreet ||
         !data.city || !data.state || !data.pincode || !data.phone) {
         showToast('Please fill in all required fields', 'error');
         return false;
       }
 
-      // Pincode validation (6 digits)
       if (!/^\d{6}$/.test(data.pincode)) {
         showToast('Please enter a valid 6-digit pincode', 'error');
         return false;
       }
 
-      // Phone number validation (10 digits)
       if (!/^\d{10}$/.test(data.phone)) {
         showToast('Please enter a valid 10-digit phone number', 'error');
         return false;
       }
 
-      // Alternate phone validation (if provided)
       if (data.alternatePhone && !/^\d{10}$/.test(data.alternatePhone)) {
         showToast('Please enter a valid 10-digit alternate phone number', 'error');
         return false;
       }
-
       return true;
     }
     // submit new address 
@@ -613,10 +612,9 @@
 
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
-        
+
         let hasError = false;
-        
-        // Name validation
+
         if (!data.name?.trim()) {
           showError('name', 'Name is required', 'add');
           hasError = true;
@@ -624,8 +622,7 @@
           showError('name', 'Name must be between 3 and 50 characters', 'add');
           hasError = true;
         }
-        
-        // House name validation
+
         if (!data.houseName?.trim()) {
           showError('houseName', 'House name is required', 'add');
           hasError = true;
@@ -633,8 +630,7 @@
           showError('houseName', 'House name must be between 3 and 50 characters', 'add');
           hasError = true;
         }
-        
-        // Locality/Street validation
+
         if (!data.localityStreet?.trim()) {
           showError('localityStreet', 'Locality/Street is required', 'add');
           hasError = true;
@@ -642,8 +638,7 @@
           showError('localityStreet', 'Locality/Street must be between 3 and 50 characters', 'add');
           hasError = true;
         }
-        
-        // City validation
+
         if (!data.city?.trim()) {
           showError('city', 'City is required', 'add');
           hasError = true;
@@ -651,14 +646,12 @@
           showError('city', 'City must be between 3 and 50 characters', 'add');
           hasError = true;
         }
-        
-        // State validation
+
         if (!data.state) {
           showError('state', 'Please select a state', 'add');
           hasError = true;
         }
-        
-        // Pincode validation
+
         if (!data.pincode?.trim()) {
           showError('pincode', 'Pincode is required', 'add');
           hasError = true;
@@ -666,8 +659,7 @@
           showError('pincode', 'Please enter a valid 6-digit pincode', 'add');
           hasError = true;
         }
-        
-        // Phone validation
+
         if (!data.phone?.trim()) {
           showError('phone', 'Phone number is required', 'add');
           hasError = true;
@@ -681,14 +673,13 @@
         const response = await axios.post('/addresses', data);
 
         if (response.data.success) {
-          // Update DOM with new address
           const addressesContainer = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.gap-4');
           const isFirstAddress = addressesContainer.children.length === 0;
           const newAddressCard = createAddressCard(response.data.address, isFirstAddress);
-          
+
           // Add the new address card to the grid
           addressesContainer.insertAdjacentHTML('beforeend', newAddressCard);
-          
+
           // Update the "Add New Address" button visibility
           const addAddressBtn = document.querySelector('button[onclick="toggleAddAddress()"]');
           if (addressesContainer.children.length >= 4) {
@@ -718,7 +709,7 @@
 
         const address = response.data.address;
         const form = document.getElementById('editAddressForm');
-        
+
         // Populate the form with address details
         form.querySelector('[name="addressId"]').value = address._id;
         form.querySelector('[name="name"]').value = address.name;
@@ -750,10 +741,9 @@
         const addressId = form.querySelector('[name="addressId"]').value;
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
-        
+
         let hasError = false;
-        
-        // Name validation
+
         if (!data.name?.trim()) {
           showError('name', 'Name is required', 'edit');
           hasError = true;
@@ -761,8 +751,7 @@
           showError('name', 'Name must be between 3 and 50 characters', 'edit');
           hasError = true;
         }
-        
-        // House name validation
+
         if (!data.houseName?.trim()) {
           showError('houseName', 'House name is required', 'edit');
           hasError = true;
@@ -770,8 +759,7 @@
           showError('houseName', 'House name must be between 3 and 50 characters', 'edit');
           hasError = true;
         }
-        
-        // Locality/Street validation
+
         if (!data.localityStreet?.trim()) {
           showError('localityStreet', 'Locality/Street is required', 'edit');
           hasError = true;
@@ -779,8 +767,7 @@
           showError('localityStreet', 'Locality/Street must be between 3 and 50 characters', 'edit');
           hasError = true;
         }
-        
-        // City validation
+
         if (!data.city?.trim()) {
           showError('city', 'City is required', 'edit');
           hasError = true;
@@ -788,14 +775,12 @@
           showError('city', 'City must be between 3 and 50 characters', 'edit');
           hasError = true;
         }
-        
-        // State validation
+
         if (!data.state) {
           showError('state', 'Please select a state', 'edit');
           hasError = true;
         }
-        
-        // Pincode validation
+
         if (!data.pincode?.trim()) {
           showError('pincode', 'Pincode is required', 'edit');
           hasError = true;
@@ -803,8 +788,7 @@
           showError('pincode', 'Please enter a valid 6-digit pincode', 'edit');
           hasError = true;
         }
-        
-        // Phone validation
+
         if (!data.phone?.trim()) {
           showError('phone', 'Phone number is required', 'edit');
           hasError = true;
@@ -821,7 +805,7 @@
           const addressCard = document.querySelector(`input[value="${addressId}"]`).closest('.border.rounded-lg');
           const wasChecked = addressCard.querySelector('input[type="radio"]').checked;
           const newAddressCard = createAddressCard(response.data.address, wasChecked);
-          
+
           // Replace the old card with the new one
           addressCard.outerHTML = newAddressCard;
 
@@ -859,7 +843,7 @@
 
     async function applyCoupon() {
       const couponCode = document.getElementById('couponCode').value.trim();
-      
+
       if (!couponCode) {
         showToast('Please enter a coupon code', 'error');
         return;
@@ -867,7 +851,7 @@
 
       try {
         const response = await axios.post('/checkout/apply-coupon', { couponCode });
-        
+
         if (response.data.success) {
           // Store coupon information in memory
           currentCouponCode = response.data.couponCode;
@@ -877,14 +861,14 @@
           document.getElementById('couponInputSection').classList.add('hidden');
           document.getElementById('appliedCouponSection').classList.remove('hidden');
           document.getElementById('couponToggle').classList.add('hidden');
-          
+
           document.getElementById('appliedCouponCode').textContent = currentCouponCode;
           document.getElementById('couponDiscount').textContent = `-₹${currentCouponDiscount.toFixed(2)}`;
-          
+
           // Update total amount
           const newTotal = originalTotal - currentCouponDiscount;
           document.querySelector('[data-total]').textContent = `₹${newTotal.toFixed(2)}`;
-          
+
           showToast(response.data.message, 'success');
           updatePaymentMethods();
         }
@@ -897,7 +881,7 @@
     async function removeCoupon() {
       try {
         const response = await axios.post('/checkout/remove-coupon');
-        
+
         if (response.data.success) {
           // Clear coupon information
           currentCouponCode = null;
@@ -908,10 +892,10 @@
           document.getElementById('appliedCouponSection').classList.add('hidden');
           document.getElementById('couponToggle').classList.remove('hidden');
           document.getElementById('couponCode').value = '';
-          
+
           // Reset total amount to original
           document.querySelector('[data-total]').textContent = `₹${originalTotal.toFixed(2)}`;
-          
+
           showToast('Coupon removed successfully', 'success');
           updatePaymentMethods();
         }
@@ -920,8 +904,8 @@
       }
     }
 
-    // Add event listener for Enter key on coupon input
-    document.getElementById('couponCode').addEventListener('keypress', function(e) {
+    //  event listener for Enter key on coupon input
+    document.getElementById('couponCode').addEventListener('keypress', function (e) {
       if (e.key === 'Enter') {
         e.preventDefault();
         applyCoupon();
@@ -932,7 +916,7 @@
     function updatePaymentMethods() {
       const total = parseFloat(document.querySelector('[data-total]').textContent.replace('₹', ''));
       const codRadio = document.querySelector('input[value="cod"]');
-      
+
       if (total > 1000) {
         codRadio.disabled = true;
         if (codRadio.checked) {
@@ -947,34 +931,34 @@
 
     // Initialize coupon from session if exists
     <% if (sessionCoupon) { %>
-      document.addEventListener('DOMContentLoaded', function() {
+      document.addEventListener('DOMContentLoaded', function () {
         currentCouponCode = '<%= sessionCoupon.code %>';
         currentCouponDiscount = <%= sessionCoupon.discount %>;
-        
+
         // Update UI to show applied coupon
         document.getElementById('couponInputSection').classList.add('hidden');
         document.getElementById('appliedCouponSection').classList.remove('hidden');
         document.getElementById('couponToggle').classList.add('hidden');
-        
+
         document.getElementById('appliedCouponCode').textContent = currentCouponCode;
         document.getElementById('couponDiscount').textContent = `-₹${currentCouponDiscount.toFixed(2)}`;
-        
+
         // Update total amount
         const newTotal = originalTotal - currentCouponDiscount;
         document.querySelector('[data-total]').textContent = `₹${newTotal.toFixed(2)}`;
-        
+
         updatePaymentMethods();
       });
     <% } %>
 
-    document.addEventListener('DOMContentLoaded', updatePaymentMethods);
+      document.addEventListener('DOMContentLoaded', updatePaymentMethods);
 
     // Add validation helper functions
     function showError(fieldId, message, formType) {
       const errorId = `${formType}${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}Error`;
       const input = document.querySelector(`#${formType}AddressForm [name="${fieldId}"]`);
       const errorElement = document.getElementById(errorId);
-      
+
       if (input && errorElement) {
         input.classList.add('border-red-500');
         errorElement.textContent = message;
@@ -997,13 +981,13 @@
       });
     }
 
-    // Add input listeners to clear errors
+    //  input listeners to clear errors
     function addInputListeners(formType) {
       const form = document.getElementById(`${formType}AddressForm`);
       const inputs = form.querySelectorAll('input, select');
-      
+
       inputs.forEach(input => {
-        input.addEventListener('input', function() {
+        input.addEventListener('input', function () {
           this.classList.remove('border-red-500');
           const fieldName = this.getAttribute('name');
           const errorId = `${formType}${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}Error`;
@@ -1016,18 +1000,17 @@
     }
 
     // Initialize input listeners
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       addInputListeners('add');
       addInputListeners('edit');
     });
 
-    // Make sure input listeners are added for the edit form
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       const editForm = document.getElementById('editAddressForm');
       if (editForm) {
         const inputs = editForm.querySelectorAll('input, select');
         inputs.forEach(input => {
-          input.addEventListener('input', function() {
+          input.addEventListener('input', function () {
             this.classList.remove('border-red-500');
             const fieldName = this.getAttribute('name');
             const errorId = `edit${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}Error`;
@@ -1040,7 +1023,6 @@
       }
     });
 
-    // Add this function to create an address card
     function createAddressCard(address, isFirstAddress = false) {
       return `
         <div class="border rounded-lg p-4 relative">

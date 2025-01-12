@@ -135,7 +135,7 @@
         </div>
     </div>
 
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
     <script>
         async function initializeRazorpay(orderData) {
             const options = {
@@ -217,7 +217,7 @@
             }
         }
 
-        // New helper function to prepend transaction
+        //  helper function to prepend transaction
         function prependTransaction(transaction) {
             const tbody = document.querySelector('tbody');
             if (!tbody) return;

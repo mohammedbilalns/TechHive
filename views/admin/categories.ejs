@@ -86,11 +86,10 @@
                 </tbody>
               </table>
 
-              <!-- Add margin/padding between table and pagination -->
               <div class="pb-6"></div>
 
-              <!-- Pagination with horizontal scroll for mobile -->
-              <% if (categories.length > 0) { %>
+              <!-- Pagination  -->
+              <% if (categories.length> 0) { %>
                 <div class="mt-8 flex justify-center">
                   <div class="overflow-x-auto max-w-full">
                     <div class="flex items-center space-x-4 px-4">
@@ -99,31 +98,30 @@
                           class="flex-shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
                           Previous
                         </a>
-                      <% } %>
+                        <% } %>
 
-                      <% for(let i=1; i <=totalPages; i++) { %>
-                        <a href="/admin/categories?page=<%= i %><%= search ? `&search=${search}` : '' %>"
-                          class="flex-shrink-0 px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
-                          <%= i %>
-                        </a>
-                      <% } %>
+                          <% for(let i=1; i <=totalPages; i++) { %>
+                            <a href="/admin/categories?page=<%= i %><%= search ? `&search=${search}` : '' %>"
+                              class="flex-shrink-0 px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
+                              <%= i %>
+                            </a>
+                            <% } %>
 
-                      <% if (hasNextPage) { %>
-                        <a href="/admin/categories?page=<%= currentPage + 1 %><%= search ? `&search=${search}` : '' %>"
-                          class="flex-shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                          Next
-                        </a>
-                      <% } %>
+                              <% if (hasNextPage) { %>
+                                <a href="/admin/categories?page=<%= currentPage + 1 %><%= search ? `&search=${search}` : '' %>"
+                                  class="flex-shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                                  Next
+                                </a>
+                                <% } %>
                     </div>
                   </div>
                 </div>
-              <% } %>
+                <% } %>
             </div>
           </div>
         </div>
       </main>
   </div>
-
 
   <!-- Add Category Modal -->
   <div id="addCategoryModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 items-center justify-center z-50">
@@ -153,8 +151,6 @@
       </form>
     </div>
   </div>
-
-
 
   <!-- Edit Category Modal -->
   <div id="editCategoryModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 items-center justify-center z-50">
@@ -186,15 +182,7 @@
     </div>
   </div>
 
-
-
-
-
-
   <script>
-
-
-
 
     // show add category modal
     async function addCategory() {
@@ -232,11 +220,11 @@
 
       // Reset previous errors
       resetErrors(nameId, descriptionId);
-     
+
       if (!name) {
         showError(nameId, 'Category Name is required');
         isValid = false;
-      } else if (name.length < 3 || name.length >50) {
+      } else if (name.length < 3 || name.length > 50) {
         showError(nameId, 'Category Name must be between 3-50 characters');
         isValid = false;
       } else if (/[^a-zA-Z\s&,]/.test(name)) {
@@ -250,7 +238,7 @@
       if (!description) {
         showError(descriptionId, 'Description is required');
         isValid = false;
-      } else if (description.length < 10 || description.length >100) {
+      } else if (description.length < 10 || description.length > 100) {
         showError(descriptionId, 'Description must be between 10-100 characters');
         isValid = false;
       } else if (/[^a-zA-Z0-9\s.,'&,\/-]/.test(description)) {
@@ -267,7 +255,7 @@
     function showError(fieldId, message) {
       const input = document.getElementById(fieldId);
       const errorElement = document.getElementById(`${fieldId}Error`);
-      
+
       input.classList.add('border-red-500');
       errorElement.textContent = message;
       errorElement.classList.remove('hidden');
@@ -278,14 +266,13 @@
       fields.forEach(field => {
         const input = document.getElementById(field);
         const errorElement = document.getElementById(`${field}Error`);
-        
+
         input.classList.remove('border-red-500');
         errorElement.classList.add('hidden');
         errorElement.textContent = '';
       });
     }
 
-    // Update the form validation calls
     function validateAddCategoryForm() {
       return validateCategoryForm('name', 'description', 'alertMessageAdd');
     }
@@ -310,20 +297,16 @@
             const toggleButton = document.getElementById(`toggle-${categoryId}`);
 
             if (action === 'hide') {
-              // Update status directly
               statusSpan.textContent = 'Inactive';
               statusSpan.className = 'px-4 py-2 rounded-md shadow text-primary-accent';
 
-              // Update button directly
               toggleButton.textContent = 'Unhide';
               toggleButton.className = 'bg-green-500 text-white px-4 py-2 rounded-md shadow hover:bg-green-600';
               toggleButton.onclick = () => toggleCategoryStatus(categoryId, 'unhide');
             } else {
-              // Update status directly
               statusSpan.textContent = 'Active';
               statusSpan.className = 'px-4 py-2 rounded-md shadow text-green-600';
 
-              // Update button directly
               toggleButton.textContent = 'Hide';
               toggleButton.className = 'bg-primary-accent text-white px-4 py-2 rounded-md shadow hover:bg-red-600';
               toggleButton.onclick = () => toggleCategoryStatus(categoryId, 'hide');
@@ -476,12 +459,12 @@
     document.getElementById('editCategoryForm').onsubmit = submitEditCategory;
 
     //  input event listeners to clear errors when user starts typing
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       const addFields = ['name', 'description'];
       const editFields = ['editCategoryName', 'editCategoryDescription'];
 
       [...addFields, ...editFields].forEach(field => {
-        document.getElementById(field).addEventListener('input', function() {
+        document.getElementById(field).addEventListener('input', function () {
           this.classList.remove('border-red-500');
           document.getElementById(`${field}Error`).classList.add('hidden');
         });
@@ -489,6 +472,5 @@
     });
 
   </script>
-
 
   <%- include('../partials/adminfooter') %>

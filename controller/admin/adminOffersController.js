@@ -2,7 +2,7 @@ import Offer from '../../model/offerModel.js';
 import Category from '../../model/categoryModel.js';
 import Product from '../../model/productModel.js';
 import Referral from '../../model/referralModel.js';
-import {log} from "mercedlogger"
+import { log } from "mercedlogger"
 
 const updateProductDiscounts = async (offer, remove = false) => {
     if (!offer.isActive && !remove) return;
@@ -51,9 +51,9 @@ const getOffers = async (req, res) => {
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
-            .lean(); 
+            .lean();
 
-        
+
         const currentDate = new Date();
         offers.forEach(offer => {
             offer.isExpired = new Date(offer.endDate) < currentDate;
@@ -72,7 +72,6 @@ const getOffers = async (req, res) => {
             .populate('category', 'name')
             .sort({ name: 1 });
 
-        // Format products 
         const formattedProducts = products.map(product => ({
             _id: product._id,
             name: `${product.name} (${product.category.name}) - ₹${product.price}`,
@@ -156,37 +155,37 @@ const addOffer = async (req, res) => {
             products
         } = req.body;
         const name = req.body.name.trim()
-        if(!name || !offerType || !offerPercentage || !startDate || !endDate || !categories || !products){
+        if (!name || !offerType || !offerPercentage || !startDate || !endDate || !categories || !products) {
             return res.status(400).json({
                 success: false,
                 message: 'All fields are required'
             });
         }
-        if(name.length < 3|| name.length>50){
+        if (name.length < 3 || name.length > 50) {
             return res.status(400).json({
                 success: false,
                 message: 'Offer name must be between 3 and 50 characters'
             });
         }
-        if(offerPercentage < 1 || offerPercentage > 99){
+        if (offerPercentage < 1 || offerPercentage > 99) {
             return res.status(400).json({
                 success: false,
                 message: 'Offer percentage must be between 1 and 99'
             });
         }
-        if(startDate > endDate){
+        if (startDate > endDate) {
             return res.status(400).json({
                 success: false,
                 message: 'Start date cannot be greater than end date'
             });
         }
-        if(startDate < new Date()){
+        if (startDate < new Date()) {
             return res.status(400).json({
                 success: false,
                 message: 'Start date cannot be in the past'
             });
         }
-    
+
         // Check for existing active offers
         const items = offerType === 'category' ? categories : products;
         const existingOffer = await checkExistingOffers(offerType, items, startDate, endDate);
@@ -210,8 +209,8 @@ const addOffer = async (req, res) => {
 
         await newOffer.save();
         await updateProductDiscounts(newOffer);
-        res.json({ 
-            success: true, 
+        res.json({
+            success: true,
             message: 'Offer added successfully',
             offerId: newOffer._id
         });
@@ -237,25 +236,25 @@ const updateOffer = async (req, res) => {
             products
         } = req.body;
         const name = req.body.name.trim()
-        if(!name || !offerType || !offerPercentage || !startDate || !endDate || !categories || !products){
+        if (!name || !offerType || !offerPercentage || !startDate || !endDate || !categories || !products) {
             return res.status(400).json({
                 success: false,
                 message: 'All fields are required'
             });
         }
-        if(name.length < 3|| name.length>50){
+        if (name.length < 3 || name.length > 50) {
             return res.status(400).json({
                 success: false,
                 message: 'Offer name must be between 3 and 50 characters'
             });
         }
-        if(offerPercentage < 1 || offerPercentage > 99){
+        if (offerPercentage < 1 || offerPercentage > 99) {
             return res.status(400).json({
                 success: false,
                 message: 'Offer percentage must be between 1 and 99'
             });
         }
-        if(startDate > endDate){
+        if (startDate > endDate) {
             return res.status(400).json({
                 success: false,
                 message: 'Start date cannot be greater than end date'
@@ -264,11 +263,11 @@ const updateOffer = async (req, res) => {
         // Check for existing offers, excluding the current offer being updated
         const items = offerType === 'category' ? categories : products;
         const existingOffer = await checkExistingOffers(
-            offerType, 
-            items, 
-            startDate, 
+            offerType,
+            items,
+            startDate,
             endDate,
-            req.params.offerId  
+            req.params.offerId
         );
 
         if (existingOffer) {
@@ -337,7 +336,7 @@ const toggleOfferStatus = async (req, res) => {
         offer.isActive = !offer.isActive;
         await offer.save();
 
-        // Update product discounts based on new status
+        // Update product discounts 
         if (!offer.isActive) {
             await updateProductDiscounts(offer, true);
         } else {
@@ -386,22 +385,22 @@ const updateReferralSettings = async (req, res) => {
                 message: 'Referral values cannot be negative'
             });
         }
-        if(referrerValue <= refereeValue){
+        if (referrerValue <= refereeValue) {
             return res.status(400).json({
                 success: false,
                 message: 'Referrer value cannot be greater than referee value'
             });
         }
 
-        if(referrerValue > 100 || refereeValue > 100){
+        if (referrerValue > 100 || refereeValue > 100) {
             return res.status(400).json({
                 success: false,
                 message: 'Referral values cannot be greater than 100'
             });
         }
-        
+
         let referralSettings = await Referral.findOne();
-        
+
         if (!referralSettings) {
             referralSettings = new Referral({
                 referrerValue,

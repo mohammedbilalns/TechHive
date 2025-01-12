@@ -14,7 +14,7 @@
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <h1 class="text-2xl font-semibold text-gray-800">My Orders</h1>
         
-        <!-- Updated Search Form -->
+        <!--  Search Form -->
         <form class="flex items-center space-x-2 w-full sm:w-auto" id="searchForm">
           <input 
             type="search" 
@@ -39,7 +39,7 @@
               <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <div class="flex items-start sm:items-center space-x-4 w-full sm:w-auto">
-                    <!-- Updated Product Images Preview -->
+                    <!--  Product Images Preview -->
                     <div class="flex -space-x-2 flex-shrink-0">
                       <% if (order.items.length === 1) { %>
                         <img src="<%= order.items[0].images[0].path %>" 
@@ -61,7 +61,7 @@
                     </div>
                     <div class="flex-1 sm:min-w-[300px]">
                       <p class="font-medium break-all sm:break-normal">Order #<%= order.orderId %></p>
-                      <!-- Updated Items List -->
+                      <!--  Items List -->
                       <div class="text-sm text-gray-600 mt-1 break-words sm:break-normal">
                         <% order.items.forEach((item, index) => { %>
                           <%= item.name %><%= index < order.items.length - 1 ? ',' : '' %>
@@ -95,7 +95,6 @@
                           statusColor = 'text-gray-600';
                         }
 
-                        // Format date as dd/mm/yy
                         const formattedDate = new Date(displayDate).toLocaleDateString('en-GB', {
                           day: '2-digit',
                           month: '2-digit',
@@ -123,7 +122,7 @@
           <% }) %>
         </div>
 
-        <!-- Updated Pagination Controls -->
+        <!--  Pagination Controls -->
         <% if (totalPages > 1) { %>
           <div class="mt-8 flex flex-wrap justify-center items-center gap-2 px-4">
             <% if (hasPrevPage) { %>
@@ -167,7 +166,6 @@
 
 <script>
   
-
   document.getElementById('searchForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const searchQuery = new URLSearchParams(new FormData(e.target)).toString();

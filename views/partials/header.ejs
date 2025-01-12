@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +12,9 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
     <script>
@@ -21,6 +24,7 @@
         }
     </script>
 </head>
+
 <body class="min-h-screen flex flex-col">
     <header class="bg-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -34,53 +38,65 @@
                 <nav class="hidden md:flex items-center space-x-8">
                     <a href="/home" class="text-black hover:text-gray-700 transition duration-150 nav-link">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
                     </a>
                     <% if (locals.fullname) { %>
                         <span class="text-gray-600 hidden xl:block">Welcome, <%= locals.fullname %></span>
-                    <% } %>
-                    <a href="/logout" class="text-gray-600 hover:text-gray-900 transition duration-150 nav-link">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                        </svg>
-                    </a>
+                        <% } %>
+                            <a href="/logout"
+                                class="text-gray-600 hover:text-gray-900 transition duration-150 nav-link">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                            </a>
                 </nav>
 
                 <!-- Desktop Search and Icons -->
                 <div class="hidden md:flex items-center space-x-4">
                     <div class="relative">
                         <form action="/search" method="GET" class="flex" onsubmit="return validateSearch(this)">
-                            <input type="text" 
-                                   name="q"
-                                   placeholder="What are you looking for?" 
-                                   class="border rounded-md px-4 py-2 w-64"
-                            />
-                            <button type="submit" class="ml-2 bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-900">
+                            <input type="text" name="q" placeholder="What are you looking for?"
+                                class="border rounded-md px-4 py-2 w-64" />
+                            <button type="submit"
+                                class="ml-2 bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-900">
                                 <i class="fas fa-search"></i>
                             </button>
                         </form>
                     </div>
                     <div class="flex space-x-4">
-                        <a href="/wishlist" class="text-gray-600 hover:text-gray-900 nav-link relative"  aria-label="Wishlist">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                        <a href="/wishlist" class="text-gray-600 hover:text-gray-900 nav-link relative"
+                            aria-label="Wishlist">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                                </path>
                             </svg>
-                            <span id="wishlist-quantity" class="absolute -top-2 -right-2 bg-primary-accent text-white rounded-full text-[10px] min-w-[18px] h-4 flex items-center justify-center px-1">
+                            <span id="wishlist-quantity"
+                                class="absolute -top-2 -right-2 bg-primary-accent text-white rounded-full text-[10px] min-w-[18px] h-4 flex items-center justify-center px-1">
                                 <%= locals.wishlistQuantity || 0 %>
                             </span>
                         </a>
-                        <a href="/cart" class="text-gray-600 hover:text-gray-900 relative nav-link" aria-label="Shopping cart">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        <a href="/cart" class="text-gray-600 hover:text-gray-900 relative nav-link"
+                            aria-label="Shopping cart">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
-                            <span id="cart-quantity" class="absolute -top-2 -right-2 bg-primary-accent text-white rounded-full text-[10px] min-w-[18px] h-4 flex items-center justify-center px-1">
+                            <span id="cart-quantity"
+                                class="absolute -top-2 -right-2 bg-primary-accent text-white rounded-full text-[10px] min-w-[18px] h-4 flex items-center justify-center px-1">
                                 <%= locals.cartQuantity || 0 %>
                             </span>
                         </a>
                         <a href="/account" class="text-gray-600 hover:text-gray-900 nav-link" aria-label="Profile">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
                         </a>
                     </div>
@@ -88,34 +104,42 @@
 
                 <!-- Mobile Icons -->
                 <div class="flex items-center space-x-4 md:hidden">
-                    <a href="javascript:void(0)" 
-                       onclick="toggleUserSidebar()" 
-                       class="text-gray-600 hover:text-gray-900 nav-link" 
-                       aria-label="Profile">
+                    <a href="javascript:void(0)" onclick="toggleUserSidebar()"
+                        class="text-gray-600 hover:text-gray-900 nav-link" aria-label="Profile">
                         <i class="fas fa-user text-xl"></i>
                     </a>
-                    <a href="/wishlist" class="text-gray-600 hover:text-gray-900 nav-link relative" aria-label="Wishlist">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    <a href="/wishlist" class="text-gray-600 hover:text-gray-900 nav-link relative"
+                        aria-label="Wishlist">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                            </path>
                         </svg>
-                        <span class="absolute -top-2 -right-2 bg-primary-accent text-white rounded-full text-[10px] min-w-[18px] h-4 flex items-center justify-center px-1" id="wishlist-quantity-mobile">
+                        <span
+                            class="absolute -top-2 -right-2 bg-primary-accent text-white rounded-full text-[10px] min-w-[18px] h-4 flex items-center justify-center px-1"
+                            id="wishlist-quantity-mobile">
                             <%= locals.wishlistQuantity || 0 %>
                         </span>
                     </a>
-                    <a href="/cart" class="text-gray-600 hover:text-gray-900 relative nav-link" aria-label="Shopping cart">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                    <a href="/cart" class="text-gray-600 hover:text-gray-900 relative nav-link"
+                        aria-label="Shopping cart">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
-                        <span id="cart-quantity-mobile" class="absolute -top-2 -right-2 bg-primary-accent text-white rounded-full text-[10px] min-w-[18px] h-4 flex items-center justify-center px-1">
+                        <span id="cart-quantity-mobile"
+                            class="absolute -top-2 -right-2 bg-primary-accent text-white rounded-full text-[10px] min-w-[18px] h-4 flex items-center justify-center px-1">
                             <%= locals.cartQuantity || 0 %>
                         </span>
                     </a>
                     <!-- Mobile menu button -->
-                    <button type="button" 
-                            onclick="toggleMenu()"
-                            class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
+                    <button type="button" onclick="toggleMenu()"
+                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
                         <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </button>
                 </div>
@@ -124,12 +148,8 @@
             <!-- Mobile search bar  -->
             <div class="md:hidden pb-3">
                 <form action="/search" method="GET" class="flex" onsubmit="return validateSearch(this)">
-                    <input type="text" 
-                           name="q"
-                           placeholder="What are you looking for?" 
-                           class="w-full border rounded-md px-4 py-2"
-                           required
-                    />
+                    <input type="text" name="q" placeholder="What are you looking for?"
+                        class="w-full border rounded-md px-4 py-2" required />
                     <button type="submit" class="ml-2 bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-900">
                         <i class="fas fa-search"></i>
                     </button>
@@ -140,20 +160,26 @@
             <div class="hidden md:hidden" id="mobile-menu">
                 <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                     <% if (locals.fullname) { %>
-                        <div class="block px-3 py-2 rounded-md text-base font-medium text-gray-600">Welcome, <%= locals.fullname %></div>
-                    <% } %>
-                    <a href="/home" class="flex items-center px-3 py-2 rounded-md text-base font-medium text-black hover:bg-gray-50 nav-link">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                        </svg>
-                        Home
-                    </a>
-                    <a href="/logout" class="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-50 nav-link">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                        </svg>
-                        Logout
-                    </a>
+                        <div class="block px-3 py-2 rounded-md text-base font-medium text-gray-600">Welcome, <%=
+                                locals.fullname %>
+                        </div>
+                        <% } %>
+                            <a href="/home"
+                                class="flex items-center px-3 py-2 rounded-md text-base font-medium text-black hover:bg-gray-50 nav-link">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                </svg>
+                                Home
+                            </a>
+                            <a href="/logout"
+                                class="flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:bg-gray-50 nav-link">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                                Logout
+                            </a>
                 </div>
             </div>
         </div>
@@ -165,7 +191,7 @@
         }
 
         function toggleUserSidebar() {
-            // Check if toggleSidebar function exists (defined in usersidebar.ejs)
+            // Check if toggleSidebar function exists 
             if (typeof toggleSidebar === 'function') {
                 toggleSidebar();
             } else {

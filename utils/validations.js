@@ -22,7 +22,6 @@ const isValidPassword = (password) => {
 
     return (hasMinLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar)
 
-
 }
 
 

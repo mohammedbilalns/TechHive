@@ -52,10 +52,11 @@
                                     data-discount="<%= item.productId.discount %>">
                                     <% if (item.productId.discount> 0) { %>
                                       ₹<%= (item.productId.price * (1 - item.productId.discount/100)).toFixed(2) %>
-                                      <span class="line-through text-gray-400">₹<%= item.productId.price.toFixed(2) %></span>
-                                    <% } else { %>
-                                      ₹<%= item.productId.price.toFixed(2) %>
-                                    <% } %>
+                                        <span class="line-through text-gray-400">₹<%= item.productId.price.toFixed(2) %>
+                                            </span>
+                                        <% } else { %>
+                                          ₹<%= item.productId.price.toFixed(2) %>
+                                            <% } %>
                                   </p>
                                 </div>
                                 <button onclick="removeFromCart('<%= item.productId._id %>')"
@@ -69,7 +70,7 @@
                             <div class="flex items-center border rounded">
                               <button onclick="updateQuantity('<%= item.productId._id %>', 'decrease')"
                                 class="decrease-btn px-3 py-1 hover:bg-gray-100 <%= item.quantity <= 1 ? 'text-gray-400' : '' %>"
-                                <%= item.quantity <= 1 ? 'disabled' : '' %>>
+                                <%=item.quantity <=1 ? 'disabled' : '' %>>
                                 -
                               </button>
                               <span class="quantity-value px-4 py-1 border-x">
@@ -81,11 +82,12 @@
                               </button>
                             </div>
                             <p class="font-semibold item-total">
-                              ₹<%= ((item.productId.price * (1 - item.productId.discount/100)) * item.quantity).toFixed(2) %>
+                              ₹<%= ((item.productId.price * (1 - item.productId.discount/100)) *
+                                item.quantity).toFixed(2) %>
                             </p>
                           </div>
                         </div>
-                      <% }) %>
+                        <% }) %>
                     </div>
 
                     <!-- Cart Summary -->
@@ -106,13 +108,13 @@
                               <span>Coupon Discount</span>
                               <span id="couponDiscount">-₹<%= cart.discount %></span>
                             </div>
-                          <% } %>
-                          <div class="border-t pt-2 mt-2">
-                            <div class="flex justify-between font-semibold">
-                              <span>Total</span>
-                              <span id="total">₹<%= total %></span>
-                            </div>
-                          </div>
+                            <% } %>
+                              <div class="border-t pt-2 mt-2">
+                                <div class="flex justify-between font-semibold">
+                                  <span>Total</span>
+                                  <span id="total">₹<%= total %></span>
+                                </div>
+                              </div>
                         </div>
 
                         <!-- Checkout Button -->
@@ -158,7 +160,7 @@
       if (action === 'decrease' && currentQuantity <= 1) {
         return;
       }
-      
+
       axios.patch('/cart', { productId, action })
         .then(response => {
           if (response.data.success) {
@@ -239,7 +241,7 @@
               showEmptyCart();
             }
             document.getElementById("cart-quantity").innerText = response.data.totalQuantity;
-            document.getElementById("cart-quantity-mobile").innerText = response.data.totalQuantity;  
+            document.getElementById("cart-quantity-mobile").innerText = response.data.totalQuantity;
           } else {
             showToast(response.data.message || 'Failed to remove item', 'error');
           }

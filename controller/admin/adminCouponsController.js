@@ -63,19 +63,19 @@ const addCoupon = async (req, res) => {
             expiryDate
         } = req.body;
         const code = req.body.code.toUpperCase().trim()
-        if(!code || !description || !discountType || !discountValue || !minPurchase || !maxDiscount || !usageLimit || !startDate || !expiryDate){
+        if (!code || !description || !discountType || !discountValue || !minPurchase || !maxDiscount || !usageLimit || !startDate || !expiryDate) {
             return res.status(400).json({
                 success: false,
                 message: 'All fields are required'
             });
         }
-        if(code.length < 3 || code.length > 10){
+        if (code.length < 3 || code.length > 10) {
             return res.status(400).json({
                 success: false,
                 message: 'Coupon code must be between 3 and 10 characters'
             });
         }
-        if(/^\d+$/.test(code)){
+        if (/^\d+$/.test(code)) {
             return res.status(400).json({
                 success: false,
                 message: 'Coupon code cannot contain numbers only'
@@ -113,13 +113,13 @@ const addCoupon = async (req, res) => {
                 });
             }
         }
-        if(minPurchase < 0){
+        if (minPurchase < 0) {
             return res.status(400).json({
                 success: false,
                 message: 'Minimum purchase cannot be negative'
             });
         }
-        if(usageLimit < 1){
+        if (usageLimit < 1) {
             return res.status(400).json({
                 success: false,
                 message: 'Usage limit must be at least 1'
@@ -168,8 +168,8 @@ const addCoupon = async (req, res) => {
         });
 
         await newCoupon.save();
-        res.json({ 
-            success: true, 
+        res.json({
+            success: true,
             message: 'Coupon created successfully',
             couponId: newCoupon._id
         });
@@ -184,7 +184,7 @@ const addCoupon = async (req, res) => {
 
 const updateCoupon = async (req, res) => {
     try {
-        const { 
+        const {
             description,
             discountType,
             discountValue,
@@ -196,19 +196,19 @@ const updateCoupon = async (req, res) => {
         } = req.body;
         const code = req.body.code.toUpperCase().trim()
 
-        if (!code || !description || !discountType || !discountValue || !minPurchase || !maxDiscount || !usageLimit || !startDate || !expiryDate){
+        if (!code || !description || !discountType || !discountValue || !minPurchase || !maxDiscount || !usageLimit || !startDate || !expiryDate) {
             return res.status(400).json({
                 success: false,
                 message: 'All fields are required'
             });
         }
-        if(code.length < 3 || code.length > 10){
+        if (code.length < 3 || code.length > 10) {
             return res.status(400).json({
                 success: false,
                 message: 'Coupon code must be between 3 and 10 characters'
             });
         }
-        if(/^\d+$/.test(code)){
+        if (/^\d+$/.test(code)) {
             return res.status(400).json({
                 success: false,
                 message: 'Coupon code cannot contain numbers only'
@@ -227,13 +227,13 @@ const updateCoupon = async (req, res) => {
                 message: 'Description must be between 10 and 100 characters'
             });
         }
-        if(minPurchase < 0){
+        if (minPurchase < 0) {
             return res.status(400).json({
                 success: false,
                 message: 'Minimum purchase cannot be negative'
             });
         }
-        if(usageLimit < 1){
+        if (usageLimit < 1) {
             return res.status(400).json({
                 success: false,
                 message: 'Usage limit must be at least 1'

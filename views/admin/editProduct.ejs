@@ -1,418 +1,410 @@
 <%- include('../partials/adminheader') %>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 
-<div class="flex min-h-screen">
-  <!-- Sidebar -->
-  <%- include('../partials/adminsidebar') %>
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <%- include('../partials/adminsidebar') %>
 
-  <!-- Main Content -->
-  <main class="md:ml-64 w-full min-h-screen bg-gray-50 transition-all duration-300 ease-in-out">
-    <div class="pt-14 md:pt-0 p-4">
-      <!-- Breadcrumbs -->
-      <nav class="flex mb-4 text-sm">
-        <a href="/admin/products" class="text-gray-500 hover:text-red-600">Products</a>
-        <span class="mx-2 text-gray-500">/</span>
-        <span class="text-gray-800">Edit Product</span>
-      </nav>
+      <!-- Main Content -->
+      <main class="md:ml-64 w-full min-h-screen bg-gray-50 transition-all duration-300 ease-in-out">
+        <div class="pt-14 md:pt-0 p-4">
+          <!-- Breadcrumbs -->
+          <nav class="flex mb-4 text-sm">
+            <a href="/admin/products" class="text-gray-500 hover:text-red-600">Products</a>
+            <span class="mx-2 text-gray-500">/</span>
+            <span class="text-gray-800">Edit Product</span>
+          </nav>
 
-      <h1 class="text-2xl font-bold text-gray-800">Edit Product</h1>
-      
-      <!-- Add Product Form -->
-      <div id="productFormContainer" class="bg-white shadow-lg rounded-lg p-8 mt-4">
-        <form id="addProductForm" action=/admin/products/edit/<%= product._id %> method="POST" enctype="multipart/form-data">
-          <!-- Product Name -->
-          <div class="form-group mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
-            <input type="text" name="name" value="<%= product.name %>" 
-              class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" 
-              placeholder="Enter product name">
-            <p class="text-red-500 text-sm mt-1 hidden" id="nameError"></p>
-          </div>
-          
-          <!-- Product Description -->
-          <div class="form-group mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Product Description</label>
-            <textarea name="description" 
-              class="w-full h-24 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" 
-              placeholder="Enter product description"><%= product.description %></textarea>
-            <p class="text-red-500 text-sm mt-1 hidden" id="descriptionError"></p>
-          </div>
-          
-          <!-- Price -->
-          <div class="form-group mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Price</label>
-            <input type="number" name="price" value="<%= product.price %>" 
-              class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" 
-              placeholder="Enter product price" step="0.01">
-            <p class="text-red-500 text-sm mt-1 hidden" id="priceError"></p>
-          </div>
-          
-          <!-- Stock -->
-          <div class="form-group mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
-            <input type="number" name="stock" value="<%= product.stock %>" 
-              class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" 
-              placeholder="Enter stock quantity" min="0">
-            <p class="text-red-500 text-sm mt-1 hidden" id="stockError"></p>
-          </div>
-          
-          <!-- Brand -->
-          <div class="form-group mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
-            <input type="text" name="brand" value="<%= product.brand %>" 
-              class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" 
-              placeholder="Enter brand name">
-            <p class="text-red-500 text-sm mt-1 hidden" id="brandError"></p>
-          </div>
-          
-          <!-- Category -->
-          <div class="form-group mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-            <select name="category" 
-              class="w-full h-12 px-4 py-2 rounded-lg border border-gray-300 focus:border-blue-500">
-              <option value="">Select Category</option>
-              <% categories.forEach(category => { %>
-                <option value="<%= category._id %>" 
-                  <%= category._id.toString() === product.category.toString() ? 'selected' : '' %>>
-                  <%= category.name %>
-                </option>
-              <% }); %>
-            </select>
-            <p class="text-red-500 text-sm mt-1 hidden" id="categoryError"></p>
-          </div>
-          
-          <!-- Specifications -->
-          <div class="form-group mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Specifications (up to 4)</label>
-            <div class="space-y-2">
-              <% for(let i = 0; i < 4; i++) { %>
-                <input type="text" name="specifications" 
-                  value="<%= product.specifications[i] || '' %>"
-                  class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500" 
-                  placeholder="Enter specification <%= i+1 %>">
-              <% } %>
-            </div>
-            <p class="text-red-500 text-sm mt-1 hidden" id="specificationsError"></p>
-            <small class="text-gray-500">Add up to 4 key specifications for the product</small>
-          </div>
-          
-          <!-- Main Image -->
-          <div class="form-group mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Images</label>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <% for(let i = 0; i < 4; i++) { %>
-                <div class="w-full">
-                  <label class="block">
-                    <input type="file" 
-                           name="mainImages"
-                           id="imageInput<%= i+1 %>"
-                           accept="image/*" 
-                           class="hidden" 
-                           onchange="handleImageUpload(this, 'preview<%= i+1 %>', 'uploadLabel<%= i+1 %>', 'cropperModal', 'cropperImage')">
-                    <span id="uploadLabel<%= i+1 %>" class="<%= product.images && product.images[i] ? 'hidden' : 'flex' %> items-center justify-center h-20 w-20 border border-gray-300 bg-white text-gray-800 cursor-pointer hover:bg-gray-100 transition duration-200 ease-in-out">
-                      <i class="fas fa-plus text-3xl"></i>
-                    </span>
-                  </label>
-                  <div id="preview<%= i+1 %>" class="mt-2 <%= product.images && product.images[i] ? '' : 'hidden' %>">
-                    <% if (product.images && product.images[i]) { %>
-                      <img src="/uploads/products/<%= product.images[i].filename %>" 
-                           alt="Preview <%= i+1 %>" 
-                           class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity"
-                           onclick="document.getElementById('imageInput<%= i+1 %>').click()">
-                      <input type="hidden" name="existingImages" value="<%= product.images[i].filename %>">
+          <h1 class="text-2xl font-bold text-gray-800">Edit Product</h1>
+
+          <!-- Add Product Form -->
+          <div id="productFormContainer" class="bg-white shadow-lg rounded-lg p-8 mt-4">
+            <form id="addProductForm" action=/admin/products/edit/<%=product._id %> method="POST"
+              enctype="multipart/form-data">
+              <!-- Product Name -->
+              <div class="form-group mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
+                <input type="text" name="name" value="<%= product.name %>"
+                  class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500"
+                  placeholder="Enter product name">
+                <p class="text-red-500 text-sm mt-1 hidden" id="nameError"></p>
+              </div>
+
+              <!-- Product Description -->
+              <div class="form-group mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Product Description</label>
+                <textarea name="description"
+                  class="w-full h-24 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500"
+                  placeholder="Enter product description"><%= product.description %></textarea>
+                <p class="text-red-500 text-sm mt-1 hidden" id="descriptionError"></p>
+              </div>
+
+              <!-- Price -->
+              <div class="form-group mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Price</label>
+                <input type="number" name="price" value="<%= product.price %>"
+                  class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500"
+                  placeholder="Enter product price" step="0.01">
+                <p class="text-red-500 text-sm mt-1 hidden" id="priceError"></p>
+              </div>
+
+              <!-- Stock -->
+              <div class="form-group mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Stock</label>
+                <input type="number" name="stock" value="<%= product.stock %>"
+                  class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500"
+                  placeholder="Enter stock quantity" min="0">
+                <p class="text-red-500 text-sm mt-1 hidden" id="stockError"></p>
+              </div>
+
+              <!-- Brand -->
+              <div class="form-group mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
+                <input type="text" name="brand" value="<%= product.brand %>"
+                  class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500"
+                  placeholder="Enter brand name">
+                <p class="text-red-500 text-sm mt-1 hidden" id="brandError"></p>
+              </div>
+
+              <!-- Category -->
+              <div class="form-group mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                <select name="category"
+                  class="w-full h-12 px-4 py-2 rounded-lg border border-gray-300 focus:border-blue-500">
+                  <option value="">Select Category</option>
+                  <% categories.forEach(category=> { %>
+                    <option value="<%= category._id %>" <%=category._id.toString()===product.category.toString()
+                      ? 'selected' : '' %>>
+                      <%= category.name %>
+                    </option>
+                    <% }); %>
+                </select>
+                <p class="text-red-500 text-sm mt-1 hidden" id="categoryError"></p>
+              </div>
+
+              <!-- Specifications -->
+              <div class="form-group mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Specifications (up to 4)</label>
+                <div class="space-y-2">
+                  <% for(let i=0; i < 4; i++) { %>
+                    <input type="text" name="specifications" value="<%= product.specifications[i] || '' %>"
+                      class="w-full h-12 px-4 py-2 text-base rounded-lg border border-gray-300 focus:border-blue-500"
+                      placeholder="Enter specification <%= i+1 %>">
                     <% } %>
-                  </div>
                 </div>
-              <% } %>
+                <p class="text-red-500 text-sm mt-1 hidden" id="specificationsError"></p>
+                <small class="text-gray-500">Add up to 4 key specifications for the product</small>
+              </div>
+
+              <!-- Main Image -->
+              <div class="form-group mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Images</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <% for(let i=0; i < 4; i++) { %>
+                    <div class="w-full">
+                      <label class="block">
+                        <input type="file" name="mainImages" id="imageInput<%= i+1 %>" accept="image/*" class="hidden"
+                          onchange="handleImageUpload(this, 'preview<%= i+1 %>', 'uploadLabel<%= i+1 %>', 'cropperModal', 'cropperImage')">
+                        <span id="uploadLabel<%= i+1 %>"
+                          class="<%= product.images && product.images[i] ? 'hidden' : 'flex' %> items-center justify-center h-20 w-20 border border-gray-300 bg-white text-gray-800 cursor-pointer hover:bg-gray-100 transition duration-200 ease-in-out">
+                          <i class="fas fa-plus text-3xl"></i>
+                        </span>
+                      </label>
+                      <div id="preview<%= i+1 %>"
+                        class="mt-2 <%= product.images && product.images[i] ? '' : 'hidden' %>">
+                        <% if (product.images && product.images[i]) { %>
+                          <img src="/uploads/products/<%= product.images[i].filename %>" alt="Preview <%= i+1 %>"
+                            class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity"
+                            onclick="document.getElementById('imageInput<%= i+1 %>').click()">
+                          <input type="hidden" name="existingImages" value="<%= product.images[i].filename %>">
+                          <% } %>
+                      </div>
+                    </div>
+                    <% } %>
+                </div>
+                <small class="text-gray-500">Click on any image to replace it. You can update individual images or keep
+                  existing ones.</small>
+              </div>
+              <!-- Error Message -->
+              <div id="alertMessage" class="mb-4 p-3 rounded-md hidden bg-red-100 text-red-700">
+                <span id="alertText"></span>
+              </div>
+
+              <!-- update Product Button -->
+              <div id="addProductButtonContainer" class="flex justify-end mt-6">
+                <button type="submit" form="addProductForm"
+                  class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Update Product</button>
+              </div>
+          </div>
+
+          </form>
+
+          <!-- Cropper Modal -->
+          <div id="cropperModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4">
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold">Crop Image</h3>
+                <button onclick="closeCropper()" class="text-gray-500 hover:text-gray-700">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+              <div class="relative aspect-square mb-4">
+                <img id="cropperImage" src="#" class="max-w-full">
+              </div>
+              <div class="flex justify-end gap-3">
+                <button onclick="closeCropper()"
+                  class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Cancel</button>
+                <button class="apply-button px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                  onclick="applyCrop()">Apply</button>
+              </div>
             </div>
-            <small class="text-gray-500">Click on any image to replace it. You can update individual images or keep existing ones.</small>
-          </div> 
-     <!-- Error Message -->
-     <div id="alertMessage" class="mb-4 p-3 rounded-md hidden bg-red-100 text-red-700">
-      <span id="alertText"></span>
-    </div>
-
-    <!-- update Product Button -->
-    <div id="addProductButtonContainer" class="flex justify-end mt-6">
-      <button type="submit" form="addProductForm" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Update Product</button>
-    </div>
-  </div>
-
-
-        </form>
-
-     
-      <!-- Cropper Modal -->
-      <div id="cropperModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold">Crop Image</h3>
-            <button onclick="closeCropper()" class="text-gray-500 hover:text-gray-700">
-              <i class="fas fa-times"></i>
-            </button>
           </div>
-          <div class="relative aspect-square mb-4">
-            <img id="cropperImage" src="#" class="max-w-full">
-          </div>
-          <div class="flex justify-end gap-3">
-            <button onclick="closeCropper()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">Cancel</button>
-            <button class="apply-button px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onclick="applyCrop()">Apply</button>
-          </div>
-        </div>
-      </div>
 
-      <script>
-        document.addEventListener("DOMContentLoaded", () => {
-          const addProductForm = document.getElementById("addProductForm");
-          let cropper;
-          let currentImageInput;
-          let currentPreviewId;
-          let currentUploadLabelId;
+          <script>
+            document.addEventListener("DOMContentLoaded", () => {
+              const addProductForm = document.getElementById("addProductForm");
+              let cropper;
+              let currentImageInput;
+              let currentPreviewId;
+              let currentUploadLabelId;
 
-          // Form validation function
-          function validateProductForm() {
-            let isValid = true;
-            
-            // Reset all previous errors
-            resetErrors();
+              // Form validation 
+              function validateProductForm() {
+                let isValid = true;
 
-            const name = addProductForm.name.value.trim();
-            const brand = addProductForm.brand.value.trim();
-            const description = addProductForm.description.value.trim();
-            const price = addProductForm.price.value.trim();
-            const stock = addProductForm.stock.value.trim();
-            const category = addProductForm.category.value.trim();
-            const specifications = Array.from(addProductForm.querySelectorAll('input[name="specifications"]')).map(input => input.value.trim());
-            
-            // Name validation
-            if (!name) {
-              showError('name', 'Product name is required');
-              isValid = false;
-            } else if (name.length < 2 || name.length > 100) {
-              showError('name', 'Product name must be between 2 and 100 characters');
-              isValid = false;
-            } else if (!/^[A-Za-z0-9\s()%]+$/.test(name)) {
-              showError('name', 'Product name can only contain letters, numbers, spaces, parentheses () and % symbol');
-              isValid = false;
-            }
+                // Reset all previous errors
+                resetErrors();
 
-            // Brand validation
-            if (!brand) {
-              showError('brand', 'Brand is required');
-              isValid = false;
-            } else if (brand.length < 2 || brand.length > 100) {
-              showError('brand', 'Brand must be between 2 and 100 characters');
-              isValid = false;
-            } else if (!/^[A-Za-z0-9\s]+$/.test(brand)) {
-              showError('brand', 'Brand can only contain letters, numbers, and spaces');
-              isValid = false;
-            }
+                const name = addProductForm.name.value.trim();
+                const brand = addProductForm.brand.value.trim();
+                const description = addProductForm.description.value.trim();
+                const price = addProductForm.price.value.trim();
+                const stock = addProductForm.stock.value.trim();
+                const category = addProductForm.category.value.trim();
+                const specifications = Array.from(addProductForm.querySelectorAll('input[name="specifications"]')).map(input => input.value.trim());
 
-            // Description validation
-            if (!description || description.replace(/\s/g, '').length === 0) {
-              showError('description', 'Product description is required');
-              isValid = false;
-            }
-
-            // Category validation
-            if (!category) {
-              showError('category', 'Please select a category');
-              isValid = false;
-            }
-
-            // Price validation
-            if (!price) {
-              showError('price', 'Price is required');
-              isValid = false;
-            } else if (parseFloat(price) < 50) {
-              showError('price', 'Price must be at least ₹50');
-              isValid = false;
-            }
-
-            // Stock validation
-            if (!stock) {
-              showError('stock', 'Stock is required');
-              isValid = false;
-            } else if (parseInt(stock) < 0) {
-              showError('stock', 'Stock cannot be negative');
-              isValid = false;
-            }
-
-            // Specifications validation
-            const invalidSpecs = specifications.some(spec => !spec || spec.replace(/\s/g, '').length === 0);
-            if (invalidSpecs) {
-              showError('specifications', 'All four specifications are required and cannot be only spaces');
-              isValid = false;
-            }
-
-            return isValid;
-          }
-
-          function showError(fieldId, message) {
-            const input = document.querySelector(`[name="${fieldId}"]`);
-            let errorElement = document.getElementById(`${fieldId}Error`);
-            
-            // Create error element if it doesn't exist
-            if (!errorElement) {
-              errorElement = document.createElement('p');
-              errorElement.id = `${fieldId}Error`;
-              errorElement.className = 'text-red-500 text-sm mt-1';
-              input.parentNode.appendChild(errorElement);
-            }
-            
-            input.classList.add('border-red-500');
-            errorElement.textContent = message;
-            errorElement.classList.remove('hidden');
-          }
-
-          function resetErrors() {
-            const fields = ['name', 'brand', 'description', 'price', 'stock', 'category', 'specifications'];
-            fields.forEach(field => {
-              const inputs = document.getElementsByName(field);
-              const errorElement = document.getElementById(`${field}Error`);
-              
-              inputs.forEach(input => input.classList.remove('border-red-500'));
-              if (errorElement) {
-                errorElement.classList.add('hidden');
-                errorElement.textContent = '';
-              }
-            });
-          }
-
-          // Add input event listeners to clear errors when user starts typing
-          const fields = ['name', 'brand', 'description', 'price', 'stock', 'category'];
-          fields.forEach(field => {
-            const input = document.querySelector(`[name="${field}"]`);
-            if (input) {
-              input.addEventListener('input', function() {
-                this.classList.remove('border-red-500');
-                const errorElement = document.getElementById(`${field}Error`);
-                if (errorElement) {
-                  errorElement.classList.add('hidden');
+                if (!name) {
+                  showError('name', 'Product name is required');
+                  isValid = false;
+                } else if (name.length < 2 || name.length > 100) {
+                  showError('name', 'Product name must be between 2 and 100 characters');
+                  isValid = false;
+                } else if (!/^[A-Za-z0-9\s()%]+$/.test(name)) {
+                  showError('name', 'Product name can only contain letters, numbers, spaces, parentheses () and % symbol');
+                  isValid = false;
                 }
-              });
-            }
-          });
 
-          // Add event listeners for specifications
-          document.querySelectorAll('input[name="specifications"]').forEach(input => {
-            input.addEventListener('input', function() {
-              this.classList.remove('border-red-500');
-              const errorElement = document.getElementById('specificationsError');
-              if (errorElement) {
-                errorElement.classList.add('hidden');
+                if (!brand) {
+                  showError('brand', 'Brand is required');
+                  isValid = false;
+                } else if (brand.length < 2 || brand.length > 100) {
+                  showError('brand', 'Brand must be between 2 and 100 characters');
+                  isValid = false;
+                } else if (!/^[A-Za-z0-9\s]+$/.test(brand)) {
+                  showError('brand', 'Brand can only contain letters, numbers, and spaces');
+                  isValid = false;
+                }
+
+                if (!description || description.replace(/\s/g, '').length === 0) {
+                  showError('description', 'Product description is required');
+                  isValid = false;
+                }
+
+                if (!category) {
+                  showError('category', 'Please select a category');
+                  isValid = false;
+                }
+
+                if (!price) {
+                  showError('price', 'Price is required');
+                  isValid = false;
+                } else if (parseFloat(price) < 50) {
+                  showError('price', 'Price must be at least ₹50');
+                  isValid = false;
+                }
+
+                if (!stock) {
+                  showError('stock', 'Stock is required');
+                  isValid = false;
+                } else if (parseInt(stock) < 0) {
+                  showError('stock', 'Stock cannot be negative');
+                  isValid = false;
+                }
+
+                const invalidSpecs = specifications.some(spec => !spec || spec.replace(/\s/g, '').length === 0);
+                if (invalidSpecs) {
+                  showError('specifications', 'All four specifications are required and cannot be only spaces');
+                  isValid = false;
+                }
+
+                return isValid;
               }
-            });
-          });
 
-          // Update the form submit handler
-          addProductForm.addEventListener("submit", async (event) => {
-            event.preventDefault();
-            
-            if (!validateProductForm()) {
-              return;
-            }
+              function showError(fieldId, message) {
+                const input = document.querySelector(`[name="${fieldId}"]`);
+                let errorElement = document.getElementById(`${fieldId}Error`);
 
-            try {
-              const formData = new FormData(addProductForm);
-              const productId = window.location.pathname.split('/').pop();
-              const response = await axios.post(`/admin/products/edit/${productId}`, formData, {
-                headers: {
-                  'Content-Type': 'multipart/form-data'
+                // Create error element if it doesn't exist
+                if (!errorElement) {
+                  errorElement = document.createElement('p');
+                  errorElement.id = `${fieldId}Error`;
+                  errorElement.className = 'text-red-500 text-sm mt-1';
+                  input.parentNode.appendChild(errorElement);
+                }
+
+                input.classList.add('border-red-500');
+                errorElement.textContent = message;
+                errorElement.classList.remove('hidden');
+              }
+
+              function resetErrors() {
+                const fields = ['name', 'brand', 'description', 'price', 'stock', 'category', 'specifications'];
+                fields.forEach(field => {
+                  const inputs = document.getElementsByName(field);
+                  const errorElement = document.getElementById(`${field}Error`);
+
+                  inputs.forEach(input => input.classList.remove('border-red-500'));
+                  if (errorElement) {
+                    errorElement.classList.add('hidden');
+                    errorElement.textContent = '';
+                  }
+                });
+              }
+
+              //  input event listeners to clear errors when user starts typing
+              const fields = ['name', 'brand', 'description', 'price', 'stock', 'category'];
+              fields.forEach(field => {
+                const input = document.querySelector(`[name="${field}"]`);
+                if (input) {
+                  input.addEventListener('input', function () {
+                    this.classList.remove('border-red-500');
+                    const errorElement = document.getElementById(`${field}Error`);
+                    if (errorElement) {
+                      errorElement.classList.add('hidden');
+                    }
+                  });
                 }
               });
 
-              if (response.data.success) {
-                showToast('Product updated successfully');
-                setTimeout(() => {
-                  window.location.href = '/admin/products';
-                }, 1000);
-              } else {
-                showToast(response.data.message || 'Failed to update product', 'error');
-              }
-            } catch (error) {
-              console.error('Error:', error);
-              showToast(error.response?.data?.message || 'Failed to update product', 'error');
-            }
-          });
+              //  event listeners for specifications
+              document.querySelectorAll('input[name="specifications"]').forEach(input => {
+                input.addEventListener('input', function () {
+                  this.classList.remove('border-red-500');
+                  const errorElement = document.getElementById('specificationsError');
+                  if (errorElement) {
+                    errorElement.classList.add('hidden');
+                  }
+                });
+              });
 
-          // Image handling functions
-          function handleImageUpload(input, previewId, uploadLabelId, modalId, cropperImageId) {
-            if (input.files && input.files[0]) {
-              const reader = new FileReader();
-              currentImageInput = input;
-              currentPreviewId = previewId;
-              currentUploadLabelId = uploadLabelId;
-              
-              reader.onload = function(e) {
-                const cropperImg = document.getElementById(cropperImageId);
-                cropperImg.src = e.target.result;
-                
-                document.getElementById(modalId).style.display = 'flex';
-                
+              // Update the form submit handler
+              addProductForm.addEventListener("submit", async (event) => {
+                event.preventDefault();
+
+                if (!validateProductForm()) {
+                  return;
+                }
+
+                try {
+                  const formData = new FormData(addProductForm);
+                  const productId = window.location.pathname.split('/').pop();
+                  const response = await axios.post(`/admin/products/edit/${productId}`, formData, {
+                    headers: {
+                      'Content-Type': 'multipart/form-data'
+                    }
+                  });
+
+                  if (response.data.success) {
+                    showToast('Product updated successfully');
+                    setTimeout(() => {
+                      window.location.href = '/admin/products';
+                    }, 1000);
+                  } else {
+                    showToast(response.data.message || 'Failed to update product', 'error');
+                  }
+                } catch (error) {
+                  console.error('Error:', error);
+                  showToast(error.response?.data?.message || 'Failed to update product', 'error');
+                }
+              });
+
+              // Image handling functions
+              function handleImageUpload(input, previewId, uploadLabelId, modalId, cropperImageId) {
+                if (input.files && input.files[0]) {
+                  const reader = new FileReader();
+                  currentImageInput = input;
+                  currentPreviewId = previewId;
+                  currentUploadLabelId = uploadLabelId;
+
+                  reader.onload = function (e) {
+                    const cropperImg = document.getElementById(cropperImageId);
+                    cropperImg.src = e.target.result;
+
+                    document.getElementById(modalId).style.display = 'flex';
+
+                    if (cropper) {
+                      cropper.destroy();
+                    }
+
+                    cropper = new Cropper(cropperImg, {
+                      aspectRatio: 1,
+                      viewMode: 1,
+                      autoCropArea: 1,
+                      background: false,
+                      zoomable: true,
+                      scalable: true
+                    });
+                  };
+
+                  reader.readAsDataURL(input.files[0]);
+                }
+              }
+
+              function closeCropper() {
+                document.getElementById("cropperModal").style.display = 'none';
                 if (cropper) {
                   cropper.destroy();
+                  cropper = null;
                 }
-                
-                cropper = new Cropper(cropperImg, {
-                  aspectRatio: 1,
-                  viewMode: 1,
-                  autoCropArea: 1,
-                  background: false,
-                  zoomable: true,
-                  scalable: true
-                });
-              };
-              
-              reader.readAsDataURL(input.files[0]);
-            }
-          }
+              }
 
-          function closeCropper() {
-            document.getElementById("cropperModal").style.display = 'none';
-            if (cropper) {
-              cropper.destroy();
-              cropper = null;
-            }
-          }
+              function applyCrop() {
+                if (cropper) {
+                  const canvas = cropper.getCroppedCanvas();
+                  canvas.toBlob((blob) => {
+                    const file = new File([blob], "croppedImage.png", { type: "image/png" });
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    currentImageInput.files = dataTransfer.files;
 
-          function applyCrop() {
-            if (cropper) {
-              const canvas = cropper.getCroppedCanvas();
-              canvas.toBlob((blob) => {
-                const file = new File([blob], "croppedImage.png", { type: "image/png" });
-                const dataTransfer = new DataTransfer();
-                dataTransfer.items.add(file);
-                currentImageInput.files = dataTransfer.files;
+                    // Update preview
+                    const previewContainer = document.getElementById(currentPreviewId);
+                    const previewImg = previewContainer.querySelector('img') || document.createElement('img');
+                    if (!previewContainer.querySelector('img')) {
+                      previewImg.classList.add('h-20', 'w-20', 'object-cover', 'rounded', 'cursor-pointer', 'hover:opacity-75', 'transition-opacity');
+                      previewImg.onclick = () => currentImageInput.click();
+                      previewContainer.appendChild(previewImg);
+                    }
+                    previewImg.src = canvas.toDataURL();
 
-                // Update preview
-                const previewContainer = document.getElementById(currentPreviewId);
-                const previewImg = previewContainer.querySelector('img') || document.createElement('img');
-                if (!previewContainer.querySelector('img')) {
-                  previewImg.classList.add('h-20', 'w-20', 'object-cover', 'rounded', 'cursor-pointer', 'hover:opacity-75', 'transition-opacity');
-                  previewImg.onclick = () => currentImageInput.click();
-                  previewContainer.appendChild(previewImg);
+                    previewContainer.classList.remove('hidden');
+                    const uploadLabel = document.getElementById(currentUploadLabelId);
+                    if (uploadLabel) {
+                      uploadLabel.classList.add('hidden');
+                    }
+
+                    closeCropper();
+                  });
                 }
-                previewImg.src = canvas.toDataURL();
-                
-                previewContainer.classList.remove('hidden');
-                const uploadLabel = document.getElementById(currentUploadLabelId);
-                if (uploadLabel) {
-                  uploadLabel.classList.add('hidden');
-                }
-                
-                closeCropper();
-              });
-            }
-          }
+              }
 
-          window.handleImageUpload = handleImageUpload;
-          window.closeCropper = closeCropper;
-          window.applyCrop = applyCrop;
-        });
-      </script>
-    </div>
-  </main>
-</div>
-<%- include('../partials/adminfooter') %>
+              window.handleImageUpload = handleImageUpload;
+              window.closeCropper = closeCropper;
+              window.applyCrop = applyCrop;
+            });
+          </script>
+        </div>
+      </main>
+  </div>
+  <%- include('../partials/adminfooter') %>

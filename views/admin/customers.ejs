@@ -21,10 +21,8 @@
                   <div class="flex gap-4">
                     <div class="relative">
                       <form action="/admin/customers" method="GET">
-                        <input type="text" name="search" 
-                          value="<%= locals.search || '' %>"
-                          placeholder="Search customers..." 
-                          onblur="this.form.submit()"
+                        <input type="text" name="search" value="<%= locals.search || '' %>"
+                          placeholder="Search customers..." onblur="this.form.submit()"
                           class="w-full md:w-64 border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500">
                       </form>
                     </div>
@@ -49,7 +47,7 @@
                         <tr>
                           <td colspan="6" class="text-center py-10">
                             <h2 class="text-xl font-semibold text-gray-600">
-                              <%= search ? `No customers found for "${search}"` : 'No customers found' %>
+                              <%= search ? `No customers found for "${search}" ` : 'No customers found' %>
                             </h2>
                           </td>
                         </tr>
@@ -103,7 +101,7 @@
 
                 <div class="pb-6"></div>
 
-                <% if (customers.length > 0) { %>
+                <% if (customers.length> 0) { %>
                   <div class="mt-8 mb-4 flex justify-center">
                     <div class="overflow-x-auto max-w-full">
                       <div class="flex items-center space-x-4 px-4">
@@ -112,25 +110,25 @@
                             class="flex-shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
                             Previous
                           </a>
-                        <% } %>
+                          <% } %>
 
-                        <% for(let i=1; i <=totalPages; i++) { %>
-                          <a href="/admin/customers?page=<%= i %><%= search ? `&search=${search}` : '' %>"
-                            class="flex-shrink-0 px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
-                            <%= i %>
-                          </a>
-                        <% } %>
+                            <% for(let i=1; i <=totalPages; i++) { %>
+                              <a href="/admin/customers?page=<%= i %><%= search ? `&search=${search}` : '' %>"
+                                class="flex-shrink-0 px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
+                                <%= i %>
+                              </a>
+                              <% } %>
 
-                        <% if (hasNextPage) { %>
-                          <a href="/admin/customers?page=<%= currentPage + 1 %><%= search ? `&search=${search}` : '' %>"
-                            class="flex-shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                            Next
-                          </a>
-                        <% } %>
+                                <% if (hasNextPage) { %>
+                                  <a href="/admin/customers?page=<%= currentPage + 1 %><%= search ? `&search=${search}` : '' %>"
+                                    class="flex-shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                                    Next
+                                  </a>
+                                  <% } %>
                       </div>
                     </div>
                   </div>
-                <% } %>
+                  <% } %>
 
               </div>
         </div>
@@ -154,20 +152,19 @@
           const toggleButton = document.getElementById(`toggle-${customerId}`);
 
           if (action === 'block') {
-            // Update status text and color directly
+            // Update status text and color 
             statusSpan.textContent = 'Inactive';
             statusSpan.className = 'px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800';
 
-            // Update button directly
+            // Update button 
             toggleButton.textContent = 'Unblock';
             toggleButton.className = 'bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600';
             toggleButton.onclick = () => toggleCustomerStatus(customerId, 'unblock');
           } else {
-            // Update status text and color directly
+            // Update status text and color 
             statusSpan.textContent = 'Active';
             statusSpan.className = 'px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800';
 
-            // Update button directly
             toggleButton.textContent = 'Block';
             toggleButton.className = 'bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600';
             toggleButton.onclick = () => toggleCustomerStatus(customerId, 'block');

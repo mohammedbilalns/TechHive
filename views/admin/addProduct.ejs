@@ -1,6 +1,6 @@
 <%- include('../partials/adminheader') %>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js" defer></script>
 
   <div class="flex min-h-screen">
     <!-- Sidebar -->
@@ -293,7 +293,6 @@
                 isValid = false;
               }
 
-              // Brand validation
               if (!brand) {
                 showError('brand', 'Brand is required');
                 isValid = false;
@@ -315,13 +314,11 @@
                 isValid = false;
               }
 
-              // Category validation
               if (!category) {
                 showError('category', 'Please select a category');
                 isValid = false;
               }
 
-              // Price validation
               if (!price) {
                 showError('price', 'Price is required');
                 isValid = false;
@@ -407,7 +404,7 @@
               });
             });
 
-            // Add event listeners for specifications
+            //  event listeners for specifications
             document.querySelectorAll('input[name="specifications"]').forEach(input => {
               input.addEventListener('input', function() {
                 this.classList.remove('border-red-500');
@@ -418,7 +415,7 @@
               });
             });
 
-            // Update the form submit handler
+            //  form submit handler
             addProductForm.addEventListener("submit", async (event) => {
               event.preventDefault();
               

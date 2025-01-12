@@ -113,20 +113,20 @@ const addCategory = async (req, res) => {
         name = name.trim()[0].toUpperCase() + name.trim().slice(1).toLowerCase()
         description = description.trim()
 
-        if(!name || !description){
+        if (!name || !description) {
             return res.status(400).json({
                 success: false,
                 message: 'Category name and description are required'
             });
         }
-        if( name.length<3 || name.length >100){
+        if (name.length < 3 || name.length > 100) {
             return res.status(400).json({
                 success: false,
                 message: 'Category name must be between 3-100 characters'
             });
         }
 
-        if(description.length< 10 || description.length>100){
+        if (description.length < 10 || description.length > 100) {
             return res.status(400).json({
                 success: false,
                 message: 'Description  must be between 10-100 characters'
@@ -171,20 +171,20 @@ const editCategory = async (req, res) => {
         description = description.trim();
 
 
-        if(!name || !description){
+        if (!name || !description) {
             return res.status(400).json({
                 success: false,
                 message: 'Category name and description are required'
             });
         }
-        if( name.length<3 || name.length >100){
+        if (name.length < 3 || name.length > 100) {
             return res.status(400).json({
                 success: false,
                 message: 'Category name must be between 3-100 characters'
             });
         }
 
-        if(description.length< 10 || description.length>500){
+        if (description.length < 10 || description.length > 500) {
             return res.status(400).json({
                 success: false,
                 message: 'Description  must be between 3-100 characters'

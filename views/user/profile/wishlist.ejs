@@ -1,6 +1,5 @@
 <%- include('../../partials/header') %>
 
-
   <div class="flex flex-col md:flex-row">
     <%- include('../../partials/usersidebar') %>
 
@@ -18,7 +17,7 @@
             <%= message %>
           </div>
           <% } %>
-          
+
             <div class="bg-white rounded-lg shadow-lg p-6">
               <h1 class="text-2xl font-semibold text-gray-800 mb-6">My Wishlist</h1>
 
@@ -69,33 +68,33 @@
                     <% }) %>
                 </div>
 
-                <!-- Updated Pagination Controls -->
-                <% if (totalPages > 1) { %>
+                <!--  Pagination Controls -->
+                <% if (totalPages> 1) { %>
                   <div class="mt-8 flex flex-wrap justify-center items-center gap-2 px-4">
                     <% if (hasPrevPage) { %>
                       <a href="/wishlist?page=<%= currentPage - 1 %>"
                         class="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
                         Previous
                       </a>
-                    <% } %>
-
-                    <div class="flex flex-wrap justify-center gap-2">
-                      <% for(let i = 1; i <= totalPages; i++) { %>
-                        <a href="/wishlist?page=<%= i %>"
-                          class="px-3 py-1.5 text-sm rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
-                          <%= i %>
-                        </a>
                       <% } %>
-                    </div>
 
-                    <% if (hasNextPage) { %>
-                      <a href="/wishlist?page=<%= currentPage + 1 %>"
-                        class="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                        Next
-                      </a>
-                    <% } %>
+                        <div class="flex flex-wrap justify-center gap-2">
+                          <% for(let i=1; i <=totalPages; i++) { %>
+                            <a href="/wishlist?page=<%= i %>"
+                              class="px-3 py-1.5 text-sm rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
+                              <%= i %>
+                            </a>
+                            <% } %>
+                        </div>
+
+                        <% if (hasNextPage) { %>
+                          <a href="/wishlist?page=<%= currentPage + 1 %>"
+                            class="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                            Next
+                          </a>
+                          <% } %>
                   </div>
-                <% } %>
+                  <% } %>
                     <% } else { %>
                       <!-- Empty Wishlist -->
                       <div class="text-center py-8">
@@ -119,7 +118,6 @@
       try {
         const response = await axios.put('/wishlist', { productId });
         if (response.data.success) {
-          // Remove the product element from DOM
           const productElement = document.querySelector(`[data-product-id="${productId}"]`);
           productElement.remove();
 

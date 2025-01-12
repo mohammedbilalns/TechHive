@@ -27,7 +27,7 @@
                   <%= product.name %>
                 </p>
 
-                <!-- Add rating stars -->
+                <!--  rating stars -->
                 <div class="flex items-center gap-1 mb-2">
                   <% const rating=locals.productRatings[product._id] || 0 %>
                     <div class="flex items-center">
@@ -93,7 +93,8 @@
           <div class="col-span-1 transform hover:-translate-y-1 transition-transform duration-300">
             <a href="/product/<%= product._id %>" class="block">
               <div class="aspect-square rounded-lg overflow-hidden">
-                <img alt="<%= product.name %>" src="<%= product.images[0].path %>" class="w-full h-full object-contain transition-transform duration-300 hover:scale-110" />
+                <img alt="<%= product.name %>" src="<%= product.images[0].path %>"
+                  class="w-full h-full object-contain transition-transform duration-300 hover:scale-110" />
               </div>
               <p class="text-black text-sm mt-2">
                 <%= product.name %>

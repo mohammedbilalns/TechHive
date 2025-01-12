@@ -4,7 +4,6 @@ import { log } from "mercedlogger"
 
 const getCart = async (req, res) => {
     try {
-        // Remove any existing coupon from session when viewing cart
         delete req.session.coupon;
         
         const userId = req.session.user.id;
@@ -244,7 +243,6 @@ const updateQuantity = async (req, res) => {
             newQuantity = cartItem.quantity + 1;
         } else if (action === 'decrease') {
             if (cartItem.quantity <= 1) {
-                // Remove item if quantity would be less than 1
                 cart.items = cart.items.filter(item =>
                     item.productId._id.toString() !== productId
                 );

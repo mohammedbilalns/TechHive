@@ -23,9 +23,9 @@ const getCoupons = async (req, res) => {
             try {
                 const expiryDate = new Date(coupon.expiryDate);
                 const startDate = new Date(coupon.startDate);
-                
+
                 // Count usage count of this coupon 
-                const userUsageCount = coupon.usageHistory?.filter(usage => 
+                const userUsageCount = coupon.usageHistory?.filter(usage =>
                     usage.userId?.toString() === userId.toString()
                 ).length || 0;
 
@@ -35,7 +35,7 @@ const getCoupons = async (req, res) => {
                 if (expiryDate < currentDate) {
                     categorizedCoupons.expired.push({
                         ...coupon,
-                        usedDate: coupon.usageHistory?.find(usage => 
+                        usedDate: coupon.usageHistory?.find(usage =>
                             usage.userId?.toString() === userId.toString()
                         )?.usedAt,
                         remainingUses
@@ -51,7 +51,7 @@ const getCoupons = async (req, res) => {
                 if (remainingUses <= 0) {
                     categorizedCoupons.used.push({
                         ...coupon,
-                        usedDate: coupon.usageHistory?.find(usage => 
+                        usedDate: coupon.usageHistory?.find(usage =>
                             usage.userId?.toString() === userId.toString()
                         )?.usedAt,
                         remainingUses: 0
@@ -63,7 +63,7 @@ const getCoupons = async (req, res) => {
                 categorizedCoupons.available.push({
                     ...coupon,
                     remainingUses,
-                    userUsedDate: coupon.usageHistory?.find(usage => 
+                    userUsedDate: coupon.usageHistory?.find(usage =>
                         usage.userId?.toString() === userId.toString()
                     )?.usedAt
                 });

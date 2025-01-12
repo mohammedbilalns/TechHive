@@ -4,9 +4,8 @@
     <div class="bg-primary-white rounded-lg shadow-lg flex flex-col lg:flex-row overflow-hidden max-w-4xl w-full">
       <!-- Image Section -->
       <div class="bg-blue-100 p-6 hidden sm:flex justify-center items-center lg:w-1/2">
-        <img alt="Illustration of a laptop with a clock display and office supplies" 
-             src="./images/login2.png"
-             class="object-cover max-w-full h-auto" />
+        <img alt="Illustration of a laptop with a clock display and office supplies" src="./images/login2.png"
+          class="object-cover max-w-full h-auto" />
       </div>
       <!-- Form Section -->
       <div class="bg-gray-50 p-4 md:p-8 flex-1">
@@ -20,27 +19,22 @@
         <form id="signupForm" method="post" action="/signup" class="space-y-3" novalidate>
           <p class="text-2xl font-semibold text-gray-800 mb-1">Create an Account</p>
           <p class="text-gray-600 mb-4">Enter your details below</p>
-          
+
           <div class="mb-3">
-            <input type="text" id="fullname" placeholder="Full Name" 
-              value="<%= locals.fullname ? fullname : '' %>"
-              name="fullname" 
-              class="border w-full px-3 py-2 rounded-md transition-colors" />
+            <input type="text" id="fullname" placeholder="Full Name" value="<%= locals.fullname ? fullname : '' %>"
+              name="fullname" class="border w-full px-3 py-2 rounded-md transition-colors" />
             <p class="text-red-500 text-sm mt-1 hidden" id="fullnameError"></p>
           </div>
 
           <div class="mb-3">
             <input type="tel" id="phonenumber" placeholder="Phone Number"
-              value="<%= locals.phonenumber ? phonenumber : '' %>"
-              name="phonenumber" 
+              value="<%= locals.phonenumber ? phonenumber : '' %>" name="phonenumber"
               class="border w-full px-3 py-2 rounded-md transition-colors" />
             <p class="text-red-500 text-sm mt-1 hidden" id="phonenumberError"></p>
           </div>
 
           <div class="mb-3">
-            <input type="email" id="email" placeholder="Email"
-              value="<%= locals.email ? email : '' %>"
-              name="email" 
+            <input type="email" id="email" placeholder="Email" value="<%= locals.email ? email : '' %>" name="email"
               class="border w-full px-3 py-2 rounded-md transition-colors" />
             <p class="text-red-500 text-sm mt-1 hidden" id="emailError"></p>
           </div>
@@ -49,7 +43,8 @@
             <div class="relative">
               <input type="password" id="password" placeholder="Password" name="password"
                 class="border w-full px-3 py-2 rounded-md pr-10 transition-colors" />
-              <span class="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-600" id="togglePassword">
+              <span class="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-600"
+                id="togglePassword">
                 <i class="fas fa-eye"></i>
               </span>
             </div>
@@ -60,7 +55,8 @@
             <div class="relative">
               <input type="password" id="confirmPassword" placeholder="Confirm Password" name="confirmPassword"
                 class="border w-full px-3 py-2 rounded-md pr-10 transition-colors" />
-              <span class="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-600" id="toggleConfirmPassword">
+              <span class="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-600"
+                id="toggleConfirmPassword">
                 <i class="fas fa-eye"></i>
               </span>
             </div>
@@ -146,15 +142,14 @@
         <div class="bg-gray-50 flex flex-col items-center text-center">
           <p class="text-2xl font-semibold text-gray-800 mb-4">Enter Referral Code</p>
           <p class="text-gray-600 mb-4">Have a referral code? Enter it below to get rewards!</p>
-          
-          <input type="text" id="referralCode" placeholder="Enter referral code" 
+
+          <input type="text" id="referralCode" placeholder="Enter referral code"
             class="border w-full mb-4 px-3 py-2 rounded-md uppercase" />
-          
+
           <div id="referralAlertMessage" class="mb-4 p-3 rounded-md hidden"></div>
 
           <div class="flex gap-3 w-full">
-            <button type="button" id="skipReferral"
-              class="w-1/2 py-2 text-gray-600 bg-gray-200 rounded-md">
+            <button type="button" id="skipReferral" class="w-1/2 py-2 text-gray-600 bg-gray-200 rounded-md">
               Skip
             </button>
             <button type="button" id="applyReferral"
@@ -173,7 +168,7 @@
 
       document.getElementById('signupForm').addEventListener('submit', async function (event) {
         event.preventDefault();
-        
+
         // Reset all error states
         resetErrors();
 
@@ -269,7 +264,7 @@
       function showError(fieldId, message) {
         const input = document.getElementById(fieldId);
         const errorElement = document.getElementById(`${fieldId}Error`);
-        
+
         input.classList.add('border-red-500');
         errorElement.textContent = message;
         errorElement.classList.remove('hidden');
@@ -280,7 +275,7 @@
         fields.forEach(field => {
           const input = document.getElementById(field);
           const errorElement = document.getElementById(`${field}Error`);
-          
+
           input.classList.remove('border-red-500');
           errorElement.classList.add('hidden');
           errorElement.textContent = '';
@@ -289,7 +284,7 @@
 
       // Add input event listeners to clear errors when user starts typing
       ['fullname', 'phonenumber', 'email', 'password', 'confirmPassword'].forEach(field => {
-        document.getElementById(field).addEventListener('input', function() {
+        document.getElementById(field).addEventListener('input', function () {
           this.classList.remove('border-red-500');
           document.getElementById(`${field}Error`).classList.add('hidden');
         });
@@ -462,8 +457,8 @@
           clearOtpFields();
 
           if (error.response?.data?.maxAttemptsExceeded) {
-              closeOtpModal();
-              showToast('Maximum attempts exceeded. Please sign up again.', 'error');
+            closeOtpModal();
+            showToast('Maximum attempts exceeded. Please sign up again.', 'error');
           }
         } finally {
           // Reset loading state
@@ -517,8 +512,8 @@
 
           if (error.response?.data?.maxAttemptsExceeded) {
             alertMessage.textContent = 'Maximum resend attempts exceeded. Please sign up again.';
-              closeOtpModal();
-              showToast('Maximum resend attempts exceeded. Please sign up again.', 'error');
+            closeOtpModal();
+            showToast('Maximum resend attempts exceeded. Please sign up again.', 'error');
           }
         } finally {
           buttonText.textContent = 'Resend OTP';

@@ -32,7 +32,6 @@ const productUpload = multer({
     }
 });
 
-
 const getProducts = async (req, res) => {
     try {
         let message = req.query.message
@@ -72,7 +71,7 @@ const getProducts = async (req, res) => {
         });
     } catch (error) {
         log.red("PRODUCT_FETCH_ERROR", error);
-        
+
     }
 }
 
@@ -88,7 +87,6 @@ const deleteProduct = async (req, res) => {
             });
         }
 
-        // Delete all images except the first one
         if (product.images && product.images.length > 1) {
             product.images.slice(1).forEach(image => {
                 const imagePath = path.join('static', image.path);
@@ -241,13 +239,13 @@ const getEditProduct = async (req, res) => {
     try {
         const productId = req.params.productid;
 
-        
+
         if (!mongoose.Types.ObjectId.isValid(productId)) {
             return res.redirect('/notfound?message=Invalid+Product+ID&alertType=error');
         }
 
         const product = await productSchema.findById(productId);
-        
+
         // Check if product exists
         if (!product) {
             return res.redirect('/notfound?message=Product+not+found&alertType=error');
@@ -255,7 +253,7 @@ const getEditProduct = async (req, res) => {
 
         const categories = await categorySchema.find({ status: "Active" });
         res.render('admin/editProduct', { product, categories, page: 'products' });
-        
+
     } catch (error) {
         log.red('FETCH_EDIT_PRODUCT_ERROR', error);
         res.redirect('/notfound?message=Error+loading+product&alertType=error');
@@ -266,13 +264,13 @@ const getEditProduct = async (req, res) => {
 const editProduct = async (req, res) => {
     try {
         const productId = req.params.productid;
-        if(!productId){
+        if (!productId) {
             return res.redirect('/notfound?message=Invalid+Product+id&alertType=error');
 
         };
         if (!mongoose.Types.ObjectId.isValid(productId)) {
             return res.redirect('/notfound?message=Invalid+Product+id&alertType=error');
-        
+
         }
 
         let { name, description, price, stock, brand, category, specifications } = req.body;
@@ -288,7 +286,6 @@ const editProduct = async (req, res) => {
         const specArray = Array.isArray(specifications) ? specifications : [specifications];
         const cleanedSpecs = specArray.filter(spec => spec && spec.trim()).map(spec => spec.trim());
 
-        // Basic validation
         if (!name || !description || !price || !stock || !brand || !category) {
             return res.status(400).json({
                 success: false,

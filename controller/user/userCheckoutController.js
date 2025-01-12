@@ -23,9 +23,9 @@ const getCheckout = async (req, res) => {
     // Check stock availability
     for (const item of cart.items) {
       if (item.productId.stock < item.quantity) {
-        return res.status(400).json({ 
-          success: false, 
-          message: `${item.productId.name} is out of stock` 
+        return res.status(400).json({
+          success: false,
+          message: `${item.productId.name} is out of stock`
         });
       }
     }
@@ -46,7 +46,7 @@ const getCheckout = async (req, res) => {
 
     // Apply coupon from session if exists
     const sessionCoupon = req.session.coupon;
-    
+
     res.render('user/checkout', {
       user,
       cart,
@@ -60,9 +60,9 @@ const getCheckout = async (req, res) => {
     });
   } catch (error) {
     log.red('CHECKOUT_ERROR', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Something went wrong. Please try again.' 
+    res.status(500).json({
+      success: false,
+      message: 'Something went wrong. Please try again.'
     });
   }
 };
@@ -81,16 +81,16 @@ const applyCoupon = async (req, res) => {
     });
 
     // Find and validate coupon
-    const coupon = await couponModel.findOne({ 
+    const coupon = await couponModel.findOne({
       code: couponCode.toUpperCase(),
       isActive: true,
       expiryDate: { $gt: new Date() }
     });
 
     if (!coupon) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Invalid or expired coupon' 
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired coupon'
       });
     }
 
@@ -151,7 +151,7 @@ const removeCoupon = async (req, res) => {
   try {
     // Remove coupon from session
     delete req.session.coupon;
-    
+
     return res.status(200).json({
       success: true,
       message: 'Coupon removed successfully'

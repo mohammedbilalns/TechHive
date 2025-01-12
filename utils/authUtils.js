@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport({
 
 const generateOTP = () => {
   return crypto.randomInt(1000, 9999).toString() 
-};  // generate 4 digit otp 
+}; 
 
 const sendOTPEmail = async (email, otp) => {
   try {

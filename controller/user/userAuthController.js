@@ -30,14 +30,14 @@ const verifyLogin = async (req, res) => {
                 success: false,
                 message: "Email and password are required"
             })
-        } // check all fields are filled 
+        }
 
         if (!validation.isValidEmail(email)) {
             return res.status(401).json({
                 success: false,
                 message: "Enter a valid email address"
             })
-        } // check the email is in vaid format 
+        }
 
         if (!user) {
             return res.status(401).json({
@@ -237,7 +237,7 @@ const registerUser = async (req, res) => {
     }
 };
 
-// Verify OTP entered by the user during signup
+// Verify OTP entered by the user 
 const verifyOTP = async (req, res) => {
     const { otp1, otp2, otp3, otp4, email, timeRem } = req.body;
     const userOTP = otp1 + otp2 + otp3 + otp4;
@@ -292,7 +292,7 @@ const verifyOTP = async (req, res) => {
 };
 
 
-// Resend OTP functionality
+// Resend OTP 
 const resendOTP = async (req, res) => {
     let { email } = req.body;
     email = email.trim();
@@ -355,21 +355,18 @@ const authGoogleCallback = (req, res) => {
             return res.redirect(`/login?message=${message}&alertType=error`);
         }
 
-        // Explicitly log in the user
         req.logIn(user, (err) => {
             if (err) {
                 console.error("Session Error:", err);
                 return res.redirect("/login?message=Session+error&alertType=error");
             }
 
-            // Set session data
             req.session.user = {
                 id: user.id,
                 fullname: user.fullname,
                 email: user.email
             };
 
-            // Ensure session is saved before redirect
             req.session.save((err) => {
                 if (err) {
                     console.error("Session Save Error:", err);
@@ -613,17 +610,17 @@ const applyReferral = async (req, res) => {
         const { referralCode } = req.body;
         log.cyan("REFERRAL CODE", referralCode)
         const currentUser = await userSchema.findById(req.session.user.id);
-        log.cyan("CURRENT USER", )
+        log.cyan("CURRENT USER",)
         // Find referrer
         const referrer = await userSchema.findOne({ referralCode });
-        
+
         if (!referrer) {
             return res.status(400).json({
                 success: false,
                 message: "Invalid referral code"
             });
         }
-        
+
         if (referrer._id.toString() === currentUser._id.toString()) {
             return res.status(400).json({
                 success: false,
@@ -644,7 +641,7 @@ const applyReferral = async (req, res) => {
                 balance: 0
             });
         }
-        
+
         referrerWallet.balance += referrerAmount;
         referrerWallet.transactions.push({
             transactionId: `REF${Date.now()}`,
@@ -662,7 +659,7 @@ const applyReferral = async (req, res) => {
                 balance: 0
             });
         }
-        
+
         userWallet.balance += refereeAmount;
         userWallet.transactions.push({
             transactionId: `REF${Date.now()}`,

@@ -15,7 +15,6 @@
           <div class="bg-gray-50 px-6 py-4 border-b">
             <h1 class="text-xl md:text-2xl font-semibold text-gray-800">My Coupons</h1>
           </div>
-
           <!-- Coupons  -->
           <div class="p-6">
             <% if (coupons.length===0) { %>
@@ -45,11 +44,12 @@
                               <h3 class="text-lg font-bold text-gray-800" id="couponCode-<%= coupon._id %>">
                                 <%= coupon.code %>
                               </h3>
-                              <% if (status === 'Active') { %>
-                                <button onclick="copyCouponCode('<%= coupon._id %>')" class="text-primary-accent hover:text-primary-accent/90">
+                              <% if (status==='Active' ) { %>
+                                <button onclick="copyCouponCode('<%= coupon._id %>')"
+                                  class="text-primary-accent hover:text-primary-accent/90">
                                   <i class="fas fa-copy"></i>
                                 </button>
-                              <% } %>
+                                <% } %>
                             </div>
                             <p class="text-gray-600 text-sm">
                               <%= coupon.description %>
@@ -81,8 +81,8 @@
                               <%= status==='Used' ? 'Used On:' : 'Valid Till:' %>
                             </span>
                             <span>
-                              <%= new Date(status==='Used' ? coupon.usedDate : coupon.expiryDate).toLocaleDateString('en-GB')
-                                %>
+                              <%= new Date(status==='Used' ? coupon.usedDate :
+                                coupon.expiryDate).toLocaleDateString('en-GB') %>
                             </span>
                           </div>
 
@@ -134,7 +134,7 @@
   <script>
     async function copyCouponCode(couponId) {
       const couponCode = document.getElementById(`couponCode-${couponId}`).textContent.trim();
-      
+
       if (navigator.clipboard && window.isSecureContext) {
         try {
           await navigator.clipboard.writeText(couponCode);
@@ -144,7 +144,7 @@
           console.error('Clipboard API failed:', err);
         }
       }
-      
+
       try {
         const textarea = document.createElement('textarea');
         textarea.value = couponCode;

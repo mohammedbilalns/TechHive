@@ -21,12 +21,9 @@
                   <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                     <div class="relative w-full sm:w-auto">
                       <form action="/admin/products" method="GET">
-                        <input type="text" 
-                            name="search" 
-                            value="<%= locals.search || '' %>"
-                            placeholder="Search products..."
-                            onblur="this.form.submit()"
-                            class="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                        <input type="text" name="search" value="<%= locals.search || '' %>"
+                          placeholder="Search products..." onblur="this.form.submit()"
+                          class="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-blue-500 focus:border-blue-500">
                       </form>
                     </div>
                     <form action="/admin/products/add" class="w-full sm:w-auto">
@@ -55,85 +52,84 @@
                       </tr>
                     </thead>
                     <tbody id="productsTable" class="text-gray-700">
-                      <% if (products.length === 0) { %>
+                      <% if (products.length===0) { %>
                         <tr>
                           <td colspan="9" class="text-center py-10">
                             <h2 class="text-xl font-semibold text-gray-600">
-                              <%= search ? `No products found for "${search}"` : 'No products found' %>
+                              <%= search ? `No products found for "${search}" ` : 'No products found' %>
                             </h2>
                           </td>
                         </tr>
-                      <% } else { %>
-                        <% products.forEach((product, index) => { %>
-                          <tr class="border-b hover:bg-gray-100">
-                            <td class="px-4 md:px-6 py-4">
-                              <%= (currentPage - 1) * 10 + index + 1 %>
-                            </td>
-                            <td class="px-6 py-3">
-                              <% if (product.images && product.images.length> 0) { %>
-                                <img src="<%= product.images[0].path %>" alt="<%= product.name %>"
-                                  class="w-12 h-12 object-cover rounded-md">
-                                <% } else { %>
-                                  <div class="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center">
-                                    <i class="fas fa-image text-gray-400"></i>
-                                  </div>
-                                  <% } %>
-                            </td>
-                            <td class="px-6 py-3">
-                              <%= product.name %>
-                            </td>
-                            <td class="px-6 py-3">
-                              <%= product.category.name %>
-                            </td>
-                            <td class="px-6 py-3">₹<%= product.price %>
-                            </td>
-                            <td class="px-6 py-3">
-                              <%= product.stock %>
-                            </td>
-                            <td class="px-6 py-3">
-                              <span
-                                class="px-3 py-1 rounded-full text-sm font-medium
-                      <%= product.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
-                                <%= product.status %>
-                              </span>
-                            </td>
-                            <td class="px-6 py-3">
-                              <%= product.variant %>
-                            </td>
-                            <td class="px-6 py-3 text-center">
-                              <div class="flex justify-center gap-2">
-                                <% if (product.status==='Active' ) { %>
-                                  <button onclick="toggleProductStatus('<%= product._id %>', 'deactivate')"
-                                    class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">
-                                    Deactivate
-                                  </button>
+                        <% } else { %>
+                          <% products.forEach((product, index)=> { %>
+                            <tr class="border-b hover:bg-gray-100">
+                              <td class="px-4 md:px-6 py-4">
+                                <%= (currentPage - 1) * 10 + index + 1 %>
+                              </td>
+                              <td class="px-6 py-3">
+                                <% if (product.images && product.images.length> 0) { %>
+                                  <img src="<%= product.images[0].path %>" alt="<%= product.name %>"
+                                    class="w-12 h-12 object-cover rounded-md">
                                   <% } else { %>
-                                    <button onclick="toggleProductStatus('<%= product._id %>', 'activate')"
-                                      class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-                                      Activate
-                                    </button>
+                                    <div class="w-12 h-12 bg-gray-200 rounded-md flex items-center justify-center">
+                                      <i class="fas fa-image text-gray-400"></i>
+                                    </div>
                                     <% } %>
-                                      <form action="/admin/products/edit/<%= product._id %>">
-                                        <button type="submit"
-                                          class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-                                          Edit
-                                        </button>
-                                      </form>
-                                      <button onclick="deleteProduct('<%= product._id %>')"
-                                        class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">
-                                        Delete
+                              </td>
+                              <td class="px-6 py-3">
+                                <%= product.name %>
+                              </td>
+                              <td class="px-6 py-3">
+                                <%= product.category.name %>
+                              </td>
+                              <td class="px-6 py-3">₹<%= product.price %>
+                              </td>
+                              <td class="px-6 py-3">
+                                <%= product.stock %>
+                              </td>
+                              <td class="px-6 py-3">
+                                <span class="px-3 py-1 rounded-full text-sm font-medium
+                      <%= product.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                                  <%= product.status %>
+                                </span>
+                              </td>
+                              <td class="px-6 py-3">
+                                <%= product.variant %>
+                              </td>
+                              <td class="px-6 py-3 text-center">
+                                <div class="flex justify-center gap-2">
+                                  <% if (product.status==='Active' ) { %>
+                                    <button onclick="toggleProductStatus('<%= product._id %>', 'deactivate')"
+                                      class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">
+                                      Deactivate
+                                    </button>
+                                    <% } else { %>
+                                      <button onclick="toggleProductStatus('<%= product._id %>', 'activate')"
+                                        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                                        Activate
                                       </button>
-                              </div>
-                            </td>
-                          </tr>
-                          <% }); %>
-                        <% } %>
+                                      <% } %>
+                                        <form action="/admin/products/edit/<%= product._id %>">
+                                          <button type="submit"
+                                            class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
+                                            Edit
+                                          </button>
+                                        </form>
+                                        <button onclick="deleteProduct('<%= product._id %>')"
+                                          class="bg-primary-accent text-white px-4 py-2 rounded-md hover:bg-red-600">
+                                          Delete
+                                        </button>
+                                </div>
+                              </td>
+                            </tr>
+                            <% }); %>
+                              <% } %>
                     </tbody>
                   </table>
 
                   <div class="pb-6"></div>
 
-                  <% if (products.length > 0) { %>
+                  <% if (products.length> 0) { %>
                     <div class="mt-8 flex justify-center">
                       <div class="overflow-x-auto max-w-full">
                         <div class="flex items-center space-x-4 px-4">
@@ -142,25 +138,25 @@
                               class="flex-shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
                               Previous
                             </a>
-                          <% } %>
+                            <% } %>
 
-                          <% for(let i=1; i <=totalPages; i++) { %>
-                            <a href="/admin/products?page=<%= i %><%= search ? `&search=${search}` : '' %>"
-                              class="flex-shrink-0 px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
-                              <%= i %>
-                            </a>
-                          <% } %>
+                              <% for(let i=1; i <=totalPages; i++) { %>
+                                <a href="/admin/products?page=<%= i %><%= search ? `&search=${search}` : '' %>"
+                                  class="flex-shrink-0 px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
+                                  <%= i %>
+                                </a>
+                                <% } %>
 
-                          <% if (hasNextPage) { %>
-                            <a href="/admin/products?page=<%= currentPage + 1 %><%= search ? `&search=${search}` : '' %>"
-                              class="flex-shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                              Next
-                            </a>
-                          <% } %>
+                                  <% if (hasNextPage) { %>
+                                    <a href="/admin/products?page=<%= currentPage + 1 %><%= search ? `&search=${search}` : '' %>"
+                                      class="flex-shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                                      Next
+                                    </a>
+                                    <% } %>
                         </div>
                       </div>
                     </div>
-                  <% } %>
+                    <% } %>
                 </div>
               </div>
         </div>
@@ -187,11 +183,10 @@
               // Update status cell
               const newStatus = action === 'activate' ? 'Active' : 'Inactive';
               statusCell.textContent = newStatus;
-              statusCell.className = `px-3 py-1 rounded-full text-sm font-medium ${
-                newStatus === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-              }`;
+              statusCell.className = `px-3 py-1 rounded-full text-sm font-medium ${newStatus === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                }`;
 
-              // Create new action buttons HTML
+              // Create new action buttons 
               const newActionButtons = `
                 <button onclick="toggleProductStatus('${productId}', '${newStatus === 'Active' ? 'deactivate' : 'activate'}')" 
                   class="${newStatus === 'Active' ? 'bg-primary-accent hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'} text-white px-4 py-2 rounded-md">
@@ -207,7 +202,7 @@
                   Delete
                 </button>
               `;
-              
+
               actionCell.innerHTML = newActionButtons;
               showToast(`Product ${action}d successfully`);
             }

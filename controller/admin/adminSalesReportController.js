@@ -20,9 +20,8 @@ const getSalesReportData = async (req, res) => {
   try {
     const { filterType, startDate, endDate } = req.query;
     const page = parseInt(req.query.page) || 1;
-    const limit = 10;  
+    const limit = 10;
 
-    //  date validation for custom range
     if (filterType === 'custom') {
       if (!startDate || !endDate) {
         return res.status(400).json({ message: 'Start date and end date are required' });
@@ -91,8 +90,8 @@ const getSalesReportData = async (req, res) => {
         break;
     }
 
-    dateFilter.status = 'Delivered'; // Only include delivered orders
-    dateFilter.isReturned = { $ne: true }; // Exclude returned orders
+    dateFilter.status = 'Delivered';
+    dateFilter.isReturned = { $ne: true };
 
     // First, get all orders to calculate overall totals
     const allOrders = await Order.find({
@@ -121,7 +120,7 @@ const getSalesReportData = async (req, res) => {
       const couponDiscount = order.coupon?.discount ? (order.coupon.discount * deliveredItemsRatio) : 0;
 
       const totalDiscount = couponDiscount + itemTotals.offerDiscount;
-      
+
       overallTotalSales += itemTotals.originalAmount;
       overallTotalDiscounts += totalDiscount;
 
@@ -147,21 +146,21 @@ const getSalesReportData = async (req, res) => {
     const totalOrders = validAllOrders.length;
     const totalPages = Math.ceil(totalOrders / limit);
     const skip = (page - 1) * limit;
-    
+
     // Get the orders for current page
     const paginatedOrders = validAllOrders.slice(skip, skip + limit);
 
     res.json({
-      // Overall totals (from all orders)
+      // Overall totals 
       totalOrders: totalOrders,
       totalSales: overallTotalSales,
       totalDiscounts: overallTotalDiscounts,
       netRevenue: overallTotalSales - overallTotalDiscounts,
-      
+
       // Paginated orders for the table
       orders: paginatedOrders,
-      
-    
+
+
       pagination: {
         currentPage: page,
         totalPages,
@@ -219,7 +218,7 @@ const generateExcelReport = async (res, orders, totals, filterType, startDate, e
   worksheet.getCell('A3').font = { size: 10, italic: true };
   worksheet.getCell('A3').alignment = { horizontal: 'center' };
 
-  worksheet.addRow(['']);  
+  worksheet.addRow(['']);
   const headers = [
     'Order ID',
     'Date',
@@ -248,7 +247,7 @@ const generateExcelReport = async (res, orders, totals, filterType, startDate, e
   });
 
   // Add totals
-  worksheet.addRow(['']);  
+  worksheet.addRow(['']);
   worksheet.addRow([
     'TOTALS',
     '',
@@ -317,11 +316,11 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
 
   // Summary Cards Section=
   const summaryStartY = doc.y;
-  const cardWidth = 120;  
-  const cardSpacing = 10; 
+  const cardWidth = 120;
+  const cardSpacing = 10;
   const cardHeight = 70;
 
-  // Helper function to draw a card with text truncation
+  //  function to draw a card with text truncation
   const drawCard = (x, y, title, value, color) => {
     doc.roundedRect(x, y, cardWidth, cardHeight, 5)
       .fill(color)
@@ -584,13 +583,12 @@ const downloadReport = async (req, res) => {
     }
 
     // Add delivered status to the filter
-    dateFilter.status = 'Delivered'; 
+    dateFilter.status = 'Delivered';
     dateFilter.isReturned = { $ne: true }; // Exclude returned orders
 
-    // Modify the query to find orders with at least one delivered item
     const orders = await Order.find({
       'items.status': 'delivered',  // At least one item is delivered
-      orderDate: dateFilter.orderDate 
+      orderDate: dateFilter.orderDate
     })
       .populate('userId', 'fullname')
       .sort({ orderDate: -1 });

@@ -1,637 +1,650 @@
 <%- include('../../partials/header') %>
 
-<div class="flex flex-col md:flex-row">
-  <%- include('../../partials/usersidebar') %>
+  <div class="flex flex-col md:flex-row">
+    <%- include('../../partials/usersidebar') %>
 
-  <main class="flex-grow p-4 md:py-12">
-    <nav class="flex mb-6 text-sm">
-      <a href="/home" class="text-gray-500 hover:text-primary-accent">Home</a>
-      <span class="mx-2 text-gray-500">/</span>
-      <a href="/orders" class="text-gray-500 hover:text-primary-accent">Orders</a>
-      <span class="mx-2 text-gray-500">/</span>
-      <span class="text-gray-800">Order Details</span>
-    </nav>
+      <main class="flex-grow p-4 md:py-12">
+        <nav class="flex mb-6 text-sm">
+          <a href="/home" class="text-gray-500 hover:text-primary-accent">Home</a>
+          <span class="mx-2 text-gray-500">/</span>
+          <a href="/orders" class="text-gray-500 hover:text-primary-accent">Orders</a>
+          <span class="mx-2 text-gray-500">/</span>
+          <span class="text-gray-800">Order Details</span>
+        </nav>
 
-    <div class="bg-white rounded-lg shadow-lg p-6">
-      <!-- Order Header -->
-      <div class="border-b pb-6 mb-6">
-        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
-          <div class="space-y-1">
-            <h1 class="text-2xl font-semibold text-gray-800">Order <%= order.orderId %></h1>
-            <p class="text-gray-600">Placed on <%= new Date(order.orderDate).toLocaleDateString('en-GB') %></p>
-            <% if (order.paymentStatus === 'pending') { %>
-              <p class="text-red-600 font-medium">Payment Failed</p>
-            <% } %>
-          </div>
-          <div class="sm:text-right">
-            <p class="text-lg font-semibold">₹<%= order.totalAmount.toFixed(2) %></p>
-            <span class="inline-block px-3 py-1 text-sm rounded-full mt-2
+        <div class="bg-white rounded-lg shadow-lg p-6">
+          <!-- Order Header -->
+          <div class="border-b pb-6 mb-6">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+              <div class="space-y-1">
+                <h1 class="text-2xl font-semibold text-gray-800">Order <%= order.orderId %>
+                </h1>
+                <p class="text-gray-600">Placed on <%= new Date(order.orderDate).toLocaleDateString('en-GB') %>
+                </p>
+                <% if (order.paymentStatus==='pending' ) { %>
+                  <p class="text-red-600 font-medium">Payment Failed</p>
+                  <% } %>
+              </div>
+              <div class="sm:text-right">
+                <p class="text-lg font-semibold">₹<%= order.totalAmount.toFixed(2) %>
+                </p>
+                <span class="inline-block px-3 py-1 text-sm rounded-full mt-2
                      <%= order.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 
                          order.paymentStatus === 'pending' ? 'bg-red-100 text-red-800' :
                          'bg-yellow-100 text-yellow-800' %>">
-              <%= order.paymentStatus === 'pending' ? 'Payment Failed' : order.paymentStatus %>
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Order Items -->
-      <div class="space-y-6">
-        <h2 class="text-xl font-semibold mb-4">Order Items</h2>
-        <% order.items.forEach(item => { %>
-          <div class="flex flex-col sm:flex-row sm:items-start space-y-4 sm:space-y-0 sm:space-x-4 p-4 border rounded-lg">
-            <div class="self-center sm:self-start">
-              <img src="<%= item.images[0].path %>" 
-                   alt="<%= item.name %>" 
-                   class="w-32 h-32 object-contain rounded">
+                  <%= order.paymentStatus==='pending' ? 'Payment Failed' : order.paymentStatus %>
+                </span>
+              </div>
             </div>
-            <div class="flex-grow space-y-4">
-              <h3 class="font-medium"><%= item.name %></h3>
-              <p class="text-gray-600">
-                Qty: <%= item.quantity %> × 
-                <% if (item.discount > 0) { %>
-                  <span class="line-through text-gray-500">₹<%= item.price.toFixed(2) %></span>
-                  <span>₹<%= (item.price * (1 - item.discount/100)).toFixed(2) %></span>
-                  <span class="text-green-600">(<%= item.discount %>% off)</span>
-                <% } else { %>
-                  ₹<%= item.price.toFixed(2) %>
-                <% } %>
-              </p>
-              
-              <!-- Item Status Timeline -->
-              <div class="mt-4">
-                <div class="flex items-center space-x-4">
-                  <% 
-                    let statusOrder = ['processing'];
-                    if (item.shippedDate) statusOrder.push('shipped');
-                    if (item.deliveredDate) statusOrder.push('delivered');
-                    if (item.status === 'returned') statusOrder.push('returned');
+          </div>
 
-                    const statusIcons = {
-                      'processing': 'fa-box',
-                      'shipped': 'fa-shipping-fast',
-                      'delivered': 'fa-check',
-                      'cancelled': 'fa-times',
-                      'return requested': 'fa-undo',
-                      'returned': 'fa-box-open'
-                    }; 
-                  %>
-                  
-                  <% if (item.status === 'cancelled') { %>
-                    <% statusOrder.forEach((status, index) => { %>
-                      <div class="flex flex-col items-center">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center
+          <!-- Order Items -->
+          <div class="space-y-6">
+            <h2 class="text-xl font-semibold mb-4">Order Items</h2>
+            <% order.items.forEach(item=> { %>
+              <div
+                class="flex flex-col sm:flex-row sm:items-start space-y-4 sm:space-y-0 sm:space-x-4 p-4 border rounded-lg">
+                <div class="self-center sm:self-start">
+                  <img src="<%= item.images[0].path %>" alt="<%= item.name %>" class="w-32 h-32 object-contain rounded">
+                </div>
+                <div class="flex-grow space-y-4">
+                  <h3 class="font-medium">
+                    <%= item.name %>
+                  </h3>
+                  <p class="text-gray-600">
+                    Qty: <%= item.quantity %> ×
+                      <% if (item.discount> 0) { %>
+                        <span class="line-through text-gray-500">₹<%= item.price.toFixed(2) %></span>
+                        <span>₹<%= (item.price * (1 - item.discount/100)).toFixed(2) %></span>
+                        <span class="text-green-600">(<%= item.discount %>% off)</span>
+                        <% } else { %>
+                          ₹<%= item.price.toFixed(2) %>
+                            <% } %>
+                  </p>
+
+                  <!-- Item Status Timeline -->
+                  <div class="mt-4">
+                    <div class="flex items-center space-x-4">
+                      <% let statusOrder=['processing']; if (item.shippedDate) statusOrder.push('shipped'); if
+                        (item.deliveredDate) statusOrder.push('delivered'); if (item.status==='returned' )
+                        statusOrder.push('returned'); const statusIcons={ 'processing' : 'fa-box' , 'shipped'
+                        : 'fa-shipping-fast' , 'delivered' : 'fa-check' , 'cancelled' : 'fa-times' , 'return requested'
+                        : 'fa-undo' , 'returned' : 'fa-box-open' }; %>
+
+                        <% if (item.status==='cancelled' ) { %>
+                          <% statusOrder.forEach((status, index)=> { %>
+                            <div class="flex flex-col items-center">
+                              <div class="w-8 h-8 rounded-full flex items-center justify-center
                                   <%= item[status === 'shipped' ? 'shippedDate' : 
                                          status === 'delivered' ? 'deliveredDate' : 
                                          'orderDate'] ? 'bg-green-500 text-white' : 
                                          'bg-gray-200 text-gray-500' %>">
-                          <i class="fas <%= statusIcons[status] %>"></i>
-                        </div>
-                        <p class="text-xs mt-1 text-gray-600"><%= status %></p>
-                      </div>
-                      <% if (index < statusOrder.length - 1) { %>
-                        <div class="flex-grow h-0.5 bg-gray-200"></div>
-                      <% } %>
-                    <% }); %>
-                    <!-- Add cancelled status at the end -->
-                    <div class="flex-grow h-0.5 bg-gray-200"></div>
-                    <div class="flex flex-col items-center">
-                      <div class="w-8 h-8 rounded-full flex items-center justify-center bg-red-500 text-white">
-                        <i class="fas fa-times"></i>
-                      </div>
-                      <p class="text-xs mt-1 text-red-600">Cancelled</p>
-                    </div>
-                  <% } else if (item.status === 'return requested') { %>
-                    <div class="flex flex-col items-center">
-                      <div class="w-8 h-8 rounded-full flex items-center justify-center bg-yellow-500 text-white">
-                        <i class="fas fa-undo"></i>
-                      </div>
-                      <p class="text-xs mt-1 text-yellow-600">Return Requested</p>
-                    </div>
-                  <% } else { %>
-                    <% statusOrder.forEach((status, index) => { %>
-                      <div class="flex flex-col items-center">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center
+                                <i class="fas <%= statusIcons[status] %>"></i>
+                              </div>
+                              <p class="text-xs mt-1 text-gray-600">
+                                <%= status %>
+                              </p>
+                            </div>
+                            <% if (index < statusOrder.length - 1) { %>
+                              <div class="flex-grow h-0.5 bg-gray-200"></div>
+                              <% } %>
+                                <% }); %>
+                                  <!--  cancelled status  -->
+                                  <div class="flex-grow h-0.5 bg-gray-200"></div>
+                                  <div class="flex flex-col items-center">
+                                    <div
+                                      class="w-8 h-8 rounded-full flex items-center justify-center bg-red-500 text-white">
+                                      <i class="fas fa-times"></i>
+                                    </div>
+                                    <p class="text-xs mt-1 text-red-600">Cancelled</p>
+                                  </div>
+                                  <% } else if (item.status==='return requested' ) { %>
+                                    <div class="flex flex-col items-center">
+                                      <div
+                                        class="w-8 h-8 rounded-full flex items-center justify-center bg-yellow-500 text-white">
+                                        <i class="fas fa-undo"></i>
+                                      </div>
+                                      <p class="text-xs mt-1 text-yellow-600">Return Requested</p>
+                                    </div>
+                                    <% } else { %>
+                                      <% statusOrder.forEach((status, index)=> { %>
+                                        <div class="flex flex-col items-center">
+                                          <div class="w-8 h-8 rounded-full flex items-center justify-center
                                   <%= item.status === status ? 'bg-blue-500 text-white' : 
                                      statusOrder.indexOf(item.status) > index ? 'bg-green-500 text-white' : 
                                      'bg-gray-200 text-gray-500' %>">
-                          <i class="fas <%= statusIcons[status] %>"></i>
-                        </div>
-                        <p class="text-xs mt-1 text-gray-600"><%= status %></p>
-                      </div>
-                      <% if (index < statusOrder.length - 1) { %>
-                        <div class="flex-grow h-0.5 bg-gray-200"></div>
+                                            <i class="fas <%= statusIcons[status] %>"></i>
+                                          </div>
+                                          <p class="text-xs mt-1 text-gray-600">
+                                            <%= status %>
+                                          </p>
+                                        </div>
+                                        <% if (index < statusOrder.length - 1) { %>
+                                          <div class="flex-grow h-0.5 bg-gray-200"></div>
+                                          <% } %>
+                                            <% }); %>
+                                              <% } %>
+                    </div>
+                  </div>
+
+                  <!-- Status Dates -->
+                  <div class="mt-4 text-sm text-gray-600 space-y-1">
+                    <p>Ordered on: <%= new Date(order.orderDate).toLocaleString('en-GB') %>
+                    </p>
+                    <% if (item.shippedDate) { %>
+                      <p>Shipped on: <%= new Date(item.shippedDate).toLocaleString('en-GB') %>
+                      </p>
                       <% } %>
-                    <% }); %>
-                  <% } %>
+                        <% if (item.deliveredDate) { %>
+                          <p>Delivered on: <%= new Date(item.deliveredDate).toLocaleString('en-GB') %>
+                          </p>
+                          <% } %>
+                            <% if (item.cancelledDate) { %>
+                              <p class="text-red-600">Cancelled on: <%= new
+                                  Date(item.cancelledDate).toLocaleString('en-GB') %>
+                              </p>
+                              <% } %>
+                                <% if (item.return && item.return.requestedAt) { %>
+                                  <p class="text-yellow-600">Return requested on: <%= new
+                                      Date(item.return.requestedAt).toLocaleString('en-GB') %>
+                                  </p>
+                                  <% } %>
+                                    <% if (item.returnedDate) { %>
+                                      <p class="text-green-600">Returned on: <%= new
+                                          Date(item.returnedDate).toLocaleString('en-GB') %>
+                                      </p>
+                                      <% } %>
+                                        <% if (item.return && item.return.reason) { %>
+                                          <p class="mt-2">
+                                            <span class="font-medium">Return reason:</span>
+                                            <%= item.return.reason %>
+                                          </p>
+                                          <% } %>
+                  </div>
+
+                  <!-- Action Buttons -->
+                  <div class="flex flex-wrap gap-4 mt-4">
+                    <% if (['processing', 'shipped' ].includes(item.status) && !(order.paymentMethod==='online' &&
+                      order.paymentStatus==='pending' )) { %>
+                      <button onclick="cancelOrderItem('<%= order._id %>', '<%= item._id %>')"
+                        class="text-red-600 text-sm hover:underline">
+                        Cancel Item
+                      </button>
+                      <% } %>
+                        <% if (item.status==='delivered' ) { %>
+                          <button onclick="openReturnModal('<%= order._id %>', '<%= item._id %>')"
+                            class="text-blue-600 text-sm hover:underline">
+                            Return Item
+                          </button>
+                          <% } %>
+                            <% if (['delivered', 'return requested' , 'returned' ].includes(item.status)) { %>
+                              <button onclick="downloadInvoice('<%= order._id %>', '<%= item._id %>')"
+                                class="text-blue-600 text-sm hover:underline">
+                                <i class="fas fa-file-invoice"></i> Download Invoice
+                              </button>
+                              <% } %>
+                                <% if (item.status==='delivered' ) { %>
+                                  <button onclick="openReviewModal('<%= item.name %>')"
+                                    class="text-blue-600 text-sm hover:underline">
+                                    <i class="fas fa-star"></i> Write Review
+                                  </button>
+                                  <% } %>
+                  </div>
                 </div>
               </div>
+              <% }); %>
+          </div>
 
-              <!-- Status Dates -->
-              <div class="mt-4 text-sm text-gray-600 space-y-1">
-                <p>Ordered on: <%= new Date(order.orderDate).toLocaleString('en-GB') %></p>
-                <% if (item.shippedDate) { %>
-                  <p>Shipped on: <%= new Date(item.shippedDate).toLocaleString('en-GB') %></p>
-                <% } %>
-                <% if (item.deliveredDate) { %>
-                  <p>Delivered on: <%= new Date(item.deliveredDate).toLocaleString('en-GB') %></p>
-                <% } %>
-                <% if (item.cancelledDate) { %>
-                  <p class="text-red-600">Cancelled on: <%= new Date(item.cancelledDate).toLocaleString('en-GB') %></p>
-                <% } %>
-                <% if (item.return && item.return.requestedAt) { %>
-                  <p class="text-yellow-600">Return requested on: <%= new Date(item.return.requestedAt).toLocaleString('en-GB') %></p>
-                <% } %>
-                <% if (item.returnedDate) { %>
-                  <p class="text-green-600">Returned on: <%= new Date(item.returnedDate).toLocaleString('en-GB') %></p>
-                <% } %>
-                <% if (item.return && item.return.reason) { %>
-                  <p class="mt-2">
-                    <span class="font-medium">Return reason:</span> 
-                    <%= item.return.reason %>
-                  </p>
-                <% } %>
+          <!-- Order Information -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+            <!-- Shipping Information -->
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <h3 class="font-semibold mb-4">Shipping Information</h3>
+              <div class="text-gray-600">
+                <p class="font-medium">
+                  <%= order.shippingAddress.name %>
+                </p>
+                <p>
+                  <%= order.shippingAddress.houseName %>
+                </p>
+                <p>
+                  <%= order.shippingAddress.localityStreet %>
+                </p>
+                <p>
+                  <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %>
+                </p>
+                <p>PIN: <%= order.shippingAddress.pincode %>
+                </p>
+                <p>Phone: <%= order.shippingAddress.phone %>
+                </p>
               </div>
+            </div>
 
-              <!-- Action Buttons -->
-              <div class="flex flex-wrap gap-4 mt-4">
-                <% if (['processing', 'shipped'].includes(item.status) && 
-                    !(order.paymentMethod === 'online' && order.paymentStatus === 'pending')) { %>
-                  <button onclick="cancelOrderItem('<%= order._id %>', '<%= item._id %>')"
-                          class="text-red-600 text-sm hover:underline">
-                    Cancel Item
-                  </button>
-                <% } %>
-                <% if (item.status === 'delivered') { %>
-                  <button onclick="openReturnModal('<%= order._id %>', '<%= item._id %>')"
-                          class="text-blue-600 text-sm hover:underline">
-                    Return Item
-                  </button>
-                <% } %>
-                <% if (['delivered', 'return requested', 'returned'].includes(item.status)) { %>
-                  <button onclick="downloadInvoice('<%= order._id %>', '<%= item._id %>')"
-                          class="text-blue-600 text-sm hover:underline">
-                    <i class="fas fa-file-invoice"></i> Download Invoice
-                  </button>
-                <% } %>
-                <% if (item.status === 'delivered') { %>
-                  <button onclick="openReviewModal('<%= item.name %>')"
-                          class="text-blue-600 text-sm hover:underline">
-                    <i class="fas fa-star"></i> Write Review
-                  </button>
-                <% } %>
+            <!-- Payment Information -->
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <h3 class="font-semibold mb-4">Payment Information</h3>
+              <div class="space-y-2">
+                <p>Method: <%= order.paymentMethod.toUpperCase() %>
+                </p>
+                <p>Status:
+                  <span class="<%= order.paymentStatus === 'paid' ? 'text-green-600' : 'text-yellow-600' %>">
+                    <%= order.paymentStatus %>
+                  </span>
+                </p>
+                <% if (order.coupon && order.coupon.code) { %>
+                  <div class="mt-4">
+                    <p class="text-sm text-gray-600">Applied Coupon:</p>
+                    <p class="font-medium text-primary-accent">
+                      <%= order.coupon.code %>
+                    </p>
+                    <p class="text-green-600">-₹<%= order.coupon.discount.toFixed(2) %>
+                    </p>
+                  </div>
+                  <% } %>
               </div>
             </div>
           </div>
-        <% }); %>
-      </div>
 
-      <!-- Order Information -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-        <!-- Shipping Information -->
-        <div class="bg-gray-50 p-4 rounded-lg">
-          <h3 class="font-semibold mb-4">Shipping Information</h3>
-          <div class="text-gray-600">
-            <p class="font-medium"><%= order.shippingAddress.name %></p>
-            <p><%= order.shippingAddress.houseName %></p>
-            <p><%= order.shippingAddress.localityStreet %></p>
-            <p><%= order.shippingAddress.city %>, <%= order.shippingAddress.state %></p>
-            <p>PIN: <%= order.shippingAddress.pincode %></p>
-            <p>Phone: <%= order.shippingAddress.phone %></p>
-          </div>
-        </div>
-
-        <!-- Payment Information -->
-        <div class="bg-gray-50 p-4 rounded-lg">
-          <h3 class="font-semibold mb-4">Payment Information</h3>
-          <div class="space-y-2">
-            <p>Method: <%= order.paymentMethod.toUpperCase() %></p>
-            <p>Status: 
-              <span class="<%= order.paymentStatus === 'paid' ? 'text-green-600' : 'text-yellow-600' %>">
-                <%= order.paymentStatus %>
-              </span>
-            </p>
-            <% if (order.coupon && order.coupon.code) { %>
-              <div class="mt-4">
-                <p class="text-sm text-gray-600">Applied Coupon:</p>
-                <p class="font-medium text-primary-accent"><%= order.coupon.code %></p>
-                <p class="text-green-600">-₹<%= order.coupon.discount.toFixed(2) %></p>
-              </div>
+          <% if (order.paymentMethod==='online' && order.paymentStatus==='pending' ) { %>
+            <div class="mt-6 bg-yellow-50 p-4 rounded-lg">
+              <p class="text-yellow-800 mb-2">Payment pending for this order</p>
+              <button onclick="retryPayment('<%= order._id %>')"
+                class="bg-primary-accent text-white px-4 py-2 rounded hover:bg-primary-accent/90">
+                Retry Payment
+              </button>
+            </div>
             <% } %>
-          </div>
         </div>
-      </div>
+      </main>
+  </div>
 
-      <% if (order.paymentMethod === 'online' && order.paymentStatus === 'pending') { %>
-        <div class="mt-6 bg-yellow-50 p-4 rounded-lg">
-          <p class="text-yellow-800 mb-2">Payment pending for this order</p>
-          <button onclick="retryPayment('<%= order._id %>')"
-                  class="bg-primary-accent text-white px-4 py-2 rounded hover:bg-primary-accent/90">
-            Retry Payment
+  <!-- Return Modal -->
+  <div id="returnModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+      <h3 class="text-lg font-semibold mb-4">Return Item</h3>
+      <form id="returnForm">
+        <input type="hidden" id="returnOrderId">
+        <input type="hidden" id="returnItemId">
+        <div class="mb-4">
+          <label for="returnReason" class="block text-sm font-medium text-gray-700 mb-2">
+            Reason for Return
+          </label>
+          <textarea id="returnReason"
+            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-primary-accent focus:border-primary-accent"
+            rows="4" placeholder="Please explain why you want to return this item..."></textarea>
+          <p class="text-red-500 text-sm mt-1 hidden" id="returnReasonError"></p>
+          <p class="text-sm text-gray-500 mt-1">
+            <span id="charCount">0</span>/500 characters
+          </p>
+        </div>
+        <div class="flex justify-end space-x-4">
+          <button type="button" onclick="closeReturnModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 bg-primary-accent text-white rounded-md hover:bg-primary-accent/90">
+            Submit Return Request
           </button>
         </div>
-      <% } %>
+      </form>
     </div>
-  </main>
-</div>
-
-<!-- Return Modal -->
-<div id="returnModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
-  <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-    <h3 class="text-lg font-semibold mb-4">Return Item</h3>
-    <form id="returnForm">
-      <input type="hidden" id="returnOrderId">
-      <input type="hidden" id="returnItemId">
-      <div class="mb-4">
-        <label for="returnReason" class="block text-sm font-medium text-gray-700 mb-2">
-          Reason for Return
-        </label>
-        <textarea id="returnReason" 
-                  class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-primary-accent focus:border-primary-accent"
-                  rows="4"
-                  placeholder="Please explain why you want to return this item..."></textarea>
-        <p class="text-red-500 text-sm mt-1 hidden" id="returnReasonError"></p>
-        <p class="text-sm text-gray-500 mt-1">
-          <span id="charCount">0</span>/500 characters
-        </p>
-      </div>
-      <div class="flex justify-end space-x-4">
-        <button type="button" 
-                onclick="closeReturnModal()"
-                class="px-4 py-2 text-gray-600 hover:text-gray-800">
-          Cancel
-        </button>
-        <button type="submit"
-                class="px-4 py-2 bg-primary-accent text-white rounded-md hover:bg-primary-accent/90">
-          Submit Return Request
-        </button>
-      </div>
-    </form>
   </div>
-</div>
 
-<!-- Review Modal -->
-<div id="reviewModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
-  <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-    <h3 class="text-lg font-semibold mb-4">Write a Review</h3>
-    <form id="reviewForm">
-      <input type="hidden" id="reviewProductName">
-      
-      <!-- Star Rating -->
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Rating</label>
-        <div class="flex space-x-2 mb-1">
-          <% for(let i = 1; i <= 5; i++) { %>
-            <button type="button" 
-                    onclick="setRating('<%= i %>')"
-                    class="star-btn text-2xl transition-colors duration-200 ease-in-out text-gray-300 hover:text-yellow-400 focus:outline-none group"
-                    data-rating="<%- i %>">
-              <span class="group-hover:text-yellow-400 peer">★</span>
-              <span class="peer-hover:text-gray-300"></span>
-            </button>
-          <% } %>
+  <!-- Review Modal -->
+  <div id="reviewModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+      <h3 class="text-lg font-semibold mb-4">Write a Review</h3>
+      <form id="reviewForm">
+        <input type="hidden" id="reviewProductName">
+
+        <!-- Star Rating -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+          <div class="flex space-x-2 mb-1">
+            <% for(let i=1; i <=5; i++) { %>
+              <button type="button" onclick="setRating('<%= i %>')"
+                class="star-btn text-2xl transition-colors duration-200 ease-in-out text-gray-300 hover:text-yellow-400 focus:outline-none group"
+                data-rating="<%- i %>">
+                <span class="group-hover:text-yellow-400 peer">★</span>
+                <span class="peer-hover:text-gray-300"></span>
+              </button>
+              <% } %>
+          </div>
+          <input type="hidden" id="ratingInput">
+          <p class="text-red-500 text-sm mt-1 hidden" id="ratingInputError"></p>
         </div>
-        <input type="hidden" id="ratingInput">
-        <p class="text-red-500 text-sm mt-1 hidden" id="ratingInputError"></p>
-      </div>
 
-      <!-- Review Comment -->
-      <div class="mb-4">
-        <label for="reviewComment" class="block text-sm font-medium text-gray-700 mb-2">
-          Your Review
-        </label>
-        <textarea id="reviewComment" 
-                  class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-primary-accent focus:border-primary-accent"
-                  rows="4"
-                  placeholder="Share your experience with this product..."></textarea>
-        <p class="text-red-500 text-sm mt-1 hidden" id="reviewCommentError"></p>
-        <p class="text-sm text-gray-500 mt-1">
-          <span id="reviewCharCount">0</span>/100 characters
-        </p>
-      </div>
+        <!-- Review Comment -->
+        <div class="mb-4">
+          <label for="reviewComment" class="block text-sm font-medium text-gray-700 mb-2">
+            Your Review
+          </label>
+          <textarea id="reviewComment"
+            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-primary-accent focus:border-primary-accent"
+            rows="4" placeholder="Share your experience with this product..."></textarea>
+          <p class="text-red-500 text-sm mt-1 hidden" id="reviewCommentError"></p>
+          <p class="text-sm text-gray-500 mt-1">
+            <span id="reviewCharCount">0</span>/100 characters
+          </p>
+        </div>
 
-      <div class="flex justify-end space-x-4">
-        <button type="button" 
-                onclick="closeReviewModal()"
-                class="px-4 py-2 text-gray-600 hover:text-gray-800">
-          Cancel
-        </button>
-        <button type="submit"
-                class="px-4 py-2 bg-primary-accent text-white rounded-md hover:bg-primary-accent/90">
-          Submit Review
-        </button>
-      </div>
-    </form>
+        <div class="flex justify-end space-x-4">
+          <button type="button" onclick="closeReviewModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 bg-primary-accent text-white rounded-md hover:bg-primary-accent/90">
+            Submit Review
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
-</div>
 
-<script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
 
-<script>
-  async function cancelOrderItem(orderId, itemId) {
-    try {
-      const confirmed = await customConfirm('Are you sure you want to cancel this item?');
-      if (!confirmed) return;
+  <script>
+    async function cancelOrderItem(orderId, itemId) {
+      try {
+        const confirmed = await customConfirm('Are you sure you want to cancel this item?');
+        if (!confirmed) return;
 
-      const response = await axios.post(`/orders/${orderId}/items/${itemId}/cancel`);
-      if (response.data.success) {
-        showToast('Item cancelled successfully', 'success');
-        setTimeout(() => window.location.reload(), 1500);
-      } else {
-        showToast(response.data.message || 'Failed to cancel item', 'error');
+        const response = await axios.post(`/orders/${orderId}/items/${itemId}/cancel`);
+        if (response.data.success) {
+          showToast('Item cancelled successfully', 'success');
+          setTimeout(() => window.location.reload(), 1500);
+        } else {
+          showToast(response.data.message || 'Failed to cancel item', 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('Failed to cancel item', 'error');
       }
-    } catch (error) {
-      console.error('Error:', error);
-      showToast('Failed to cancel item', 'error');
     }
-  }
 
-  function openReturnModal(orderId, itemId) {
-    document.getElementById('returnModal').classList.remove('hidden');
-    document.getElementById('returnModal').classList.add('flex');
-    document.getElementById('returnOrderId').value = orderId;
-    document.getElementById('returnItemId').value = itemId;
-  }
+    function openReturnModal(orderId, itemId) {
+      document.getElementById('returnModal').classList.remove('hidden');
+      document.getElementById('returnModal').classList.add('flex');
+      document.getElementById('returnOrderId').value = orderId;
+      document.getElementById('returnItemId').value = itemId;
+    }
 
-  function closeReturnModal() {
-    document.getElementById('returnModal').classList.add('hidden');
-    document.getElementById('returnModal').classList.remove('flex');
-    document.getElementById('returnForm').reset();
-  }
+    function closeReturnModal() {
+      document.getElementById('returnModal').classList.add('hidden');
+      document.getElementById('returnModal').classList.remove('flex');
+      document.getElementById('returnForm').reset();
+    }
 
-  // Character count for return reason
-  document.getElementById('returnReason').addEventListener('input', function(e) {
-    const count = e.target.value.length;
-    document.getElementById('charCount').textContent = count;
-  });
+    // Character count for return reason
+    document.getElementById('returnReason').addEventListener('input', function (e) {
+      const count = e.target.value.length;
+      document.getElementById('charCount').textContent = count;
+    });
 
-  // Add these validation helper functions
-  function showError(fieldId, message) {
-    const input = document.getElementById(fieldId);
-    const errorElement = document.getElementById(`${fieldId}Error`);
-    
-    input.classList.add('border-red-500');
-    errorElement.textContent = message;
-    errorElement.classList.remove('hidden');
-  }
+    function showError(fieldId, message) {
+      const input = document.getElementById(fieldId);
+      const errorElement = document.getElementById(`${fieldId}Error`);
 
-  function resetErrors(formId) {
-    const form = document.getElementById(formId);
-    const inputs = form.querySelectorAll('input, textarea');
-    inputs.forEach(input => {
-      input.classList.remove('border-red-500');
-      const errorElement = document.getElementById(`${input.id}Error`);
-      if (errorElement) {
-        errorElement.classList.add('hidden');
-        errorElement.textContent = '';
+      input.classList.add('border-red-500');
+      errorElement.textContent = message;
+      errorElement.classList.remove('hidden');
+    }
+
+    function resetErrors(formId) {
+      const form = document.getElementById(formId);
+      const inputs = form.querySelectorAll('input, textarea');
+      inputs.forEach(input => {
+        input.classList.remove('border-red-500');
+        const errorElement = document.getElementById(`${input.id}Error`);
+        if (errorElement) {
+          errorElement.classList.add('hidden');
+          errorElement.textContent = '';
+        }
+      });
+    }
+
+    //  return form submission
+    document.getElementById('returnForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      resetErrors('returnForm');
+
+      const reason = document.getElementById('returnReason').value.trim();
+      let hasError = false;
+
+      if (!reason) {
+        showError('returnReason', 'Return reason is required');
+        hasError = true;
+      } else if (reason.length < 10) {
+        showError('returnReason', 'Return reason must be at least 10 characters long');
+        hasError = true;
+      }
+
+      if (hasError) return;
+
+      const orderId = document.getElementById('returnOrderId').value;
+      const itemId = document.getElementById('returnItemId').value;
+
+      try {
+        const response = await axios.post(`/orders/${orderId}/items/${itemId}/return`, {
+          reason: reason
+        });
+
+        if (response.data.success) {
+          showToast('Return request submitted successfully', 'success');
+          closeReturnModal();
+          setTimeout(() => window.location.reload(), 1500);
+        } else {
+          showToast(response.data.message || 'Failed to submit return request', 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('Failed to submit return request', 'error');
       }
     });
-  }
 
-  // Update return form submission
-  document.getElementById('returnForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    resetErrors('returnForm');
+    async function downloadInvoice(orderId, itemId) {
+      try {
+        const response = await axios.get(
+          `/orders/${orderId}/items/${itemId}/invoice`,
+          { responseType: 'blob' }
+        );
 
-    const reason = document.getElementById('returnReason').value.trim();
-    let hasError = false;
-
-    if (!reason) {
-      showError('returnReason', 'Return reason is required');
-      hasError = true;
-    } else if (reason.length < 10) {
-      showError('returnReason', 'Return reason must be at least 10 characters long');
-      hasError = true;
-    }
-
-    if (hasError) return;
-
-    const orderId = document.getElementById('returnOrderId').value;
-    const itemId = document.getElementById('returnItemId').value;
-
-    try {
-      const response = await axios.post(`/orders/${orderId}/items/${itemId}/return`, {
-        reason: reason
-      });
-
-      if (response.data.success) {
-        showToast('Return request submitted successfully', 'success');
-        closeReturnModal();
-        setTimeout(() => window.location.reload(), 1500);
-      } else {
-        showToast(response.data.message || 'Failed to submit return request', 'error');
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `invoice-${orderId}-${itemId}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        showToast('Failed to download invoice', 'error');
       }
-    } catch (error) {
-      console.error('Error:', error);
-      showToast('Failed to submit return request', 'error');
     }
-  });
 
-  async function downloadInvoice(orderId, itemId) {
-    try {
-      const response = await axios.get(
-        `/orders/${orderId}/items/${itemId}/invoice`,
-        { responseType: 'blob' }
-      );
-      
-      const blob = new Blob([response.data], { type: 'application/pdf' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `invoice-${orderId}-${itemId}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      showToast('Failed to download invoice', 'error');
-    }
-  }
+    async function retryPayment(orderId) {
+      try {
+        const response = await axios.post(`/orders/${orderId}/retry-payment`);
 
-  async function retryPayment(orderId) {
-    try {
-      const response = await axios.post(`/orders/${orderId}/retry-payment`);
-
-      if (response.data.success) {
-        // Initialize Razorpay payment
-        const options = {
-          key: '<%= process.env.RAZORPAY_KEY_ID %>',
-          amount: response.data.amount,
-          currency: "INR",
-          name: "TechHive",
-          description: "Order Payment",
-          order_id: response.data.razorpayOrderId,
-          handler: function (response) {
-            verifyPayment({
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_signature: response.razorpay_signature,
-              orderId: orderId
-            });
-          },
-          modal: {
-            ondismiss: function () {
-              showToast('Payment failed', 'error');
+        if (response.data.success) {
+          // Initialize Razorpay payment
+          const options = {
+            key: '<%= process.env.RAZORPAY_KEY_ID %>',
+            amount: response.data.amount,
+            currency: "INR",
+            name: "TechHive",
+            description: "Order Payment",
+            order_id: response.data.razorpayOrderId,
+            handler: function (response) {
+              verifyPayment({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+                orderId: orderId
+              });
+            },
+            modal: {
+              ondismiss: function () {
+                showToast('Payment failed', 'error');
+              }
+            },
+            prefill: {
+              name: "<%= user.name %>",
+              email: "<%= user.email %>"
+            },
+            theme: {
+              color: "#DA0037"
             }
-          },
-          prefill: {
-            name: "<%= user.name %>",
-            email: "<%= user.email %>"
-          },
-          theme: {
-            color: "#DA0037"
-          }
-        };
+          };
 
-        const rzp = new Razorpay(options);
-        rzp.open();
-      } else {
-        showToast(response.data.message || 'Failed to initialize payment', 'error');
+          const rzp = new Razorpay(options);
+          rzp.open();
+        } else {
+          showToast(response.data.message || 'Failed to initialize payment', 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('Failed to initialize payment', 'error');
       }
-    } catch (error) {
-      console.error('Error:', error);
-      showToast('Failed to initialize payment', 'error');
     }
-  }
 
-  async function verifyPayment(paymentData) {
-    try {
-      const response = await axios.post('/checkout/verifypayment', paymentData);
-      if (response.data.success) {
-        showToast('Payment successful', 'success');
-        setTimeout(() => window.location.reload(), 1500);
-      } else {
+    async function verifyPayment(paymentData) {
+      try {
+        const response = await axios.post('/checkout/verifypayment', paymentData);
+        if (response.data.success) {
+          showToast('Payment successful', 'success');
+          setTimeout(() => window.location.reload(), 1500);
+        } else {
+          showToast('Payment verification failed', 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
         showToast('Payment verification failed', 'error');
       }
-    } catch (error) {
-      console.error('Error:', error);
-      showToast('Payment verification failed', 'error');
     }
-  }
 
-  let currentRating = 0;
+    let currentRating = 0;
 
-  function openReviewModal(productName) {
-    document.getElementById('reviewModal').classList.remove('hidden');
-    document.getElementById('reviewModal').classList.add('flex');
-    document.getElementById('reviewProductName').value = productName;
-    
-    // Reset form
-    document.getElementById('reviewForm').reset();
-    document.getElementById('reviewCharCount').textContent = '0';
-    resetStars();
-    
-    // Check for existing review
-    fetchExistingReview(productName);
-  }
+    function openReviewModal(productName) {
+      document.getElementById('reviewModal').classList.remove('hidden');
+      document.getElementById('reviewModal').classList.add('flex');
+      document.getElementById('reviewProductName').value = productName;
 
-  function closeReviewModal() {
-    document.getElementById('reviewModal').classList.add('hidden');
-    document.getElementById('reviewModal').classList.remove('flex');
-    document.getElementById('reviewForm').reset();
-    resetStars();
-  }
+      // Reset form
+      document.getElementById('reviewForm').reset();
+      document.getElementById('reviewCharCount').textContent = '0';
+      resetStars();
 
-  function setRating(rating) {
-    currentRating = rating;
-    document.getElementById('ratingInput').value = rating;
-    
-    // Clear error when rating is selected
-    document.getElementById('ratingInput').classList.remove('border-red-500');
-    document.getElementById('ratingInputError').classList.add('hidden');
-    
-    // Update star colors
-    const stars = document.querySelectorAll('.star-btn');
-    stars.forEach((star, index) => {
-      star.style.color = index < rating ? '#FBBF24' : '#D1D5DB';
+      // Check for existing review
+      fetchExistingReview(productName);
+    }
+
+    function closeReviewModal() {
+      document.getElementById('reviewModal').classList.add('hidden');
+      document.getElementById('reviewModal').classList.remove('flex');
+      document.getElementById('reviewForm').reset();
+      resetStars();
+    }
+
+    function setRating(rating) {
+      currentRating = rating;
+      document.getElementById('ratingInput').value = rating;
+
+      // Clear error when rating is selected
+      document.getElementById('ratingInput').classList.remove('border-red-500');
+      document.getElementById('ratingInputError').classList.add('hidden');
+
+      // Update star colors
+      const stars = document.querySelectorAll('.star-btn');
+      stars.forEach((star, index) => {
+        star.style.color = index < rating ? '#FBBF24' : '#D1D5DB';
+      });
+    }
+
+    function resetStars() {
+      currentRating = 0;
+      document.getElementById('ratingInput').value = '';
+      const stars = document.querySelectorAll('.star-btn');
+      stars.forEach(star => star.style.color = '#D1D5DB');
+    }
+
+    // Character count for review
+    document.getElementById('reviewComment').addEventListener('input', function (e) {
+      const count = e.target.value.length;
+      document.getElementById('reviewCharCount').textContent = count;
     });
-  }
 
-  function resetStars() {
-    currentRating = 0;
-    document.getElementById('ratingInput').value = '';
-    const stars = document.querySelectorAll('.star-btn');
-    stars.forEach(star => star.style.color = '#D1D5DB');
-  }
+    async function fetchExistingReview(productName) {
+      try {
+        const response = await axios.get('/review/get', {
+          params: { productName }
+        });
 
-  // Character count for review
-  document.getElementById('reviewComment').addEventListener('input', function(e) {
-    const count = e.target.value.length;
-    document.getElementById('reviewCharCount').textContent = count;
-  });
-
-  async function fetchExistingReview(productName) {
-    try {
-      const response = await axios.get('/review/get', {
-        params: { productName }
-      });
-
-      if (response.data.success) {
-        const { rating, comment } = response.data.review;
-        setRating(rating);
-        document.getElementById('reviewComment').value = comment;
-        document.getElementById('reviewCharCount').textContent = comment.length;
-      }
-    } catch (error) {
-      if (error.response && error.response.status !== 404) {
-        console.error('Error fetching review:', error);
+        if (response.data.success) {
+          const { rating, comment } = response.data.review;
+          setRating(rating);
+          document.getElementById('reviewComment').value = comment;
+          document.getElementById('reviewCharCount').textContent = comment.length;
+        }
+      } catch (error) {
+        if (error.response && error.response.status !== 404) {
+          console.error('Error fetching review:', error);
+        }
       }
     }
-  }
 
-  // Update review form submission
-  document.getElementById('reviewForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    resetErrors('reviewForm');
+    //  review form submission
+    document.getElementById('reviewForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      resetErrors('reviewForm');
 
-    const productName = document.getElementById('reviewProductName').value;
-    const rating = currentRating;
-    const comment = document.getElementById('reviewComment').value.trim();
-    let hasError = false;
+      const productName = document.getElementById('reviewProductName').value;
+      const rating = currentRating;
+      const comment = document.getElementById('reviewComment').value.trim();
+      let hasError = false;
 
-    if (!rating) {
-      showError('ratingInput', 'Please select a rating');
-      hasError = true;
-    }
-
-    if (!comment) {
-      showError('reviewComment', 'Review comment is required');
-      hasError = true;
-    } else if (comment.length < 10) {
-      showError('reviewComment', 'Review must be at least 10 characters long');
-      hasError = true;
-    }
-
-    if (hasError) return;
-
-    try {
-      const response = await axios.post('/review/add', {
-        productName,
-        rating,
-        comment
-      });
-
-      if (response.data.success) {
-        showToast(response.data.message, 'success');
-        closeReviewModal();
-      } else {
-        showToast(response.data.message || 'Failed to submit review', 'error');
+      if (!rating) {
+        showError('ratingInput', 'Please select a rating');
+        hasError = true;
       }
-    } catch (error) {
-      console.error('Error:', error);
-      showToast(error.response?.data?.message || 'Failed to submit review', 'error');
-    }
-  });
 
-  // Add input event listeners to clear errors when user starts typing
-  document.getElementById('returnReason').addEventListener('input', function() {
-    this.classList.remove('border-red-500');
-    document.getElementById('returnReasonError').classList.add('hidden');
-  });
+      if (!comment) {
+        showError('reviewComment', 'Review comment is required');
+        hasError = true;
+      } else if (comment.length < 10) {
+        showError('reviewComment', 'Review must be at least 10 characters long');
+        hasError = true;
+      }
 
-  document.getElementById('reviewComment').addEventListener('input', function() {
-    this.classList.remove('border-red-500');
-    document.getElementById('reviewCommentError').classList.add('hidden');
-  });
-</script>
+      if (hasError) return;
 
-<%- include('../../partials/footer') %> 
+      try {
+        const response = await axios.post('/review/add', {
+          productName,
+          rating,
+          comment
+        });
+
+        if (response.data.success) {
+          showToast(response.data.message, 'success');
+          closeReviewModal();
+        } else {
+          showToast(response.data.message || 'Failed to submit review', 'error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showToast(error.response?.data?.message || 'Failed to submit review', 'error');
+      }
+    });
+
+    //  input event listeners to clear errors when user starts typing
+    document.getElementById('returnReason').addEventListener('input', function () {
+      this.classList.remove('border-red-500');
+      document.getElementById('returnReasonError').classList.add('hidden');
+    });
+
+    document.getElementById('reviewComment').addEventListener('input', function () {
+      this.classList.remove('border-red-500');
+      document.getElementById('reviewCommentError').classList.add('hidden');
+    });
+  </script>
+
+  <%- include('../../partials/footer') %>

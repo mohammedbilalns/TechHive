@@ -14,7 +14,7 @@
       </span>
     </nav>
 
-    <!-- Product Details Section -->
+    <!-- Product Details  -->
     <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
       <!-- Images -->
       <div>
@@ -23,7 +23,8 @@
           id="imageContainer">
           <img id="mainImage" src="<%= product.images[0].path %>" alt="<%= product.name %>"
             class="w-full h-full object-contain" />
-          <div id="zoomPane" class="hidden md:block absolute bg-white pointer-events-none border w-[200px] h-[200px] opacity-0">
+          <div id="zoomPane"
+            class="hidden md:block absolute bg-white pointer-events-none border w-[200px] h-[200px] opacity-0">
           </div>
         </div>
         <!-- Thumbnail Images -->
@@ -110,7 +111,6 @@
         </div>
 
         <!-- Action Buttons -->
-
         <div class="flex gap-4 mb-6">
           <% if (locals.fullname) { %>
             <button onclick="addToCart('<%= product._id %>')"
@@ -118,31 +118,34 @@
               <%=!product.stock ? 'disabled' : '' %>>
               Add to Cart
             </button>
-          <% } else { %>
-            <a href="/login" class="bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors text-center">
-              Add to Cart
-            </a>
-          <% } %>
-
-          <% if(locals.fullname) { %>
-            <% if(wishlistItems.some(id=> id.equals(product._id))) { %>
-              <button onclick="removeFromWishlist('<%= product._id %>')"
-                class="w-10 h-10 flex items-center justify-center rounded-full bg-primary-accent text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-              </button>
             <% } else { %>
-              <button onclick="addToWishlist('<%= product._id %>')"
-                class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-primary-accent hover:text-black transition-colors duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-              </button>
-            <% } %>
-          <% } %>
+              <a href="/login"
+                class="bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-red-600 transition-colors text-center">
+                Add to Cart
+              </a>
+              <% } %>
+
+                <% if(locals.fullname) { %>
+                  <% if(wishlistItems.some(id=> id.equals(product._id))) { %>
+                    <button onclick="removeFromWishlist('<%= product._id %>')"
+                      class="w-10 h-10 flex items-center justify-center rounded-full bg-primary-accent text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      </svg>
+                    </button>
+                    <% } else { %>
+                      <button onclick="addToWishlist('<%= product._id %>')"
+                        class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-primary-accent hover:text-black transition-colors duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                      </button>
+                      <% } %>
+                        <% } %>
         </div>
       </div>
     </section>
@@ -255,39 +258,43 @@
     <section class="mt-12">
       <h2 class="text-2xl mb-6">Customer Reviews</h2>
 
-      <% if (reviews.length > 0) { %>
+      <% if (reviews.length> 0) { %>
         <div class="space-y-6" id="reviews-container">
-          <% reviews.forEach(review => { %>
+          <% reviews.forEach(review=> { %>
             <div class="border-b pb-4">
               <div class="flex items-center mb-2">
                 <div class="flex text-yellow-400 mr-2">
                   <% for(let i=1; i <=5; i++) { %>
                     <i class="<%= i <= review.rating ? 'fas' : 'far' %> fa-star"></i>
-                  <% } %>
+                    <% } %>
                 </div>
-                <p class="font-semibold"><%= review.user.fullname %></p>
+                <p class="font-semibold">
+                  <%= review.user.fullname %>
+                </p>
                 <p class="text-gray-500 ml-4">
-                  <%= new Date(review.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+                  <%= new Date(review.createdAt).toLocaleDateString('en-US', { year: 'numeric' , month: 'long' ,
+                    day: 'numeric' }) %>
                 </p>
               </div>
-              <p class="text-gray-600"><%= review.comment %></p>
+              <p class="text-gray-600">
+                <%= review.comment %>
+              </p>
             </div>
-          <% }); %>
+            <% }); %>
         </div>
-        
+
         <% if (hasMore) { %>
           <div class="text-center mt-6">
-            <button id="load-more-reviews" 
-                    class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg transition-colors"
-                    data-page="<%= currentPage %>"
-                    data-product="<%= product._id %>">
+            <button id="load-more-reviews"
+              class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg transition-colors"
+              data-page="<%= currentPage %>" data-product="<%= product._id %>">
               Load More Reviews
             </button>
           </div>
-        <% } %>
-      <% } else { %>
-        <p class="text-gray-500">No reviews yet</p>
-      <% } %>
+          <% } %>
+            <% } else { %>
+              <p class="text-gray-500">No reviews yet</p>
+              <% } %>
     </section>
   </main>
 
@@ -297,8 +304,8 @@
     const mainImage = document.getElementById('mainImage');
     const zoomPane = document.getElementById('zoomPane');
 
-    // Only initialize zoom functionality for larger screens
-    if (window.innerWidth >= 768) { // 768px is the default Tailwind md breakpoint
+    // Only initialize zoom functionality 
+    if (window.innerWidth >= 768) {
       container.addEventListener('mouseenter', function () {
         zoomPane.style.opacity = '1';
       });
@@ -409,62 +416,62 @@
       }
     }
 
-    document.getElementById('load-more-reviews')?.addEventListener('click', async function() {
-        const button = this;
-        const nextPage = parseInt(button.dataset.page) + 1;
-        const productId = button.dataset.product;
+    document.getElementById('load-more-reviews')?.addEventListener('click', async function () {
+      const button = this;
+      const nextPage = parseInt(button.dataset.page) + 1;
+      const productId = button.dataset.product;
 
-        // Disable button and show loading state
-        button.disabled = true;
-        button.innerHTML = 'Loading...';
+      // Disable button and show loading state
+      button.disabled = true;
+      button.innerHTML = 'Loading...';
 
-        try {
-            const response = await axios.get(`/product/${productId}`, {
-                params: { page: nextPage },
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            });
+      try {
+        const response = await axios.get(`/product/${productId}`, {
+          params: { page: nextPage },
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
 
-            const { reviews, hasMore } = response.data;
+        const { reviews, hasMore } = response.data;
 
-            // Append new reviews
-            const container = document.getElementById('reviews-container');
-            reviews.forEach(review => {
-                const reviewElement = document.createElement('div');
-                reviewElement.className = 'border-b pb-4';
-                reviewElement.innerHTML = `
+        // Append new reviews
+        const container = document.getElementById('reviews-container');
+        reviews.forEach(review => {
+          const reviewElement = document.createElement('div');
+          reviewElement.className = 'border-b pb-4';
+          reviewElement.innerHTML = `
                     <div class="flex items-center mb-2">
                         <div class="flex text-yellow-400 mr-2">
-                            ${Array(5).fill(0).map((_, i) => 
-                                `<i class="${i < review.rating ? 'fas' : 'far'} fa-star"></i>`
-                            ).join('')}
+                            ${Array(5).fill(0).map((_, i) =>
+            `<i class="${i < review.rating ? 'fas' : 'far'} fa-star"></i>`
+          ).join('')}
                         </div>
                         <p class="font-semibold">${review.user.fullname}</p>
                         <p class="text-gray-500 ml-4">
-                            ${new Date(review.createdAt).toLocaleDateString('en-US', 
-                                { year: 'numeric', month: 'long', day: 'numeric' })}
+                            ${new Date(review.createdAt).toLocaleDateString('en-US',
+            { year: 'numeric', month: 'long', day: 'numeric' })}
                         </p>
                     </div>
                     <p class="text-gray-600">${review.comment}</p>
                 `;
-                container.appendChild(reviewElement);
-            });
+          container.appendChild(reviewElement);
+        });
 
-            // Update button
-            button.dataset.page = nextPage;
-            if (!hasMore) {
-                button.parentElement.remove();
-            } else {
-                button.disabled = false;
-                button.innerHTML = 'Load More Reviews';
-            }
-        } catch (error) {
-            console.error('Error loading more reviews:', error);
-            button.disabled = false;
-            button.innerHTML = 'Load More Reviews';
-            showToast(error.response?.data?.error || 'Error loading more reviews', 'error');
+        // Update button
+        button.dataset.page = nextPage;
+        if (!hasMore) {
+          button.parentElement.remove();
+        } else {
+          button.disabled = false;
+          button.innerHTML = 'Load More Reviews';
         }
+      } catch (error) {
+        console.error('Error loading more reviews:', error);
+        button.disabled = false;
+        button.innerHTML = 'Load More Reviews';
+        showToast(error.response?.data?.error || 'Error loading more reviews', 'error');
+      }
     });
 
   </script>
 
-  <%- include(locals.fullname ? '../partials/footer' : '../partials/authfooter') %>
+  <%- include(locals.fullname ? '../partials/footer' : '../partials/authfooter' ) %>

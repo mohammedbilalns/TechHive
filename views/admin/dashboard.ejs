@@ -1,265 +1,265 @@
 <%- include('../partials/adminheader') %>
 
-<div class="flex min-h-screen">
-  <%- include('../partials/adminsidebar') %>
+  <div class="flex min-h-screen">
+    <%- include('../partials/adminsidebar') %>
 
-  <main class="md:ml-64 w-full min-h-screen bg-gray-50 transition-all duration-300 ease-in-out">
-    <div class="pt-14 md:pt-0 p-4">
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <!-- Header with Filters -->
-        <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-          <h1 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Dashboard Overview</h1>
-          
-          <div class="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
-              <select id="filterType" class="border rounded-md px-3 py-2 w-full sm:w-auto">
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly" selected>Monthly</option>
-                <option value="yearly">Yearly</option>
-                <option value="custom">Custom Range</option>
-              </select>
+      <main class="md:ml-64 w-full min-h-screen bg-gray-50 transition-all duration-300 ease-in-out">
+        <div class="pt-14 md:pt-0 p-4">
+          <div class="bg-white rounded-lg shadow-lg p-6">
+            <!-- Header  -->
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+              <h1 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Dashboard Overview</h1>
 
-              <div id="customDateRange" class="hidden gap-2 items-center w-full sm:w-auto">
-                <input type="date" id="startDate" class="border rounded-md px-3 py-2 w-full sm:w-auto">
-                <span>to</span>
-                <input type="date" id="endDate" class="border rounded-md px-3 py-2 w-full sm:w-auto">
+              <div class="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+                  <select id="filterType" class="border rounded-md px-3 py-2 w-full sm:w-auto">
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly" selected>Monthly</option>
+                    <option value="yearly">Yearly</option>
+                    <option value="custom">Custom Range</option>
+                  </select>
+
+                  <div id="customDateRange" class="hidden gap-2 items-center w-full sm:w-auto">
+                    <input type="date" id="startDate" class="border rounded-md px-3 py-2 w-full sm:w-auto">
+                    <span>to</span>
+                    <input type="date" id="endDate" class="border rounded-md px-3 py-2 w-full sm:w-auto">
+                  </div>
+
+                  <button onclick="applyFilter()"
+                    class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full sm:w-auto">
+                    Apply Filter
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- Sales Chart -->
+            <div class="mb-8">
+              <h2 class="text-xl font-semibold mb-4">Sales Overview</h2>
+              <div class="bg-white p-4 rounded-lg shadow" style="height: 400px">
+                <canvas id="salesChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Top Products, Categories, and Brands -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <!-- Top Products -->
+              <div class="bg-white p-4 rounded-lg shadow">
+                <h3 class="text-lg font-semibold mb-4">Top Products</h3>
+                <div class="overflow-y-auto max-h-80">
+                  <table class="min-w-full">
+                    <thead class="bg-gray-50">
+                      <tr>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
+                        <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Sales</th>
+                      </tr>
+                    </thead>
+                    <tbody id="topProductsList" class="divide-y"></tbody>
+                  </table>
+                </div>
               </div>
 
-              <button onclick="applyFilter()" 
-                class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full sm:w-auto">
-                Apply Filter
-              </button>
+              <!-- Top Categories -->
+              <div class="bg-white p-4 rounded-lg shadow">
+                <h3 class="text-lg font-semibold mb-4">Top Categories</h3>
+                <div class="overflow-y-auto max-h-80">
+                  <table class="min-w-full">
+                    <thead class="bg-gray-50">
+                      <tr>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+                        <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Sales</th>
+                      </tr>
+                    </thead>
+                    <tbody id="topCategoriesList" class="divide-y"></tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Top Brands -->
+              <div class="bg-white p-4 rounded-lg shadow">
+                <h3 class="text-lg font-semibold mb-4">Top Brands</h3>
+                <div class="overflow-y-auto max-h-80">
+                  <table class="min-w-full">
+                    <thead class="bg-gray-50">
+                      <tr>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Brand</th>
+                        <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Sales</th>
+                      </tr>
+                    </thead>
+                    <tbody id="topBrandsList" class="divide-y"></tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <!-- Sales Chart -->
-        <div class="mb-8">
-          <h2 class="text-xl font-semibold mb-4">Sales Overview</h2>
-          <div class="bg-white p-4 rounded-lg shadow" style="height: 400px">
-            <canvas id="salesChart"></canvas>
-          </div>
-        </div>
+      </main>
+  </div>
 
-        <!-- Top Products, Categories, and Brands -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <!-- Top Products -->
-          <div class="bg-white p-4 rounded-lg shadow">
-            <h3 class="text-lg font-semibold mb-4">Top Products</h3>
-            <div class="overflow-y-auto max-h-80">
-              <table class="min-w-full">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
-                    <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Sales</th>
-                  </tr>
-                </thead>
-                <tbody id="topProductsList" class="divide-y"></tbody>
-              </table>
-            </div>
-          </div>
+  <%- include('../partials/adminfooter') %>
 
-          <!-- Top Categories -->
-          <div class="bg-white p-4 rounded-lg shadow">
-            <h3 class="text-lg font-semibold mb-4">Top Categories</h3>
-            <div class="overflow-y-auto max-h-80">
-              <table class="min-w-full">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-                    <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Sales</th>
-                  </tr>
-                </thead>
-                <tbody id="topCategoriesList" class="divide-y"></tbody>
-              </table>
-            </div>
-          </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      let salesChart;
 
-          <!-- Top Brands -->
-          <div class="bg-white p-4 rounded-lg shadow">
-            <h3 class="text-lg font-semibold mb-4">Top Brands</h3>
-            <div class="overflow-y-auto max-h-80">
-              <table class="min-w-full">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Brand</th>
-                    <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">Sales</th>
-                  </tr>
-                </thead>
-                <tbody id="topBrandsList" class="divide-y"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
-</div>
+      // Show/hide custom date range based on filter type
+      document.getElementById('filterType').addEventListener('change', function () {
+        const customDateRange = document.getElementById('customDateRange');
+        if (this.value === 'custom') {
+          customDateRange.classList.remove('hidden');
+          customDateRange.classList.add('flex');
+        } else {
+          customDateRange.classList.remove('flex');
+          customDateRange.classList.add('hidden');
+        }
+      });
 
-<%- include('../partials/adminfooter') %>
+      async function applyFilter() {
+        const filterType = document.getElementById('filterType').value;
+        let startDate, endDate;
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-let salesChart;
+        if (filterType === 'custom') {
+          startDate = document.getElementById('startDate').value;
+          endDate = document.getElementById('endDate').value;
 
-// Show/hide custom date range based on filter type
-document.getElementById('filterType').addEventListener('change', function() {
-  const customDateRange = document.getElementById('customDateRange');
-  if (this.value === 'custom') {
-    customDateRange.classList.remove('hidden');
-    customDateRange.classList.add('flex');
-  } else {
-    customDateRange.classList.remove('flex');
-    customDateRange.classList.add('hidden');
-  }
-});
+          if (!startDate || !endDate) {
+            showToast('Please select both start and end dates', 'error');
+            return;
+          }
 
-async function applyFilter() {
-  const filterType = document.getElementById('filterType').value;
-  let startDate, endDate;
+          const startDateTime = new Date(startDate);
+          const endDateTime = new Date(endDate);
 
-  if (filterType === 'custom') {
-    startDate = document.getElementById('startDate').value;
-    endDate = document.getElementById('endDate').value;
+          if (startDateTime > endDateTime) {
+            showToast('Start date cannot be after end date', 'error');
+            return;
+          }
+        }
 
-    if (!startDate || !endDate) {
-      showToast('Please select both start and end dates', 'error');
-      return;
-    }
+        try {
+          const response = await axios.get('/admin/dashboard/data', {
+            params: {
+              filterType,
+              startDate,
+              endDate
+            }
+          });
 
-    const startDateTime = new Date(startDate);
-    const endDateTime = new Date(endDate);
-
-    if (startDateTime > endDateTime) {
-      showToast('Start date cannot be after end date', 'error');
-      return;
-    }
-  }
-
-  try {
-    const response = await axios.get('/admin/dashboard/data', {
-      params: {
-        filterType,
-        startDate,
-        endDate
+          if (response.data.success) {
+            updateDashboard(response.data);
+          }
+        } catch (error) {
+          showToast('Error fetching dashboard data', 'error');
+        }
       }
-    });
 
-    if (response.data.success) {
-      updateDashboard(response.data);
-    }
-  } catch (error) {
-    showToast('Error fetching dashboard data', 'error');
-  }
-}
+      function updateDashboard(data) {
+        // Update sales chart
+        updateSalesChart(data.salesData);
 
-function updateDashboard(data) {
-  // Update sales chart
-  updateSalesChart(data.salesData);
-  
-  // Update top products list
-  updateTopList('topProductsList', data.topProducts, 'name', 'totalQuantity');
-  
-  // Update top categories list
-  updateTopList('topCategoriesList', data.topCategories, 'categoryName', 'totalQuantity');
-  
-  // Update top brands list
-  updateTopList('topBrandsList', data.topBrands, '_id', 'totalQuantity');
-}
+        // Update top products list
+        updateTopList('topProductsList', data.topProducts, 'name', 'totalQuantity');
 
-function updateSalesChart(salesData) {
-  const ctx = document.getElementById('salesChart').getContext('2d');
-  
-  // Calculate total revenue
-  const totalRevenue = salesData.reduce((sum, item) => sum + item.totalSales, 0);
-  
-  if (salesChart) {
-    salesChart.destroy();
-  }
+        // Update top categories list
+        updateTopList('topCategoriesList', data.topCategories, 'categoryName', 'totalQuantity');
 
-  salesChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: salesData.map(item => {
-        const date = new Date(item._id);
-        return date.toLocaleDateString('en-IN', { 
-          month: 'short', 
-          day: 'numeric' 
-        });
-      }),
-      datasets: [{
-        label: 'Revenue (₹)',
-        data: salesData.map(item => item.totalSales),
-        backgroundColor: '#DA0037',
-        borderRadius: 4
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'top',
-        },
-        title: {
-          display: true,
-          text: `Total Revenue: ₹${totalRevenue.toLocaleString('en-IN', {
-            maximumFractionDigits: 2,
-            minimumFractionDigits: 2
-          })}`,
-          color: '#374151',
-          font: {
-            size: 16,
-            weight: 'bold'
+        // Update top brands list
+        updateTopList('topBrandsList', data.topBrands, '_id', 'totalQuantity');
+      }
+
+      function updateSalesChart(salesData) {
+        const ctx = document.getElementById('salesChart').getContext('2d');
+
+        // Calculate total revenue
+        const totalRevenue = salesData.reduce((sum, item) => sum + item.totalSales, 0);
+
+        if (salesChart) {
+          salesChart.destroy();
+        }
+
+        salesChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: salesData.map(item => {
+              const date = new Date(item._id);
+              return date.toLocaleDateString('en-IN', {
+                month: 'short',
+                day: 'numeric'
+              });
+            }),
+            datasets: [{
+              label: 'Revenue (₹)',
+              data: salesData.map(item => item.totalSales),
+              backgroundColor: '#DA0037',
+              borderRadius: 4
+            }]
           },
-          padding: {
-            bottom: 15
-          }
-        },
-        tooltip: {
-          callbacks: {
-            label: function(context) {
-              return `Revenue: ₹${context.raw.toLocaleString('en-IN', {
-                maximumFractionDigits: 2,
-                minimumFractionDigits: 2
-              })}`;
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: `Total Revenue: ₹${totalRevenue.toLocaleString('en-IN', {
+                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 2
+                })}`,
+                color: '#374151',
+                font: {
+                  size: 16,
+                  weight: 'bold'
+                },
+                padding: {
+                  bottom: 15
+                }
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    return `Revenue: ₹${context.raw.toLocaleString('en-IN', {
+                      maximumFractionDigits: 2,
+                      minimumFractionDigits: 2
+                    })}`;
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: function (value) {
+                    return '₹' + value.toLocaleString('en-IN');
+                  }
+                }
+              }
             }
           }
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            callback: function(value) {
-              return '₹' + value.toLocaleString('en-IN');
-            }
-          }
-        }
+        });
       }
-    }
-  });
-}
 
-function updateTopList(elementId, data, nameKey, valueKey) {
-  const tbody = document.getElementById(elementId);
-  tbody.innerHTML = '';
-  
-  data.forEach(item => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
+      function updateTopList(elementId, data, nameKey, valueKey) {
+        const tbody = document.getElementById(elementId);
+        tbody.innerHTML = '';
+
+        data.forEach(item => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
       <td class="px-4 py-2 text-sm text-gray-900">${item[nameKey]}</td>
       <td class="px-4 py-2 text-sm text-gray-900 text-right">
         ${item.totalQuantity} units
       </td>
     `;
-    tbody.appendChild(row);
-  });
-}
+          tbody.appendChild(row);
+        });
+      }
 
-// Load initial data
-window.addEventListener('load', () => {
-  document.getElementById('filterType').value = 'monthly';
-  applyFilter();
-});
-</script>
+      // Load initial data
+      window.addEventListener('load', () => {
+        document.getElementById('filterType').value = 'monthly';
+        applyFilter();
+      });
+    </script>

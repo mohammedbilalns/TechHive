@@ -1,312 +1,341 @@
 <%- include('../partials/adminheader') %>
 
-<div class="flex min-h-screen">
-  <%- include('../partials/adminsidebar') %>
+  <div class="flex min-h-screen">
+    <%- include('../partials/adminsidebar') %>
 
-  <main class="md:ml-64 w-full min-h-screen bg-gray-50 transition-all duration-300 ease-in-out">
-    <div class="pt-14 md:pt-0 p-4">
-      <% if (locals.message && locals.alertType) { %>
-        <div id="alertMessage" class="mb-4 p-3 rounded-md 
+      <main class="md:ml-64 w-full min-h-screen bg-gray-50 transition-all duration-300 ease-in-out">
+        <div class="pt-14 md:pt-0 p-4">
+          <% if (locals.message && locals.alertType) { %>
+            <div id="alertMessage" class="mb-4 p-3 rounded-md 
          <%= alertType === 'error' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' %>">
-          <%= message %>
-        </div>
-      <% } %>
-
-      <div class="bg-primary-white rounded-lg shadow-lg w-full overflow-hidden mb-4">
-        <!-- Referral Settings Header -->
-        <div class="flex flex-col md:flex-row justify-between items-center bg-gray-50 px-4 md:px-6 py-4 border-b space-y-4 md:space-y-0">
-          <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Referral Settings</h1>
-        </div>
-
-        <!-- Referral Settings Form -->
-        <div class="p-6">
-          <form id="referralForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label class="block text-gray-700 text-sm font-bold mb-2" for="referrerValue">
-                Referrer Reward Value (₹)
-              </label>
-              <input type="number" id="referrerValue" name="referrerValue"  
-                value="<%= referralSettings?.referrerValue || 100 %>"
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+              <%= message %>
             </div>
-            <div>
-              <label class="block text-gray-700 text-sm font-bold mb-2" for="refereeValue">
-                Referee Reward Value (₹)
-              </label>
-              <input type="number" id="refereeValue" name="refereeValue" 
-                value="<%= referralSettings?.refereeValue || 50 %>"
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            </div>
-            <div class="md:col-span-2 flex justify-end">
-              <button type="submit"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                Update Referral Settings
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
+            <% } %>
 
-      <div class="bg-primary-white rounded-lg shadow-lg w-full overflow-hidden">
-        <!-- Page Header -->
-        <div class="flex flex-col md:flex-row justify-between items-center bg-gray-50 px-4 md:px-6 py-4 border-b space-y-4 md:space-y-0">
-          <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Offers</h1>
-          <div class="flex gap-4">
-            <button class="flex items-center bg-blue-500 text-white px-4 py-2 rounded-md shadow w-full md:w-auto justify-center"
-              onclick="addOffer()">
-              <i class="fas fa-plus mr-2"></i> Add Offer
-            </button>
-          </div>
-        </div>
+              <div class="bg-primary-white rounded-lg shadow-lg w-full overflow-hidden mb-4">
+                <!-- Referral Settings  -->
+                <div
+                  class="flex flex-col md:flex-row justify-between items-center bg-gray-50 px-4 md:px-6 py-4 border-b space-y-4 md:space-y-0">
+                  <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Referral Settings</h1>
+                </div>
 
-        <!-- Offers Table -->
-        <div class="overflow-x-auto">
-          <table class="min-w-full bg-white">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Percentage</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start Date</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End Date</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200" id="offersTable">
-              <% offers.forEach((offer, index) => { %>
-                <tr>
-                  <td class="px-6 py-4 whitespace-nowrap"><%= (currentPage - 1) * 10 + index + 1 %></td>
-                  <td class="px-6 py-4 whitespace-nowrap"><%= offer.name %></td>
-                  <td class="px-6 py-4 whitespace-nowrap"><%= offer.offerType %></td>
-                  <td class="px-6 py-4 whitespace-nowrap"><%= offer.offerPercentage %>%</td>
-                  <td class="px-6 py-4 whitespace-nowrap"><%= new Date(offer.startDate).toLocaleDateString() %></td>
-                  <td class="px-6 py-4 whitespace-nowrap"><%= new Date(offer.endDate).toLocaleDateString() %></td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <% if (offer.isExpired) { %>
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                            Expired
-                        </span>
-                    <% } else { %>
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                            <%= offer.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
-                            <%= offer.isActive ? 'Active' : 'Inactive' %>
-                        </span>
-                    <% } %>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div class="flex space-x-2">
-                      <% if (!offer.isExpired) { %>
-                        <button onclick="editOffer('<%= offer._id %>')"
-                          class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">
-                          Edit
-                        </button>
-                        <button onclick="toggleOfferStatus('<%= offer._id %>', '<%= offer.isActive %>')"
-                          class="<%= offer.isActive ? 'bg-primary-accent' : 'bg-green-700' %> text-white px-3 py-2 rounded-md hover:<%= offer.isActive ? 'bg-red-600' : 'bg-green-600' %>">
-                          <%= offer.isActive ? 'Deactivate' : 'Activate' %>
-                        </button>
-                      <% } %>
-                      <button onclick="deleteOffer('<%= offer._id %>')"
-                        class="bg-primary-accent text-white px-3 py-2 rounded-md hover:bg-red-600">
-                        Delete
+                <!-- Referral Settings Form -->
+                <div class="p-6">
+                  <form id="referralForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label class="block text-gray-700 text-sm font-bold mb-2" for="referrerValue">
+                        Referrer Reward Value (₹)
+                      </label>
+                      <input type="number" id="referrerValue" name="referrerValue"
+                        value="<%= referralSettings?.referrerValue || 100 %>"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div>
+                      <label class="block text-gray-700 text-sm font-bold mb-2" for="refereeValue">
+                        Referee Reward Value (₹)
+                      </label>
+                      <input type="number" id="refereeValue" name="refereeValue"
+                        value="<%= referralSettings?.refereeValue || 50 %>"
+                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div class="md:col-span-2 flex justify-end">
+                      <button type="submit"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        Update Referral Settings
                       </button>
                     </div>
-                  </td>
-                </tr>
-              <% }); %>
-            </tbody>
-          </table>
+                  </form>
+                </div>
+              </div>
+
+              <div class="bg-primary-white rounded-lg shadow-lg w-full overflow-hidden">
+                <!-- Page Header -->
+                <div
+                  class="flex flex-col md:flex-row justify-between items-center bg-gray-50 px-4 md:px-6 py-4 border-b space-y-4 md:space-y-0">
+                  <h1 class="text-xl md:text-2xl font-semibold text-gray-800">Offers</h1>
+                  <div class="flex gap-4">
+                    <button
+                      class="flex items-center bg-blue-500 text-white px-4 py-2 rounded-md shadow w-full md:w-auto justify-center"
+                      onclick="addOffer()">
+                      <i class="fas fa-plus mr-2"></i> Add Offer
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Offers Table -->
+                <div class="overflow-x-auto">
+                  <table class="min-w-full bg-white">
+                    <thead class="bg-gray-50">
+                      <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Percentage</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Start
+                          Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">End
+                          Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="offersTable">
+                      <% offers.forEach((offer, index)=> { %>
+                        <tr>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                            <%= (currentPage - 1) * 10 + index + 1 %>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                            <%= offer.name %>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                            <%= offer.offerType %>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                            <%= offer.offerPercentage %>%
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                            <%= new Date(offer.startDate).toLocaleDateString() %>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                            <%= new Date(offer.endDate).toLocaleDateString() %>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap">
+                            <% if (offer.isExpired) { %>
+                              <span
+                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                Expired
+                              </span>
+                              <% } else { %>
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                            <%= offer.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
+                                  <%= offer.isActive ? 'Active' : 'Inactive' %>
+                                </span>
+                                <% } %>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                              <% if (!offer.isExpired) { %>
+                                <button onclick="editOffer('<%= offer._id %>')"
+                                  class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">
+                                  Edit
+                                </button>
+                                <button onclick="toggleOfferStatus('<%= offer._id %>', '<%= offer.isActive %>')"
+                                  class="<%= offer.isActive ? 'bg-primary-accent' : 'bg-green-700' %> text-white px-3 py-2 rounded-md hover:<%= offer.isActive ? 'bg-red-600' : 'bg-green-600' %>">
+                                  <%= offer.isActive ? 'Deactivate' : 'Activate' %>
+                                </button>
+                                <% } %>
+                                  <button onclick="deleteOffer('<%= offer._id %>')"
+                                    class="bg-primary-accent text-white px-3 py-2 rounded-md hover:bg-red-600">
+                                    Delete
+                                  </button>
+                            </div>
+                          </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="pb-6"></div>
+
+                <% if (offers.length> 0) { %>
+                  <div class="mt-8 mb-4 flex justify-center">
+                    <div class="overflow-x-auto max-w-full">
+                      <div class="flex items-center space-x-4 px-4">
+                        <% if (hasPrevPage) { %>
+                          <a href="/admin/offers?page=<%= currentPage - 1 %>"
+                            class="flex-shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                            Previous
+                          </a>
+                          <% } %>
+
+                            <% for(let i=1; i <=totalPages; i++) { %>
+                              <a href="/admin/offers?page=<%= i %>"
+                                class="flex-shrink-0 px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
+                                <%= i %>
+                              </a>
+                              <% } %>
+
+                                <% if (hasNextPage) { %>
+                                  <a href="/admin/offers?page=<%= currentPage + 1 %>"
+                                    class="flex-shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                                    Next
+                                  </a>
+                                  <% } %>
+                      </div>
+                    </div>
+                  </div>
+                  <% } %>
+              </div>
         </div>
+      </main>
+  </div>
 
-        <div class="pb-6"></div>
+  <!-- Add/Edit Offer Modal -->
+  <div id="offerModal"
+    class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full items-center justify-center">
+    <div class="relative mx-auto p-5 border w-[800px] shadow-lg rounded-md bg-white">
+      <div class="mt-3">
+        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modalTitle">Add New Offer</h3>
+        <form id="offerForm" class="mt-4">
+          <input type="hidden" id="offerId">
 
-        <% if (offers.length > 0) { %>
-          <div class="mt-8 mb-4 flex justify-center">
-            <div class="overflow-x-auto max-w-full">
-              <div class="flex items-center space-x-4 px-4">
-                <% if (hasPrevPage) { %>
-                  <a href="/admin/offers?page=<%= currentPage - 1 %>"
-                    class="flex-shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                    Previous
-                  </a>
-                <% } %>
+          <div class="grid grid-cols-2 gap-4">
+            <!-- Left Column -->
+            <div>
+              <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
+                  Offer Name <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="name" name="name"
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <p class="text-red-500 text-sm mt-1 hidden" id="nameError"></p>
+              </div>
 
-                <% for(let i=1; i <=totalPages; i++) { %>
-                  <a href="/admin/offers?page=<%= i %>"
-                    class="flex-shrink-0 px-4 py-2 rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
-                    <%= i %>
-                  </a>
-                <% } %>
+              <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="offerType">
+                  Offer Type <span class="text-red-500">*</span>
+                </label>
+                <select id="offerType" name="offerType" onchange="handleOfferTypeChange()"
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                  <option value="category">Category</option>
+                  <option value="product">Product</option>
+                </select>
+                <p class="text-red-500 text-sm mt-1 hidden" id="offerTypeError"></p>
+              </div>
 
-                <% if (hasNextPage) { %>
-                  <a href="/admin/offers?page=<%= currentPage + 1 %>"
-                    class="flex-shrink-0 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
-                    Next
-                  </a>
-                <% } %>
+              <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="offerPercentage">
+                  Offer Percentage <span class="text-red-500">*</span>
+                </label>
+                <input type="number" id="offerPercentage" name="offerPercentage"
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <p class="text-red-500 text-sm mt-1 hidden" id="offerPercentageError"></p>
+              </div>
+            </div>
+            <!-- Right Column -->
+            <div>
+              <div id="categorySelect" class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="categories">
+                  Select Categories <span class="text-red-500">*</span>
+                </label>
+                <select id="categories" name="categories" multiple
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                  <% if (categories && categories.length> 0) { %>
+                    <% categories.forEach(category=> { %>
+                      <option value="<%= category._id %>">
+                        <%= category.name %>
+                      </option>
+                      <% }); %>
+                        <% } else { %>
+                          <option value="" disabled>No active categories available</option>
+                          <% } %>
+                </select>
+                <p class="text-red-500 text-sm mt-1 hidden" id="categoriesError"></p>
+                <p class="text-sm text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple categories</p>
+              </div>
+
+              <div id="productSelect" class="mb-4 hidden">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="products">
+                  Select Products <span class="text-red-500">*</span>
+                </label>
+                <select id="products" name="products" multiple
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                  <% if (products && products.length> 0) { %>
+                    <% products.forEach(product=> { %>
+                      <option value="<%= product._id %>">
+                        <%= product.name %>
+                      </option>
+                      <% }); %>
+                        <% } else { %>
+                          <option value="" disabled>No active products available</option>
+                          <% } %>
+                </select>
+                <p class="text-red-500 text-sm mt-1 hidden" id="productsError"></p>
+                <p class="text-sm text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple products</p>
+              </div>
+
+              <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="startDate">
+                  Start Date <span class="text-red-500">*</span>
+                </label>
+                <input type="datetime-local" id="startDate" name="startDate"
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <p class="text-red-500 text-sm mt-1 hidden" id="startDateError"></p>
+              </div>
+
+              <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="endDate">
+                  End Date <span class="text-red-500">*</span>
+                </label>
+                <input type="datetime-local" id="endDate" name="endDate"
+                  class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <p class="text-red-500 text-sm mt-1 hidden" id="endDateError"></p>
               </div>
             </div>
           </div>
-        <% } %>
+
+          <!-- Form Actions -->
+          <div class="flex items-center justify-end mt-6 gap-4">
+            <button type="button" onclick="closeModal()"
+              class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+              Cancel
+            </button>
+            <button type="submit"
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+              Save
+            </button>
+          </div>
+        </form>
       </div>
     </div>
-  </main>
-</div>
-
-<!-- Add/Edit Offer Modal -->
-<div id="offerModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full items-center justify-center">
-  <div class="relative mx-auto p-5 border w-[800px] shadow-lg rounded-md bg-white">
-    <div class="mt-3">
-      <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modalTitle">Add New Offer</h3>
-      <form id="offerForm" class="mt-4">
-        <input type="hidden" id="offerId">
-        
-        <div class="grid grid-cols-2 gap-4">
-          <!-- Left Column -->
-          <div>
-            <div class="mb-4">
-              <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
-                Offer Name <span class="text-red-500">*</span>
-              </label>
-              <input type="text" id="name" name="name" 
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-              <p class="text-red-500 text-sm mt-1 hidden" id="nameError"></p>
-            </div>
-
-            <div class="mb-4">
-              <label class="block text-gray-700 text-sm font-bold mb-2" for="offerType">
-                Offer Type <span class="text-red-500">*</span>
-              </label>
-              <select id="offerType" name="offerType" onchange="handleOfferTypeChange()"
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                <option value="category">Category</option>
-                <option value="product">Product</option>
-              </select>
-              <p class="text-red-500 text-sm mt-1 hidden" id="offerTypeError"></p>
-            </div>
-
-            <div class="mb-4">
-              <label class="block text-gray-700 text-sm font-bold mb-2" for="offerPercentage">
-                Offer Percentage <span class="text-red-500">*</span>
-              </label>
-              <input type="number" id="offerPercentage" name="offerPercentage"  
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-              <p class="text-red-500 text-sm mt-1 hidden" id="offerPercentageError"></p>
-            </div>
-          </div>
-          <!-- Right Column -->
-          <div>
-            <div id="categorySelect" class="mb-4">
-              <label class="block text-gray-700 text-sm font-bold mb-2" for="categories">
-                Select Categories <span class="text-red-500">*</span>
-              </label>
-              <select id="categories" name="categories" multiple
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                <% if (categories && categories.length > 0) { %>
-                  <% categories.forEach(category => { %>
-                    <option value="<%= category._id %>"><%= category.name %></option>
-                  <% }); %>
-                <% } else { %>
-                  <option value="" disabled>No active categories available</option>
-                <% } %>
-              </select>
-              <p class="text-red-500 text-sm mt-1 hidden" id="categoriesError"></p>
-              <p class="text-sm text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple categories</p>
-            </div>
-
-            <div id="productSelect" class="mb-4 hidden">
-              <label class="block text-gray-700 text-sm font-bold mb-2" for="products">
-                Select Products <span class="text-red-500">*</span>
-              </label>
-              <select id="products" name="products" multiple
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                <% if (products && products.length > 0) { %>
-                  <% products.forEach(product => { %>
-                    <option value="<%= product._id %>"><%= product.name %></option>
-                  <% }); %>
-                <% } else { %>
-                  <option value="" disabled>No active products available</option>
-                <% } %>
-              </select>
-              <p class="text-red-500 text-sm mt-1 hidden" id="productsError"></p>
-              <p class="text-sm text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple products</p>
-            </div>
-
-            <div class="mb-4">
-              <label class="block text-gray-700 text-sm font-bold mb-2" for="startDate">
-                Start Date <span class="text-red-500">*</span>
-              </label>
-              <input type="datetime-local" id="startDate" name="startDate" 
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-              <p class="text-red-500 text-sm mt-1 hidden" id="startDateError"></p>
-            </div>
-
-            <div class="mb-4">
-              <label class="block text-gray-700 text-sm font-bold mb-2" for="endDate">
-                End Date <span class="text-red-500">*</span>
-              </label>
-              <input type="datetime-local" id="endDate" name="endDate" 
-                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-              <p class="text-red-500 text-sm mt-1 hidden" id="endDateError"></p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Form Actions -->
-        <div class="flex items-center justify-end mt-6 gap-4">
-          <button type="button" onclick="closeModal()"
-            class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-            Cancel
-          </button>
-          <button type="submit"
-            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-            Save
-          </button>
-        </div>
-      </form>
-    </div>
   </div>
-</div>
 
-<script>
+  <script>
 
 
-  function handleOfferTypeChange() {
-    const offerType = document.getElementById('offerType').value;
-    const categorySelect = document.getElementById('categorySelect');
-    const productSelect = document.getElementById('productSelect');
+    function handleOfferTypeChange() {
+      const offerType = document.getElementById('offerType').value;
+      const categorySelect = document.getElementById('categorySelect');
+      const productSelect = document.getElementById('productSelect');
 
-    if (offerType === 'category') {
-      categorySelect.classList.remove('hidden');
-      productSelect.classList.add('hidden');
-      document.getElementById('products').value = '';
-    } else {
-      categorySelect.classList.add('hidden');
-      productSelect.classList.remove('hidden');
-      document.getElementById('categories').value = '';
+      if (offerType === 'category') {
+        categorySelect.classList.remove('hidden');
+        productSelect.classList.add('hidden');
+        document.getElementById('products').value = '';
+      } else {
+        categorySelect.classList.add('hidden');
+        productSelect.classList.remove('hidden');
+        document.getElementById('categories').value = '';
+      }
     }
-  }
 
-  function addOffer() {
-    document.getElementById('modalTitle').textContent = 'Add New Offer';
-    document.getElementById('offerForm').reset();
-    document.getElementById('offerId').value = '';
-    handleOfferTypeChange();
-    openModal();
-  }
+    function addOffer() {
+      document.getElementById('modalTitle').textContent = 'Add New Offer';
+      document.getElementById('offerForm').reset();
+      document.getElementById('offerId').value = '';
+      handleOfferTypeChange();
+      openModal();
+    }
 
-  async function editOffer(offerId) {
-    try {
+    async function editOffer(offerId) {
+      try {
         const response = await axios.get(`/admin/offers/${offerId}`);
 
         if (!response.data.success) {
-            throw new Error(response.data.message || 'Failed to fetch offer details');
+          throw new Error(response.data.message || 'Failed to fetch offer details');
         }
 
         const offer = response.data.offer;
         if (!offer) {
-            throw new Error('No offer data received');
+          throw new Error('No offer data received');
         }
 
         document.getElementById('modalTitle').textContent = 'Edit Offer';
@@ -318,7 +347,7 @@
         // Convert UTC to IST
         const startDate = new Date(offer.startDate);
         const endDate = new Date(offer.endDate);
-        
+
         //  IST offset (UTC+5:30)
         startDate.setMinutes(startDate.getMinutes() + 330);
         endDate.setMinutes(endDate.getMinutes() + 330);
@@ -330,177 +359,176 @@
 
         // Handle multi-select values
         if (offer.offerType === 'category') {
-            const categorySelect = document.getElementById('categories');
-            Array.from(categorySelect.options).forEach(option => option.selected = false);
-            offer.applicableCategories.forEach(categoryId => {
-                const option = categorySelect.querySelector(`option[value="${categoryId}"]`);
-                if (option) {
-                    option.selected = true;
-                }
-            });
+          const categorySelect = document.getElementById('categories');
+          Array.from(categorySelect.options).forEach(option => option.selected = false);
+          offer.applicableCategories.forEach(categoryId => {
+            const option = categorySelect.querySelector(`option[value="${categoryId}"]`);
+            if (option) {
+              option.selected = true;
+            }
+          });
         } else {
-            const productSelect = document.getElementById('products');
-            Array.from(productSelect.options).forEach(option => option.selected = false);
-            offer.applicableProducts.forEach(productId => {
-                const option = productSelect.querySelector(`option[value="${productId}"]`);
-                if (option) {
-                    option.selected = true;
-                }
-            });
+          const productSelect = document.getElementById('products');
+          Array.from(productSelect.options).forEach(option => option.selected = false);
+          offer.applicableProducts.forEach(productId => {
+            const option = productSelect.querySelector(`option[value="${productId}"]`);
+            if (option) {
+              option.selected = true;
+            }
+          });
         }
 
         openModal();
-    } catch (error) {
+      } catch (error) {
         console.error('Error in editOffer:', error);
         showToast(error.response?.data?.message || error.message || 'Failed to fetch offer details', 'error');
-    }
-  }
-
-  function openModal() {
-    const modal = document.getElementById('offerModal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-  }
-
-  function closeModal() {
-    const modal = document.getElementById('offerModal');
-    modal.classList.remove('flex');
-    modal.classList.add('hidden');
-  }
-
-  function showError(fieldId, message) {
-    const input = document.getElementById(fieldId);
-    const errorElement = document.getElementById(`${fieldId}Error`);
-    
-    input.classList.add('border-red-500');
-    errorElement.textContent = message;
-    errorElement.classList.remove('hidden');
-  }
-
-  function resetErrors() {
-    const fields = ['name', 'offerType', 'offerPercentage', 'categories', 'products', 'startDate', 'endDate'];
-    fields.forEach(field => {
-      const input = document.getElementById(field);
-      const errorElement = document.getElementById(`${field}Error`);
-      
-      if (input && errorElement) {
-        input.classList.remove('border-red-500');
-        errorElement.classList.add('hidden');
-        errorElement.textContent = '';
       }
-    });
-  }
-
-  document.getElementById('offerForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    resetErrors();
-    
-    let hasErrors = false;
-    
-    // Required field validation
-    const offerName = document.getElementById('name').value.trim();
-    if (!offerName) {
-      showError('name', 'Offer Name is required');
-      hasErrors = true;
-    } else if (offerName.length < 10 || offerName.length > 50) {
-      showError('name', 'Offer name must be between 10 and 50 characters');
-      hasErrors = true;
     }
 
-    const offerPercentage = Number(document.getElementById('offerPercentage').value);
-    if (!offerPercentage) {
-      showError('offerPercentage', 'Offer Percentage is required');
-      hasErrors = true;
-    } else if (isNaN(offerPercentage) || !Number.isInteger(offerPercentage)) {
-      showError('offerPercentage', 'Offer percentage must be a whole number');
-      hasErrors = true;
-    } else if (offerPercentage < 1 || offerPercentage > 99) {
-      showError('offerPercentage', 'Offer percentage must be between 1 and 99');
-      hasErrors = true;
+    function openModal() {
+      const modal = document.getElementById('offerModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
     }
 
-    // Validate dates
-    const startDate = new Date(document.getElementById('startDate').value);
-    const endDate = new Date(document.getElementById('endDate').value);
-    const now = new Date();
-
-    if (!document.getElementById('startDate').value) {
-      showError('startDate', 'Start Date is required');
-      hasErrors = true;
-    } else if (isNaN(startDate.getTime())) {
-      showError('startDate', 'Please enter a valid start date');
-      hasErrors = true;
-    } else if (!document.getElementById('offerId').value && startDate < now) {
-      showError('startDate', 'Start date cannot be in the past');
-      hasErrors = true;
+    function closeModal() {
+      const modal = document.getElementById('offerModal');
+      modal.classList.remove('flex');
+      modal.classList.add('hidden');
     }
 
-    if (!document.getElementById('endDate').value) {
-      showError('endDate', 'End Date is required');
-      hasErrors = true;
-    } else if (isNaN(endDate.getTime())) {
-      showError('endDate', 'Please enter a valid end date');
-      hasErrors = true;
-    } else if (endDate <= startDate) {
-      showError('endDate', 'End date must be after start date');
-      hasErrors = true;
+    function showError(fieldId, message) {
+      const input = document.getElementById(fieldId);
+      const errorElement = document.getElementById(`${fieldId}Error`);
+
+      input.classList.add('border-red-500');
+      errorElement.textContent = message;
+      errorElement.classList.remove('hidden');
     }
 
-    // Validate selections based on offer type
-    const offerType = document.getElementById('offerType').value;
-    const categories = Array.from(document.getElementById('categories').selectedOptions).map(opt => opt.value);
-    const products = Array.from(document.getElementById('products').selectedOptions).map(opt => opt.value);
+    function resetErrors() {
+      const fields = ['name', 'offerType', 'offerPercentage', 'categories', 'products', 'startDate', 'endDate'];
+      fields.forEach(field => {
+        const input = document.getElementById(field);
+        const errorElement = document.getElementById(`${field}Error`);
 
-    if (offerType === 'category' && categories.length === 0) {
-      showError('categories', 'Please select at least one category');
-      hasErrors = true;
-    }
-    if (offerType === 'product' && products.length === 0) {
-      showError('products', 'Please select at least one product');
-      hasErrors = true;
-    }
-
-    if (hasErrors) {
-      return;
+        if (input && errorElement) {
+          input.classList.remove('border-red-500');
+          errorElement.classList.add('hidden');
+          errorElement.textContent = '';
+        }
+      });
     }
 
-    // If no validation errors, proceed with form submission
-    const formData = {
-      name: offerName,
-      offerType: offerType,
-      offerPercentage: offerPercentage,
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
-      categories: categories,
-      products: products
-    };
+    document.getElementById('offerForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      resetErrors();
 
-    const url = document.getElementById('offerId').value ? 
-      `/admin/offers/${document.getElementById('offerId').value}` : 
-      '/admin/offers';
-    const method = document.getElementById('offerId').value ? 'put' : 'post';
+      let hasErrors = false;
 
-    try {
-      const response = await axios[method](url, formData);
-      if (response.data.success) {
-        closeModal();
-        
-        if (method === 'put') {
-          // Update existing row logic
-          const row = document.querySelector(`button[onclick="editOffer('${document.getElementById('offerId').value}')"]`).closest('tr');
-          
-          row.children[1].textContent = formData.name;
-          row.children[2].textContent = formData.offerType;
-          row.children[3].textContent = formData.offerPercentage + '%';
-          row.children[4].textContent = new Date(formData.startDate).toLocaleDateString();
-          row.children[5].textContent = new Date(formData.endDate).toLocaleDateString();
-          
-          showToast('Offer updated successfully');
-        } else {
-          // For new offers, add new row at the top
-          const tbody = document.getElementById('offersTable');
-          
-          const newRow = `
+      //  field validation
+      const offerName = document.getElementById('name').value.trim();
+      if (!offerName) {
+        showError('name', 'Offer Name is required');
+        hasErrors = true;
+      } else if (offerName.length < 10 || offerName.length > 50) {
+        showError('name', 'Offer name must be between 10 and 50 characters');
+        hasErrors = true;
+      }
+
+      const offerPercentage = Number(document.getElementById('offerPercentage').value);
+      if (!offerPercentage) {
+        showError('offerPercentage', 'Offer Percentage is required');
+        hasErrors = true;
+      } else if (isNaN(offerPercentage) || !Number.isInteger(offerPercentage)) {
+        showError('offerPercentage', 'Offer percentage must be a whole number');
+        hasErrors = true;
+      } else if (offerPercentage < 1 || offerPercentage > 99) {
+        showError('offerPercentage', 'Offer percentage must be between 1 and 99');
+        hasErrors = true;
+      }
+
+      // Validate dates
+      const startDate = new Date(document.getElementById('startDate').value);
+      const endDate = new Date(document.getElementById('endDate').value);
+      const now = new Date();
+
+      if (!document.getElementById('startDate').value) {
+        showError('startDate', 'Start Date is required');
+        hasErrors = true;
+      } else if (isNaN(startDate.getTime())) {
+        showError('startDate', 'Please enter a valid start date');
+        hasErrors = true;
+      } else if (!document.getElementById('offerId').value && startDate < now) {
+        showError('startDate', 'Start date cannot be in the past');
+        hasErrors = true;
+      }
+
+      if (!document.getElementById('endDate').value) {
+        showError('endDate', 'End Date is required');
+        hasErrors = true;
+      } else if (isNaN(endDate.getTime())) {
+        showError('endDate', 'Please enter a valid end date');
+        hasErrors = true;
+      } else if (endDate <= startDate) {
+        showError('endDate', 'End date must be after start date');
+        hasErrors = true;
+      }
+
+      const offerType = document.getElementById('offerType').value;
+      const categories = Array.from(document.getElementById('categories').selectedOptions).map(opt => opt.value);
+      const products = Array.from(document.getElementById('products').selectedOptions).map(opt => opt.value);
+
+      if (offerType === 'category' && categories.length === 0) {
+        showError('categories', 'Please select at least one category');
+        hasErrors = true;
+      }
+      if (offerType === 'product' && products.length === 0) {
+        showError('products', 'Please select at least one product');
+        hasErrors = true;
+      }
+
+      if (hasErrors) {
+        return;
+      }
+
+      // If no validation errors, proceed with form submission
+      const formData = {
+        name: offerName,
+        offerType: offerType,
+        offerPercentage: offerPercentage,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        categories: categories,
+        products: products
+      };
+
+      const url = document.getElementById('offerId').value ?
+        `/admin/offers/${document.getElementById('offerId').value}` :
+        '/admin/offers';
+      const method = document.getElementById('offerId').value ? 'put' : 'post';
+
+      try {
+        const response = await axios[method](url, formData);
+        if (response.data.success) {
+          closeModal();
+
+          if (method === 'put') {
+            // Update existing row logic
+            const row = document.querySelector(`button[onclick="editOffer('${document.getElementById('offerId').value}')"]`).closest('tr');
+
+            row.children[1].textContent = formData.name;
+            row.children[2].textContent = formData.offerType;
+            row.children[3].textContent = formData.offerPercentage + '%';
+            row.children[4].textContent = new Date(formData.startDate).toLocaleDateString();
+            row.children[5].textContent = new Date(formData.endDate).toLocaleDateString();
+
+            showToast('Offer updated successfully');
+          } else {
+            // For new offers, add new row at the top
+            const tbody = document.getElementById('offersTable');
+
+            const newRow = `
             <tr>
               <td class="px-6 py-4 whitespace-nowrap">1</td>
               <td class="px-6 py-4 whitespace-nowrap">${formData.name}</td>
@@ -532,146 +560,146 @@
             </tr>
           `;
 
-          // If table was empty, replace the "No offers available" message
-          if (tbody.querySelector('td[colspan="8"]')) {
-            tbody.innerHTML = newRow;
-          } else {
-            // Insert at the beginning and update all row numbers
-            tbody.insertAdjacentHTML('afterbegin', newRow);
-            
-            // Update row numbers for all rows
-            const rows = tbody.getElementsByTagName('tr');
-            const currentPage = parseInt(new URLSearchParams(window.location.search).get('page')) || 1;
-            Array.from(rows).forEach((row, index) => {
-              const numberCell = row.querySelector('td:first-child');
-              if (numberCell) {
-                numberCell.textContent = ((currentPage - 1) * 10) + index + 1;
-              }
-            });
+            // If table was empty, replace the "No offers available" message
+            if (tbody.querySelector('td[colspan="8"]')) {
+              tbody.innerHTML = newRow;
+            } else {
+              // Insert at the beginning and update all row numbers
+              tbody.insertAdjacentHTML('afterbegin', newRow);
+
+              // Update row numbers for all rows
+              const rows = tbody.getElementsByTagName('tr');
+              const currentPage = parseInt(new URLSearchParams(window.location.search).get('page')) || 1;
+              Array.from(rows).forEach((row, index) => {
+                const numberCell = row.querySelector('td:first-child');
+                if (numberCell) {
+                  numberCell.textContent = ((currentPage - 1) * 10) + index + 1;
+                }
+              });
+            }
+
+            showToast('Offer added successfully');
           }
-
-          showToast('Offer added successfully');
         }
+      } catch (error) {
+        showToast(error.response?.data?.message || `Failed to ${method === 'put' ? 'update' : 'add'} offer`, 'error');
       }
-    } catch (error) {
-      showToast(error.response?.data?.message || `Failed to ${method === 'put' ? 'update' : 'add'} offer`, 'error');
-    }
-  });
+    });
 
-  async function toggleOfferStatus(offerId, currentStatus) {
-    const action = currentStatus === 'true' ? 'deactivate' : 'activate';
-    const confirmed = await customConfirm(
+    async function toggleOfferStatus(offerId, currentStatus) {
+      const action = currentStatus === 'true' ? 'deactivate' : 'activate';
+      const confirmed = await customConfirm(
         `Are you sure you want to ${action} this offer?`,
         `${action.charAt(0).toUpperCase() + action.slice(1)} Offer`
-    );
+      );
 
-    if (confirmed) {
+      if (confirmed) {
         try {
-            const response = await axios.patch(`/admin/offers/${offerId}/toggle-status`);
-            if (response.data.success) {
-                const row = document.querySelector(`button[onclick="toggleOfferStatus('${offerId}', '${currentStatus}')"]`).closest('tr');
-                const statusBadge = row.querySelector('td:nth-child(7) span');
-                const toggleButton = row.querySelector(`button[onclick*="toggleOfferStatus('${offerId}"]`);
-                
-                // Update status badge
-                const newStatus = currentStatus === 'true' ? false : true;
-                statusBadge.className = `px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${newStatus ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
-                statusBadge.textContent = newStatus ? 'Active' : 'Inactive';
+          const response = await axios.patch(`/admin/offers/${offerId}/toggle-status`);
+          if (response.data.success) {
+            const row = document.querySelector(`button[onclick="toggleOfferStatus('${offerId}', '${currentStatus}')"]`).closest('tr');
+            const statusBadge = row.querySelector('td:nth-child(7) span');
+            const toggleButton = row.querySelector(`button[onclick*="toggleOfferStatus('${offerId}"]`);
 
-                // Update toggle button
-                toggleButton.textContent = newStatus ? 'Deactivate' : 'Activate';
-                toggleButton.className = `${newStatus ? 'bg-primary-accent hover:bg-red-600' : 'bg-green-700 hover:bg-green-600'} text-white px-3 py-2 rounded-md`;
-                toggleButton.setAttribute('onclick', `toggleOfferStatus('${offerId}', '${newStatus}')`);
+            // Update status badge
+            const newStatus = currentStatus === 'true' ? false : true;
+            statusBadge.className = `px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${newStatus ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
+            statusBadge.textContent = newStatus ? 'Active' : 'Inactive';
 
-                showToast(response.data.message);
-            }
+            // Update toggle button
+            toggleButton.textContent = newStatus ? 'Deactivate' : 'Activate';
+            toggleButton.className = `${newStatus ? 'bg-primary-accent hover:bg-red-600' : 'bg-green-700 hover:bg-green-600'} text-white px-3 py-2 rounded-md`;
+            toggleButton.setAttribute('onclick', `toggleOfferStatus('${offerId}', '${newStatus}')`);
+
+            showToast(response.data.message);
+          }
         } catch (error) {
-            console.error('Error:', error);
-            showToast(error.response?.data?.message || `Failed to ${action} offer`, 'error');
+          console.error('Error:', error);
+          showToast(error.response?.data?.message || `Failed to ${action} offer`, 'error');
         }
+      }
     }
-  }
 
-  async function deleteOffer(offerId) {
-    const confirmed = await customConfirm(
+    async function deleteOffer(offerId) {
+      const confirmed = await customConfirm(
         'Are you sure you want to delete this offer?',
         'Delete Offer'
-    );
+      );
 
-    if (confirmed) {
+      if (confirmed) {
         try {
-            const response = await axios.delete(`/admin/offers/${offerId}`);
-            if (response.data.success) {
-                // Find and remove the row
-                const row = document.querySelector(`button[onclick="deleteOffer('${offerId}')"]`).closest('tr');
-                row.remove();
+          const response = await axios.delete(`/admin/offers/${offerId}`);
+          if (response.data.success) {
+            // Find and remove the row
+            const row = document.querySelector(`button[onclick="deleteOffer('${offerId}')"]`).closest('tr');
+            row.remove();
 
-                // Get all remaining rows
-                const rows = document.querySelectorAll('#offersTable tr');
-                
-                if (rows.length === 0) {
-                    // Show "No offers available" message instead of reloading
-                    const tbody = document.getElementById('offersTable');
-                    tbody.innerHTML = `
+            // Get all remaining rows
+            const rows = document.querySelectorAll('#offersTable tr');
+
+            if (rows.length === 0) {
+              // Show "No offers available" message instead of reloading
+              const tbody = document.getElementById('offersTable');
+              tbody.innerHTML = `
                         <tr>
                             <td colspan="8" class="px-6 py-4 text-center text-gray-500">
                                 No offers available
                             </td>
                         </tr>
                     `;
-                } else {
-                    // Update row numbers for remaining rows
-                    rows.forEach((row, index) => {
-                        const numberCell = row.querySelector('td:first-child');
-                        if (numberCell) {
-                            const currentPage = parseInt(new URLSearchParams(window.location.search).get('page')) || 1;
-                            numberCell.textContent = ((currentPage - 1) * 10) + index + 1;
-                        }
-                    });
+            } else {
+              // Update row numbers for remaining rows
+              rows.forEach((row, index) => {
+                const numberCell = row.querySelector('td:first-child');
+                if (numberCell) {
+                  const currentPage = parseInt(new URLSearchParams(window.location.search).get('page')) || 1;
+                  numberCell.textContent = ((currentPage - 1) * 10) + index + 1;
                 }
-
-                showToast(response.data.message);
+              });
             }
-        } catch (error) {
-            showToast(error.response?.data?.message || 'Failed to delete offer', 'error');
-        }
-    }
-  }
 
-  document.getElementById('referralForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const formData = {
-      referrerValue: parseInt(document.getElementById('referrerValue').value),
-      refereeValue: parseInt(document.getElementById('refereeValue').value)
-    };
-
-    try {
-      const response = await axios.post('/admin/referral-settings', formData);
-      if (response.data.success) {
-        showToast('Referral settings updated successfully');
-      }
-    } catch (error) {
-      showToast(error.response?.data?.message || 'Failed to update referral settings', 'error');
-    }
-  });
-
-  document.addEventListener('DOMContentLoaded', function() {
-    const fields = ['name', 'offerType', 'offerPercentage', 'categories', 'products', 'startDate', 'endDate'];
-    
-    fields.forEach(field => {
-      const element = document.getElementById(field);
-      if (element) {
-        element.addEventListener('input', function() {
-          this.classList.remove('border-red-500');
-          const errorElement = document.getElementById(`${field}Error`);
-          if (errorElement) {
-            errorElement.classList.add('hidden');
+            showToast(response.data.message);
           }
-        });
+        } catch (error) {
+          showToast(error.response?.data?.message || 'Failed to delete offer', 'error');
+        }
+      }
+    }
+
+    document.getElementById('referralForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const formData = {
+        referrerValue: parseInt(document.getElementById('referrerValue').value),
+        refereeValue: parseInt(document.getElementById('refereeValue').value)
+      };
+
+      try {
+        const response = await axios.post('/admin/referral-settings', formData);
+        if (response.data.success) {
+          showToast('Referral settings updated successfully');
+        }
+      } catch (error) {
+        showToast(error.response?.data?.message || 'Failed to update referral settings', 'error');
       }
     });
-  });
-</script>
 
-<%- include('../partials/adminfooter') %>
+    document.addEventListener('DOMContentLoaded', function () {
+      const fields = ['name', 'offerType', 'offerPercentage', 'categories', 'products', 'startDate', 'endDate'];
+
+      fields.forEach(field => {
+        const element = document.getElementById(field);
+        if (element) {
+          element.addEventListener('input', function () {
+            this.classList.remove('border-red-500');
+            const errorElement = document.getElementById(`${field}Error`);
+            if (errorElement) {
+              errorElement.classList.add('hidden');
+            }
+          });
+        }
+      });
+    });
+  </script>
+
+  <%- include('../partials/adminfooter') %>

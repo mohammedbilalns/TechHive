@@ -48,7 +48,9 @@
                   <div>
                     <p class="text-gray-600">Referral Code</p>
                     <div class="flex items-center space-x-2">
-                      <p class="text-lg font-semibold" id="referralCode"><%= user.referralCode %></p>
+                      <p class="text-lg font-semibold" id="referralCode">
+                        <%= user.referralCode %>
+                      </p>
                       <button onclick="copyReferralCode()" class="text-primary-accent hover:text-primary-accent/90">
                         <i class="fas fa-copy"></i>
                       </button>
@@ -133,7 +135,7 @@
                   </button>
                   <button type="submit"
                     class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-primary-accent/90">
-                    Update Password 
+                    Update Password
                   </button>
                 </div>
               </form>
@@ -236,32 +238,32 @@
     }
 
     async function copyReferralCode() {
-        const referralCode = document.getElementById('referralCode').textContent;
-        
-        if (navigator.clipboard && window.isSecureContext) {
-            try {
-                await navigator.clipboard.writeText(referralCode);
-                showToast('Referral code copied to clipboard!');
-                return;
-            } catch (err) {
-                console.error('Clipboard API failed:', err);
-            }
-        }
-        
+      const referralCode = document.getElementById('referralCode').textContent;
+
+      if (navigator.clipboard && window.isSecureContext) {
         try {
-            const textarea = document.createElement('textarea');
-            textarea.value = referralCode;
-            textarea.style.position = 'fixed'; 
-            textarea.style.opacity = '0';
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-            showToast('Referral code copied to clipboard!');
+          await navigator.clipboard.writeText(referralCode);
+          showToast('Referral code copied to clipboard!');
+          return;
         } catch (err) {
-            console.error('Fallback copy method failed:', err);
-            showToast('Failed to copy referral code', 'error');
+          console.error('Clipboard API failed:', err);
         }
+      }
+
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = referralCode;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast('Referral code copied to clipboard!');
+      } catch (err) {
+        console.error('Fallback copy method failed:', err);
+        showToast('Failed to copy referral code', 'error');
+      }
     }
   </script>
 

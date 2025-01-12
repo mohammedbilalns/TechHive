@@ -1,172 +1,161 @@
 <%- include('../partials/adminheader') %>
-<main class="min-h-[80vh] py-8 flex justify-center items-center">
-  <div class="bg-primary-white rounded-lg shadow-lg flex flex-col lg:flex-row overflow-hidden max-w-4xl w-full">
-    <!-- Image Section -->
-    <div class="bg-blue-100 p-6 hidden sm:flex justify-center items-center lg:w-1/2">
-      <img alt="Illustration of a laptop with a clock display and office supplies" 
-           src="./images/login2.png"
-           class="object-cover max-w-full h-auto" />
-    </div>
-    <!-- Form Section -->
-    <div class="flex-1 flex items-center justify-center">
-      <form id="adminLoginForm" action="/admin/login" method="post" novalidate class="w-full">
-        <div class="bg-gray-50 p-6 md:p-12">
-          <p class="text-2xl font-semibold text-gray-800 mb-6">Admin Login</p>
+  <main class="min-h-[80vh] py-8 flex justify-center items-center">
+    <div class="bg-primary-white rounded-lg shadow-lg flex flex-col lg:flex-row overflow-hidden max-w-4xl w-full">
+      <!-- Image Section -->
+      <div class="bg-blue-100 p-6 hidden sm:flex justify-center items-center lg:w-1/2">
+        <img alt="Illustration of a laptop with a clock display and office supplies" src="./images/login2.png"
+          class="object-cover max-w-full h-auto" />
+      </div>
+      <!-- Form Section -->
+      <div class="flex-1 flex items-center justify-center">
+        <form id="adminLoginForm" action="/admin/login" method="post" novalidate class="w-full">
+          <div class="bg-gray-50 p-6 md:p-12">
+            <p class="text-2xl font-semibold text-gray-800 mb-6">Admin Login</p>
 
-          <div class="relative mb-4">
-            <div class="relative">
-              <span class="absolute inset-y-0 left-3 flex items-center text-gray-500">
-                <i class="fas fa-envelope"></i>
-              </span>
-              <input
-                type="text"
-                id="email"
-                name="email"
-                placeholder="Email"
-                value="<%= locals.email ? locals.email : '' %>"
-                class="border w-full pl-10 pr-3 py-2 rounded-md transition-colors"
-              />
+            <div class="relative mb-4">
+              <div class="relative">
+                <span class="absolute inset-y-0 left-3 flex items-center text-gray-500">
+                  <i class="fas fa-envelope"></i>
+                </span>
+                <input type="text" id="email" name="email" placeholder="Email"
+                  value="<%= locals.email ? locals.email : '' %>"
+                  class="border w-full pl-10 pr-3 py-2 rounded-md transition-colors" />
+              </div>
+              <p class="text-red-500 text-sm mt-1 hidden" id="emailError"></p>
             </div>
-            <p class="text-red-500 text-sm mt-1 hidden" id="emailError"></p>
+
+            <div class="relative mb-6">
+              <div class="relative">
+                <span class="absolute inset-y-0 left-3 flex items-center text-gray-500">
+                  <i class="fas fa-lock"></i>
+                </span>
+                <input type="password" id="password" name="password" placeholder="Password"
+                  class="border w-full pl-10 pr-10 py-2 rounded-md transition-colors" />
+                <span class="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-600"
+                  id="togglePassword">
+                  <i class="fas fa-eye"></i>
+                </span>
+              </div>
+              <p class="text-red-500 text-sm mt-1 hidden" id="passwordError"></p>
+            </div>
+
+            <button type="submit" id="loginButton"
+              class="w-full py-2 mb-2 text-white bg-primary-accent rounded-md flex items-center justify-center">
+              <span>Log In</span>
+              <div id="loginLoader" class="hidden ml-2">
+                <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            </button>
           </div>
-
-          <div class="relative mb-6">
-            <div class="relative">
-              <span class="absolute inset-y-0 left-3 flex items-center text-gray-500">
-                <i class="fas fa-lock"></i>
-              </span>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Password"
-                class="border w-full pl-10 pr-10 py-2 rounded-md transition-colors"
-              />
-              <span class="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-600" id="togglePassword">
-                <i class="fas fa-eye"></i>
-              </span>
-            </div>
-            <p class="text-red-500 text-sm mt-1 hidden" id="passwordError"></p>
-          </div>
-
-          <button type="submit" id="loginButton" class="w-full py-2 mb-2 text-white bg-primary-accent rounded-md flex items-center justify-center">
-            <span>Log In</span>
-            <div id="loginLoader" class="hidden ml-2">
-              <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            </div>
-          </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
-  </div>
-</main>
-<%- include('../partials/adminfooter') %>
+  </main>
+  <%- include('../partials/adminfooter') %>
 
-<script>
-  if (window.history.replaceState) {
-    window.history.replaceState({}, document.title, window.location.pathname);
-  }
+    <script>
+      if (window.history.replaceState) {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
 
-  document.getElementById('adminLoginForm').addEventListener('submit', async function (event) {
-    event.preventDefault();
-    
-    // Reset all error states
-    resetErrors();
-    
-    const email = document.getElementById('email').value.trim();
-    const password = document.getElementById('password').value.trim();
+      document.getElementById('adminLoginForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
 
-    let hasError = false;
+        // Reset all error states
+        resetErrors();
 
-    // Validate email
-    if (!email) {
-      showError('email', 'Email is required');
-      hasError = true;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      showError('email', 'Please enter a valid email address');
-      hasError = true;
-    }
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
 
-    // Validate password
-    if (!password) {
-      showError('password', 'Password is required');
-      hasError = true;
-    }
+        let hasError = false;
 
-    if (hasError) return;
+        if (!email) {
+          showError('email', 'Email is required');
+          hasError = true;
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          showError('email', 'Please enter a valid email address');
+          hasError = true;
+        }
 
-    const loginButton = document.getElementById('loginButton');
-    const loginLoader = document.getElementById('loginLoader');
-    const buttonText = loginButton.querySelector('span');
+        if (!password) {
+          showError('password', 'Password is required');
+          hasError = true;
+        }
 
-    try {
-      // Show loading state
-      buttonText.textContent = 'Logging in...';
-      loginLoader.classList.remove('hidden');
-      loginButton.disabled = true;
+        if (hasError) return;
 
-      const response = await axios.post('/admin/login', {
-        email,
-        password
+        const loginButton = document.getElementById('loginButton');
+        const loginLoader = document.getElementById('loginLoader');
+        const buttonText = loginButton.querySelector('span');
+
+        try {
+          // Show loading state
+          buttonText.textContent = 'Logging in...';
+          loginLoader.classList.remove('hidden');
+          loginButton.disabled = true;
+
+          const response = await axios.post('/admin/login', {
+            email,
+            password
+          });
+
+          if (response.data.success) {
+            showToast(response.data.message, 'success');
+            window.location.href = response.data.redirectUrl;
+          }
+        } catch (error) {
+          const message = error.response?.data?.message || 'Something went wrong';
+          showToast(message, 'error');
+        } finally {
+          // Reset button state
+          buttonText.textContent = 'Log In';
+          loginLoader.classList.add('hidden');
+          loginButton.disabled = false;
+        }
       });
 
-      if (response.data.success) {
-        showToast(response.data.message, 'success');
-        window.location.href = response.data.redirectUrl;
+      function showError(fieldId, message) {
+        const input = document.getElementById(fieldId);
+        const errorElement = document.getElementById(`${fieldId}Error`);
+
+        input.classList.add('border-red-500');
+        errorElement.textContent = message;
+        errorElement.classList.remove('hidden');
       }
-    } catch (error) {
-      const message = error.response?.data?.message || 'Something went wrong';
-      showToast(message, 'error');
-    } finally {
-      // Reset button state
-      buttonText.textContent = 'Log In';
-      loginLoader.classList.add('hidden');
-      loginButton.disabled = false;
-    }
-  });
 
-  function showError(fieldId, message) {
-    const input = document.getElementById(fieldId);
-    const errorElement = document.getElementById(`${fieldId}Error`);
-    
-    input.classList.add('border-red-500');
-    errorElement.textContent = message;
-    errorElement.classList.remove('hidden');
-  }
+      function resetErrors() {
+        const fields = ['email', 'password'];
+        fields.forEach(field => {
+          const input = document.getElementById(field);
+          const errorElement = document.getElementById(`${field}Error`);
 
-  function resetErrors() {
-    const fields = ['email', 'password'];
-    fields.forEach(field => {
-      const input = document.getElementById(field);
-      const errorElement = document.getElementById(`${field}Error`);
-      
-      input.classList.remove('border-red-500');
-      errorElement.classList.add('hidden');
-      errorElement.textContent = '';
-    });
-  }
+          input.classList.remove('border-red-500');
+          errorElement.classList.add('hidden');
+          errorElement.textContent = '';
+        });
+      }
 
-  // Add input event listeners to clear errors when user starts typing
-  ['email', 'password'].forEach(field => {
-    document.getElementById(field).addEventListener('input', function() {
-      this.classList.remove('border-red-500');
-      document.getElementById(`${field}Error`).classList.add('hidden');
-    });
-  });
+      //  input event listeners to clear errors when user starts typing
+      ['email', 'password'].forEach(field => {
+        document.getElementById(field).addEventListener('input', function () {
+          this.classList.remove('border-red-500');
+          document.getElementById(`${field}Error`).classList.add('hidden');
+        });
+      });
 
-  // Toggle password visibility
-  document.getElementById('togglePassword').addEventListener('click', function() {
-    const passwordInput = document.getElementById('password');
-    const eyeIcon = this.querySelector('i');
+      // Toggle password visibility
+      document.getElementById('togglePassword').addEventListener('click', function () {
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = this.querySelector('i');
 
-    if (passwordInput.type === 'password') {
-      passwordInput.type = 'text';
-      eyeIcon.classList.remove('fa-eye');
-      eyeIcon.classList.add('fa-eye-slash');
-    } else {
-      passwordInput.type = 'password';
-      eyeIcon.classList.remove('fa-eye-slash');
-      eyeIcon.classList.add('fa-eye');
-    }
-  });
-</script>
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          eyeIcon.classList.remove('fa-eye');
+          eyeIcon.classList.add('fa-eye-slash');
+        } else {
+          passwordInput.type = 'password';
+          eyeIcon.classList.remove('fa-eye-slash');
+          eyeIcon.classList.add('fa-eye');
+        }
+      });
+    </script>

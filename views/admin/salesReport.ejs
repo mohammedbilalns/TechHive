@@ -85,14 +85,11 @@
           </table>
         </div>
 
-        <!-- Add margin/padding between table and pagination -->
         <div class="pb-6"></div>
 
-        <!-- Pagination with horizontal scroll for mobile -->
         <div id="paginationControls" class="mt-8 flex justify-center">
           <div class="overflow-x-auto max-w-full">
             <div class="flex items-center space-x-4 px-4">
-              <!-- Pagination will be dynamically inserted here by JavaScript -->
             </div>
           </div>
         </div>
@@ -122,7 +119,7 @@
       startDate = document.getElementById('startDate').value;
       endDate = document.getElementById('endDate').value;
 
-      // Add frontend validation
+      //  validation
       if (!startDate || !endDate) {
         showToast('Please select both start and end dates', 'error');
         return;
