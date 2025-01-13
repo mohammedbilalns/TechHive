@@ -152,6 +152,7 @@
 
     <!-- related products -->
     <section class="mt-12 mb-12">
+      <% if(relatedProducts.length> 0) { %> 
       <h2 class="text-2xl mb-6">Related Products</h2>
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         <% relatedProducts.forEach(related=> { %>
@@ -253,7 +254,9 @@
           <% }); %>
       </div>
     </section>
-
+    <% } else { %>
+      <p class="text-gray-500">No related products found</p>
+      <% } %>
     <!-- Reviews Section -->
     <section class="mt-12">
       <h2 class="text-2xl mb-6">Customer Reviews</h2>
