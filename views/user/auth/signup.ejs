@@ -3,15 +3,19 @@
   <main class="py-8 flex justify-center items-center min-h-[70vh]">
     <div class="bg-primary-white rounded-lg shadow-lg flex flex-col lg:flex-row overflow-hidden max-w-4xl w-full">
       <!-- Image Section -->
-      <div class="bg-blue-100 p-6 hidden sm:flex justify-center items-center lg:w-1/2">
-        <img alt="Illustration of a laptop with a clock display and office supplies" src="./images/login2.png"
-          class="object-cover max-w-full h-auto" />
+      <div class="bg-[#DA0037] p-8 hidden sm:flex flex-col justify-center items-center lg:w-1/2">
+        <img alt="Signup Illustration" src="./images/login2.png"
+          class="w-4/5 h-auto object-contain" />
+        <div class="text-center mt-8">
+          <h2 class="text-2xl font-bold text-white mb-2">Join Our Community!</h2>
+          <p class="text-white/90">Create an account to start shopping</p>
+        </div>
       </div>
       <!-- Form Section -->
       <div class="bg-gray-50 p-4 md:p-8 flex-1">
         <form action="/auth/google">
           <button type="submit"
-            class="flex border items-center justify-center rounded-md py-2 mb-4 bg-white text-black w-full">
+            class="flex border items-center justify-center rounded-md py-2 mb-4 bg-white text-black w-full hover:bg-gray-50 transition-all duration-300">
             <img alt="Google logo" src="images/google.svg" class="mr-3" />
             Sign Up with Google
           </button>
@@ -74,7 +78,7 @@
             </div>
             <% } %>
               <button type="submit" id="signupButton"
-                class="w-full py-2 mb-2 text-white bg-primary-accent rounded-md flex items-center justify-center">
+                class="w-full py-2 mb-2 text-white bg-[#DA0037] hover:bg-red-700 rounded-md flex items-center justify-center transition-colors duration-300">
                 <span>Sign Up</span>
                 <div id="signupLoader" class="hidden ml-2">
                   <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -111,7 +115,7 @@
           </div>
 
           <button type="button" id="verifyOtpButton"
-            class="w-full py-2 mb-4 text-white bg-primary-accent rounded-md flex items-center justify-center">
+            class="w-full py-2 mb-4 text-white bg-[#DA0037] hover:bg-red-700 rounded-md flex items-center justify-center transition-colors duration-300">
             <span>Verify Code</span>
             <div id="verifyLoader" class="hidden ml-2">
               <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -153,7 +157,7 @@
               Skip
             </button>
             <button type="button" id="applyReferral"
-              class="w-1/2 py-2 text-white bg-primary-accent rounded-md flex items-center justify-center">
+              class="w-1/2 py-2 text-white bg-[#DA0037] hover:bg-red-700 rounded-md flex items-center justify-center transition-colors duration-300">
               <span>Apply</span>
               <div id="referralLoader" class="hidden ml-2">
                 <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
