@@ -77,15 +77,17 @@
               <%= message %>
             </div>
             <% } %>
-              <button type="submit" id="signupButton"
-                class="w-full py-2 mb-2 text-white bg-[#DA0037] hover:bg-red-700 rounded-md flex items-center justify-center transition-colors duration-300">
-                <span>Sign Up</span>
-                <div id="signupLoader" class="hidden ml-2">
-                  <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                </div>
-              </button>
+              <div class="flex flex-col items-center">
+                <button type="submit" id="signupButton"
+                  class="w-full py-2 mb-2 text-white bg-[#DA0037] hover:bg-red-700 rounded-md flex items-center justify-center transition-colors duration-300">
+                  <span>Sign Up</span>
+                  <div id="signupLoader" class="hidden ml-2">
+                    <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                </button>
+                <a href="/login" class="text-sm text-primary-accent">Already have an account? Login</a>
+              </div>
         </form>
-        <a href="/login" class="text-right text-sm text-primary-accent block">Already have an account? Login</a>
       </div>
     </div>
   </main>

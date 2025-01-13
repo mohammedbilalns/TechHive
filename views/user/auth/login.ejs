@@ -49,16 +49,18 @@
             <p class="text-red-500 text-sm mt-1 hidden" id="passwordError"></p>
           </div>
 
-          <button type="submit" id="loginButton"
-            class="w-full py-2 mb-2 text-white bg-[#DA0037] hover:bg-red-700 rounded-md flex items-center justify-center transition-colors duration-300">
-            <span>Log In</span>
-            <div id="loginLoader" class="hidden ml-2">
-              <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            </div>
-          </button>
+          <div class="flex flex-col items-center">
+            <button type="submit" id="loginButton"
+              class="w-full py-2 mb-2 text-white bg-[#DA0037] hover:bg-red-700 rounded-md flex items-center justify-center transition-colors duration-300">
+              <span>Log In</span>
+              <div id="loginLoader" class="hidden ml-2">
+                <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            </button>
+            <a href="/forgot-password" class="text-sm text-primary-accent mb-4">Forgot Password?</a>
+            <a href="/signup" class="text-blue-600">Sign Up</a>
+          </div>
         </form>
-        <a href="/forgot-password" class="text-right text-sm text-primary-accent mb-4 block">Forgot Password?</a>
-        <a href="/signup" class="text-center text-blue-600 block">Sign Up</a>
       </div>
     </div>
   </main>
