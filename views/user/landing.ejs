@@ -91,6 +91,9 @@
                     <% } %>
               </div>
             </a>
+            <% if (product.stock <= 0) { %>
+                <p class="text-red-600 text-sm pl-4 -mt-2 mb-4">Out of Stock</p>
+            <% } %>
           </div>
           <% }); %>
       </div>
@@ -118,6 +121,9 @@
                 </p>
               </div>
             </a>
+            <% if (product.stock <= 0) { %>
+                <p class="text-red-600 text-sm pl-2 -mt-1">Out of Stock</p>
+            <% } %>
           </div>
           <% }); %>
       </div>

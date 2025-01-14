@@ -127,6 +127,9 @@
                                             </button>
                                             <% } %>
                         </div>
+                        <% if (product.stock <= 0) { %>
+                            <p class="text-primary-accent text-sm text-center mb-4">Out of Stock</p>
+                        <% } %>
                     </div>
                     <% }); %>
             </div>
@@ -234,6 +237,9 @@
                                             </button>
                                             <% } %>
                         </div>
+                        <% if (product.stock <= 0) { %>
+                            <p class="text-primary-accent text-sm text-center mt-2">Out of Stock</p>
+                        <% } %>
                     </div>
 
                     <% }); %>
