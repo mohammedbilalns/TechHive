@@ -18,67 +18,67 @@ router.use(express.static('static'));
 //---- login routes ----
 router.route('/login')
       .all(adminAuth.isLogin)
-      .get(adminAuthController.loadLogin)
-      .post(adminAuthController.verifyLogin)
+      .get(adminAuthController.loadLogin) // load login page 
+      .post(adminAuthController.verifyLogin) // verify login 
 
 router.use(adminAuth.checkSession)
 router.get('/logout', adminAuthController.logoutAdmin)
 
 //---- products routes ---- 
-router.get('/products', adminProductController.getProducts)
-router.delete('/products/delete/:productid', adminProductController.deleteProduct)
-router.post('/products/activate/:productid', adminProductController.activateProduct)
-router.post('/products/deactivate/:productid', adminProductController.deactivateProduct)
+router.get('/products', adminProductController.getProducts) // get all products page 
+router.delete('/products/delete/:productid', adminProductController.deleteProduct) // delete product 
+router.post('/products/activate/:productid', adminProductController.activateProduct) // activate product 
+router.post('/products/deactivate/:productid', adminProductController.deactivateProduct) // deactivate product 
 router.route('/products/add')
-      .get(adminProductController.getAddProduct)
-      .post(adminProductController.productUpload.array('mainImages', 4), adminProductController.addProduct)
+      .get(adminProductController.getAddProduct) // get add product page 
+      .post(adminProductController.productUpload.array('mainImages', 4), adminProductController.addProduct) // add product 
 router.route('/products/edit/:productid')
-      .get(adminProductController.getEditProduct)
+      .get(adminProductController.getEditProduct) // get edit product page 
       .post(adminProductController.productUpload.array('mainImages', 4), adminProductController.editProduct)
 
 //---- categories routes ----
-router.get('/categories', adminCategoryController.getCategories)
-router.delete('/categories/:categoryid', adminCategoryController.deleteCategory)
-router.post('/categories/hide/:categoryid', adminCategoryController.hideCategory)
-router.post('/categories/unhide/:categoryid', adminCategoryController.unhideCategory)
-router.post('/categories/new', adminCategoryController.addCategory)
-router.post('/categories/edit/:categoryid', adminCategoryController.editCategory)
+router.get('/categories', adminCategoryController.getCategories) // get all categories page 
+router.delete('/categories/:categoryid', adminCategoryController.deleteCategory) // delete category 
+router.post('/categories/hide/:categoryid', adminCategoryController.hideCategory) // hide category 
+router.post('/categories/unhide/:categoryid', adminCategoryController.unhideCategory) // unhide category 
+router.post('/categories/new', adminCategoryController.addCategory) // add category 
+router.post('/categories/edit/:categoryid', adminCategoryController.editCategory) // edit category 
 
 //---- orders routes ----
-router.get('/orders', adminOrderController.getOrders)
-router.post('/orders/:orderId/items/:itemId/update-status', adminOrderController.updateOrderItemStatus);
+router.get('/orders', adminOrderController.getOrders) // get all orders page 
+router.post('/orders/:orderId/items/:itemId/update-status', adminOrderController.updateOrderItemStatus); // update order item status 
 
 //---- coupons routes ----
-router.get('/coupons', adminCouponsController.getCoupons)
-router.post('/coupons', adminCouponsController.addCoupon)
+router.get('/coupons', adminCouponsController.getCoupons) // get all coupons page 
+router.post('/coupons', adminCouponsController.addCoupon) // add coupon 
 router.route('/coupons/:couponId')
-      .get(adminCouponsController.getCouponDetails)
-      .put(adminCouponsController.updateCoupon)
-      .delete(adminCouponsController.deleteCoupon)
-router.patch('/coupons/:couponId/toggle-status', adminCouponsController.toggleCouponStatus)
+      .get(adminCouponsController.getCouponDetails) // get coupon details     
+      .put(adminCouponsController.updateCoupon) // update coupon 
+      .delete(adminCouponsController.deleteCoupon) // delete coupon 
+router.patch('/coupons/:couponId/toggle-status', adminCouponsController.toggleCouponStatus) // toggle coupon status 
 
 //---- offers routes ----
-router.get('/offers', adminOfferController.getOffers)
-router.post('/offers', adminOfferController.addOffer)
+router.get('/offers', adminOfferController.getOffers) // get all offers page 
+router.post('/offers', adminOfferController.addOffer) // add offer 
 router.route('/offers/:offerId')
-      .get(adminOfferController.getOfferDetails)
-      .put(adminOfferController.updateOffer)
-      .delete(adminOfferController.deleteOffer)
-router.patch('/offers/:offerId/toggle-status', adminOfferController.toggleOfferStatus)
-router.post('/referral-settings', adminOffersController.updateReferralSettings);
+      .get(adminOfferController.getOfferDetails) // get offer details 
+      .put(adminOfferController.updateOffer) // update offer 
+      .delete(adminOfferController.deleteOffer) // delete offer 
+router.patch('/offers/:offerId/toggle-status', adminOfferController.toggleOfferStatus) // toggle offer status 
+router.post('/referral-settings', adminOffersController.updateReferralSettings); // update referral settings 
 
 //---- sales report routes ----
-router.get('/sales-report', adminSalesreportController.renderSalesReport)
-router.get('/sales-report/data', adminSalesreportController.getSalesReportData)
-router.get('/sales-report/download', adminSalesreportController.downloadReport)
+router.get('/sales-report', adminSalesreportController.renderSalesReport) // render sales report page 
+router.get('/sales-report/data', adminSalesreportController.getSalesReportData) // get sales report data 
+router.get('/sales-report/download', adminSalesreportController.downloadReport) // download sales report 
 
-//---- customers routes ----
-router.get('/customers', adminCustomersController.getCustomers)
-router.post('/customers/block/:customerid', adminCustomersController.blockCustomer)
-router.post('/customers/unblock/:customerid', adminCustomersController.unblockCustomer)
+//---- customers routes ----  
+router.get('/customers', adminCustomersController.getCustomers) // get all customers page 
+router.post('/customers/block/:customerid', adminCustomersController.blockCustomer) // block customer 
+router.post('/customers/unblock/:customerid', adminCustomersController.unblockCustomer) // unblock customer 
 
 // Dashboard routes
-router.get('/dashboard', adminDashboardController.renderDashboard)
-router.get('/dashboard/data', adminDashboardController.getDashboardData)
+router.get('/dashboard', adminDashboardController.renderDashboard) // render dashboard page 
+router.get('/dashboard/data', adminDashboardController.getDashboardData) // get dashboard data  
 
 export default router
