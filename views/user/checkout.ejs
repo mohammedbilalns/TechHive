@@ -700,7 +700,7 @@
 
     async function editAddress(addressId) {
       try {
-        // Fetch address details from server
+        // Fetch address details
         const response = await axios.get(`/address/${addressId}`);
         if (!response.data.success) {
           showToast('Address not found', 'error');
@@ -912,7 +912,6 @@
       }
     });
 
-    // check payment methods when page is reloaded or coupon is applied 
     function updatePaymentMethods() {
       const total = parseFloat(document.querySelector('[data-total]').textContent.replace('₹', ''));
       const codRadio = document.querySelector('input[value="cod"]');
@@ -953,7 +952,7 @@
 
       document.addEventListener('DOMContentLoaded', updatePaymentMethods);
 
-    // Add validation helper functions
+    //  validation helper functions
     function showError(fieldId, message, formType) {
       const errorId = `${formType}${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}Error`;
       const input = document.querySelector(`#${formType}AddressForm [name="${fieldId}"]`);

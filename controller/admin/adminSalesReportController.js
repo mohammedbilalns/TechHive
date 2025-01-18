@@ -427,7 +427,7 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
       doc.font('NotoSans').fontSize(8);
     }
 
-    // Alternate row background with border
+    //  row background with border
     doc.rect(tableLeftMargin, yPos - 5, totalWidth, 30)
       .fill(index % 2 === 0 ? '#FFFFFF' : '#F9FAFB');
 
@@ -507,7 +507,7 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
   addTotalLine('Total Sales Amount:', `₹${totals.totalAmount.toFixed(2)}`, totalsY + 40);
   addTotalLine('Total Discounts Applied:', `₹${totals.totalDiscounts.toFixed(2)}`, totalsY + 65);
 
-  // Net Revenue with highlighted background and adjusted width
+  // Net Revenue 
   doc.rect(40, totalsY + 90, totalsBoxWidth, 30)
     .fill('#E0E7FF');
   addTotalLine('Net Revenue:', `₹${totals.netAmount.toFixed(2)}`, totalsY + 95);
@@ -593,7 +593,6 @@ const downloadReport = async (req, res) => {
       .populate('userId', 'fullname')
       .sort({ orderDate: -1 });
 
-    // Format orders to match report requirements
     const formattedOrders = orders.map(order => {
       // Filter only delivered items
       const deliveredItems = order.items.filter(item => item.status === 'delivered');
