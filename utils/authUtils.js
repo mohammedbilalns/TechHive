@@ -36,7 +36,7 @@ const sendOTPEmail = async (email, otp) => {
     log.red("OTP STATUS", error)
     await userSchema.deleteOne({ email });
   }
-}; // send otp to the given mail addres
+}; // send otp to the given mail address
 
 // utils for hashing passwords 
 const hashPassword = async (password, saltRounds) =>{

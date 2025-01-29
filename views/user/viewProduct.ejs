@@ -4,14 +4,18 @@
 
   <main class="mx-auto my-5 md:my-10 container px-4 md:px-0">
     <!-- Breadcrumbs -->
-    <nav class="flex mb-4 text-sm">
-      <a href="<%= locals.fullname ? '/home' : '/' %>" class="text-gray-500 hover:text-red-600">Home</a>
-      <span class="mx-2 text-gray-500">/</span>
-      <a href="/allproducts" class="text-gray-500 hover:text-red-600">All Products</a>
-      <span class="mx-2 text-gray-500">/</span>
-      <span class="text-gray-800">
-        <%= product.name %>
-      </span>
+    <nav class="flex flex-wrap mb-4 text-sm">
+      <div class="flex items-center w-full sm:w-auto">
+        <a href="<%= locals.fullname ? '/home' : '/' %>" class="text-gray-500 hover:text-red-600">Home</a>
+        <span class="mx-2 text-gray-500">/</span>
+        <a href="/allproducts" class="text-gray-500 hover:text-red-600">All Products</a>
+      </div>
+      <div class="flex items-center w-full sm:w-auto">
+        <span class="sm:mx-2 text-gray-500">/</span>
+        <span class="text-gray-800">
+          <%= product.name %>
+        </span>
+      </div>
     </nav>
 
     <!-- Product Details  -->
@@ -164,7 +168,7 @@
                 <%= related.name %>
               </h3>
 
-              <!-- Add Rating Stars -->
+              <!--  Rating Stars -->
               <div class="flex items-center gap-1 mb-2">
                 <% const rating=locals.productRatings[related._id] || 0 %>
                   <div class="flex items-center">
@@ -196,7 +200,7 @@
                             <% } %>
                               <% } %>
                   </div>
-                  <span class="text-sm text-gray-600">(<%= rating %>)</span>
+                  <span class="text-sm text-gray-600">(<%= rating.toFixed(1) %>)</span>
               </div>
 
               <div class="flex items-center gap-2 flex-wrap">

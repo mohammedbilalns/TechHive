@@ -2428,6 +2428,11 @@ input::placeholder {
 }
 
 @media (min-width: 640px) {
+  .sm\:mx-2 {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+
   .sm\:mb-0 {
     margin-bottom: 0px;
   }
