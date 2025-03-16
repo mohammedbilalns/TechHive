@@ -337,45 +337,45 @@ const resendOTP = async (req, res) => {
 // ---- Google OAuth ----
 // Redirect the user to Google for authentication
 const authGoogle = (req, res) => {
-    passport.authenticate("google", {
-        scope: ["email", "profile"],
-    })(req, res);
+	passport.authenticate("google", {
+		scope: ["email", "profile"],
+	})(req, res);
 };
 
 // Callback for Google OAuth, handle success or failure
 const authGoogleCallback = (req, res) => {
-    passport.authenticate("google", { failureRedirect: "/login" }, (err, user, info) => {
-        if (err) {
-            console.error("Google Auth Callback Error:", err);
-            return res.redirect("/login?message=Something+went+wrong&alertType=error");
-        }
+	passport.authenticate("google", { failureRedirect: "/login" }, (err, user, info) => {
+		if (err) {
+			console.error("Google Auth Callback Error:", err);
+			return res.redirect("/login?message=Something+went+wrong&alertType=error");
+		}
 
-        if (!user) {
-            const message = info?.message || "Authentication failed";
-            return res.redirect(`/login?message=${message}&alertType=error`);
-        }
+		if (!user) {
+			const message = info?.message || "Authentication failed";
+			return res.redirect(`/login?message=${message}&alertType=error`);
+		}
 
-        req.logIn(user, (err) => {
-            if (err) {
-                console.error("Session Error:", err);
-                return res.redirect("/login?message=Session+error&alertType=error");
-            }
+		req.logIn(user, (err) => {
+			if (err) {
+				console.error("Session Error:", err);
+				return res.redirect("/login?message=Session+error&alertType=error");
+			}
 
-            req.session.user = {
-                id: user.id,
-                fullname: user.fullname,
-                email: user.email
-            };
+			req.session.user = {
+				id: user.id,
+				fullname: user.fullname,
+				email: user.email
+			};
 
-            req.session.save((err) => {
-                if (err) {
-                    console.error("Session Save Error:", err);
-                    return res.redirect("/login?message=Session+save+error&alertType=error");
-                }
-                res.redirect('/home');
-            });
-        });
-    })(req, res);
+			req.session.save((err) => {
+				if (err) {
+					console.error("Session Save Error:", err);
+					return res.redirect("/login?message=Session+save+error&alertType=error");
+				}
+				res.redirect('/home');
+			});
+		});
+	})(req, res);
 };
 
 

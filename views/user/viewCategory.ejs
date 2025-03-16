@@ -77,7 +77,12 @@
                             <a href="/product/<%= product._id %>">
                                 <div class="aspect-square rounded-lg overflow-hidden mb-2">
                                     <img src="<%= product.images[0].path %>" alt="<%= product.name %>"
-                                        class="w-full h-full object-contain transition-transform duration-300 hover:scale-110" />
+                                        class="w-full h-full object-contain transition-transform duration-300 hover:scale-110 <%= product.stock <= 0 ? 'blur-[2px]' : '' %>" />
+                                    <% if (product.stock <= 0) { %>
+                                        <div class="absolute inset-0 flex items-center justify-center">
+                                            <p class="text-white text-sm font-medium px-4 py-2 rounded-full bg-red-600 z-10">Out of Stock</p>
+                                        </div>
+                                    <% } %>
                                 </div>
                                 <p class="text-gray-800 text-sm md:text-base truncate">
                                     <%= product.name %>

@@ -7,10 +7,10 @@ const orderItemSchema = new mongoose.Schema({
   quantity: { type: Number, required: true },
   price: { type: Number, required: true },
   discount: { type: Number, default: 0 },
-  status: { 
-    type: String, 
-    enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'return requested', 'returned'], 
-    default: 'pending' 
+  status: {
+    type: String,
+    enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'return requested', 'returned'],
+    default: 'pending'
   },
   shippedDate: { type: Date },
   deliveredDate: { type: Date },
@@ -23,27 +23,27 @@ const orderItemSchema = new mongoose.Schema({
 });
 
 const orderSchema = new mongoose.Schema({
-  orderId: { 
-    type: String, 
+  orderId: {
+    type: String,
     required: true,
-    unique: true 
+    unique: true
   },
-  userId: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'users', 
-    required: true 
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'users',
+    required: true
   },
   items: [orderItemSchema],
   totalAmount: { type: Number, required: true },
-  paymentMethod: { 
-    type: String, 
-    enum: ['cod', 'online', 'wallet'], 
-    required: true 
+  paymentMethod: {
+    type: String,
+    enum: ['cod', 'online', 'wallet'],
+    required: true
   },
-  paymentStatus: { 
-    type: String, 
-    enum: ['paid', 'unpaid', 'pending', "refunded"], 
-    default: 'pending' 
+  paymentStatus: {
+    type: String,
+    enum: ['paid', 'unpaid', 'pending', "refunded"],
+    default: 'pending'
   },
   shippingAddress: {
     name: { type: String, required: true },
@@ -55,15 +55,15 @@ const orderSchema = new mongoose.Schema({
     phone: { type: String, required: true },
     alternatePhone: { type: String }
   },
-  orderDate: { 
-    type: Date, 
-    default: Date.now 
+  orderDate: {
+    type: Date,
+    default: Date.now
   },
-  expectedDeliveryDate: { 
-    type: Date 
+  expectedDeliveryDate: {
+    type: Date
   },
-  deliveryDate: { 
-    type: Date 
+  deliveryDate: {
+    type: Date
   },
   coupon: {
     code: { type: String },
@@ -74,8 +74,8 @@ const orderSchema = new mongoose.Schema({
     razorpayPaymentId: { type: String },
     razorpaySignature: { type: String }
   }
-}, { 
-  timestamps: true 
+}, {
+  timestamps: true
 });
 
 export default mongoose.model('order', orderSchema);

@@ -21,14 +21,18 @@
                             class="text-sm text-primary-accent hover:text-red-700">View
                             All</a>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 justify-items-center">
                         <% category.products.slice(0, 4).forEach(product=> { %>
-                            <div
-                                class="bg-white rounded-lg text-center p-4 md:p-5 border border-gray-200 transform hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-                                <a href="/product/<%= product._id %>">
-                                    <div class="aspect-square rounded-lg overflow-hidden mb-2">
-                                        <img src="<%= product.images[0].path %>" alt="<%= product.name %>"
-                                            class="w-full h-full object-contain transition-transform duration-300 hover:scale-110" />
+                            <div class="w-full max-w-[300px] bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 transform hover:-translate-y-1">
+                                <a href="/product/<%= product._id %>" class="block">
+                                    <div class="aspect-square rounded-lg overflow-hidden relative">
+                                        <img alt="<%= product.name %>" src="<%= product.images[0].path %>"
+                                            class="w-full h-full object-contain transition-transform duration-300 hover:scale-110 <%= product.stock <= 0 ? 'blur-[2px]' : '' %>" />
+                                        <% if (product.stock <= 0) { %>
+                                            <div class="absolute inset-0 flex items-center justify-center">
+                                                <p class="text-white text-sm font-medium px-4 py-2 rounded-full bg-red-600 z-10">Out of Stock</p>
+                                            </div>
+                                        <% } %>
                                     </div>
                                     <p class="text-gray-800 text-sm md:text-base">
                                         <%= product.name %>
@@ -130,10 +134,6 @@
                                                         <% } %>
                                     </div>
                                     <% } %>
-
-                                        <% if (product.stock <=0) { %>
-                                            <p class="text-primary-accent text-sm mt-1">Out of Stock</p>
-                                            <% } %>
                             </div>
                             <% }); %>
                     </div>
