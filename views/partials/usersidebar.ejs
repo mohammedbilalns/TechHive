@@ -1,17 +1,11 @@
+<!-- Desktop Sidebar -->
 <aside id="sidebar"
-      class="bg-gray-100 w-3/4 md:w-72 min-h-screen transform md:transform-none transition-transform duration-300 ease-in-out md:block fixed md:static top-0 left-0 h-full md:h-auto z-40 md:z-0 -translate-x-full md:translate-x-0 hidden">
-      <!-- Close button - only visible on mobile -->
-      <div class="md:hidden p-4 flex justify-end">
-        <button onclick="toggleSidebar()" class="text-gray-600 hover:text-gray-900 p-2 rounded-lg">
-          <i class="fas fa-times text-xl"></i>
-        </button>
-      </div>
-      
+      class="bg-white w-72 min-h-screen hidden md:block shadow-lg">
       <nav class="py-4">
-        <div class="px-4 md:px-6">
-          <div class="flex items-center space-x-4 mb-6">
+        <div class="px-6">
+          <div class="flex items-center space-x-4 mb-6 p-4 bg-gray-50 rounded-xl">
             <div
-              class="w-10 h-10 rounded-full bg-primary-accent text-white flex items-center justify-center flex-shrink-0">
+              class="w-12 h-12 rounded-full bg-primary-accent text-white flex items-center justify-center flex-shrink-0 shadow-md transition-transform duration-300 hover:scale-105">
               <i class="fas fa-user text-lg"></i>
             </div>
             <div class="min-w-0 flex-1">
@@ -24,55 +18,53 @@
             </div>
           </div>
           <ul class="mt-4 space-y-2">
-          
             <li>
-              <a href="/account" class="flex nav-link items-center px-4 py-2 <%= locals.page=="account" ? 'bg-primary-accent text-white hover:bg-primary-accent/90' : 'text-gray-800 hover:bg-gray-200' %> rounded-lg">
-                <i class="fas fa-user mr-3"></i>
+              <a href="/account" class="flex nav-link items-center px-4 py-3 <%= locals.page=="account" ? 'bg-primary-accent text-white hover:bg-primary-accent/90' : 'text-gray-800 hover:bg-gray-50' %> rounded-xl transition-all duration-300 group">
+                <i class="fas fa-user mr-3 transition-transform duration-300 group-hover:scale-110"></i>
                 <span>Account Details</span>
               </a>
             </li>
             <li>
               <a href="/addresses"
-                class="flex items-center px-4 nav-link py-2 <%= locals.page=="addresses" ? 'bg-primary-accent text-white hover:bg-primary-accent/90' : 'text-gray-800 hover:bg-gray-200' %> rounded-lg">
-                <i class="fas fa-map-marker-alt mr-3"></i>
+                class="flex items-center px-4 nav-link py-3 <%= locals.page=="addresses" ? 'bg-primary-accent text-white hover:bg-primary-accent/90' : 'text-gray-800 hover:bg-gray-50' %> rounded-xl transition-all duration-300 group">
+                <i class="fas fa-map-marker-alt mr-3 transition-transform duration-300 group-hover:scale-110"></i>
                 <span>Addresses</span>
               </a>
             </li>
             <li>
-              <a href="/orders" class="flex items-center nav-link px-4 py-2 <%= locals.page=="orders" ? 'bg-primary-accent text-white hover:bg-primary-accent/90' : 'text-gray-800 hover:bg-gray-200' %> rounded-lg">
-                <i class="fas fa-shopping-bag mr-3"></i>
+              <a href="/orders" class="flex items-center nav-link px-4 py-3 <%= locals.page=="orders" ? 'bg-primary-accent text-white hover:bg-primary-accent/90' : 'text-gray-800 hover:bg-gray-50' %> rounded-xl transition-all duration-300 group">
+                <i class="fas fa-shopping-bag mr-3 transition-transform duration-300 group-hover:scale-110"></i>
                 <span>Orders</span>
               </a>
             </li>
             <li>
-              <a href="/cart" class="flex items-center nav-link px-4 py-2 <%= locals.page=="cart" ? 'bg-primary-accent text-white hover:bg-primary-accent/90' : 'text-gray-800 hover:bg-gray-200' %> rounded-lg">
-                <i class="fas fa-shopping-cart mr-3"></i>
+              <a href="/cart" class="flex items-center nav-link px-4 py-3 <%= locals.page=="cart" ? 'bg-primary-accent text-white hover:bg-primary-accent/90' : 'text-gray-800 hover:bg-gray-50' %> rounded-xl transition-all duration-300 group">
+                <i class="fas fa-shopping-cart mr-3 transition-transform duration-300 group-hover:scale-110"></i>
                 <span>Cart</span>
-               
               </a>
             </li>
             <li>
               <a href="/wishlist"
-                class="flex items-center nav-link px-4 py-2 <%= locals.page=="wishlist" ? 'bg-primary-accent text-white hover:bg-primary-accent/90' : 'text-gray-800 hover:bg-gray-200' %> rounded-lg">
-                <i class="fas fa-heart mr-3"></i>
+                class="flex items-center nav-link px-4 py-3 <%= locals.page=="wishlist" ? 'bg-primary-accent text-white hover:bg-primary-accent/90' : 'text-gray-800 hover:bg-gray-50' %> rounded-xl transition-all duration-300 group">
+                <i class="fas fa-heart mr-3 transition-transform duration-300 group-hover:scale-110"></i>
                 <span>Wishlist</span>
               </a> 
             </li>
             <li>
-              <a href="/wallet" class="flex items-center px-4 nav-link py-2 <%= locals.page=="wallet" ? 'bg-primary-accent text-white hover:bg-primary-accent/90' : 'text-gray-800 hover:bg-gray-200' %> rounded-lg">
-                <i class="fas fa-wallet mr-3"></i>
+              <a href="/wallet" class="flex items-center px-4 nav-link py-3 <%= locals.page=="wallet" ? 'bg-primary-accent text-white hover:bg-primary-accent/90' : 'text-gray-800 hover:bg-gray-50' %> rounded-xl transition-all duration-300 group">
+                <i class="fas fa-wallet mr-3 transition-transform duration-300 group-hover:scale-110"></i>
                 <span>Wallet</span>
               </a>
             </li>
             <li>
-              <a href="/coupons" class="flex items-center nav-link px-4 py-2 <%= locals.page=="coupons" ? 'bg-primary-accent text-white hover:bg-primary-accent/90' : 'text-gray-800 hover:bg-gray-200' %> rounded-lg">
-                <i class="fas fa-ticket-alt mr-3"></i>
+              <a href="/coupons" class="flex items-center nav-link px-4 py-3 <%= locals.page=="coupons" ? 'bg-primary-accent text-white hover:bg-primary-accent/90' : 'text-gray-800 hover:bg-gray-50' %> rounded-xl transition-all duration-300 group">
+                <i class="fas fa-ticket-alt mr-3 transition-transform duration-300 group-hover:scale-110"></i>
                 <span>My Coupons</span>
               </a>
             </li>
             <li>
-              <a href="/logout" class="flex items-center px-4 py-2 text-gray-800 hover:bg-gray-200 rounded-lg">
-                <i class="fas fa-sign-out-alt mr-3"></i>
+              <a href="/logout" class="flex items-center px-4 py-3 text-gray-800 hover:bg-gray-50 rounded-xl transition-all duration-300 group">
+                <i class="fas fa-sign-out-alt mr-3 transition-transform duration-300 group-hover:scale-110"></i>
                 <span>Logout</span>
               </a>
             </li>
@@ -81,44 +73,91 @@
       </nav>
     </aside>
 
+<!-- Mobile Bottom Navigation -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
+  <div class="flex justify-around items-center h-16">
+    <a href="/account" class="flex flex-col items-center justify-center w-full h-full <%= locals.page=="account" ? 'text-primary-accent' : 'text-gray-600' %> transition-all duration-300">
+      <i class="fas fa-user text-lg"></i>
+      <span class="text-xs mt-1">Account</span>
+    </a>
+    <a href="/orders" class="flex flex-col items-center justify-center w-full h-full <%= locals.page=="orders" ? 'text-primary-accent' : 'text-gray-600' %> transition-all duration-300">
+      <i class="fas fa-shopping-bag text-lg"></i>
+      <span class="text-xs mt-1">Orders</span>
+    </a>
+    <a href="/wallet" class="flex flex-col items-center justify-center w-full h-full <%= locals.page=="wallet" ? 'text-primary-accent' : 'text-gray-600' %> transition-all duration-300">
+      <i class="fas fa-wallet text-lg"></i>
+      <span class="text-xs mt-1">Wallet</span>
+    </a>
+    <a href="/coupons" class="flex flex-col items-center justify-center w-full h-full <%= locals.page=="coupons" ? 'text-primary-accent' : 'text-gray-600' %> transition-all duration-300">
+      <i class="fas fa-ticket-alt text-lg"></i>
+      <span class="text-xs mt-1">Coupons</span>
+    </a>
+    <a href="/addresses" class="flex flex-col items-center justify-center w-full h-full <%= locals.page=="addresses" ? 'text-primary-accent' : 'text-gray-600' %> transition-all duration-300">
+      <i class="fas fa-map-marker-alt text-lg"></i>
+      <span class="text-xs mt-1">Addresses</span>
+    </a>
+  </div>
+</nav>
+
+<!-- Mobile Menu Overlay -->
+<div id="mobile-menu" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden transition-opacity duration-300">
+  <div class="absolute bottom-16 left-0 right-0 bg-white rounded-t-2xl p-4 transform transition-transform duration-300 translate-y-full">
+    <div class="flex justify-between items-center mb-4">
+      <h3 class="text-lg font-semibold text-gray-800">More Options</h3>
+      <button onclick="toggleMobileMenu()" class="text-gray-600 hover:text-primary-accent transition-colors">
+        <i class="fas fa-times text-xl"></i>
+      </button>
+    </div>
+    <div class="space-y-2">
+      <a href="/cart" class="flex items-center px-4 py-3 text-gray-800 hover:bg-gray-50 rounded-xl transition-all duration-300">
+        <div class="relative mr-3">
+          <i class="fas fa-shopping-cart"></i>
+          <% if (locals.cartQuantity && locals.cartQuantity > 0) { %>
+            <span class="absolute -top-2 -right-2 bg-primary-accent text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+              <%= locals.cartQuantity %>
+            </span>
+          <% } %>
+        </div>
+        <span>Cart</span>
+      </a>
+      <a href="/wishlist" class="flex items-center px-4 py-3 text-gray-800 hover:bg-gray-50 rounded-xl transition-all duration-300">
+        <div class="relative mr-3">
+          <i class="fas fa-heart"></i>
+          <% if (locals.wishlistQuantity && locals.wishlistQuantity > 0) { %>
+            <span class="absolute -top-2 -right-2 bg-primary-accent text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+              <%= locals.wishlistQuantity %>
+            </span>
+          <% } %>
+        </div>
+        <span>Wishlist</span>
+      </a>
+      <a href="/logout" class="flex items-center px-4 py-3 text-gray-800 hover:bg-gray-50 rounded-xl transition-all duration-300">
+        <i class="fas fa-sign-out-alt mr-3"></i>
+        <span>Logout</span>
+      </a>
+    </div>
+  </div>
+</div>
+
 <script>
-  function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const isOpen = !sidebar.classList.contains('hidden');
+  function toggleMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    const menuContent = menu.querySelector('div');
+    const isOpen = !menu.classList.contains('hidden');
     
     if (!isOpen) {
-      // Opening the sidebar
-      sidebar.classList.remove('hidden');
+      // Opening the menu
+      menu.classList.remove('hidden');
       // Trigger animation after adding the element
       setTimeout(() => {
-        sidebar.classList.remove('-translate-x-full');
-      }, 10);
-      
-      // Add overlay with fade in
-      const overlay = document.createElement('div');
-      overlay.id = 'sidebar-overlay';
-      overlay.className = 'fixed inset-0 bg-black bg-opacity-0 transition-all duration-300 z-30 md:hidden';
-      overlay.onclick = toggleSidebar;
-      document.body.appendChild(overlay);
-      // Trigger fade in
-      setTimeout(() => {
-        overlay.classList.add('bg-opacity-50');
+        menuContent.classList.remove('translate-y-full');
       }, 10);
     } else {
-      // Closing the sidebar
-      sidebar.classList.add('-translate-x-full');
-      const overlay = document.getElementById('sidebar-overlay');
-      
-      // Fade out overlay
-      if (overlay) {
-        overlay.classList.remove('bg-opacity-50');
-        overlay.classList.add('bg-opacity-0');
-      }
-      
-      // Wait for animations to complete before removing elements
+      // Closing the menu
+      menuContent.classList.add('translate-y-full');
+      // Wait for animation to complete before hiding
       setTimeout(() => {
-        sidebar.classList.add('hidden');
-        overlay?.remove();
+        menu.classList.add('hidden');
       }, 300);
     }
   }
