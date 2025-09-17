@@ -15,40 +15,39 @@ const otpSchema = new mongoose.Schema({
 });
 
 const userSchema = new mongoose.Schema(
-    {
-        fullname: {
-            type: String,
-            required: true,
-        },
-        phonenumber: {
-            type: Number,
-            sparse: true
-        },
-        email: {
-            type: String,
-            required: true,
-            unique: true,
-        },
-        googleId: {
-            type: String,
-        },
-        password: {
-            type: String,
-        },
-        status: {
-            type: String,
-            enum: ["Pending", "Active", "Blocked"],
-        },
-        otp: otpSchema,
+	{
+		fullname: {
+			type: String,
+			required: true,
+		},
+		phonenumber: {
+			type: Number,
+			sparse: true
+		},
+		email: {
+			type: String,
+			required: true,
+			unique: true 
+		},
+		googleId: {
+			type: String,
+		},
+		password: {
+			type: String,
+		},
+		status: {
+			type: String,
+			enum: ["Pending", "Active", "Blocked"],
+		},
+		otp: otpSchema,
 		referralCode : {
 			type: String,
 			unique: true 
 		}
-    },
-    { timestamps: true }
+	},
+	{ timestamps: true }
 );
 
-userSchema.index({ email: 1 });
 
 export default mongoose.model("users", userSchema);
 
