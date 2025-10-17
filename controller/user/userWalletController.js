@@ -12,7 +12,7 @@ const getWallet = async (req, res) => {
         const skip = (page - 1) * limit;
 
         const wallet = await walletModel.findOne({ userId: req.session.user.id });
-        const user =  await userModel.findOne({_id: req.session.user.id})
+        const user =  await userModel.findOne({_id: req.session.user.id});
       
         if (!wallet) {
             // Create wallet if it doesn't exist

@@ -6,8 +6,8 @@ import referralModel from "../../model/referralModel.js";
 
 const getAccountDetails = async (req, res) => {
     try {
-        let email = req.session.user.email
-        let user = await userSchema.findOne({ email })
+        let email = req.session.user.email;
+        let user = await userSchema.findOne({ email });
 
         // Generate referral code 
         if (!user.referralCode) {
@@ -25,12 +25,12 @@ const getAccountDetails = async (req, res) => {
             user,
             page: "account",
             referralValues
-        })
+        });
     } catch (error) {
-        log.red("FETCH_ACCOUNT_DETAILS_ERROR", error)
-        res.status(500).render("notfound")
+        log.red("FETCH_ACCOUNT_DETAILS_ERROR", error);
+        res.status(500).render("notfound");
     }
-}
+};
 
 const updateProfile = async (req, res) => {
     try {

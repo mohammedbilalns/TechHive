@@ -268,7 +268,7 @@ const getDashboardData = async (req, res) => {
       message: 'Error fetching dashboard data'
     });
   }
-}
+};
 
 const renderDashboard = async (req, res) => {
   try {
@@ -277,7 +277,7 @@ const renderDashboard = async (req, res) => {
     console.error('Dashboard Render Error:', error);
     res.status(500).send('Error loading dashboard');
   }
-}
+};
 
 
 export default { getDashboardData, renderDashboard };

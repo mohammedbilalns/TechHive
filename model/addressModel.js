@@ -1,5 +1,5 @@
 
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
 const addressSchema = new mongoose.Schema({
     userId: {   
@@ -38,6 +38,6 @@ const addressSchema = new mongoose.Schema({
     alternatePhone: {
         type: String,
     }
-}, { timestamps: true })
+}, { timestamps: true });
 
-export default mongoose.model('Address', addressSchema)
+export default mongoose.model('Address', addressSchema);

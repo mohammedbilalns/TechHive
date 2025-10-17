@@ -1,23 +1,23 @@
 import { log } from "mercedlogger";
 import { configDotenv } from "dotenv";
-configDotenv()
+configDotenv();
 
 //---- Admin Login----
 const loadLogin = (req, res) => {
 
-  const message = req.query.message
-  const alertType = req.query.alertType
-  const email = req.query.email
-  res.render("admin/login", { message, alertType, email })
+  const message = req.query.message;
+  const alertType = req.query.alertType;
+  const email = req.query.email;
+  res.render("admin/login", { message, alertType, email });
 
-}
+};
 
 const verifyLogin = async (req, res) => {
   try {
 
-    let { email, password } = req.body
-    email = email.trim()
-    password = password.trim()
+    let { email, password } = req.body;
+    email = email.trim();
+    password = password.trim();
 
     if (!email) {
       return res.status(401).json({
@@ -48,24 +48,24 @@ const verifyLogin = async (req, res) => {
     });
 
   } catch (error) {
-    log.red("LOGIN ERROR", error)
+    log.red("LOGIN ERROR", error);
     res.status(500).json({
       success: false,
       message: 'Something went wrong'
     });
   }
-}
+};
 
 const logoutAdmin = (req, res) => {
   try {
-    delete req.session.admin
+    delete req.session.admin;
     res.redirect('/admin/login?message=logged+out+successfully&alertType=success');
 
   } catch (error) {
-    log.red('ADMIN_LOGOUT_ERROR', error)
+    log.red('ADMIN_LOGOUT_ERROR', error);
   }
-}
+};
 
 export default {
   loadLogin, verifyLogin, logoutAdmin,
-}
+};

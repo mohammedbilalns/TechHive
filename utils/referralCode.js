@@ -9,4 +9,4 @@ const  generateReferralCode = ()=> {
 
 
 
-export default {generateReferralCode}
+export default {generateReferralCode};

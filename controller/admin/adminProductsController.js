@@ -1,9 +1,9 @@
 import { log } from "mercedlogger";
-import categorySchema from "../../model/categoryModel.js"
-import productSchema from "../../model/productModel.js"
+import categorySchema from "../../model/categoryModel.js";
+import productSchema from "../../model/productModel.js";
 import multer from "multer";
-import fs from "node:fs"
-import path from "node:path"
+import fs from "node:fs";
+import path from "node:path";
 import mongoose from 'mongoose';
 
 //  multer configuration for local storage
@@ -34,11 +34,11 @@ const productUpload = multer({
 
 const getProducts = async (req, res) => {
     try {
-        let message = req.query.message
-        let alertType = req.query.alertType
-        const page = parseInt(req.query.page) || 1
-        const limit = 10
-        const search = req.query.search || ''
+        let message = req.query.message;
+        let alertType = req.query.alertType;
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10;
+        const search = req.query.search || '';
 
         // Create search query
         const searchQuery = {
@@ -46,17 +46,17 @@ const getProducts = async (req, res) => {
                 { name: { $regex: search, $options: 'i' } },
                 { brand: { $regex: search, $options: 'i' } }
             ]
-        }
+        };
 
-        const totalProducts = await productSchema.countDocuments(searchQuery)
-        const totalPages = Math.ceil(totalProducts / limit)
-        const skip = (page - 1) * limit
+        const totalProducts = await productSchema.countDocuments(searchQuery);
+        const totalPages = Math.ceil(totalProducts / limit);
+        const skip = (page - 1) * limit;
 
         const products = await productSchema.find(searchQuery)
             .populate('category')
             .sort({ createdAt: 1 })
             .skip(skip)
-            .limit(limit)
+            .limit(limit);
 
         res.render("admin/products", {
             products,
@@ -73,7 +73,7 @@ const getProducts = async (req, res) => {
         log.red("PRODUCT_FETCH_ERROR", error);
 
     }
-}
+};
 
 const deleteProduct = async (req, res) => {
     try {
@@ -170,17 +170,17 @@ const activateProduct = async (req, res) => {
     }
 };
 
-const getAddProduct = async (req, res) => {
+const getAddProduct = async (_req, res) => {
     try {
-        const categories = await categorySchema.find({ status: "Active" })
-        res.render('admin/addProduct', { categories, page: 'products' })
+        const categories = await categorySchema.find({ status: "Active" });
+        res.render('admin/addProduct', { categories, page: 'products' });
     } catch (error) {
-        log.red("FETCH_ADD_PRODUCT", err)
-        res.redirect('/admin/products?message=Something+went+wrong&alertType=error')
+        log.red("FETCH_ADD_PRODUCT", error);
+        res.redirect('/admin/products?message=Something+went+wrong&alertType=error');
 
     }
 
-}
+};
 
 const addProduct = async (req, res) => {
     try {
@@ -197,8 +197,8 @@ const addProduct = async (req, res) => {
         const specArray = Array.isArray(specifications) ? specifications : [specifications];
         const cleanedSpecs = specArray.filter(spec => spec && spec.trim()).map(spec => spec.trim());
 
-        let product = await productSchema.findOne({ name })
-        if (product) return res.redirect('/admin/products?message=Product+with+same+name+already+exists&alertType=error')
+        let product = await productSchema.findOne({ name });
+        if (product) return res.redirect('/admin/products?message=Product+with+same+name+already+exists&alertType=error');
 
         // Process images
         const images = req.files.map(file => ({
@@ -371,4 +371,4 @@ const editProduct = async (req, res) => {
     }
 };
 
-export default { getProducts, deleteProduct, deactivateProduct, activateProduct, getAddProduct, addProduct, getEditProduct, editProduct, productUpload }
+export default { getProducts, deleteProduct, deactivateProduct, activateProduct, getAddProduct, addProduct, getEditProduct, editProduct, productUpload };

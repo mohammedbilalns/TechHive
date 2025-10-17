@@ -44,7 +44,7 @@ const getWishlist = async (req, res) => {
         log.red("FETCH_WISHLIST_ERROR", error);
         res.status(500).json({ success: false, message: "Error fetching wishlist" });
     }
-}
+};
 
 const addToWishlist = async (req, res) => {
     try {
@@ -90,7 +90,7 @@ const addToWishlist = async (req, res) => {
             message: "Error adding product to wishlist" 
         });
     }
-}
+};
 
 const removeFromWishlist = async (req, res) => {
     try {
@@ -128,6 +128,6 @@ const removeFromWishlist = async (req, res) => {
             message: "Error removing product from wishlist" 
         });
     }
-}
+};
 
-export default { getWishlist, addToWishlist, removeFromWishlist }
+export default { getWishlist, addToWishlist, removeFromWishlist };

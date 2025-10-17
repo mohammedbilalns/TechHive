@@ -1,4 +1,4 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 const walletSchema = new mongoose.Schema({
 
@@ -38,7 +38,7 @@ const walletSchema = new mongoose.Schema({
             }
         }
     ]
-}, { timestamps: true })
+}, { timestamps: true });
 
 
-export default mongoose.model("wallet", walletSchema)
+export default mongoose.model("wallet", walletSchema);

@@ -357,4 +357,4 @@ const viewCategory = async (req, res) => {
 
 export default {
     loadHome, loadLanding, loadAllProducts, viewProduct, viewCategory
-}
+};

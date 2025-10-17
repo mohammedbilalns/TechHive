@@ -1,6 +1,6 @@
-import cartSchema from "../../model/cartModel.js"
-import productSchema from "../../model/productModel.js"
-import { log } from "mercedlogger"
+import cartSchema from "../../model/cartModel.js";
+import productSchema from "../../model/productModel.js";
+import { log } from "mercedlogger";
 
 const getCart = async (req, res) => {
     try {
@@ -58,7 +58,7 @@ const getCart = async (req, res) => {
             total: "0.00"
         });
     }
-}
+};
 
 const addToCart = async (req, res) => {
     try {
@@ -114,7 +114,7 @@ const addToCart = async (req, res) => {
 
         await cart.save();
 
-        const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0)
+        const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
 
         return res.status(200).json({
             success: true,
@@ -131,7 +131,7 @@ const addToCart = async (req, res) => {
             message: "Error adding product to cart"
         });
     }
-}
+};
 
 const removeFromCart = async (req, res) => {
     try {
@@ -186,7 +186,7 @@ const removeFromCart = async (req, res) => {
             message: "Error removing product from cart"
         });
     }
-}
+};
 
 const updateQuantity = async (req, res) => {
     try {
@@ -329,4 +329,4 @@ export default {
     updateQuantity,
     removeFromCart,
     clearCart
-}
+};

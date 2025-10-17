@@ -1,4 +1,4 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
 const referralSchema = new mongoose.Schema({
 	referrerValue: {
@@ -11,6 +11,6 @@ const referralSchema = new mongoose.Schema({
 		default: 50,
 		required: true
 	}
-}, { timestamps: true })
+}, { timestamps: true });
 
-export default mongoose.model("referral", referralSchema)
+export default mongoose.model("referral", referralSchema);

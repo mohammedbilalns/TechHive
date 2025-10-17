@@ -91,7 +91,7 @@ const updateOrderItemStatus = async (req, res) => {
       if (order.coupon && order.coupon.discount > 0) {
         // Distribute coupon 
         const totalPrice = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        couponDiscount = (orderItem.quantity * orderItem.price / totalPrice) * order.coupon.discount
+        couponDiscount = (orderItem.quantity * orderItem.price / totalPrice) * order.coupon.discount;
 
       }
 

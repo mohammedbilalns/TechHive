@@ -1,8 +1,7 @@
 import Order from '../../model/orderModel.js';
-import User from '../../model/userModel.js';
 import ExcelJS from 'exceljs';
 import PDFDocument from 'pdfkit';
-import { log } from "mercedlogger"
+import { log } from "mercedlogger";
 
 
 const renderSalesReport = async (req, res) => {

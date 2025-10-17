@@ -10,8 +10,8 @@ const isValidPincode = (pincode) => {
     return /^\d{6}$/.test(pincode);
 };
 const isValidEmail = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-}
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
 
 const isValidPassword = (password) => {
     const hasMinLength = password.length >= 8;
@@ -20,9 +20,9 @@ const isValidPassword = (password) => {
     const hasNumber = /\d/.test(password);
     const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};:'",.<>/?\\|]/.test(password);
 
-    return (hasMinLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar)
+    return (hasMinLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar);
 
-}
+};
 
 
-export default { isValidName, isValidPhone, isValidPincode, isValidEmail, isValidPassword }
+export default { isValidName, isValidPhone, isValidPincode, isValidEmail, isValidPassword };

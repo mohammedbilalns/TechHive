@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import authUtils from "../../utils/authUtils.js";
 import { config } from "dotenv";
 import passport from "passport";
-import validation from "../../utils/validations.js"
+import validation from "../../utils/validations.js";
 import referralSchema from "../../model/referralModel.js";
 import walletSchema from "../../model/walletModel.js";
 import referralUtils from "../../utils/referralCode.js";
@@ -20,8 +20,8 @@ const loadLogin = (req, res) => {
 const verifyLogin = async (req, res) => {
     try {
         let { email, password } = req.body;
-        email = email.trim()
-        password = password.trim()
+        email = email.trim();
+        password = password.trim();
 
         const user = await userSchema.findOne({ email });// find the user 
 
@@ -29,14 +29,14 @@ const verifyLogin = async (req, res) => {
             return res.status(401).json({
                 success: false,
                 message: "Email and password are required"
-            })
+            });
         }
 
         if (!validation.isValidEmail(email)) {
             return res.status(401).json({
                 success: false,
                 message: "Enter a valid email address"
-            })
+            });
         }
 
         if (!user) {
@@ -108,48 +108,48 @@ const loadSignup = (req, res) => {
 const registerUser = async (req, res) => {
     try {
         let { fullname, phonenumber, email, password, confirmPassword } = req.body;
-        fullname = fullname.trim()
-        phonenumber = phonenumber.trim()
-        email = email.trim()
-        password = password.trim()
-        confirmPassword = confirmPassword.trim()
+        fullname = fullname.trim();
+        phonenumber = phonenumber.trim();
+        email = email.trim();
+        password = password.trim();
+        confirmPassword = confirmPassword.trim();
         const otp = authUtils.generateOTP();
 
         if (!fullname || !phonenumber || !email || !password || !confirmPassword) {
             return res.status(400).json({
                 success: false,
                 message: "All fields are required"
-            })
+            });
         }
         if (!/^[a-zA-Z ]{3,30}$/.test(fullname)) {
             return res.status(400).json({
                 success: false,
                 message: "Full name should containe only alphabets (3-30 characters)"
-            })
+            });
         }
         if (!validation.isValidPhone(phonenumber)) {
             return res.status(400).json({
                 success: false,
                 message: "Phone number must be 10 digits"
-            })
+            });
         }
         if (!validation.isValidEmail(email)) {
             return res.status(400).json({
                 success: false,
                 message: "Please enter a valid email address"
-            })
+            });
         }
         if (!validation.isValidPassword(password)) {
             return res.status(400).json({
                 success: false,
                 message: "Password must contain 8+ characters with uppercase, lowercase, number, and special character"
-            })
+            });
         }
         if (password !== confirmPassword) {
             return res.status(400).json({
                 success: false,
                 message: "Passwords do not match"
-            })
+            });
         }
         // Check if a user already exists with the given email or phone number
         const existingUser = await userSchema.findOne({
@@ -161,7 +161,7 @@ const registerUser = async (req, res) => {
 
         // If the user already exists, return an error message
         if (existingUser && existingUser.status == "Pending") {
-            await userSchema.findOneAndDelete({ email })
+            await userSchema.findOneAndDelete({ email });
 
         } else if (existingUser) {
             let message;
@@ -173,7 +173,7 @@ const registerUser = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message
-            })
+            });
         }
 
         // Hash the password 
@@ -239,7 +239,7 @@ const registerUser = async (req, res) => {
 
 // Verify OTP entered by the user 
 const verifyOTP = async (req, res) => {
-    const { otp1, otp2, otp3, otp4, email, timeRem } = req.body;
+    const { otp1, otp2, otp3, otp4, email} = req.body;
     const userOTP = otp1 + otp2 + otp3 + otp4;
 
     try {
@@ -384,15 +384,15 @@ const authGoogleCallback = (req, res) => {
 const logoutUser = (req, res) => {
 
     try {
-        delete req.session.user
+        delete req.session.user;
         res.render('user/auth/login', { message: "Logged out successfully", alertType: "success" });
 
     } catch (error) {
-        log.red('Error destroying session', err);
+        log.red('Error destroying session', error);
         return res.status(500).send('Unable to log out');
     }
 
-}
+};
 
 
 
@@ -553,15 +553,15 @@ const resendForgotPasswordOTP = async (req, res) => {
 const resetPassword = async (req, res) => {
     let { email, password, confirmPassword } = req.body;
     email = email.trim();
-    password = password.trim()
-    confirmPassword = confirmPassword.trim()
+    password = password.trim();
+    confirmPassword = confirmPassword.trim();
 
     try {
         if (!password || !confirmPassword) {
             return res.status(400).json({
                 success: false,
                 message: "All fields are required"
-            })
+            });
         }
         const user = await userSchema.findOne({ email });
 
@@ -583,7 +583,7 @@ const resetPassword = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Passwords do not match..."
-            })
+            });
         }
 
         // Hash the new password
@@ -608,9 +608,9 @@ const resetPassword = async (req, res) => {
 const applyReferral = async (req, res) => {
     try {
         const { referralCode } = req.body;
-        log.cyan("REFERRAL CODE", referralCode)
+        log.cyan("REFERRAL CODE", referralCode);
         const currentUser = await userSchema.findById(req.session.user.id);
-        log.cyan("CURRENT USER",)
+        log.cyan("CURRENT USER",);
         // Find referrer
         const referrer = await userSchema.findOne({ referralCode });
 
@@ -690,6 +690,6 @@ export default {
     resendForgotPasswordOTP, resetPassword,
     registerUser, authGoogle, authGoogleCallback,
     logoutUser, applyReferral
-}
+};
 
 

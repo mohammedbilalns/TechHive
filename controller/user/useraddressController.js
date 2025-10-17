@@ -6,16 +6,16 @@ import mongoose from 'mongoose';
 // get all addresses of a user
 const getAddresses = async (req, res) => {
     try {
-        let email = req.session.user.email
-        let user = await userSchema.findOne({ email })
+        let email = req.session.user.email;
+        let user = await userSchema.findOne({ email });
 
-        let addresses = await addressSchema.find({ userId: user._id })
-        res.render('user/profile/addresses', { addresses, user, page: "addresses" })
+        let addresses = await addressSchema.find({ userId: user._id });
+        res.render('user/profile/addresses', { addresses, user, page: "addresses" });
     } catch (error) {
-        log.red("FETCH_ADDRESSES_ERROR", error)
-        res.status(500).render("notfound")
+        log.red("FETCH_ADDRESSES_ERROR", error);
+        res.status(500).render("notfound");
     }
-}
+};
 
 // Add a new address
 const addAddress = async (req, res) => {
@@ -30,10 +30,10 @@ const addAddress = async (req, res) => {
         }
 
         const { state, pincode, phone, alternatePhone } = req.body;
-        const name = req.body.name.trim()
-        const houseName = req.body.houseName.trim()
-        const localityStreet = req.body.localityStreet.trim()
-        const city = req.body.city.trim()
+        const name = req.body.name.trim();
+        const houseName = req.body.houseName.trim();
+        const localityStreet = req.body.localityStreet.trim();
+        const city = req.body.city.trim();
 
         // Validate required fields
         if (!name || !houseName || !localityStreet || !city || !state || !pincode || !phone) {
@@ -47,39 +47,39 @@ const addAddress = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Name must be between 3 and 50 characters"
-            })
+            });
         }
 
         if (houseName.length < 3 || houseName.length > 50) {
             return res.status(400).json({
                 success: false,
                 message: "House name must be between 3 and 50 characters"
-            })
+            });
         }
 
         if (localityStreet.length < 3 || localityStreet.length > 50) {
             return res.status(400).json({
                 success: false,
                 message: "Locality/Street must be between 3 and 50 characters"
-            })
+            });
         }
         if (city.length < 3 || city.length > 50) {
             return res.status(400).json({
                 success: false,
                 message: 'City must be between 3 and 50 characters'
-            })
+            });
         }
         if (!/^\d{6}$/.test(pincode)) {
             return res.status(400).json({
                 success: false,
                 message: 'Please enter a valid pincode'
-            })
+            });
         }
         if (!/^\d{10}$/.test(phone)) {
             return res.status(400).json({
                 success: false,
                 message: 'Please enter a 10-digit valid Phone number'
-            })
+            });
         }
         const newAddress = new addressSchema({
             userId: req.session.user.id,
@@ -126,38 +126,38 @@ const updateAddress = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: "Name must be between 3 and 50 characters"
-            })
+            });
         }
 
         if (houseName.length < 3 || houseName.length > 50) {
             return res.status(400).json({
                 success: false,
                 message: "House name must be between 3 and 50 characters"
-            })
+            });
         }
         if (localityStreet.length < 3 || localityStreet.length > 50) {
             return res.status(400).json({
                 success: false,
                 message: "Locality/Street must be between 3 and 50 characters"
-            })
+            });
         }
         if (city.length < 3 || city.length > 50) {
             return res.status(400).json({
                 success: false,
                 message: 'City must be between 3 and 50 characters'
-            })
+            });
         }
         if (!/^\d{6}$/.test(pincode)) {
             return res.status(400).json({
                 success: false,
                 message: 'Please enter a valid pincode'
-            })
+            });
         }
         if (!/^\d{10}$/.test(phone)) {
             return res.status(400).json({
                 success: false,
                 message: 'Please enter a 10-digit valid Phone number'
-            })
+            });
         }
         const address = await addressSchema.findOneAndUpdate(
             {
@@ -234,7 +234,7 @@ const getAddress = async (req, res) => {
 
         // Validate if addressId is a valid  ObjectId
         if (!mongoose.Types.ObjectId.isValid(addressId)) {
-            return res.redirect("/notfound?message=Invalid+Address+Id&alertType=error")
+            return res.redirect("/notfound?message=Invalid+Address+Id&alertType=error");
         }
 
         const address = await addressSchema.findOne({
@@ -268,4 +268,4 @@ export default {
     updateAddress,
     deleteAddress,
     getAddress
-}
+};

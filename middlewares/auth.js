@@ -1,4 +1,4 @@
-import userModel from "../model/userModel.js"
+import userModel from "../model/userModel.js";
 
 const checkSession = async (req, res, next) => {
     try {
@@ -18,7 +18,7 @@ const checkSession = async (req, res, next) => {
         delete req.session.user;
         return res.redirect('/login?message=Session+error&alertType=error');
     }
-}
+};
 
 const isLogin = (req, res, next) => {
     try {
@@ -30,6 +30,6 @@ const isLogin = (req, res, next) => {
         console.log('Login Check Error:', error);
         next(error);
     }
-}
+};
 
-export default { isLogin, checkSession }
+export default { isLogin, checkSession };

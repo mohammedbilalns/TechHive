@@ -2,7 +2,7 @@ import Offer from '../../model/offerModel.js';
 import Category from '../../model/categoryModel.js';
 import Product from '../../model/productModel.js';
 import Referral from '../../model/referralModel.js';
-import { log } from "mercedlogger"
+import { log } from "mercedlogger";
 
 const updateProductDiscounts = async (offer, remove = false) => {
     if (!offer.isActive && !remove) return;
@@ -98,7 +98,7 @@ const getOffers = async (req, res) => {
         log.red('ERROR_FETCHING_OFFERS', error);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
-}
+};
 
 // Get offer details
 const getOfferDetails = async (req, res) => {
@@ -141,7 +141,7 @@ const getOfferDetails = async (req, res) => {
             error: error.message
         });
     }
-}
+};
 
 // Add new offer
 const addOffer = async (req, res) => {
@@ -154,7 +154,7 @@ const addOffer = async (req, res) => {
             categories,
             products
         } = req.body;
-        const name = req.body.name.trim()
+        const name = req.body.name.trim();
         if (!name || !offerType || !offerPercentage || !startDate || !endDate || !categories || !products) {
             return res.status(400).json({
                 success: false,
@@ -215,9 +215,10 @@ const addOffer = async (req, res) => {
             offerId: newOffer._id
         });
     } catch (error) {
+				log.error("ERROR_ADDING_OFFER", error);
         res.status(500).json({ success: false, message: 'Failed to add offer' });
     }
-}
+};
 
 // Update offer
 const updateOffer = async (req, res) => {
@@ -235,7 +236,7 @@ const updateOffer = async (req, res) => {
             categories,
             products
         } = req.body;
-        const name = req.body.name.trim()
+        const name = req.body.name.trim();
         if (!name || !offerType || !offerPercentage || !startDate || !endDate || !categories || !products) {
             return res.status(400).json({
                 success: false,
@@ -301,7 +302,7 @@ const updateOffer = async (req, res) => {
         log.red('ERROR_UPDATING_OFFER', error);
         res.status(500).json({ success: false, message: 'Failed to update offer' });
     }
-}
+};
 
 // Toggle offer status
 const toggleOfferStatus = async (req, res) => {
@@ -345,9 +346,10 @@ const toggleOfferStatus = async (req, res) => {
 
         res.json({ success: true, message: `Offer ${offer.isActive ? 'activated' : 'deactivated'} successfully` });
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Failed to toggle offer status' });
+    	log.error("ERROR_TOGGLING_OFFER_STATUS", error);
+		res.status(500).json({ success: false, message: 'Failed to toggle offer status' });
     }
-}
+};
 
 // Delete offer
 const deleteOffer = async (req, res) => {
@@ -362,10 +364,12 @@ const deleteOffer = async (req, res) => {
         await offer.deleteOne();
 
         res.json({ success: true, message: 'Offer deleted successfully' });
+
     } catch (error) {
-        res.status(500).json({ success: false, message: 'Failed to delete offer' });
+    	log.error("ERROR_DELETING_OFFER", error);
+		res.status(500).json({ success: false, message: 'Failed to delete offer' });
     }
-}
+};
 
 //  update referral settings
 const updateReferralSettings = async (req, res) => {

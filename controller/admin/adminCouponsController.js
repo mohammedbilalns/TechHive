@@ -62,7 +62,7 @@ const addCoupon = async (req, res) => {
             startDate,
             expiryDate
         } = req.body;
-        const code = req.body.code.toUpperCase().trim()
+        const code = req.body.code.toUpperCase().trim();
         if (!code || !description || !discountType || !discountValue || !minPurchase || !maxDiscount || !usageLimit || !startDate || !expiryDate) {
             return res.status(400).json({
                 success: false,
@@ -194,7 +194,7 @@ const updateCoupon = async (req, res) => {
             startDate,
             expiryDate
         } = req.body;
-        const code = req.body.code.toUpperCase().trim()
+        const code = req.body.code.toUpperCase().trim();
 
         if (!code || !description || !discountType || !discountValue || !minPurchase || !maxDiscount || !usageLimit || !startDate || !expiryDate) {
             return res.status(400).json({

@@ -11,7 +11,7 @@ import walletModel from '../../model/walletModel.js';
 import mongoose from 'mongoose';
 import PDFDocument from 'pdfkit';
 import { log } from 'mercedlogger';
-configDotenv()
+configDotenv();
 
 const placeOrder = async (req, res) => {
   try {
@@ -180,7 +180,7 @@ const placeOrder = async (req, res) => {
           receipt: order._id.toString()
         });
 
-        log.cyan('Razorpayorder', razorpayOrder)
+        log.cyan('Razorpayorder', razorpayOrder);
 
         order.paymentDetails = {
           razorpayOrderId: razorpayOrder.id
@@ -196,6 +196,7 @@ const placeOrder = async (req, res) => {
         });
       } catch (error) {
         // Save order with pending status
+				log.error("FAILED TO CREATE RAZORPAY ORDER",error)
         order.paymentStatus = 'pending';
         order.items.forEach(item => item.status = 'pending');
         await order.save();
@@ -455,7 +456,7 @@ const cancelOrderItem = async (req, res) => {
       if (order.coupon && order.coupon.discount > 0) {
         // Distribute coupon discount
         const totalPrice = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        couponDiscount = (orderItem.quantity * orderItem.price / totalPrice) * order.coupon.discount
+        couponDiscount = (orderItem.quantity * orderItem.price / totalPrice) * order.coupon.discount;
 
       }
 
