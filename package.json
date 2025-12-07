@@ -30,7 +30,7 @@
     "multer": "^2.0.1",
     "nanoid": "^5.0.9",
     "nocache": "^4.0.0",
-    "nodemailer": "^6.9.16",
+    "nodemailer": "^7.0.7",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "pdfkit": "^0.15.2",
