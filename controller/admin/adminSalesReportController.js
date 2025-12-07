@@ -3,7 +3,6 @@ import ExcelJS from 'exceljs';
 import PDFDocument from 'pdfkit';
 import { log } from "mercedlogger";
 
-
 const renderSalesReport = async (req, res) => {
   try {
     res.render('admin/salesReport', {

@@ -18,7 +18,6 @@ const PORT = process.env.PORT;
 
 app.set("view engine", "ejs");
 
-
 app.use(compression());
 app.use(nocache());
 app.use(session({
