@@ -27,7 +27,16 @@ app.use(session({
     cookie: { maxAge: 1000 * 60 * 60 * 24 }
 }));
 
-app.use(express.static('static'));
+app.use(
+  express.static(path.join(process.cwd(), "static"), {
+    extensions: ["css", "js"],
+    setHeaders(res, filePath) {
+      if (filePath.endsWith(".css")) {
+        res.setHeader("Content-Type", "text/css");
+      }
+    },
+  })
+);
 app.use('/js', express.static('static/js'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
