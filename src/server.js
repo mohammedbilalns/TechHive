@@ -1,4 +1,5 @@
 import express from "express";
+import path from "node:path"
 import { configDotenv } from "dotenv";
 import { log } from "mercedlogger";
 import nocache from "nocache";
@@ -21,10 +22,10 @@ app.set("view engine", "ejs");
 app.use(compression());
 app.use(nocache());
 app.use(session({
-    secret: process.env.SESSIONSECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: { maxAge: 1000 * 60 * 60 * 24 }
+  secret: process.env.SESSIONSECRET,
+  resave: false,
+  saveUninitialized: true,
+  cookie: { maxAge: 1000 * 60 * 60 * 24 }
 }));
 
 app.use(
@@ -49,14 +50,14 @@ app.use('/admin', adminRoutes);
 
 // 404 handler
 app.use((req, res) => {
-    res.status(404).render('notFound', {
-        fullname: req.session.user ? req.session.user.fullname : null
-    });
+  res.status(404).render('notFound', {
+    fullname: req.session.user ? req.session.user.fullname : null
+  });
 });
 
 connnectDb();
 
 // Start server
 app.listen(PORT, () => {
-    log.green('SERVER STATUS', `server running on port: ${PORT}`);
+  log.green('SERVER STATUS', `server running on port: ${PORT}`);
 });
