@@ -9,3 +9,9 @@ services:
       - "traefik.http.routers.techhive.rule=PathPrefix(`/techhive`)"
       - "traefik.http.routers.techhive.entrypoints=web"
       - "traefik.http.services.techhive.loadbalancer.server.post=3000"
+      - "traefik.http.middlewares.techhive-string.stripprefix.prefixes=/techhive"
+      - "traefik.http.routers.techhive.middlewares=techhive-strip"
+
+networks:
+  web:
+    external:false 
