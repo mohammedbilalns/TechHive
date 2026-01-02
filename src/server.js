@@ -1,5 +1,4 @@
 import express from "express";
-import path from "node:path"
 import { configDotenv } from "dotenv";
 import { log } from "mercedlogger";
 import nocache from "nocache";
@@ -28,27 +27,13 @@ app.use(session({
   cookie: { maxAge: 1000 * 60 * 60 * 24 }
 }));
 
-app.use(
-  express.static(path.join(process.cwd(), "static"), {
-    extensions: ["css", "js"],
-    setHeaders(res, filePath) {
-      if (filePath.endsWith(".css")) {
-        res.setHeader("Content-Type", "text/css");
-      }
-    },
-  })
-);
+
+app.use(express.static("static"))
 app.use('/js', express.static('static/js'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use((req, res, next) => {
-  if (req.originalUrl === "/techhive") {
-    return res.redirect(301, "/techhive/");
-  }
-  next();
-});
 
 // Routes
 app.use('/', userRoutes);
