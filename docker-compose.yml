@@ -3,14 +3,13 @@ services:
     build: .
     image: techhive:latest
     env_file:
-      - .env
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.techhive.rule=PathPrefix(`/techhive`)"
-      - "traefik.http.routers.techhive.entrypoints=web"
-      - "traefik.http.services.techhive.loadbalancer.server.port=3000"
-      - "traefik.http.middlewares.techhive-string.stripprefix.prefixes=/techhive"
-      - "traefik.http.routers.techhive.middlewares=techhive-strip"
+      - .env 
+  labels:
+    - "traefik.enable=true"
+    - "traefik.docker.network=web"
+    - "traefik.http.routers.techhive.rule=PathPrefix(`/techhive`)"
+    - "traefik.http.routers.techhive.entrypoints=web"
+    - "traefik.http.services.techhive.loadbalancer.server.port=3000"
     networks:
       - "web"
 
