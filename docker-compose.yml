@@ -13,5 +13,4 @@ services:
       - "traefik.http.routers.techhive.middlewares=techhive-strip"
 
 networks:
-  web:
-    external:false 
+  web: {}
