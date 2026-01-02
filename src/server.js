@@ -43,6 +43,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use((req, res, next) => {
+  if (req.originalUrl === "/techhive") {
+    return res.redirect(301, "/techhive/");
+  }
+  next();
+});
 
 // Routes
 app.use('/', userRoutes);
