@@ -4,6 +4,10 @@ import addressSchema from "../../model/addressModel.js";
 import mongoose from 'mongoose';
 import { validateAddAddress } from "../../validators/address.validator.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
+import { AppError } from "../../utils/appError.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
+import { ErrorMessages } from "../../constants/errorMessages.js";
+import { SuccessMessage } from "../../constants/successMessage.js";
 
 // get all addresses of a user
 export const getAddresses = async (req, res) => {
@@ -20,40 +24,73 @@ export const getAddresses = async (req, res) => {
 };
 
 // Add a new address
-export const addAddress = async (req, res) => {
-  try {
+export const addAddress = asyncHandler(async (req, res) => {
+  const addressCount = await addressSchema.countDocuments({ userId: req.session.user.id });
+  if (addressCount >= 4) {
+    throw new AppError(HttpStatus.BAD_REQUEST, ErrorMessages.MAX_ADDRESS_LIMIT);
+  }
 
-    const addressCount = await addressSchema.countDocuments({ userId: req.session.user.id });
-    if (addressCount >= 4) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        success: false,
-        message: "Maximum limit of 4 addresses reached"
-      });
-    }
+  const { state, pincode, phone, alternatePhone, name, houseName, localityStreet, city } = req.body;
 
-    const { state, pincode, phone, alternatePhone,name, houseName, localityStreet, city } = req.body;
+  const error = validateAddAddress({
+    name,
+    houseName,
+    localityStreet,
+    city,
+    state,
+    pincode,
+    phone
+  });
 
-    const error = validateAddAddress({
-      name,
-      houseName,
-      localityStreet,
-      city,
-      state,
-      pincode,
-      phone
-    });
+  if (error) {
+    throw new AppError(HttpStatus.BAD_REQUEST, error);
+  }
 
-    if(error){
+  const newAddress = new addressSchema({
+    userId: req.session.user.id,
+    name,
+    houseName,
+    localityStreet,
+    city,
+    state,
+    pincode,
+    phone,
+    alternatePhone
+  });
 
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        success: false,
-        message: error
-      })
-    }
+  const savedAddress = await newAddress.save();
 
+  res.status(HttpStatus.CREATED).json({
+    success: true,
+    message: SuccessMessage.ADDRESS_ADDED,
+    address: savedAddress
+  });
+});
 
-    const newAddress = new addressSchema({
-      userId: req.session.user.id,
+// Update an address
+export const updateAddress = asyncHandler(async (req, res) => {
+  const { name, houseName, localityStreet, city, state, pincode, phone, alternatePhone } = req.body;
+
+  const error = validateAddAddress({
+    name,
+    houseName,
+    localityStreet,
+    city,
+    state,
+    pincode,
+    phone,
+  })
+
+  if (error) {
+    throw new AppError(HttpStatus.BAD_REQUEST, error);
+  }
+
+  const address = await addressSchema.findOneAndUpdate(
+    {
+      _id: req.params.id,
+      userId: req.session.user.id
+    },
+    {
       name,
       houseName,
       localityStreet,
@@ -62,146 +99,59 @@ export const addAddress = async (req, res) => {
       pincode,
       phone,
       alternatePhone
-    });
+    },
+    { new: true }
+  );
 
-    const savedAddress = await newAddress.save();
-
-    res.status(HttpStatus.CREATED).json({
-      success: true,
-      message: "Address added successfully",
-      address: savedAddress
-    });
-  } catch (error) {
-    log.red("ADD_ADDRESS_ERROR", error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: "Failed to add address: " + error.message,
-      error: error.toString()
-    });
+  if (!address) {
+    throw new AppError(HttpStatus.NOT_FOUND, ErrorMessages.ADDRESS_NOT_FOUND);
   }
-};
 
-// Update an address
-export const updateAddress = async (req, res) => {
-  try {
-    const { name, houseName, localityStreet, city, state, pincode, phone, alternatePhone } = req.body;
-
-    const error = validateAddAddress({
-      name,
-      houseName,
-      localityStreet,
-      city,
-      state,
-      pincode,
-      phone,
-    })
-
-    if(error){
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        success: false,
-        message: error
-      })
-    }
-
-    const address = await addressSchema.findOneAndUpdate(
-      {
-        _id: req.params.id,
-        userId: req.session.user.id
-      },
-      {
-        name,
-        houseName,
-        localityStreet,
-        city,
-        state,
-        pincode,
-        phone,
-        alternatePhone
-      },
-      { new: true }
-    );
-
-    if (!address) {
-      return res.status(HttpStatus.NOT_FOUND).json({
-        success: false,
-        message: 'Address not found'
-      });
-    }
-
-    res.status(HttpStatus.OK).json({
-      success: true,
-      message: 'Address updated successfully',
-      address
-    });
-  } catch (error) {
-    log.red("UPDATE_ADDRESS_ERROR", error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: 'Failed to update address'
-    });
-  }
-};
+  res.status(HttpStatus.OK).json({
+    success: true,
+    message: SuccessMessage.ADDRESS_UPDATED,
+    address
+  });
+});
 
 // Delete an address
-export const deleteAddress = async (req, res) => {
-  try {
-    const address = await addressSchema.findOneAndDelete({
-      _id: req.params.id,
-      userId: req.session.user.id
-    });
+export const deleteAddress = asyncHandler(async (req, res) => {
+  const address = await addressSchema.findOneAndDelete({
+    _id: req.params.id,
+    userId: req.session.user.id
+  });
 
-    if (!address) {
-      return res.status(HttpStatus.NOT_FOUND).json({
-        success: false,
-        message: 'Address not found'
-      });
-    }
-
-    res.status(HttpStatus.OK).json({
-      success: true,
-      message: 'Address deleted successfully'
-    });
-  } catch (error) {
-    log.red("DELETE_ADDRESS_ERROR", error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: 'Failed to delete address'
-    });
+  if (!address) {
+    throw new AppError(HttpStatus.NOT_FOUND, ErrorMessages.ADDRESS_NOT_FOUND);
   }
-};
+
+  res.status(HttpStatus.OK).json({
+    success: true,
+    message: SuccessMessage.ADDRESS_DELETED
+  });
+});
 
 // get a single address
-export const getAddress = async (req, res) => {
-  try {
-    const addressId = req.params.id;
-    const userId = req.session.user.id;
+export const getAddress = asyncHandler(async (req, res) => {
+  const addressId = req.params.id;
+  const userId = req.session.user.id;
 
-    // Validate if addressId is a valid  ObjectId
-    if (!mongoose.Types.ObjectId.isValid(addressId)) {
+  // Validate if addressId is a valid  ObjectId
+  if (!mongoose.Types.ObjectId.isValid(addressId)) {
       return res.redirect("/notfound?message=Invalid+Address+Id&alertType=error");
-    }
-
-    const address = await addressSchema.findOne({
-      _id: addressId,
-      userId: userId
-    });
-
-    if (!address) {
-      return res.status(HttpStatus.NOT_FOUND).json({
-        success: false,
-        message: 'Address not found'
-      });
-    }
-
-    res.status(HttpStatus.OK).json({
-      success: true,
-      address
-    });
-  } catch (error) {
-    log.red("GET_ADDRESS_ERROR", error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: 'Failed to fetch address'
-    });
   }
-};
+
+  const address = await addressSchema.findOne({
+    _id: addressId,
+    userId: userId
+  });
+
+  if (!address) {
+    throw new AppError(HttpStatus.NOT_FOUND, ErrorMessages.ADDRESS_NOT_FOUND);
+  }
+
+  res.status(HttpStatus.OK).json({
+    success: true,
+    address
+  });
+});

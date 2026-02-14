@@ -3,6 +3,7 @@ import productSchema from "../../model/productModel.js";
 import categorySchema from "../../model/categoryModel.js";
 import reviewSchema from "../../model/reviewModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
+import { ErrorMessages } from "../../constants/errorMessages.js";
 
 const searchProducts = async (req, res) => {
     try {
@@ -17,7 +18,7 @@ const searchProducts = async (req, res) => {
 
         // Get product ratings 
         const productRatings = await reviewSchema.aggregate([
-            { 
+            {
                 $group: {
                     _id: "$product",
                     avgRating: { $avg: "$rating" }
@@ -62,7 +63,7 @@ const searchProducts = async (req, res) => {
 
         // Apply rating filter 
         if (minRating > 0) {
-            allProducts = allProducts.filter(product => 
+            allProducts = allProducts.filter(product =>
                 (ratingMap.get(product._id.toString()) || 0) >= minRating
             );
         }
@@ -128,11 +129,11 @@ const searchProducts = async (req, res) => {
         log.red("ERROR", error);
         if (req.xhr || req.path === '/api/search') {
             return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-                error: "Error searching products"
+                error: ErrorMessages.ERROR_SEARCHING_PRODUCTS
             });
         }
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).render('notfound', {
-            message: "Error searching products",
+            message: ErrorMessages.ERROR_SEARCHING_PRODUCTS,
             alertType: "error"
         });
     }

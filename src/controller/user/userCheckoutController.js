@@ -5,6 +5,10 @@ import walletModel from '../../model/walletModel.js';
 import couponModel from '../../model/couponModel.js';
 import { HttpStatus } from '../../constants/statusCodes.js';
 import { log } from 'mercedlogger';
+import { AppError } from "../../utils/appError.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
+import { ErrorMessages } from "../../constants/errorMessages.js";
+import { SuccessMessage } from "../../constants/successMessage.js";
 
 const getCheckout = async (req, res) => {
   try {
@@ -63,108 +67,82 @@ const getCheckout = async (req, res) => {
     log.red('CHECKOUT_ERROR', error);
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: 'Something went wrong. Please try again.'
+      message: ErrorMessages.SOMETHING_WENT_WRONG
     });
   }
 };
 
-const applyCoupon = async (req, res) => {
-  try {
-    const { couponCode } = req.body;
-    const userId = req.session.user.id;
+const applyCoupon = asyncHandler(async (req, res) => {
+  const { couponCode } = req.body;
+  const userId = req.session.user.id;
 
-    // Find cart and calculate total
-    const cart = await cartModel.findOne({ user: userId }).populate('items.productId');
-    let subtotal = 0;
-    cart.items.forEach(item => {
-      const itemPrice = item.productId.price * (1 - item.productId.discount / 100);
-      subtotal += itemPrice * item.quantity;
-    });
+  // Find cart and calculate total
+  const cart = await cartModel.findOne({ user: userId }).populate('items.productId');
+  let subtotal = 0;
+  cart.items.forEach(item => {
+    const itemPrice = item.productId.price * (1 - item.productId.discount / 100);
+    subtotal += itemPrice * item.quantity;
+  });
 
-    // Find and validate coupon
-    const coupon = await couponModel.findOne({
-      code: couponCode.toUpperCase(),
-      isActive: true,
-      expiryDate: { $gt: new Date() }
-    });
+  // Find and validate coupon
+  const coupon = await couponModel.findOne({
+    code: couponCode.toUpperCase(),
+    isActive: true,
+    expiryDate: { $gt: new Date() }
+  });
 
-    if (!coupon) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        success: false,
-        message: 'Invalid or expired coupon'
-      });
-    }
-
-    // Check minimum purchase requirement
-    if (subtotal < coupon.minPurchase) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        success: false,
-        message: `Minimum purchase of ₹${coupon.minPurchase} required`
-      });
-    }
-
-    // Check usage limit
-    const userUsageCount = coupon.usageHistory.filter(
-      history => history.userId.toString() === userId
-    ).length;
-
-    if (userUsageCount >= coupon.usageLimit) {
-      return res.status(HttpStatus.BAD_REQUEST).json({
-        success: false,
-        message: 'Coupon usage limit exceeded'
-      });
-    }
-
-    // Calculate discount
-    let discountAmount;
-    if (coupon.discountType === 'PERCENTAGE') {
-      discountAmount = (subtotal * coupon.discountValue) / 100;
-      if (coupon.maxDiscount) {
-        discountAmount = Math.min(discountAmount, coupon.maxDiscount);
-      }
-    } else {
-      discountAmount = coupon.discountValue;
-    }
-
-    // Store coupon in session
-    req.session.coupon = {
-      code: couponCode,
-      discount: discountAmount
-    };
-
-    return res.status(HttpStatus.OK).json({
-      success: true,
-      couponCode: couponCode,
-      discount: discountAmount,
-      message: 'Coupon applied successfully'
-    });
-
-  } catch (error) {
-    log.red('APPLY_COUPON_ERROR', error);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: 'Error applying coupon'
-    });
+  if (!coupon) {
+    throw new AppError(HttpStatus.BAD_REQUEST, ErrorMessages.INVALID_COUPON);
   }
-};
 
-const removeCoupon = async (req, res) => {
-  try {
-    // Remove coupon from session
-    delete req.session.coupon;
-
-    return res.status(HttpStatus.OK).json({
-      success: true,
-      message: 'Coupon removed successfully'
-    });
-  } catch (error) {
-    log.red('REMOVE_COUPON_ERROR', error);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: 'Error removing coupon'
-    });
+  // Check minimum purchase requirement
+  if (subtotal < coupon.minPurchase) {
+    throw new AppError(HttpStatus.BAD_REQUEST, `Minimum purchase of ₹${coupon.minPurchase} required`);
   }
-};
+
+  // Check usage limit
+  const userUsageCount = coupon.usageHistory.filter(
+    history => history.userId.toString() === userId
+  ).length;
+
+  if (userUsageCount >= coupon.usageLimit) {
+    throw new AppError(HttpStatus.BAD_REQUEST, ErrorMessages.COUPON_LIMIT_EXCEEDED);
+  }
+
+  // Calculate discount
+  let discountAmount;
+  if (coupon.discountType === 'PERCENTAGE') {
+    discountAmount = (subtotal * coupon.discountValue) / 100;
+    if (coupon.maxDiscount) {
+      discountAmount = Math.min(discountAmount, coupon.maxDiscount);
+    }
+  } else {
+    discountAmount = coupon.discountValue;
+  }
+
+  // Store coupon in session
+  req.session.coupon = {
+    code: couponCode,
+    discount: discountAmount
+  };
+
+  return res.status(HttpStatus.OK).json({
+    success: true,
+    couponCode: couponCode,
+    discount: discountAmount,
+    message: SuccessMessage.COUPON_APPLIED
+  });
+});
+
+const removeCoupon = asyncHandler(async (req, res) => {
+  // Remove coupon from session
+  delete req.session.coupon;
+
+  return res.status(HttpStatus.OK).json({
+    success: true,
+    message: SuccessMessage.COUPON_REMOVED
+  });
+});
 
 export default {
   getCheckout,

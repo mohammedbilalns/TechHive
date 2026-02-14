@@ -5,6 +5,10 @@ import razorpay from '../../utils/razorpayConfig.js';
 import crypto from 'crypto';
 import { log } from 'mercedlogger';
 import { HttpStatus } from '../../constants/statusCodes.js';
+import { AppError } from "../../utils/appError.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
+import { ErrorMessages } from "../../constants/errorMessages.js";
+import { SuccessMessage } from "../../constants/successMessage.js";
 
 const getWallet = async (req, res) => {
     try {
@@ -13,8 +17,8 @@ const getWallet = async (req, res) => {
         const skip = (page - 1) * limit;
 
         const wallet = await walletModel.findOne({ userId: req.session.user.id });
-        const user =  await userModel.findOne({_id: req.session.user.id});
-      
+        const user = await userModel.findOne({ _id: req.session.user.id });
+
         if (!wallet) {
             // Create wallet if it doesn't exist
             const newWallet = new walletModel({
@@ -28,7 +32,7 @@ const getWallet = async (req, res) => {
                 user,
                 currentPage: 1,
                 totalPages: 1,
-                page:"wallet"
+                page: "wallet"
             });
         }
 
@@ -49,41 +53,37 @@ const getWallet = async (req, res) => {
             user,
             currentPage: page,
             totalPages,
-            page:"wallet"
+            page: "wallet"
         });
 
     } catch (error) {
         log.red('GET_WALLET_ERROR', error);
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
             success: false,
-            message: 'Error fetching wallet details'
+            message: ErrorMessages.ERROR_FETCHING_WALLET
         });
     }
 };
 
-const addMoney = async (req, res) => {
+const addMoney = asyncHandler(async (req, res) => {
+    const { amount } = req.body;
+    const numAmount = parseFloat(amount);
+
+    if (!numAmount || numAmount <= 0) {
+        throw new AppError(HttpStatus.BAD_REQUEST, ErrorMessages.INVALID_AMOUNT);
+    }
+
+    // Create Razorpay order
+    const orderOptions = {
+        amount: Math.round(numAmount * 100), // Convert to paise
+        currency: 'INR',
+        receipt: 'wallet_' + nanoid(8)
+    };
+
+    console.log('Creating Razorpay order with options:', orderOptions);
+
     try {
-        const { amount } = req.body;
-        const numAmount = parseFloat(amount);
-        
-        if (!numAmount || numAmount <= 0) {
-            return res.status(HttpStatus.BAD_REQUEST).json({
-                success: false,
-                message: 'Invalid amount'
-            });
-        }
-
-        // Create Razorpay order
-        const orderOptions = {
-            amount: Math.round(numAmount * 100), // Convert to paise
-            currency: 'INR',
-            receipt: 'wallet_' + nanoid(8)
-        };
-
-        console.log('Creating Razorpay order with options:', orderOptions);
-
         const razorpayOrder = await razorpay.orders.create(orderOptions);
-
         console.log('Razorpay order created:', razorpayOrder);
 
         res.status(HttpStatus.OK).json({
@@ -91,72 +91,55 @@ const addMoney = async (req, res) => {
             amount: razorpayOrder.amount,
             razorpayOrderId: razorpayOrder.id
         });
-
     } catch (error) {
-        log.red('ADD_MONEY_ERROR', error);
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-            success: false,
-            message: error.message || 'Error creating payment order'
-        });
+        throw new AppError(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessages.ERROR_CREATING_PAYMENT);
     }
-};
+});
 
-const verifyWalletPayment = async (req, res) => {
-    try {
-        
-        const { 
-            razorpay_payment_id, 
-            razorpay_order_id,
-            razorpay_signature,
-            amount 
-        } = req.body;
+const verifyWalletPayment = asyncHandler(async (req, res) => {
+    const {
+        razorpay_payment_id,
+        razorpay_order_id,
+        razorpay_signature,
+        amount
+    } = req.body;
 
-        // Verify signature
-        const sign = razorpay_order_id + "|" + razorpay_payment_id;
-        const expectedSign = crypto
+    // Verify signature
+    const sign = razorpay_order_id + "|" + razorpay_payment_id;
+    const expectedSign = crypto
             .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-            .update(sign.toString())
-            .digest("hex");
+        .update(sign.toString())
+        .digest("hex");
 
-        if (razorpay_signature === expectedSign) {
-            const wallet = await walletModel.findOne({ userId: req.session.user.id });
-            
-            if (!wallet) {
-                return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: 'Wallet not found' });
-            }
+    if (razorpay_signature === expectedSign) {
+        const wallet = await walletModel.findOne({ userId: req.session.user.id });
 
-            // Add money to wallet
-            const amountInRupees = amount / 100; // Convert from paise to rupees
-            wallet.balance += amountInRupees;
-            wallet.transactions.push({
-                transactionId: 'TXN' + nanoid(8).toUpperCase(),
-                type: 'CREDIT',
-                amount: amountInRupees,
-                description: 'Added money to wallet',
-                date: new Date()
-            });
-
-            await wallet.save();
-
-            res.status(HttpStatus.OK).json({ 
-                success: true,
-                message: 'Payment verified and wallet updated successfully',
-                newBalance: wallet.balance
-            });
-        } else {
-            res.status(HttpStatus.BAD_REQUEST).json({ 
-                success: false, 
-                message: 'Payment verification failed' 
-            });
+        if (!wallet) {
+            throw new AppError(HttpStatus.NOT_FOUND, ErrorMessages.WALLET_NOT_FOUND);
         }
-    } catch (error) {
-        log.red('PAYMENT_VERIFICATION_ERROR', error);
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ 
-            success: false, 
-            message: 'Payment verification failed' 
+
+        // Add money to wallet
+        const amountInRupees = amount / 100; // Convert from paise to rupees
+        wallet.balance += amountInRupees;
+        wallet.transactions.push({
+            transactionId: 'TXN' + nanoid(8).toUpperCase(),
+            type: 'CREDIT',
+            amount: amountInRupees,
+            description: 'Added money to wallet',
+            date: new Date()
         });
+
+        await wallet.save();
+
+        res.status(HttpStatus.OK).json({
+            success: true,
+            message: SuccessMessage.PAYMENT_VERIFIED_WALLET_UPDATED,
+            newBalance: wallet.balance
+        });
+    } else {
+        throw new AppError(HttpStatus.BAD_REQUEST, ErrorMessages.PAYMENT_VERIFICATION_FAILED);
     }
-};
+});
 
 export default {
     getWallet,
