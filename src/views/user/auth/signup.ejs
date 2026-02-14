@@ -1,6 +1,6 @@
 <%- include('../../partials/authheader') %>
 
-  <main class="py-8 flex justify-center items-center min-h-[70vh]">
+  <main class="min-h-[calc(100vh-64px)] flex justify-center items-center p-4">
     <div class="bg-primary-white rounded-lg shadow-lg flex flex-col lg:flex-row overflow-hidden max-w-4xl w-full">
       <!-- Image Section -->
       <div class="bg-[#DA0037] p-8 hidden sm:flex flex-col justify-center items-center lg:w-1/2">
@@ -26,20 +26,20 @@
           <div class="mb-3">
             <input type="text" id="fullname" placeholder="Full Name" value="<%= locals.fullname ? fullname : '' %>"
               name="fullname" class="border w-full px-3 py-2 rounded-md transition-colors" />
-            <p class="text-red-500 text-sm mt-1 hidden" id="fullnameError"></p>
+            <p class="text-red-500 text-sm mt-1 min-h-[1.25rem]" id="fullnameError"></p>
           </div>
 
           <div class="mb-3">
             <input type="tel" id="phonenumber" placeholder="Phone Number"
               value="<%= locals.phonenumber ? phonenumber : '' %>" name="phonenumber"
               class="border w-full px-3 py-2 rounded-md transition-colors" />
-            <p class="text-red-500 text-sm mt-1 hidden" id="phonenumberError"></p>
+            <p class="text-red-500 text-sm mt-1 min-h-[1.25rem]" id="phonenumberError"></p>
           </div>
 
           <div class="mb-3">
             <input type="email" id="email" placeholder="Email" value="<%= locals.email ? email : '' %>" name="email"
               class="border w-full px-3 py-2 rounded-md transition-colors" />
-            <p class="text-red-500 text-sm mt-1 hidden" id="emailError"></p>
+            <p class="text-red-500 text-sm mt-1 min-h-[1.25rem]" id="emailError"></p>
           </div>
 
           <div class="relative w-full mb-3">
@@ -51,7 +51,7 @@
                 <i class="fas fa-eye"></i>
               </span>
             </div>
-            <p class="text-red-500 text-sm mt-1 hidden" id="passwordError"></p>
+            <p class="text-red-500 text-sm mt-1 min-h-[1.25rem]" id="passwordError"></p>
           </div>
 
           <div class="relative w-full mb-3">
@@ -63,7 +63,7 @@
                 <i class="fas fa-eye"></i>
               </span>
             </div>
-            <p class="text-red-500 text-sm mt-1 hidden" id="confirmPasswordError"></p>
+            <p class="text-red-500 text-sm mt-1 min-h-[1.25rem]" id="confirmPasswordError"></p>
           </div>
 
           <p class="text-xs text-gray-500 mb-3">
@@ -90,479 +90,488 @@
       </div>
     </div>
   </main>
-  <%- include('../../partials/authfooter') %>
 
-    <div id="otpModal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center">
-      <div class="bg-primary-white rounded-lg shadow-lg max-w-md w-full p-6">
-        <div class="bg-gray-50 flex flex-col items-center text-center">
-          <p class="text-2xl font-semibold text-gray-800 mb-4">OTP Verification</p>
-          <p class="text-gray-600 mb-2">Enter the 4-digit verification code sent to</p>
-          <p class="text-primary-accent font-medium mb-4" id="otpEmail"></p>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js" defer></script>
+  <script type="module">
+    import { customConfirm, showToast } from '/js/util.js';
+    window.customConfirm = customConfirm;
+    window.showToast = showToast;
+  </script>
 
-          <div class="flex gap-2 mb-6">
-            <input type="text" maxlength="1" class="otp-input w-12 h-12 border text-center text-xl rounded-md"
-              name="otp1" />
-            <input type="text" maxlength="1" class="otp-input w-12 h-12 border text-center text-xl rounded-md"
-              name="otp2" />
-            <input type="text" maxlength="1" class="otp-input w-12 h-12 border text-center text-xl rounded-md"
-              name="otp3" />
-            <input type="text" maxlength="1" class="otp-input w-12 h-12 border text-center text-xl rounded-md"
-              name="otp4" />
-          </div>
 
-          <div id="otpAlertMessage" class="mb-4 p-3 rounded-md hidden"></div>
-          <div id="warningMessage" class="mb-4 p-3 rounded-md bg-red-100 text-red-700" style="display: none;">
-            OTP expired
-          </div>
+  <div id="otpModal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center">
+    <div class="bg-primary-white rounded-lg shadow-lg max-w-md w-full p-6">
+      <div class="bg-gray-50 flex flex-col items-center text-center">
+        <p class="text-2xl font-semibold text-gray-800 mb-4">OTP Verification</p>
+        <p class="text-gray-600 mb-2">Enter the 4-digit verification code sent to</p>
+        <p class="text-primary-accent font-medium mb-4" id="otpEmail"></p>
 
-          <button type="button" id="verifyOtpButton"
-            class="w-full py-2 mb-4 text-white bg-[#DA0037] hover:bg-red-700 rounded-md flex items-center justify-center transition-colors duration-300">
-            <span>Verify Code</span>
-            <div id="verifyLoader" class="hidden ml-2">
-              <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            </div>
-          </button>
-
-          <div class="text-center">
-            <div class="flex items-center justify-center">
-              <span class="text-gray-600">Didn't receive code?</span>
-              <button id="resendButton" type="button"
-                class="text-primary-accent ml-2 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled>
-                <span>Resend OTP</span>
-                <div id="resendLoader" class="hidden ml-2">
-                  <div class="w-4 h-4 border-2 border-primary-accent border-t-transparent rounded-full animate-spin">
-                  </div>
-                </div>
-              </button>
-            </div>
-            <p id="timer" class="mt-2 text-gray-600">You can resend OTP in: 1:00</p>
-          </div>
+        <div class="flex gap-2 mb-6">
+          <input type="text" maxlength="1" class="otp-input w-12 h-12 border text-center text-xl rounded-md"
+            name="otp1" />
+          <input type="text" maxlength="1" class="otp-input w-12 h-12 border text-center text-xl rounded-md"
+            name="otp2" />
+          <input type="text" maxlength="1" class="otp-input w-12 h-12 border text-center text-xl rounded-md"
+            name="otp3" />
+          <input type="text" maxlength="1" class="otp-input w-12 h-12 border text-center text-xl rounded-md"
+            name="otp4" />
         </div>
-      </div>
-    </div>
 
-    <div id="referralModal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center">
-      <div class="bg-primary-white rounded-lg shadow-lg max-w-md w-full p-6">
-        <div class="bg-gray-50 flex flex-col items-center text-center">
-          <p class="text-2xl font-semibold text-gray-800 mb-4">Enter Referral Code</p>
-          <p class="text-gray-600 mb-4">Have a referral code? Enter it below to get rewards!</p>
+        <div id="otpAlertMessage" class="mb-4 p-3 rounded-md hidden"></div>
+        <div id="warningMessage" class="mb-4 p-3 rounded-md bg-red-100 text-red-700" style="display: none;">
+          OTP expired
+        </div>
 
-          <input type="text" id="referralCode" placeholder="Enter referral code"
-            class="border w-full mb-4 px-3 py-2 rounded-md uppercase" />
+        <button type="button" id="verifyOtpButton"
+          class="w-full py-2 mb-4 text-white bg-[#DA0037] hover:bg-red-700 rounded-md flex items-center justify-center transition-colors duration-300">
+          <span>Verify Code</span>
+          <div id="verifyLoader" class="hidden ml-2">
+            <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        </button>
 
-          <div id="referralAlertMessage" class="mb-4 p-3 rounded-md hidden"></div>
-
-          <div class="flex gap-3 w-full">
-            <button type="button" id="skipReferral" class="w-1/2 py-2 text-gray-600 bg-gray-200 rounded-md">
-              Skip
-            </button>
-            <button type="button" id="applyReferral"
-              class="w-1/2 py-2 text-white bg-[#DA0037] hover:bg-red-700 rounded-md flex items-center justify-center transition-colors duration-300">
-              <span>Apply</span>
-              <div id="referralLoader" class="hidden ml-2">
-                <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+        <div class="text-center">
+          <div class="flex items-center justify-center">
+            <span class="text-gray-600">Didn't receive code?</span>
+            <button id="resendButton" type="button"
+              class="text-primary-accent ml-2 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled>
+              <span>Resend OTP</span>
+              <div id="resendLoader" class="hidden ml-2">
+                <div class="w-4 h-4 border-2 border-primary-accent border-t-transparent rounded-full animate-spin">
+                </div>
               </div>
             </button>
           </div>
+          <p id="timer" class="mt-2 text-gray-600">You can resend OTP in: 1:00</p>
         </div>
       </div>
     </div>
+  </div>
 
-    <script>
+  <div id="referralModal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center">
+    <div class="bg-primary-white rounded-lg shadow-lg max-w-md w-full p-6">
+      <div class="bg-gray-50 flex flex-col items-center text-center">
+        <p class="text-2xl font-semibold text-gray-800 mb-4">Enter Referral Code</p>
+        <p class="text-gray-600 mb-4">Have a referral code? Enter it below to get rewards!</p>
 
-      document.getElementById('signupForm').addEventListener('submit', async function (event) {
-        event.preventDefault();
+        <input type="text" id="referralCode" placeholder="Enter referral code"
+          class="border w-full mb-4 px-3 py-2 rounded-md uppercase" />
 
-        // Reset all error states
-        resetErrors();
+        <div id="referralAlertMessage" class="mb-4 p-3 rounded-md hidden"></div>
 
-        const fullname = document.getElementById('fullname').value.trim();
-        const phonenumber = document.getElementById('phonenumber').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const password = document.getElementById('password').value.trim();
-        const confirmPassword = document.getElementById('confirmPassword').value.trim();
+        <div class="flex gap-3 w-full">
+          <button type="button" id="skipReferral" class="w-1/2 py-2 text-gray-600 bg-gray-200 rounded-md">
+            Skip
+          </button>
+          <button type="button" id="applyReferral"
+            class="w-1/2 py-2 text-white bg-[#DA0037] hover:bg-red-700 rounded-md flex items-center justify-center transition-colors duration-300">
+            <span>Apply</span>
+            <div id="referralLoader" class="hidden ml-2">
+              <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        let hasError = false;
+  <script>
 
-        // Validations
-        if (!fullname) {
-          showError('fullname', 'Full name is required');
-          hasError = true;
-        } else if (!/^[a-zA-Z ]{3,30}$/.test(fullname)) {
-          showError('fullname', 'Full name should contain only alphabets (3-30 characters)');
+    document.getElementById('signupForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      // Reset all error states
+      resetErrors();
+
+      const fullname = document.getElementById('fullname').value.trim();
+      const phonenumber = document.getElementById('phonenumber').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+      let hasError = false;
+
+      // Validations
+      if (!fullname) {
+        showError('fullname', 'Full name is required');
+        hasError = true;
+      } else if (!/^[a-zA-Z ]{3,30}$/.test(fullname)) {
+        showError('fullname', 'Full name should contain only alphabets (3-30 characters)');
+        hasError = true;
+      }
+
+      if (!phonenumber) {
+        showError('phonenumber', 'Phone number is required');
+        hasError = true;
+      } else if (!/^\d{10}$/.test(phonenumber)) {
+        showError('phonenumber', 'Phone number must be 10 digits');
+        hasError = true;
+      }
+
+      if (!email) {
+        showError('email', 'Email is required');
+        hasError = true;
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showError('email', 'Please enter a valid email address');
+        hasError = true;
+      }
+
+      if (!password) {
+        showError('password', 'Password is required');
+        hasError = true;
+      } else {
+        const hasMinLength = password.length >= 8;
+        const hasUpperCase = /[A-Z]/.test(password);
+        const hasLowerCase = /[a-z]/.test(password);
+        const hasNumber = /\d/.test(password);
+        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+        if (!hasMinLength || !hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecialChar) {
+          showError('password', 'Password must contain at least 8 characters, including uppercase, lowercase letters, numbers, and special characters');
           hasError = true;
         }
+      }
 
-        if (!phonenumber) {
-          showError('phonenumber', 'Phone number is required');
-          hasError = true;
-        } else if (!/^\d{10}$/.test(phonenumber)) {
-          showError('phonenumber', 'Phone number must be 10 digits');
-          hasError = true;
+      if (!confirmPassword) {
+        showError('confirmPassword', 'Please confirm your password');
+        hasError = true;
+      } else if (password !== confirmPassword) {
+        showError('confirmPassword', 'Passwords do not match');
+        hasError = true;
+      }
+
+      if (hasError) return;
+
+      const signupButton = document.getElementById('signupButton');
+      const signupLoader = document.getElementById('signupLoader');
+      const buttonText = signupButton.querySelector('span');
+
+      try {
+        buttonText.textContent = 'Signing up...';
+        signupLoader.classList.remove('hidden');
+        signupButton.disabled = true;
+
+        const response = await axios.post('/signup', {
+          fullname,
+          phonenumber,
+          email,
+          password,
+          confirmPassword
+        });
+
+        if (response.data.success) {
+          showOtpModal(response.data.email);
         }
+      } catch (error) {
+        const errorMessage = error.response?.data?.message || 'Signup failed';
+        showToast(errorMessage, 'error');
+      } finally {
+        buttonText.textContent = 'Sign Up';
+        signupLoader.classList.add('hidden');
+        signupButton.disabled = false;
+      }
+    });
 
-        if (!email) {
-          showError('email', 'Email is required');
-          hasError = true;
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-          showError('email', 'Please enter a valid email address');
-          hasError = true;
-        }
+    function showError(fieldId, message) {
+      const input = document.getElementById(fieldId);
+      const errorElement = document.getElementById(`${fieldId}Error`);
 
-        if (!password) {
-          showError('password', 'Password is required');
-          hasError = true;
+      input.classList.add('border-red-500');
+      errorElement.textContent = message;
+    }
+
+    function resetErrors() {
+      const fields = ['fullname', 'phonenumber', 'email', 'password', 'confirmPassword'];
+      fields.forEach(field => {
+        const input = document.getElementById(field);
+        const errorElement = document.getElementById(`${field}Error`);
+
+        input.classList.remove('border-red-500');
+        errorElement.textContent = '';
+      });
+    }
+
+    // Add input event listeners to clear errors when user starts typing
+    ['fullname', 'phonenumber', 'email', 'password', 'confirmPassword'].forEach(field => {
+      document.getElementById(field).addEventListener('input', function () {
+        this.classList.remove('border-red-500');
+        document.getElementById(`${field}Error`).textContent = '';
+      });
+    });
+
+    // Toggle password visibility
+    function togglePasswordVisibility(inputId, toggleId) {
+      const input = document.getElementById(inputId);
+      const toggle = document.getElementById(toggleId);
+      const icon = toggle.querySelector('i');
+
+      toggle.addEventListener('click', () => {
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.classList.remove('fa-eye');
+          icon.classList.add('fa-eye-slash');
         } else {
-          const hasMinLength = password.length >= 8;
-          const hasUpperCase = /[A-Z]/.test(password);
-          const hasLowerCase = /[a-z]/.test(password);
-          const hasNumber = /\d/.test(password);
-          const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-
-          if (!hasMinLength || !hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecialChar) {
-            showError('password', 'Password must contain at least 8 characters, including uppercase, lowercase letters, numbers, and special characters');
-            hasError = true;
-          }
-        }
-
-        if (!confirmPassword) {
-          showError('confirmPassword', 'Please confirm your password');
-          hasError = true;
-        } else if (password !== confirmPassword) {
-          showError('confirmPassword', 'Passwords do not match');
-          hasError = true;
-        }
-
-        if (hasError) return;
-
-        const signupButton = document.getElementById('signupButton');
-        const signupLoader = document.getElementById('signupLoader');
-        const buttonText = signupButton.querySelector('span');
-
-        try {
-          buttonText.textContent = 'Signing up...';
-          signupLoader.classList.remove('hidden');
-          signupButton.disabled = true;
-
-          const response = await axios.post('/signup', {
-            fullname,
-            phonenumber,
-            email,
-            password,
-            confirmPassword
-          });
-
-          if (response.data.success) {
-            showOtpModal(response.data.email);
-          }
-        } catch (error) {
-          const errorMessage = error.response?.data?.message || 'Signup failed';
-          showToast(errorMessage, 'error');
-        } finally {
-          buttonText.textContent = 'Sign Up';
-          signupLoader.classList.add('hidden');
-          signupButton.disabled = false;
+          input.type = 'password';
+          icon.classList.remove('fa-eye-slash');
+          icon.classList.add('fa-eye');
         }
       });
+    }
 
-      function showError(fieldId, message) {
-        const input = document.getElementById(fieldId);
-        const errorElement = document.getElementById(`${fieldId}Error`);
+    // Initialize toggle for both password fields
+    togglePasswordVisibility('password', 'togglePassword');
+    togglePasswordVisibility('confirmPassword', 'toggleConfirmPassword');
 
-        input.classList.add('border-red-500');
-        errorElement.textContent = message;
-        errorElement.classList.remove('hidden');
-      }
+    // otp verification 
+    let timeLeft = 60;
+    let countdownTimer;
 
-      function resetErrors() {
-        const fields = ['fullname', 'phonenumber', 'email', 'password', 'confirmPassword'];
-        fields.forEach(field => {
-          const input = document.getElementById(field);
-          const errorElement = document.getElementById(`${field}Error`);
+    function showOtpModal(email) {
+      document.getElementById('otpModal').classList.replace("hidden", "flex");
+      document.getElementById('otpEmail').textContent = email;
+      // Reset timer value
+      timeLeft = 60;
+      document.getElementById('timer').textContent = 'You can resend OTP in: 1:00';
+      document.getElementById('timer').style.display = 'block';
+      document.getElementById('warningMessage').style.display = 'none';
 
-          input.classList.remove('border-red-500');
-          errorElement.classList.add('hidden');
-          errorElement.textContent = '';
-        });
-      }
-
-      // Add input event listeners to clear errors when user starts typing
-      ['fullname', 'phonenumber', 'email', 'password', 'confirmPassword'].forEach(field => {
-        document.getElementById(field).addEventListener('input', function () {
-          this.classList.remove('border-red-500');
-          document.getElementById(`${field}Error`).classList.add('hidden');
-        });
+      // Reset OTP fields
+      otpInputs.forEach(input => {
+        input.value = '';
+        input.disabled = false;
       });
 
-      // Toggle password visibility
-      function togglePasswordVisibility(inputId, toggleId) {
-        const input = document.getElementById(inputId);
-        const toggle = document.getElementById(toggleId);
-        const icon = toggle.querySelector('i');
+      // Reset alert message
+      document.getElementById('otpAlertMessage').classList.add('hidden');
 
-        toggle.addEventListener('click', () => {
-          if (input.type === 'password') {
-            input.type = 'text';
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-          } else {
-            input.type = 'password';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-          }
-        });
+      // Clear timer
+      if (countdownTimer) {
+        clearInterval(countdownTimer);
       }
 
-      // Initialize toggle for both password fields
-      togglePasswordVisibility('password', 'togglePassword');
-      togglePasswordVisibility('confirmPassword', 'toggleConfirmPassword');
+      // Start timer
+      startTimer();
+    }
 
-      // otp verification 
-      let timeLeft = 60;
-      let countdownTimer;
+    function startTimer() {
+      resendButton.disabled = true;
+      resendButton.style.cursor = 'not-allowed';
 
-      function showOtpModal(email) {
-        document.getElementById('otpModal').classList.replace("hidden", "flex");
-        document.getElementById('otpEmail').textContent = email;
-        // Reset timer value
-        timeLeft = 60;
-        document.getElementById('timer').textContent = 'You can resend OTP in: 1:00';
-        document.getElementById('timer').style.display = 'block';
-        document.getElementById('warningMessage').style.display = 'none';
+      countdownTimer = setInterval(function () {
+        timeLeft--;
+        let minutes = Math.floor(timeLeft / 60);
+        let seconds = timeLeft % 60;
+        document.getElementById('timer').textContent =
+          `You can resend OTP in: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
-        // Reset OTP fields
-        otpInputs.forEach(input => {
-          input.value = '';
-          input.disabled = false;
-        });
-
-        // Reset alert message
-        document.getElementById('otpAlertMessage').classList.add('hidden');
-
-        // Clear timer
-        if (countdownTimer) {
+        if (timeLeft <= 0) {
           clearInterval(countdownTimer);
+          resendButton.disabled = false;
+          resendButton.style.cursor = 'pointer';
+          document.querySelectorAll('.otp-input').forEach(input => {
+            input.disabled = true;
+          });
+          document.getElementById('warningMessage').style.display = 'block';
+          document.getElementById('timer').style.display = 'none';
         }
+      }, 1000);
+    }
 
-        // Start timer
-        startTimer();
+    // OTP Input Navigation
+    const otpInputs = document.querySelectorAll('.otp-input');
+    otpInputs.forEach((input, index) => {
+      input.addEventListener('input', (event) => {
+        const current = event.target;
+        const next = otpInputs[index + 1];
+        current.value = current.value.replace(/[^0-9]/g, '');
+        if (current.value.length === 1 && next) {
+          next.focus();
+        }
+      });
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace') {
+          const prev = otpInputs[index - 1];
+          if (input.value === '' && prev) {
+            e.preventDefault();
+            prev.value = '';
+            prev.focus();
+          }
+        }
+      });
+    });
+
+    function closeOtpModal() {
+      document.getElementById('otpModal').classList.replace('flex', "hidden");
+      // Clear  timer
+      if (countdownTimer) {
+        clearInterval(countdownTimer);
       }
+      // Reset all OTP inputs and states
+      otpInputs.forEach(input => {
+        input.value = '';
+        input.disabled = false;
+      });
+      document.getElementById('warningMessage').style.display = 'none';
+      document.getElementById('timer').style.display = 'block';
+      document.getElementById('otpAlertMessage').classList.add('hidden');
 
-      function startTimer() {
+      // Reset the signup form
+      document.getElementById('signupForm').reset();
+    }
+
+    //  function to clear OTP fields
+    function clearOtpFields() {
+      otpInputs.forEach(input => {
+        input.value = '';
+      });
+      // Focus on first input
+      otpInputs[0].focus();
+    }
+
+    // Update the verify OTP event listener
+    document.getElementById('verifyOtpButton').addEventListener('click', async () => {
+      const verifyButton = document.getElementById('verifyOtpButton');
+      const verifyLoader = document.getElementById('verifyLoader');
+      const buttonText = verifyButton.querySelector('span');
+
+      try {
+        // Show loading state
+        buttonText.textContent = 'Verifying...';
+        verifyLoader.classList.remove('hidden');
+        verifyButton.disabled = true;
+
+        const otp = Array.from(otpInputs).map(input => input.value).join('');
+        const email = document.getElementById('otpEmail').textContent;
+
+        const response = await axios.post('/verify-otp', {
+          otp1: otp[0],
+          otp2: otp[1],
+          otp3: otp[2],
+          otp4: otp[3],
+          email,
+          timeRem: timeLeft
+        });
+
+        if (response.data.success) {
+          document.getElementById('otpModal').classList.replace("flex", "hidden");
+          document.getElementById('referralModal').classList.replace("hidden", "flex");
+        }
+      } catch (error) {
+        const alertMessage = document.getElementById('otpAlertMessage');
+        alertMessage.textContent = error.response?.data?.message || 'Verification failed';
+        alertMessage.classList.remove('hidden');
+        alertMessage.classList.add('bg-red-100', 'text-red-700');
+
+        clearOtpFields();
+
+        if (error.response?.data?.maxAttemptsExceeded) {
+          closeOtpModal();
+          showToast('Maximum attempts exceeded. Please sign up again.', 'error');
+        }
+      } finally {
+        // Reset loading state
+        buttonText.textContent = 'Verify Code';
+        verifyLoader.classList.add('hidden');
+        verifyButton.disabled = false;
+      }
+    });
+
+    //  resend OTP event listener
+    document.getElementById('resendButton').addEventListener('click', async () => {
+      const email = document.getElementById('otpEmail').textContent;
+      const resendButton = document.getElementById('resendButton');
+      const resendLoader = document.getElementById('resendLoader');
+      const buttonText = resendButton.querySelector('span');
+
+      try {
+        // Show loading state
+        buttonText.textContent = 'Sending...';
+        resendLoader.classList.remove('hidden');
         resendButton.disabled = true;
-        resendButton.style.cursor = 'not-allowed';
 
-        countdownTimer = setInterval(function () {
-          timeLeft--;
-          let minutes = Math.floor(timeLeft / 60);
-          let seconds = timeLeft % 60;
-          document.getElementById('timer').textContent =
-            `You can resend OTP in: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-
-          if (timeLeft <= 0) {
-            clearInterval(countdownTimer);
-            resendButton.disabled = false;
-            resendButton.style.cursor = 'pointer';
-            document.querySelectorAll('.otp-input').forEach(input => {
-              input.disabled = true;
-            });
-            document.getElementById('warningMessage').style.display = 'block';
-            document.getElementById('timer').style.display = 'none';
-          }
-        }, 1000);
-      }
-
-      // OTP Input Navigation
-      const otpInputs = document.querySelectorAll('.otp-input');
-      otpInputs.forEach((input, index) => {
-        input.addEventListener('input', (event) => {
-          const current = event.target;
-          const next = otpInputs[index + 1];
-          current.value = current.value.replace(/[^0-9]/g, '');
-          if (current.value.length === 1 && next) {
-            next.focus();
-          }
-        });
-
-        input.addEventListener('keydown', (e) => {
-          if (e.key === 'Backspace') {
-            const prev = otpInputs[index - 1];
-            if (input.value === '' && prev) {
-              e.preventDefault();
-              prev.value = '';
-              prev.focus();
-            }
-          }
-        });
-      });
-
-      function closeOtpModal() {
-        document.getElementById('otpModal').classList.replace('flex', "hidden");
-        // Clear  timer
-        if (countdownTimer) {
-          clearInterval(countdownTimer);
-        }
-        // Reset all OTP inputs and states
-        otpInputs.forEach(input => {
-          input.value = '';
-          input.disabled = false;
-        });
-        document.getElementById('warningMessage').style.display = 'none';
-        document.getElementById('timer').style.display = 'block';
-        document.getElementById('otpAlertMessage').classList.add('hidden');
-
-        // Reset the signup form
-        document.getElementById('signupForm').reset();
-      }
-
-      //  function to clear OTP fields
-      function clearOtpFields() {
-        otpInputs.forEach(input => {
-          input.value = '';
-        });
-        // Focus on first input
-        otpInputs[0].focus();
-      }
-
-      // Update the verify OTP event listener
-      document.getElementById('verifyOtpButton').addEventListener('click', async () => {
-        const verifyButton = document.getElementById('verifyOtpButton');
-        const verifyLoader = document.getElementById('verifyLoader');
-        const buttonText = verifyButton.querySelector('span');
-
-        try {
-          // Show loading state
-          buttonText.textContent = 'Verifying...';
-          verifyLoader.classList.remove('hidden');
-          verifyButton.disabled = true;
-
-          const otp = Array.from(otpInputs).map(input => input.value).join('');
-          const email = document.getElementById('otpEmail').textContent;
-
-          const response = await axios.post('/verify-otp', {
-            otp1: otp[0],
-            otp2: otp[1],
-            otp3: otp[2],
-            otp4: otp[3],
-            email,
-            timeRem: timeLeft
-          });
-
-          if (response.data.success) {
-            document.getElementById('otpModal').classList.replace("flex", "hidden");
-            document.getElementById('referralModal').classList.replace("hidden", "flex");
-          }
-        } catch (error) {
-          const alertMessage = document.getElementById('otpAlertMessage');
-          alertMessage.textContent = error.response?.data?.message || 'Verification failed';
-          alertMessage.classList.remove('hidden');
-          alertMessage.classList.add('bg-red-100', 'text-red-700');
+        const response = await axios.post('/resend-otp', { email });
+        if (response.data.success) {
+          timeLeft = 60;
+          document.getElementById('timer').textContent = 'You can resend OTP in: 1:00';
+          document.getElementById('warningMessage').style.display = 'none';
+          document.getElementById('timer').style.display = 'block';
 
           clearOtpFields();
+          otpInputs.forEach(input => {
+            input.disabled = false;
+          });
 
-          if (error.response?.data?.maxAttemptsExceeded) {
-            closeOtpModal();
-            showToast('Maximum attempts exceeded. Please sign up again.', 'error');
+          if (countdownTimer) {
+            clearInterval(countdownTimer);
           }
-        } finally {
-          // Reset loading state
-          buttonText.textContent = 'Verify Code';
-          verifyLoader.classList.add('hidden');
-          verifyButton.disabled = false;
-        }
-      });
 
-      //  resend OTP event listener
-      document.getElementById('resendButton').addEventListener('click', async () => {
-        const email = document.getElementById('otpEmail').textContent;
-        const resendButton = document.getElementById('resendButton');
-        const resendLoader = document.getElementById('resendLoader');
-        const buttonText = resendButton.querySelector('span');
+          startTimer();
 
-        try {
-          // Show loading state
-          buttonText.textContent = 'Sending...';
-          resendLoader.classList.remove('hidden');
-          resendButton.disabled = true;
-
-          const response = await axios.post('/resend-otp', { email });
-          if (response.data.success) {
-            timeLeft = 60;
-            document.getElementById('timer').textContent = 'You can resend OTP in: 1:00';
-            document.getElementById('warningMessage').style.display = 'none';
-            document.getElementById('timer').style.display = 'block';
-
-            clearOtpFields();
-            otpInputs.forEach(input => {
-              input.disabled = false;
-            });
-
-            if (countdownTimer) {
-              clearInterval(countdownTimer);
-            }
-
-            startTimer();
-
-            const alertMessage = document.getElementById('otpAlertMessage');
-            alertMessage.textContent = response.data.message;
-            alertMessage.classList.remove('hidden', 'bg-red-100', 'text-red-700');
-            alertMessage.classList.add('bg-green-100', 'text-green-700');
-          }
-        } catch (error) {
           const alertMessage = document.getElementById('otpAlertMessage');
-          alertMessage.textContent = error.response?.data?.message || 'Failed to resend OTP';
-          alertMessage.classList.remove('hidden', 'bg-green-100', 'text-green-700');
-          alertMessage.classList.add('bg-red-100', 'text-red-700');
-
-          if (error.response?.data?.maxAttemptsExceeded) {
-            alertMessage.textContent = 'Maximum resend attempts exceeded. Please sign up again.';
-            closeOtpModal();
-            showToast('Maximum resend attempts exceeded. Please sign up again.', 'error');
-          }
-        } finally {
-          buttonText.textContent = 'Resend OTP';
-          resendLoader.classList.add('hidden');
+          alertMessage.textContent = response.data.message;
+          alertMessage.classList.remove('hidden', 'bg-red-100', 'text-red-700');
+          alertMessage.classList.add('bg-green-100', 'text-green-700');
         }
-      });
+      } catch (error) {
+        const alertMessage = document.getElementById('otpAlertMessage');
+        alertMessage.textContent = error.response?.data?.message || 'Failed to resend OTP';
+        alertMessage.classList.remove('hidden', 'bg-green-100', 'text-green-700');
+        alertMessage.classList.add('bg-red-100', 'text-red-700');
 
-      document.getElementById('skipReferral').addEventListener('click', () => {
-        window.location.href = '/home';
-      });
-
-      document.getElementById('applyReferral').addEventListener('click', async () => {
-        const referralButton = document.getElementById('applyReferral');
-        const referralLoader = document.getElementById('referralLoader');
-        const buttonText = referralButton.querySelector('span');
-        const alertMessage = document.getElementById('referralAlertMessage');
-        const code = document.getElementById('referralCode').value.trim().toUpperCase();
-
-        if (!code) {
-          alertMessage.textContent = 'Please enter a referral code';
-          alertMessage.classList.remove('hidden', 'bg-green-100', 'text-green-700');
-          alertMessage.classList.add('bg-red-100', 'text-red-700');
-          return;
+        if (error.response?.data?.maxAttemptsExceeded) {
+          alertMessage.textContent = 'Maximum resend attempts exceeded. Please sign up again.';
+          closeOtpModal();
+          showToast('Maximum resend attempts exceeded. Please sign up again.', 'error');
         }
+      } finally {
+        buttonText.textContent = 'Resend OTP';
+        resendLoader.classList.add('hidden');
+      }
+    });
 
-        try {
-          buttonText.textContent = 'Applying...';
-          referralLoader.classList.remove('hidden');
-          referralButton.disabled = true;
+    document.getElementById('skipReferral').addEventListener('click', () => {
+      window.location.href = '/home';
+    });
 
-          const response = await axios.post('/apply-referral', { referralCode: code });
+    document.getElementById('applyReferral').addEventListener('click', async () => {
+      const referralButton = document.getElementById('applyReferral');
+      const referralLoader = document.getElementById('referralLoader');
+      const buttonText = referralButton.querySelector('span');
+      const alertMessage = document.getElementById('referralAlertMessage');
+      const code = document.getElementById('referralCode').value.trim().toUpperCase();
 
-          if (response.data.success) {
-            window.location.href = '/home';
-          }
-        } catch (error) {
-          alertMessage.textContent = error.response?.data?.message || 'Failed to apply referral code';
-          alertMessage.classList.remove('hidden', 'bg-green-100', 'text-green-700');
-          alertMessage.classList.add('bg-red-100', 'text-red-700');
-        } finally {
-          buttonText.textContent = 'Apply';
-          referralLoader.classList.add('hidden');
-          referralButton.disabled = false;
+      if (!code) {
+        alertMessage.textContent = 'Please enter a referral code';
+        alertMessage.classList.remove('hidden', 'bg-green-100', 'text-green-700');
+        alertMessage.classList.add('bg-red-100', 'text-red-700');
+        return;
+      }
+
+      try {
+        buttonText.textContent = 'Applying...';
+        referralLoader.classList.remove('hidden');
+        referralButton.disabled = true;
+
+        const response = await axios.post('/apply-referral', { referralCode: code });
+
+        if (response.data.success) {
+          window.location.href = '/home';
         }
-      });
+      } catch (error) {
+        alertMessage.textContent = error.response?.data?.message || 'Failed to apply referral code';
+        alertMessage.classList.remove('hidden', 'bg-green-100', 'text-green-700');
+        alertMessage.classList.add('bg-red-100', 'text-red-700');
+      } finally {
+        buttonText.textContent = 'Apply';
+        referralLoader.classList.add('hidden');
+        referralButton.disabled = false;
+      }
+    });
 
-    </script>
+  </script>
+  </body>
+
+  </html>
