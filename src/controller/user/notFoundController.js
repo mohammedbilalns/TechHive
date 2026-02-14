@@ -1,0 +1,12 @@
+export const  loadNotfound = (req,res)=>{
+
+  const {message , alertType} = req.query
+
+  res.render("notFound", {
+    fullname : req.session?.user?.fullname,
+    message,
+    alertType
+  });
+
+};
+

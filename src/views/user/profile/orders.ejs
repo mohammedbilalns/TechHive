@@ -1,0 +1,176 @@
+<%- include('../../partials/header.ejs') %>
+
+<div class="flex flex-col md:flex-row">
+  <%- include('../../partials/usersidebar.ejs') %>
+
+  <main class="flex-grow p-4 md:py-12">
+    <nav class="flex mb-6 text-sm">
+      <a href="/home" class="text-gray-500 hover:text-primary-accent">Home</a>
+      <span class="mx-2 text-gray-500">/</span>
+      <span class="text-gray-800">Orders</span>
+    </nav>
+
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <h1 class="text-2xl font-semibold text-gray-800">My Orders</h1>
+        
+        <!--  Search Form -->
+        <form class="flex items-center space-x-2 w-full sm:w-auto" id="searchForm">
+          <input 
+            type="search" 
+            name="search" 
+            placeholder="Search orders..." 
+            value="<%= locals.search || '' %>"
+            class="w-full sm:w-auto px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-accent focus:border-transparent"
+          >
+          <button 
+            type="submit"
+            class="flex-shrink-0 px-4 py-2 bg-primary-accent text-white rounded-lg hover:bg-primary-accent/90"
+          >
+            <i class="fas fa-search"></i>
+          </button>
+        </form>
+      </div>
+
+      <% if (orders && orders.length > 0) { %>
+        <div class="space-y-6">
+          <% orders.forEach(order => { %>
+            <a href="/orders/<%= order._id %>" class="block">
+              <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div class="flex items-start sm:items-center space-x-4 w-full sm:w-auto">
+                    <!--  Product Images Preview -->
+                    <div class="flex -space-x-2 flex-shrink-0">
+                      <% if (order.items.length === 1) { %>
+                        <img src="<%= order.items[0].images[0].path %>" 
+                             alt="<%= order.items[0].name %>" 
+                             class="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-white object-cover">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12"></div>
+                      <% } else { %>
+                        <% order.items.slice(0, 2).forEach(item => { %>
+                          <img src="<%= item.images[0].path %>" 
+                               alt="<%= item.name %>" 
+                               class="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-white object-cover">
+                        <% }) %>
+                        <% if (order.items.length > 2) { %>
+                          <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-white bg-gray-200 flex items-center justify-center text-sm font-medium">
+                            +<%= order.items.length - 2 %>
+                          </div>
+                        <% } %>
+                      <% } %>
+                    </div>
+                    <div class="flex-1 sm:min-w-[300px]">
+                      <p class="font-medium break-all sm:break-normal">Order #<%= order.orderId %></p>
+                      <!--  Items List -->
+                      <div class="text-sm text-gray-600 mt-1 break-words sm:break-normal">
+                        <% order.items.forEach((item, index) => { %>
+                          <%= item.name %><%= index < order.items.length - 1 ? ',' : '' %>
+                        <% }) %>
+                      </div>
+                      <% 
+                        let statusDisplay = '';
+                        let displayDate = null;
+                        let statusColor = '';
+                        
+                        // Determine final status and date for the order
+                        if (order.items.every(item => item.status === 'cancelled')) {
+                          statusDisplay = 'Cancelled';
+                          displayDate = order.items[0].cancelledDate;
+                          statusColor = 'text-red-600';
+                        } else if (order.items.every(item => item.status === 'returned')) {
+                          statusDisplay = 'Returned';
+                          displayDate = order.items[0].returnedDate;
+                          statusColor = 'text-blue-600';
+                        } else if (order.items.every(item => item.status === 'delivered')) {
+                          statusDisplay = 'Delivered';
+                          displayDate = order.items[0].deliveredDate;
+                          statusColor = 'text-green-600';
+                        } else if (order.items.every(item => item.status === 'shipped')) {
+                          statusDisplay = 'Shipped';
+                          displayDate = order.items[0].shippedDate;
+                          statusColor = 'text-orange-600';
+                        } else {
+                          statusDisplay = 'Ordered';
+                          displayDate = order.orderDate;
+                          statusColor = 'text-gray-600';
+                        }
+
+                        const formattedDate = new Date(displayDate).toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: '2-digit'
+                        });
+                      %>
+                      <p class="text-sm <%= statusColor %> mt-2">
+                        <%= statusDisplay %> on: <%= formattedDate %>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="text-left sm:text-right flex-shrink-0">
+                    <p class="font-semibold">₹<%= order.totalAmount.toFixed(2) %></p>
+                    <span class="inline-block px-3 py-1 text-sm rounded-full 
+                      <%= order.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 
+                          order.paymentStatus === 'pending' ? 'bg-red-100 text-red-800' :
+                          order.paymentStatus === 'refunded' ? 'bg-blue-100 text-blue-800' :
+                          'bg-yellow-100 text-yellow-800' %>">
+                      <%= order.paymentStatus === 'pending' ? 'Payment Failed' : order.paymentStatus %>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </a>
+          <% }) %>
+        </div>
+
+        <!--  Pagination Controls -->
+        <% if (totalPages > 1) { %>
+          <div class="mt-8 flex flex-wrap justify-center items-center gap-2 px-4">
+            <% if (hasPrevPage) { %>
+              <a href="/orders?page=<%= currentPage - 1 %><%= search ? `&search=${search}` : '' %>"
+                class="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                Previous
+              </a>
+            <% } %>
+
+            <div class="flex flex-wrap justify-center gap-2">
+              <% for(let i = 1; i <= totalPages; i++) { %>
+                <a href="/orders?page=<%= i %><%= search ? `&search=${search}` : '' %>"
+                  class="px-3 py-1.5 text-sm rounded-lg <%= currentPage === i ? 'bg-primary-accent text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' %>">
+                  <%= i %>
+                </a>
+              <% } %>
+            </div>
+
+            <% if (hasNextPage) { %>
+              <a href="/orders?page=<%= currentPage + 1 %><%= search ? `&search=${search}` : '' %>"
+                class="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                Next
+              </a>
+            <% } %>
+          </div>
+        <% } %>
+      <% } else { %>
+        <!-- Empty Orders -->
+        <div class="text-center py-8">
+          <i class="fas fa-shopping-bag text-gray-400 text-4xl mb-4"></i>
+          <p class="text-gray-600">You haven't placed any orders yet</p>
+          <a href="/home" 
+             class="inline-block mt-4 bg-primary-accent text-white px-6 py-2 rounded-lg hover:bg-primary-accent/90">
+            Start Shopping
+          </a>
+        </div>
+      <% } %>
+    </div>
+  </main>
+</div>
+
+<script>
+  
+  document.getElementById('searchForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const searchQuery = new URLSearchParams(new FormData(e.target)).toString();
+    window.location.href = `/orders?${searchQuery}`;
+  });
+</script>
+
+<%- include('../../partials/footer.ejs') %>

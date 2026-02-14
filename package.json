@@ -4,11 +4,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "tailwind": "npx tailwindcss -i ./static/styles/styles.css -o ./static/tailwind/output.css --watch ",
-    "nodemon": "node --watch ./src/server.js",
+    "tailwind": "npx tailwindcss -i ./src/static/styles/styles.css -o ./src/static/tailwind/output.css --watch ",
+    "nodemon": "node --inspect --watch --env-file=.env ./src/server.js",
 		"lint": "eslint --fix --ext .js .",
 		"lint:fix": "eslint --fix --ext .js . --fix",
-    "start": "concurrently 'npm run tailwind' 'npm run nodemon'"
+    "dev": "concurrently 'npm run tailwind' 'npm run nodemon'"
   },
   "type": "module",
   "keywords": [],

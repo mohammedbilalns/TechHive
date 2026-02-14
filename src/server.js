@@ -1,54 +1,71 @@
-import express from "express";
-import { configDotenv } from "dotenv";
+import http from "http";
+import app from "./app.js";
+import { connectDb, closeDb } from "./db/connect.js";
 import { log } from "mercedlogger";
-import nocache from "nocache";
-import session from "express-session";
-import passport from "passport";
-import compression from "compression";
-import userRoutes from "../routes/user.js";
-import adminRoutes from "../routes/admin.js";
-import connnectDb from "../db/connect.js";
-import '../utils/googleAuth.js';
 
+const PORT = process.env.PORT || 5000;
 
-configDotenv();
+const server = http.createServer(app);
 
-const app = express();
-const PORT = process.env.PORT;
+let isShuttingDown = false;
 
-app.set("view engine", "ejs");
+const startServer = async () => {
+  try {
+    await connectDb();
 
-app.use(compression());
-app.use(nocache());
-app.use(session({
-  secret: process.env.SESSIONSECRET,
-  resave: false,
-  saveUninitialized: true,
-  cookie: { maxAge: 1000 * 60 * 60 * 24 }
-}));
+    server.listen(PORT, () => {
+      log.green(`Server running on port`, PORT);
+    });
+  } catch (error) {
+    log.red("Failed to start server:", error);
+    process.exit(1);
+  }
+};
 
+startServer();
 
-app.use(express.static("static"))
-app.use('/js', express.static('static/js'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(passport.initialize());
-app.use(passport.session());
+process.on("uncaughtException", (err) => {
+  log.red("UNCAUGHT EXCEPTION! Shutting down...");
+  console.error(err);
+  process.exit(1);
+});
 
-// Routes
-app.use('/', userRoutes);
-app.use('/admin', adminRoutes);
+process.on("unhandledRejection", (err) => {
+  log.red("UNHANDLED REJECTION! Shutting down...");
+  console.error(err);
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).render('notFound', {
-    fullname: req.session.user ? req.session.user.fullname : null
+  server.close(() => {
+    process.exit(1);
   });
 });
 
-connnectDb();
+const gracefulShutdown = async (signal) => {
+  if (isShuttingDown) return;
+  isShuttingDown = true;
 
-// Start server
-app.listen(PORT, () => {
-  log.green('SERVER STATUS', `server running on port: ${PORT}`);
-});
+  console.log(`${signal} received. Closing server gracefully...`);
+
+  const forceExit = setTimeout(() => {
+    log.red("Shutdown timed out. Forcing exit...");
+    process.exit(1);
+  }, 10000);
+
+  server.closeAllConnections();
+  server.close(async () => {
+    clearTimeout(forceExit);
+    console.log("HTTP server closed.");
+
+    try {
+      await closeDb()
+      log.green("DB_CLOSE_STATUS", "Closed");
+      process.exit(0);
+    } catch (error) {
+      log.red("DB_CLOSE_ERROR", error);
+      process.exit(1);
+    }
+  });
+};
+
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
