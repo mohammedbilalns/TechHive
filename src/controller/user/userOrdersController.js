@@ -697,9 +697,9 @@ const downloadInvoice = async (req, res) => {
     doc.pipe(res);
 
     // Register fonts
-    doc.registerFont('NotoSans', 'static/fonts/NotoSans-Regular.ttf');
-    doc.registerFont('NotoSans-Bold', 'static/fonts/NotoSans-Bold.ttf');
-    doc.registerFont('NotoSans-Italic', 'static/fonts/NotoSans-Italic.ttf');
+    doc.registerFont('NotoSans', 'src/static/fonts/NotoSans-Regular.ttf');
+    doc.registerFont('NotoSans-Bold', 'src/static/fonts/NotoSans-Bold.ttf');
+    doc.registerFont('NotoSans-Italic', 'src/static/fonts/NotoSans-Italic.ttf');
 
     // Header
     doc.fontSize(24)
