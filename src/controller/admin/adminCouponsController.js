@@ -45,12 +45,13 @@ const getCouponDetails = asyncHandler(async (req, res) => {
 });
 
 const addCoupon = asyncHandler(async (req, res) => {
-    const error = validateCoupon(req.body);
+    const { error, value } = validateCoupon(req.body);
     if (error) {
         throw new AppError(HttpStatus.BAD_REQUEST, error);
     }
 
     const {
+        code,
         description,
         discountType,
         discountValue,
@@ -59,8 +60,7 @@ const addCoupon = asyncHandler(async (req, res) => {
         usageLimit,
         startDate,
         expiryDate
-    } = req.body;
-    const code = req.body.code.toUpperCase().trim();
+    } = value;
 
     // Check the coupon code already exists 
     const existingCoupon = await Coupon.findOne({ code: code });
@@ -90,12 +90,13 @@ const addCoupon = asyncHandler(async (req, res) => {
 });
 
 const updateCoupon = asyncHandler(async (req, res) => {
-    const error = validateCoupon(req.body, true);
+    const { error, value } = validateCoupon(req.body, true);
     if (error) {
         throw new AppError(HttpStatus.BAD_REQUEST, error);
     }
 
     const {
+        code,
         description,
         discountType,
         discountValue,
@@ -104,8 +105,7 @@ const updateCoupon = asyncHandler(async (req, res) => {
         usageLimit,
         startDate,
         expiryDate
-    } = req.body;
-    const code = req.body.code.toUpperCase().trim();
+    } = value;
 
     // Check for duplicate coupon code
     const existingCoupon = await Coupon.findOne({

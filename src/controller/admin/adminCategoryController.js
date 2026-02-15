@@ -4,6 +4,7 @@ import productSchema from "../../model/productModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AppError } from "../../utils/appError.js";
+import { validateCategory } from "../../validators/category.validator.js";
 
 //---- Fetch the categories page----
 const getCategories = asyncHandler(async (req, res) => {
@@ -82,20 +83,13 @@ const unhideCategory = asyncHandler(async (req, res) => {
 
 //---- Add a new category----
 const addCategory = asyncHandler(async (req, res) => {
-  let { name, description } = req.body;
-  name = name.trim()[0].toUpperCase() + name.trim().slice(1).toLowerCase();
-  description = description.trim();
+  const { error, value } = validateCategory(req.body);
 
-  if (!name || !description) {
-    throw new AppError(HttpStatus.BAD_REQUEST, 'Category name and description are required');
-  }
-  if (name.length < 3 || name.length > 100) {
-    throw new AppError(HttpStatus.BAD_REQUEST, 'Category name must be between 3-100 characters');
+  if (error) {
+    throw new AppError(HttpStatus.BAD_REQUEST, error);
   }
 
-  if (description.length < 10 || description.length > 100) {
-    throw new AppError(HttpStatus.BAD_REQUEST, 'Description  must be between 10-100 characters');
-  }
+  const { name, description } = value;
 
   const existingCategory = await categorySchema.findOne({ name });
   if (existingCategory) {
@@ -118,22 +112,13 @@ const addCategory = asyncHandler(async (req, res) => {
 
 //---- Edit a category----
 const editCategory = asyncHandler(async (req, res) => {
-  let { name, description } = req.body;
+  const { error, value } = validateCategory(req.body);
 
-  name = name.trim()[0].toUpperCase() + name.trim().slice(1).toLowerCase();
-  description = description.trim();
-
-
-  if (!name || !description) {
-    throw new AppError(HttpStatus.BAD_REQUEST, 'Category name and description are required');
-  }
-  if (name.length < 3 || name.length > 100) {
-    throw new AppError(HttpStatus.BAD_REQUEST, 'Category name must be between 3-100 characters');
+  if (error) {
+    throw new AppError(HttpStatus.BAD_REQUEST, error);
   }
 
-  if (description.length < 10 || description.length > 500) {
-    throw new AppError(HttpStatus.BAD_REQUEST, 'Description  must be between 3-100 characters');
-  }
+  const { name, description } = value;
 
   // find if another category exists with name
   const existingCategory = await categorySchema.findOne({
