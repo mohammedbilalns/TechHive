@@ -64,15 +64,16 @@
   </main>
   <%- include('../partials/adminfooter') %>
 
+    <script src="/js/authValidator.js" type="module"></script>
+    <script src="/js/passwordToggle.js" type="module"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/toastify-js" defer></script>
-    <!-- Assuming showToast is available globally or needs to be imported. Use the same script pattern as user login but adapted -->
     <script type="module">
       import { showToast } from '/js/util.js';
       window.showToast = showToast;
     </script>
 
-    <script>
+    <script type="module">
       if (window.history.replaceState) {
         window.history.replaceState({}, document.title, window.location.pathname);
       }
@@ -81,7 +82,7 @@
         event.preventDefault();
 
         // Reset all error states
-        resetErrors();
+        resetErrors(['email', 'password']);
 
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value.trim();
@@ -91,7 +92,7 @@
         if (!email) {
           showError('email', 'Email is required');
           hasError = true;
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        } else if (!isValidEmail(email)) {
           showError('email', 'Please enter a valid email address');
           hasError = true;
         }
@@ -108,7 +109,6 @@
         const buttonText = loginButton.querySelector('span');
 
         try {
-          // Show loading state
           buttonText.textContent = 'Logging in...';
           loginLoader.classList.remove('hidden');
           loginButton.disabled = true;
@@ -133,46 +133,9 @@
         }
       });
 
-      function showError(fieldId, message) {
-        const input = document.getElementById(fieldId);
-        const errorElement = document.getElementById(`${fieldId}Error`);
-
-        input.classList.add('border-red-500');
-        errorElement.textContent = message;
-      }
-
-      function resetErrors() {
-        const fields = ['email', 'password'];
-        fields.forEach(field => {
-          const input = document.getElementById(field);
-          const errorElement = document.getElementById(`${field}Error`);
-
-          input.classList.remove('border-red-500');
-          errorElement.textContent = '';
-        });
-      }
-
       //  input event listeners to clear errors when user starts typing
-      ['email', 'password'].forEach(field => {
-        document.getElementById(field).addEventListener('input', function () {
-          this.classList.remove('border-red-500');
-          document.getElementById(`${field}Error`).textContent = '';
-        });
-      });
+      attachInputListeners(['email', 'password']);
 
       // Toggle password visibility
-      document.getElementById('togglePassword').addEventListener('click', function () {
-        const passwordInput = document.getElementById('password');
-        const eyeIcon = this.querySelector('i');
-
-        if (passwordInput.type === 'password') {
-          passwordInput.type = 'text';
-          eyeIcon.classList.remove('fa-eye');
-          eyeIcon.classList.add('fa-eye-slash');
-        } else {
-          passwordInput.type = 'password';
-          eyeIcon.classList.remove('fa-eye-slash');
-          eyeIcon.classList.add('fa-eye');
-        }
-      });
+      togglePasswordVisibility('password', 'togglePassword');
     </script>

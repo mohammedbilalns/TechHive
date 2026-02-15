@@ -103,6 +103,8 @@
     </div>
   </main>
 
+  <script src="/js/authValidator.js" type="module"></script>
+  <script src="/js/passwordToggle.js" type="module"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/toastify-js" defer></script>
   <script type="module">
@@ -189,13 +191,13 @@
     </div>
   </div>
 
-  <script>
+  <script type="module">
 
     document.getElementById('signupForm').addEventListener('submit', async function (event) {
       event.preventDefault();
 
       // Reset all error states
-      resetErrors();
+      resetErrors(['fullname', 'phonenumber', 'email', 'password', 'confirmPassword']);
 
       const fullname = document.getElementById('fullname').value.trim();
       const phonenumber = document.getElementById('phonenumber').value.trim();
@@ -209,7 +211,7 @@
       if (!fullname) {
         showError('fullname', 'Full name is required');
         hasError = true;
-      } else if (!/^[a-zA-Z ]{3,30}$/.test(fullname)) {
+      } else if (!isValidName(fullname)) {
         showError('fullname', 'Full name should contain only alphabets (3-30 characters)');
         hasError = true;
       }
@@ -217,7 +219,7 @@
       if (!phonenumber) {
         showError('phonenumber', 'Phone number is required');
         hasError = true;
-      } else if (!/^\d{10}$/.test(phonenumber)) {
+      } else if (!isValidPhone(phonenumber)) {
         showError('phonenumber', 'Phone number must be 10 digits');
         hasError = true;
       }
@@ -225,7 +227,7 @@
       if (!email) {
         showError('email', 'Email is required');
         hasError = true;
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      } else if (!isValidEmail(email)) {
         showError('email', 'Please enter a valid email address');
         hasError = true;
       }
@@ -233,17 +235,9 @@
       if (!password) {
         showError('password', 'Password is required');
         hasError = true;
-      } else {
-        const hasMinLength = password.length >= 8;
-        const hasUpperCase = /[A-Z]/.test(password);
-        const hasLowerCase = /[a-z]/.test(password);
-        const hasNumber = /\d/.test(password);
-        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-
-        if (!hasMinLength || !hasUpperCase || !hasLowerCase || !hasNumber || !hasSpecialChar) {
-          showError('password', 'Password must contain at least 8 characters, including uppercase, lowercase letters, numbers, and special characters');
-          hasError = true;
-        }
+      } else if (!isStrongPassword(password)) {
+        showError('password', 'Password must contain at least 8 characters, including uppercase, lowercase letters, numbers, and special characters');
+        hasError = true;
       }
 
       if (!confirmPassword) {
@@ -286,55 +280,13 @@
       }
     });
 
-    function showError(fieldId, message) {
-      const input = document.getElementById(fieldId);
-      const errorElement = document.getElementById(`${fieldId}Error`);
-
-      input.classList.add('border-red-500');
-      errorElement.textContent = message;
-    }
-
-    function resetErrors() {
-      const fields = ['fullname', 'phonenumber', 'email', 'password', 'confirmPassword'];
-      fields.forEach(field => {
-        const input = document.getElementById(field);
-        const errorElement = document.getElementById(`${field}Error`);
-
-        input.classList.remove('border-red-500');
-        errorElement.textContent = '';
-      });
-    }
-
     // Add input event listeners to clear errors when user starts typing
-    ['fullname', 'phonenumber', 'email', 'password', 'confirmPassword'].forEach(field => {
-      document.getElementById(field).addEventListener('input', function () {
-        this.classList.remove('border-red-500');
-        document.getElementById(`${field}Error`).textContent = '';
-      });
-    });
-
-    // Toggle password visibility
-    function togglePasswordVisibility(inputId, toggleId) {
-      const input = document.getElementById(inputId);
-      const toggle = document.getElementById(toggleId);
-      const icon = toggle.querySelector('i');
-
-      toggle.addEventListener('click', () => {
-        if (input.type === 'password') {
-          input.type = 'text';
-          icon.classList.remove('fa-eye');
-          icon.classList.add('fa-eye-slash');
-        } else {
-          input.type = 'password';
-          icon.classList.remove('fa-eye-slash');
-          icon.classList.add('fa-eye');
-        }
-      });
-    }
+    attachInputListeners(['fullname', 'phonenumber', 'email', 'password', 'confirmPassword']);
 
     // Initialize toggle for both password fields
     togglePasswordVisibility('password', 'togglePassword');
     togglePasswordVisibility('confirmPassword', 'toggleConfirmPassword');
+
 
     // otp verification 
     let timeLeft = 60;
