@@ -3,176 +3,165 @@ import ExcelJS from 'exceljs';
 import PDFDocument from 'pdfkit';
 import { log } from "mercedlogger";
 import { HttpStatus } from '../../constants/statusCodes.js';
+import { asyncHandler } from "../../utils/asyncHandler.js";
+import { AppError } from "../../utils/appError.js";
 
-const renderSalesReport = async (_req, res) => {
-  try {
-    res.render('admin/salesReport', {
-      page: "salesreport"
-    });
-  } catch (error) {
-    log.red('ERROR_RENDERING_SALES_REPORT_PAGE', error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Error loading sales report page');
-  }
-};
+const renderSalesReport = asyncHandler(async (_req, res) => {
+  res.render('admin/salesReport', {
+    page: "salesreport"
+  });
+});
 
-const getSalesReportData = async (req, res) => {
-  try {
-    const { filterType, startDate, endDate } = req.query;
-    const page = parseInt(req.query.page) || 1;
-    const limit = 10;
+const getSalesReportData = asyncHandler(async (req, res) => {
+  const { filterType, startDate, endDate } = req.query;
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
 
-    if (filterType === 'custom') {
-      if (!startDate || !endDate) {
-        return res.status(HttpStatus.BAD_REQUEST).json({ message: 'Start date and end date are required' });
-      }
-
-      const startDateTime = new Date(startDate);
-      const endDateTime = new Date(endDate);
-
-      if (startDateTime > endDateTime) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          message: 'Invalid date range: Start date cannot be after end date'
-        });
-      }
+  if (filterType === 'custom') {
+    if (!startDate || !endDate) {
+      throw new AppError(HttpStatus.BAD_REQUEST, 'Start date and end date are required');
     }
 
-    let dateFilter = {};
+    const startDateTime = new Date(startDate);
+    const endDateTime = new Date(endDate);
 
-    //  date filter based on filter type
-    switch (filterType) {
-      case 'daily':
-        dateFilter = {
-          orderDate: {
-            $gte: new Date(new Date().setHours(0, 0, 0)),
-            $lt: new Date(new Date().setHours(23, 59, 59))
-          }
-        };
-        break;
-      case 'weekly':
-        const weekStart = new Date();
-        weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-        dateFilter = {
-          orderDate: {
-            $gte: new Date(weekStart.setHours(0, 0, 0)),
-            $lt: new Date()
-          }
-        };
-        break;
-      case 'monthly':
-        const monthStart = new Date();
-        monthStart.setDate(1);
-        dateFilter = {
-          orderDate: {
-            $gte: new Date(monthStart.setHours(0, 0, 0)),
-            $lt: new Date()
-          }
-        };
-        break;
-      case 'yearly':
-        const yearStart = new Date(new Date().getFullYear(), 0, 1);
-        dateFilter = {
-          orderDate: {
-            $gte: new Date(yearStart.setHours(0, 0, 0)),
-            $lt: new Date()
-          }
-        };
-        break;
-      case 'custom':
-        if (startDate && endDate) {
-          dateFilter = {
-            orderDate: {
-              $gte: new Date(startDate),
-              $lt: new Date(new Date(endDate).setHours(23, 59, 59))
-            }
-          };
+    if (startDateTime > endDateTime) {
+      throw new AppError(HttpStatus.BAD_REQUEST, 'Invalid date range: Start date cannot be after end date');
+    }
+  }
+
+  let dateFilter = {};
+
+  //  date filter based on filter type
+  switch (filterType) {
+    case 'daily':
+      dateFilter = {
+        orderDate: {
+          $gte: new Date(new Date().setHours(0, 0, 0)),
+          $lt: new Date(new Date().setHours(23, 59, 59))
         }
-        break;
-    }
-
-    dateFilter.status = 'Delivered';
-    dateFilter.isReturned = { $ne: true };
-
-    // First, get all orders to calculate overall totals
-    const allOrders = await Order.find({
-      'items.status': 'delivered',
-      orderDate: dateFilter.orderDate
-    }).populate('userId', 'fullname');
-
-    // Calculate overall totals
-    let overallTotalSales = 0;
-    let overallTotalDiscounts = 0;
-
-    const processedOrders = await Promise.all(allOrders.map(order => {
-      const deliveredItems = order.items.filter(item => item.status === 'delivered');
-      if (deliveredItems.length === 0) return null;
-
-      const itemTotals = deliveredItems.reduce((acc, item) => {
-        const itemOriginalAmount = item.price * item.quantity;
-        const itemDiscountAmount = (item.price * (item.discount / 100)) * item.quantity;
-        acc.originalAmount += itemOriginalAmount;
-        acc.offerDiscount += itemDiscountAmount;
-        return acc;
-      }, { originalAmount: 0, offerDiscount: 0 });
-
-      const orderTotalAmount = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      const deliveredItemsRatio = itemTotals.originalAmount / orderTotalAmount;
-      const couponDiscount = order.coupon?.discount ? (order.coupon.discount * deliveredItemsRatio) : 0;
-
-      const totalDiscount = couponDiscount + itemTotals.offerDiscount;
-
-      overallTotalSales += itemTotals.originalAmount;
-      overallTotalDiscounts += totalDiscount;
-
-      return {
-        orderId: order.orderId,
-        orderDate: order.orderDate,
-        customer: order.userId.fullname,
-        itemCount: deliveredItems.length,
-        totalAmount: itemTotals.originalAmount,
-        discount: {
-          coupon: couponDiscount,
-          offer: itemTotals.offerDiscount,
-          total: totalDiscount
-        },
-        netAmount: itemTotals.originalAmount - totalDiscount
       };
-    }));
-
-    // Filter out null values and get valid orders
-    const validAllOrders = processedOrders.filter(order => order !== null);
-
-    // Get paginated orders
-    const totalOrders = validAllOrders.length;
-    const totalPages = Math.ceil(totalOrders / limit);
-    const skip = (page - 1) * limit;
-
-    // Get the orders for current page
-    const paginatedOrders = validAllOrders.slice(skip, skip + limit);
-
-    res.json({
-      // Overall totals 
-      totalOrders: totalOrders,
-      totalSales: overallTotalSales,
-      totalDiscounts: overallTotalDiscounts,
-      netRevenue: overallTotalSales - overallTotalDiscounts,
-
-      // Paginated orders for the table
-      orders: paginatedOrders,
-
-
-      pagination: {
-        currentPage: page,
-        totalPages,
-        hasNextPage: page < totalPages,
-        hasPrevPage: page > 1
+      break;
+    case 'weekly':
+      const weekStart = new Date();
+      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+      dateFilter = {
+        orderDate: {
+          $gte: new Date(weekStart.setHours(0, 0, 0)),
+          $lt: new Date()
+        }
+      };
+      break;
+    case 'monthly':
+      const monthStart = new Date();
+      monthStart.setDate(1);
+      dateFilter = {
+        orderDate: {
+          $gte: new Date(monthStart.setHours(0, 0, 0)),
+          $lt: new Date()
+        }
+      };
+      break;
+    case 'yearly':
+      const yearStart = new Date(new Date().getFullYear(), 0, 1);
+      dateFilter = {
+        orderDate: {
+          $gte: new Date(yearStart.setHours(0, 0, 0)),
+          $lt: new Date()
+        }
+      };
+      break;
+    case 'custom':
+      if (startDate && endDate) {
+        dateFilter = {
+          orderDate: {
+            $gte: new Date(startDate),
+            $lt: new Date(new Date(endDate).setHours(23, 59, 59))
+          }
+        };
       }
-    });
-
-  } catch (error) {
-    log.red('Sales report error:', error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Failed to generate sales report' });
+      break;
   }
-};
+
+  dateFilter.status = 'Delivered';
+  dateFilter.isReturned = { $ne: true };
+
+  // First, get all orders to calculate overall totals
+  const allOrders = await Order.find({
+    'items.status': 'delivered',
+    orderDate: dateFilter.orderDate
+  }).populate('userId', 'fullname');
+
+  // Calculate overall totals
+  let overallTotalSales = 0;
+  let overallTotalDiscounts = 0;
+
+  const processedOrders = await Promise.all(allOrders.map(order => {
+    const deliveredItems = order.items.filter(item => item.status === 'delivered');
+    if (deliveredItems.length === 0) return null;
+
+    const itemTotals = deliveredItems.reduce((acc, item) => {
+      const itemOriginalAmount = item.price * item.quantity;
+      const itemDiscountAmount = (item.price * (item.discount / 100)) * item.quantity;
+      acc.originalAmount += itemOriginalAmount;
+      acc.offerDiscount += itemDiscountAmount;
+      return acc;
+    }, { originalAmount: 0, offerDiscount: 0 });
+
+    const orderTotalAmount = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const deliveredItemsRatio = itemTotals.originalAmount / orderTotalAmount;
+    const couponDiscount = order.coupon?.discount ? (order.coupon.discount * deliveredItemsRatio) : 0;
+
+    const totalDiscount = couponDiscount + itemTotals.offerDiscount;
+
+    overallTotalSales += itemTotals.originalAmount;
+    overallTotalDiscounts += totalDiscount;
+
+    return {
+      orderId: order.orderId,
+      orderDate: order.orderDate,
+      customer: order.userId.fullname,
+      itemCount: deliveredItems.length,
+      totalAmount: itemTotals.originalAmount,
+      discount: {
+        coupon: couponDiscount,
+        offer: itemTotals.offerDiscount,
+        total: totalDiscount
+      },
+      netAmount: itemTotals.originalAmount - totalDiscount
+    };
+  }));
+
+  // Filter out null values and get valid orders
+  const validAllOrders = processedOrders.filter(order => order !== null);
+
+  // Get paginated orders
+  const totalOrders = validAllOrders.length;
+  const totalPages = Math.ceil(totalOrders / limit);
+  const skip = (page - 1) * limit;
+
+  // Get the orders for current page
+  const paginatedOrders = validAllOrders.slice(skip, skip + limit);
+
+  res.json({
+    // Overall totals 
+    totalOrders: totalOrders,
+    totalSales: overallTotalSales,
+    totalDiscounts: overallTotalDiscounts,
+    netRevenue: overallTotalSales - overallTotalDiscounts,
+
+    // Paginated orders for the table
+    orders: paginatedOrders,
+
+
+    pagination: {
+      currentPage: page,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1
+    }
+  });
+});
 
 const getFormattedDateRange = (filterType, startDate, endDate) => {
   const today = new Date();
@@ -525,132 +514,127 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
   doc.end();
 };
 
-const downloadReport = async (req, res) => {
-  try {
-    const { format, filterType, startDate, endDate } = req.query;
-    let dateFilter = {};
+const downloadReport = asyncHandler(async (req, res) => {
+  const { format, filterType, startDate, endDate } = req.query;
+  let dateFilter = {};
 
-    // Set date filter based on filter type 
-    switch (filterType) {
-      case 'daily':
-        dateFilter = {
-          orderDate: {
-            $gte: new Date(new Date().setHours(0, 0, 0)),
-            $lt: new Date(new Date().setHours(23, 59, 59))
-          }
-        };
-        break;
-      case 'weekly':
-        const weekStart = new Date();
-        weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-        dateFilter = {
-          orderDate: {
-            $gte: new Date(weekStart.setHours(0, 0, 0)),
-            $lt: new Date()
-          }
-        };
-        break;
-      case 'monthly':
-        const monthStart = new Date();
-        monthStart.setDate(1);
-        dateFilter = {
-          orderDate: {
-            $gte: new Date(monthStart.setHours(0, 0, 0)),
-            $lt: new Date()
-          }
-        };
-        break;
-      case 'yearly':
-        const yearStart = new Date(new Date().getFullYear(), 0, 1);
-        dateFilter = {
-          orderDate: {
-            $gte: new Date(yearStart.setHours(0, 0, 0)),
-            $lt: new Date()
-          }
-        };
-        break;
-      case 'custom':
-        if (startDate && endDate) {
-          dateFilter = {
-            orderDate: {
-              $gte: new Date(startDate),
-              $lt: new Date(new Date(endDate).setHours(23, 59, 59))
-            }
-          };
+  // Set date filter based on filter type 
+  switch (filterType) {
+    case 'daily':
+      dateFilter = {
+        orderDate: {
+          $gte: new Date(new Date().setHours(0, 0, 0)),
+          $lt: new Date(new Date().setHours(23, 59, 59))
         }
-        break;
-    }
-
-    // Add delivered status to the filter
-    dateFilter.status = 'Delivered';
-    dateFilter.isReturned = { $ne: true }; // Exclude returned orders
-
-    const orders = await Order.find({
-      'items.status': 'delivered',  // At least one item is delivered
-      orderDate: dateFilter.orderDate
-    })
-      .populate('userId', 'fullname')
-      .sort({ orderDate: -1 });
-
-    const formattedOrders = orders.map(order => {
-      // Filter only delivered items
-      const deliveredItems = order.items.filter(item => item.status === 'delivered');
-
-      // Calculate amounts only for delivered items
-      const itemTotals = deliveredItems.reduce((acc, item) => {
-        const itemOriginalAmount = item.price * item.quantity;
-        const itemDiscountAmount = (item.price * (item.discount / 100)) * item.quantity;
-        return {
-          originalAmount: acc.originalAmount + itemOriginalAmount,
-          offerDiscount: acc.offerDiscount + itemDiscountAmount
-        };
-      }, { originalAmount: 0, offerDiscount: 0 });
-
-      // Calculate coupon discount proportionally for delivered items
-      const orderTotalAmount = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      const deliveredItemsRatio = itemTotals.originalAmount / orderTotalAmount;
-      const couponDiscount = order.coupon?.discount ? (order.coupon.discount * deliveredItemsRatio) : 0;
-
-      return {
-        orderId: order.orderId,
-        orderDate: order.orderDate,
-        customer: order.userId.fullname,
-        itemCount: deliveredItems.length,
-        totalAmount: itemTotals.originalAmount,
-        couponDiscount: couponDiscount,
-        offerDiscount: itemTotals.offerDiscount,
-        netAmount: itemTotals.originalAmount - (couponDiscount + itemTotals.offerDiscount)
       };
-    });
-
-    // Calculate totals
-    const totals = formattedOrders.reduce((acc, order) => ({
-      totalOrders: acc.totalOrders + 1,
-      totalAmount: acc.totalAmount + order.totalAmount,
-      totalCouponDiscounts: acc.totalCouponDiscounts + order.couponDiscount,
-      totalOfferDiscounts: acc.totalOfferDiscounts + order.offerDiscount,
-      totalDiscounts: acc.totalDiscounts + (order.couponDiscount + order.offerDiscount),
-      netAmount: acc.netAmount + order.netAmount
-    }), {
-      totalOrders: 0,
-      totalAmount: 0,
-      totalCouponDiscounts: 0,
-      totalOfferDiscounts: 0,
-      totalDiscounts: 0,
-      netAmount: 0
-    });
-
-    if (format === 'excel') {
-      await generateExcelReport(res, formattedOrders, totals, filterType, startDate, endDate);
-    } else if (format === 'pdf') {
-      await generatePDFReport(res, formattedOrders, totals, filterType, startDate, endDate);
-    }
-
-  } catch (error) {
-    log.red('DOWNLOAD_REPORT_ERROR', error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Failed to download report' });
+      break;
+    case 'weekly':
+      const weekStart = new Date();
+      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+      dateFilter = {
+        orderDate: {
+          $gte: new Date(weekStart.setHours(0, 0, 0)),
+          $lt: new Date()
+        }
+      };
+      break;
+    case 'monthly':
+      const monthStart = new Date();
+      monthStart.setDate(1);
+      dateFilter = {
+        orderDate: {
+          $gte: new Date(monthStart.setHours(0, 0, 0)),
+          $lt: new Date()
+        }
+      };
+      break;
+    case 'yearly':
+      const yearStart = new Date(new Date().getFullYear(), 0, 1);
+      dateFilter = {
+        orderDate: {
+          $gte: new Date(yearStart.setHours(0, 0, 0)),
+          $lt: new Date()
+        }
+      };
+      break;
+    case 'custom':
+      if (startDate && endDate) {
+        dateFilter = {
+          orderDate: {
+            $gte: new Date(startDate),
+            $lt: new Date(new Date(endDate).setHours(23, 59, 59))
+          }
+        };
+      }
+      break;
   }
-};
+
+  // Add delivered status to the filter
+  dateFilter.status = 'Delivered';
+  dateFilter.isReturned = { $ne: true }; // Exclude returned orders
+
+  const orders = await Order.find({
+    'items.status': 'delivered',  // At least one item is delivered
+    orderDate: dateFilter.orderDate
+  })
+    .populate('userId', 'fullname')
+    .sort({ orderDate: -1 });
+
+  const formattedOrders = orders.map(order => {
+    // Filter only delivered items
+    const deliveredItems = order.items.filter(item => item.status === 'delivered');
+
+    // Calculate amounts only for delivered items
+    const itemTotals = deliveredItems.reduce((acc, item) => {
+      const itemOriginalAmount = item.price * item.quantity;
+      const itemDiscountAmount = (item.price * (item.discount / 100)) * item.quantity;
+      return {
+        originalAmount: acc.originalAmount + itemOriginalAmount,
+        offerDiscount: acc.offerDiscount + itemDiscountAmount
+      };
+    }, { originalAmount: 0, offerDiscount: 0 });
+
+    // Calculate coupon discount proportionally for delivered items
+    const orderTotalAmount = order.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const deliveredItemsRatio = itemTotals.originalAmount / orderTotalAmount;
+    const couponDiscount = order.coupon?.discount ? (order.coupon.discount * deliveredItemsRatio) : 0;
+
+    return {
+      orderId: order.orderId,
+      orderDate: order.orderDate,
+      customer: order.userId.fullname,
+      itemCount: deliveredItems.length,
+      totalAmount: itemTotals.originalAmount,
+      couponDiscount: couponDiscount,
+      offerDiscount: itemTotals.offerDiscount,
+      netAmount: itemTotals.originalAmount - (couponDiscount + itemTotals.offerDiscount)
+    };
+  });
+
+  // Calculate totals
+  const totals = formattedOrders.reduce((acc, order) => ({
+    totalOrders: acc.totalOrders + 1,
+    totalAmount: acc.totalAmount + order.totalAmount,
+    totalCouponDiscounts: acc.totalCouponDiscounts + order.couponDiscount,
+    totalOfferDiscounts: acc.totalOfferDiscounts + order.offerDiscount,
+    totalDiscounts: acc.totalDiscounts + (order.couponDiscount + order.offerDiscount),
+    netAmount: acc.netAmount + order.netAmount
+  }), {
+    totalOrders: 0,
+    totalAmount: 0,
+    totalCouponDiscounts: 0,
+    totalOfferDiscounts: 0,
+    totalDiscounts: 0,
+    netAmount: 0
+  });
+
+  if (format === 'excel') {
+    await generateExcelReport(res, formattedOrders, totals, filterType, startDate, endDate);
+  } else if (format === 'pdf') {
+    await generatePDFReport(res, formattedOrders, totals, filterType, startDate, endDate);
+  }
+});
+
 
 export default {
   renderSalesReport,
