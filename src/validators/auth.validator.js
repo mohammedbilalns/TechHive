@@ -1,4 +1,4 @@
-import { isValidName, isValidEmail, isValidPassword } from "../utils/validations.js";
+import { isValidName, isValidEmail, isValidPassword, isValidPhone } from "../utils/validations.js";
 
 export const validateLogin = ({ email, password }) => {
   email = email.trim();

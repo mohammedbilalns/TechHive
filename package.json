@@ -6,9 +6,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "tailwind": "npx tailwindcss -i ./src/static/styles/styles.css -o ./src/static/tailwind/output.css --watch ",
     "nodemon": "node --inspect --watch --env-file=.env ./src/server.js",
-		"lint": "eslint --fix --ext .js .",
-		"lint:fix": "eslint --fix --ext .js . --fix",
-    "dev": "concurrently 'npm run tailwind' 'npm run nodemon'"
+    "worker": "node --watch --env-file=.env ./src/workers/emailWorker.js",
+    "lint": "eslint --fix --ext .js .",
+    "lint:fix": "eslint --fix --ext .js . --fix",
+    "dev": "concurrently 'npm run tailwind' 'npm run nodemon' 'npm run worker'"
   },
   "type": "module",
   "keywords": [],
@@ -17,6 +18,7 @@
   "description": "",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "bullmq": "^5.69.3",
     "compression": "^1.7.5",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
@@ -34,6 +36,7 @@
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "pdfkit": "^0.15.2",
+    "pretty-js-log": "^1.2.0",
     "razorpay": "^2.9.5"
   },
   "devDependencies": {

@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { log } from "mercedlogger";
+import { env } from "../utils/env.js";
 
 let isConnected = false;
 
@@ -7,7 +8,7 @@ export const connectDb = async () => {
   try {
     if (isConnected) return;
 
-    const conn = await mongoose.connect(process.env.MONGOURL, {});
+    const conn = await mongoose.connect(env.MONGODB_URI, {});
 
     isConnected = true;
 

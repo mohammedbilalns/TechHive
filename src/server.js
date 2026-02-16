@@ -2,8 +2,10 @@ import http from "http";
 import app from "./app.js";
 import { connectDb, closeDb } from "./db/connect.js";
 import { log } from "mercedlogger";
+import { env } from "./utils/env.js";
+import { logger } from "./utils/logger.js";
 
-const PORT = process.env.PORT || 5000;
+const PORT = env.PORT
 
 const server = http.createServer(app);
 
@@ -14,7 +16,7 @@ const startServer = async () => {
     await connectDb();
 
     server.listen(PORT, () => {
-      log.green(`Server running on port`, PORT);
+      logger.info(`Server running on port ${PORT}`);
     });
   } catch (error) {
     log.red("Failed to start server:", error);

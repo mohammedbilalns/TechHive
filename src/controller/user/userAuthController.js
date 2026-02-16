@@ -7,12 +7,13 @@ import referralSchema from "../../model/referralModel.js";
 import walletSchema from "../../model/walletModel.js";
 import referralUtils from "../../utils/referralCode.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
-import { validateLogin, validateResetPassword } from "../../validators/auth.validator.js";
+import { validateLogin, validateRegister, validateResetPassword } from "../../validators/auth.validator.js";
 import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AuthErrorMessages, ErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
 import { WalletTransactionDescriptions } from "../../constants/walletTransactionDescriptions.js";
+import { emailQueue } from "../../services/queue.js";
 
 // ---- User Login ----  
 export const loadLogin = (req, res) => {
@@ -160,7 +161,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   }, 3 * 60 * 1000);
 
   // Send OTP email to the user
-  await authUtils.sendOTPEmail(email, otp);
+  await emailQueue.add("sendOTP", {email, otp});
 
   return res.status(HttpStatus.OK).json({
     success: true,
@@ -237,7 +238,7 @@ export const resendOTP = asyncHandler(async (req, res) => {
   user.otp.otpAttempts += 1;
   await user.save();
 
-  await authUtils.sendOTPEmail(email, otp);
+  await emailQueue.add("sendOTP", {email, otp});
 
   return res.status(HttpStatus.OK).json({
     success: true,
@@ -337,7 +338,7 @@ export const processForgotPassword = asyncHandler(async (req, res) => {
   };
   await user.save();
 
-  await authUtils.sendOTPEmail(email, otp);
+  await emailQueue.add("sendOTP", {email, otp});
 
   return res.status(HttpStatus.OK).json({
     success: true,
@@ -413,7 +414,8 @@ export const resendForgotPasswordOTP = asyncHandler(async (req, res) => {
   };
   await user.save();
 
-  await authUtils.sendOTPEmail(email, otp);
+  await emailQueue.add("sendOTP", {email, otp});
+
 
   res.render("user/auth/forgotpasswordotp", {
     email,

@@ -1,18 +1,17 @@
 
 import nodemailer from "nodemailer";
 import crypto from "crypto";
-import { config } from "dotenv";
 import { log } from "mercedlogger";
+import { env } from "./env.js";
 import bcrypt from "bcryptjs";
-config();
 
 
 // utils for sending otp to the client 
 const transporter = nodemailer.createTransport({
   service: "Gmail",  
   auth: {
-    user: process.env.EMAIL, 
-    pass: process.env.APP_PASSWORD,  
+    user: env.EMAIL, 
+    pass: env.APP_PASSWORD,  
   },
 }); 
 
@@ -24,7 +23,7 @@ const generateOTP = () => {
 const sendOTPEmail = async (email, otp) => {
   try {
     await transporter.sendMail({
-      from: process.env.EMAIL,
+      from: env.EMAIL,
       to: email,
       subject: "Your OTP Code For TechHive ",
       text: `Your OTP is ${otp}. It will expire in 1 minutes.`,

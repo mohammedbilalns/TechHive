@@ -1,11 +1,10 @@
 import { log } from "mercedlogger";
-import { configDotenv } from "dotenv";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AppError } from "../../utils/appError.js";
 import { validateAdminLogin } from "../../validators/adminAuth.validator.js";
+import { env } from "../../utils/env.js";
 
-configDotenv();
 
 //---- Admin Login----
 const loadLogin = (req, res) => {
@@ -21,7 +20,7 @@ const verifyLogin = asyncHandler(async (req, res) => {
     throw new AppError(HttpStatus.UNAUTHORIZED, error);
   }
 
-  if (email != process.env.ADMIN_EMAIL || password != process.env.ADMIN_PASSWORD) {
+  if (email != env.ADMIN_EMAIL || password != env.ADMIN_PASSWORD) {
     throw new AppError(HttpStatus.UNAUTHORIZED, 'Invalid credentials');
   }
 

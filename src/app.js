@@ -10,6 +10,7 @@ import adminRoutes from "./routes/admin.js";
 import './utils/googleAuth.js';
 import { HttpStatus } from "./constants/statusCodes.js";
 import { errorMiddleware } from "./middlewares/errorHandler.js";
+import { env } from "./utils/env.js";
 
 const app = express();
 
@@ -25,7 +26,7 @@ app.use(nocache());
 app.use(express.static(path.join(__dirname, "static")));
 app.use(compression());
 app.use(session({
-  secret: process.env.SESSIONSECRET,
+  secret: env.SESSIONSECRET,
   resave: false,
   saveUninitialized: true,
   cookie: { maxAge: 1000 * 60 * 60 * 24 }

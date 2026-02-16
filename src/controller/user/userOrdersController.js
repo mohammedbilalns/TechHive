@@ -4,7 +4,6 @@ import productModel from '../../model/productModel.js';
 import addressModel from '../../model/addressModel.js';
 import { nanoid } from 'nanoid';
 import couponModel from '../../model/couponModel.js';
-import { configDotenv } from 'dotenv';
 import razorpay from '../../utils/razorpayConfig.js';
 import crypto from 'crypto';
 import walletModel from '../../model/walletModel.js';
@@ -12,7 +11,7 @@ import mongoose from 'mongoose';
 import PDFDocument from 'pdfkit';
 import { log } from 'mercedlogger';
 import { HttpStatus } from '../../constants/statusCodes.js';
-configDotenv();
+import { env } from '../../utils/env.js';
 
 const placeOrder = async (req, res) => {
   try {
@@ -271,7 +270,7 @@ const verifyPayment = async (req, res) => {
     // Verify payment signature
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
     const expectedSign = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .createHmac("sha256", env.RAZORPAY_KEY_SECRET)
       .update(sign.toString())
       .digest("hex");
 
