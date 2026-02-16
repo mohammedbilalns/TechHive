@@ -1,11 +1,11 @@
 import wishlistSchema from "../../model/wishlistModel.js";
 import productModel from "../../model/productModel.js";
-import { log } from "mercedlogger";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
+import logger from "../../utils/logger.js";
 
 const getWishlist = async (req, res) => {
     try {
@@ -46,7 +46,7 @@ const getWishlist = async (req, res) => {
             hasPrevPage: page > 1
         });
     } catch (error) {
-        log.red("FETCH_WISHLIST_ERROR", error);
+        logger.error("FETCH_WISHLIST_ERROR", error);
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: ErrorMessages.ERROR_FETCHING_WISHLIST });
     }
 };

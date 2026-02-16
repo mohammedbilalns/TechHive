@@ -3,12 +3,12 @@ import userModel from '../../model/userModel.js';
 import { nanoid } from 'nanoid';
 import razorpay from '../../utils/razorpayConfig.js';
 import crypto from 'crypto';
-import { log } from 'mercedlogger';
 import { HttpStatus } from '../../constants/statusCodes.js';
 import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
+import logger from '../../utils/logger.js';
 
 const getWallet = async (req, res) => {
     try {
@@ -57,7 +57,7 @@ const getWallet = async (req, res) => {
         });
 
     } catch (error) {
-        log.red('GET_WALLET_ERROR', error);
+        logger.error('GET_WALLET_ERROR', error);
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: ErrorMessages.ERROR_FETCHING_WALLET

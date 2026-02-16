@@ -1,6 +1,6 @@
-import { log } from "mercedlogger";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
+import logger from "../../utils/logger.js";
 import { AppError } from "../../utils/appError.js";
 import { validateAdminLogin } from "../../validators/adminAuth.validator.js";
 import { env } from "../../utils/env.js";
@@ -38,7 +38,7 @@ const logoutAdmin = (req, res) => {
     res.redirect('/admin/login?message=logged+out+successfully&alertType=success');
 
   } catch (error) {
-    log.red('ADMIN_LOGOUT_ERROR', error);
+    logger.error('ADMIN_LOGOUT_ERROR', error);
   }
 };
 

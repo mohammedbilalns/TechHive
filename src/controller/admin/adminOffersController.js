@@ -2,7 +2,6 @@ import Offer from '../../model/offerModel.js';
 import Category from '../../model/categoryModel.js';
 import Product from '../../model/productModel.js';
 import Referral from '../../model/referralModel.js';
-import { log } from "mercedlogger";
 import { HttpStatus } from '../../constants/statusCodes.js';
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AppError } from "../../utils/appError.js";

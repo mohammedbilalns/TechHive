@@ -1,5 +1,5 @@
 import cartSchema from "../model/cartModel.js";
-import {log} from "mercedlogger";
+import logger from "../utils/logger.js";
 
 const fetchCartItems = async (req,res, next)=>{
     try{
@@ -14,7 +14,7 @@ const fetchCartItems = async (req,res, next)=>{
         }
 
     }catch(error){
-        log.red("FETCH_CART_QUANTITY_ERROR", error),
+        logger.error("FETCH_CART_QUANTITY_ERROR", error),
         res.locals.cartQuantity = 0; 
     }
 

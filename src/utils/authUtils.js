@@ -1,7 +1,7 @@
 
 import nodemailer from "nodemailer";
 import crypto from "crypto";
-import { log } from "mercedlogger";
+import logger from "./logger.js";
 import { env } from "./env.js";
 import bcrypt from "bcryptjs";
 
@@ -29,11 +29,11 @@ const sendOTPEmail = async (email, otp) => {
       text: `Your OTP is ${otp}. It will expire in 1 minutes.`,
       
     });
-    log.green("OTP STATUS", "OTP send successfully");
+    logger.info("OTP STATUS", "OTP send successfully");
     
   } catch (error) {
-    log.red("OTP STATUS", error);
-    await userSchema.deleteOne({ email });
+    logger.error("OTP STATUS", error);
+    // await userSchema.deleteOne({ email }); // This will crash, userSchema is not defined here.
   }
 }; // send otp to the given mail address
 

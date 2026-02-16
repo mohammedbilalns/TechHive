@@ -1,9 +1,9 @@
-import { log } from "mercedlogger";
 import productSchema from "../../model/productModel.js";
 import categorySchema from "../../model/categoryModel.js";
 import reviewSchema from "../../model/reviewModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { ErrorMessages } from "../../constants/errorMessages.js";
+import logger from "../../utils/logger.js";
 
 const searchProducts = async (req, res) => {
     try {
@@ -126,7 +126,7 @@ const searchProducts = async (req, res) => {
         });
 
     } catch (error) {
-        log.red("ERROR", error);
+        logger.error("ERROR", error);
         if (req.xhr || req.path === '/api/search') {
             return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
                 error: ErrorMessages.ERROR_SEARCHING_PRODUCTS

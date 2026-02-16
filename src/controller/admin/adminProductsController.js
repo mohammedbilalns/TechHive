@@ -1,4 +1,3 @@
-import { log } from "mercedlogger";
 import categorySchema from "../../model/categoryModel.js";
 import productSchema from "../../model/productModel.js";
 import multer from "multer";

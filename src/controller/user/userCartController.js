@@ -1,7 +1,7 @@
 import cartSchema from "../../model/cartModel.js";
+import logger from "../../utils/logger.js";
 import productSchema from "../../model/productModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
-import { log } from "mercedlogger";
 import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ErrorMessages } from "../../constants/errorMessages.js";
@@ -52,7 +52,7 @@ const getCart = async (req, res) => {
             page: 'cart'
         });
     } catch (error) {
-        log.red("GET_CART_ERROR:", error);
+        logger.error("GET_CART_ERROR:", error);
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).render('user/profile/cart', {
             message: "Error loading cart",
             alertType: "error",

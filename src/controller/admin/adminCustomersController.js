@@ -1,4 +1,3 @@
-import { log } from "mercedlogger";
 import userSchema from "../../model/userModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";

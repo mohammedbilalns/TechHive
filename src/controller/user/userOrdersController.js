@@ -9,7 +9,7 @@ import crypto from 'crypto';
 import walletModel from '../../model/walletModel.js';
 import mongoose from 'mongoose';
 import PDFDocument from 'pdfkit';
-import { log } from 'mercedlogger';
+import logger from '../../utils/logger.js';
 import { HttpStatus } from '../../constants/statusCodes.js';
 import { env } from '../../utils/env.js';
 
@@ -180,7 +180,7 @@ const placeOrder = async (req, res) => {
           receipt: order._id.toString()
         });
 
-        log.cyan('Razorpayorder', razorpayOrder);
+        logger.info('Razorpayorder', razorpayOrder);
 
         order.paymentDetails = {
           razorpayOrderId: razorpayOrder.id
@@ -196,7 +196,7 @@ const placeOrder = async (req, res) => {
         });
       } catch (error) {
         // Save order with pending status
-        log.error("FAILED TO CREATE RAZORPAY ORDER", error)
+        logger.error("FAILED TO CREATE RAZORPAY ORDER", error)
         order.paymentStatus = 'pending';
         order.items.forEach(item => item.status = 'pending');
         await order.save();
@@ -249,7 +249,7 @@ const placeOrder = async (req, res) => {
     });
 
   } catch (error) {
-    log.red('PLACE_ORDER_ERROR', error);
+    logger.error('PLACE_ORDER_ERROR', error);
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: error.message || 'Failed to place order'
@@ -347,7 +347,7 @@ const getOrderSuccess = async (req, res) => {
       orderId: order.orderId
     });
   } catch (error) {
-    log.red('GET_ORDER_SUCCESS_ERROR', error);
+    logger.error('GET_ORDER_SUCCESS_ERROR', error);
     res.redirect('/home');
   }
 };
@@ -406,7 +406,7 @@ const getOrders = async (req, res) => {
     });
 
   } catch (error) {
-    log.red('GET_ORDERS_ERROR', error);
+    logger.error('GET_ORDERS_ERROR', error);
     if (req.xhr) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Error fetching orders' });
     }
@@ -508,7 +508,7 @@ const cancelOrderItem = async (req, res) => {
     res.status(HttpStatus.OK).json({ success: true, message: 'Item cancelled successfully' });
 
   } catch (error) {
-    log.red('CANCEL_ORDER_ITEM_ERROR', error);
+    logger.error('CANCEL_ORDER_ITEM_ERROR', error);
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Failed to cancel item' });
   }
 };
@@ -556,7 +556,7 @@ const returnOrderItem = async (req, res) => {
     res.status(HttpStatus.OK).json({ success: true, message: 'Return request submitted successfully' });
 
   } catch (error) {
-    log.red('RETURN_ORDER_ITEM_ERROR', error);
+    logger.error('RETURN_ORDER_ITEM_ERROR', error);
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Failed to process return request' });
   }
 };
@@ -608,7 +608,7 @@ const retryPayment = async (req, res) => {
     });
 
   } catch (error) {
-    log.red('RETRY_PAYMENT_ERROR', error);
+    logger.error('RETRY_PAYMENT_ERROR', error);
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: 'Failed to initialize payment'
@@ -636,7 +636,7 @@ const getPaymentFailed = async (req, res) => {
       user: req.session.user
     });
   } catch (error) {
-    log.red('GET_PAYMENT', error);
+    logger.error('GET_PAYMENT', error);
     res.redirect('/home');
   }
 };
@@ -948,7 +948,7 @@ const getOrderDetails = async (req, res) => {
     });
 
   } catch (error) {
-    log.red('GET_ORDER_DETAILS_ERROR', error);
+    logger.error('GET_ORDER_DETAILS_ERROR', error);
     res.redirect('/orders');
   }
 };

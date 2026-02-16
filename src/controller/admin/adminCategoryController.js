@@ -1,4 +1,3 @@
-import { log } from "mercedlogger";
 import categorySchema from "../../model/categoryModel.js";
 import productSchema from "../../model/productModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";

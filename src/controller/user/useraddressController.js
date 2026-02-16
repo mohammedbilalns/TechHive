@@ -1,5 +1,4 @@
 import userSchema from "../../model/userModel.js";
-import { log } from "mercedlogger";
 import addressSchema from "../../model/addressModel.js";
 import mongoose from 'mongoose';
 import { validateAddAddress } from "../../validators/address.validator.js";
@@ -8,6 +7,7 @@ import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
+import logger from "../../utils/logger.js";
 
 // get all addresses of a user
 export const getAddresses = async (req, res) => {
@@ -18,7 +18,7 @@ export const getAddresses = async (req, res) => {
     let addresses = await addressSchema.find({ userId: user._id });
     res.render('user/profile/addresses', { addresses, user, page: "addresses" });
   } catch (error) {
-    log.red("FETCH_ADDRESSES_ERROR", error);
+    logger.error("FETCH_ADDRESSES_ERROR", error);
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).render("notfound");
   }
 };

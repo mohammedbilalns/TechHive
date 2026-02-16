@@ -1,5 +1,5 @@
 import wishlistSchema from "../model/wishlistModel.js";
-import {log} from "mercedlogger";
+import logger from "../utils/logger.js";
 
 const fetchWishlistItems = async (req, res, next)=>{
     try{
@@ -27,7 +27,7 @@ const fetchWishlistItems = async (req, res, next)=>{
             res.locals.wishlistQuantity = 0; 
         }
     } catch(error){
-        log.red("FETCH_WISHLIST_ERROR",error);
+        logger.error("FETCH_WISHLIST_ERROR",error);
         res.locals.wishlistItems = []; 
     }
 

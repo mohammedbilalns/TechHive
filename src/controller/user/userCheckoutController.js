@@ -4,11 +4,11 @@ import addressModel from '../../model/addressModel.js';
 import walletModel from '../../model/walletModel.js';
 import couponModel from '../../model/couponModel.js';
 import { HttpStatus } from '../../constants/statusCodes.js';
-import { log } from 'mercedlogger';
 import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
+import logger from '../../utils/logger.js';
 
 const getCheckout = async (req, res) => {
   try {
@@ -64,7 +64,7 @@ const getCheckout = async (req, res) => {
       sessionCoupon
     });
   } catch (error) {
-    log.red('CHECKOUT_ERROR', error);
+    logger.error('CHECKOUT_ERROR', error);
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: ErrorMessages.SOMETHING_WENT_WRONG

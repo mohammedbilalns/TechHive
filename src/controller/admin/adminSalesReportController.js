@@ -1,7 +1,6 @@
 import Order from '../../model/orderModel.js';
 import ExcelJS from 'exceljs';
 import PDFDocument from 'pdfkit';
-import { log } from "mercedlogger";
 import { HttpStatus } from '../../constants/statusCodes.js';
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AppError } from "../../utils/appError.js";

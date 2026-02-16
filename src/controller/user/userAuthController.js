@@ -1,5 +1,4 @@
 import userSchema from "../../model/userModel.js";
-import { log } from "mercedlogger";
 import bcrypt from "bcryptjs";
 import authUtils from "../../utils/authUtils.js";
 import passport from "passport";
@@ -14,6 +13,7 @@ import { AuthErrorMessages, ErrorMessages } from "../../constants/errorMessages.
 import { SuccessMessage } from "../../constants/successMessage.js";
 import { WalletTransactionDescriptions } from "../../constants/walletTransactionDescriptions.js";
 import { emailQueue } from "../../services/queue.js";
+import logger from "../../utils/logger.js";
 
 // ---- User Login ----  
 export const loadLogin = (req, res) => {
@@ -156,7 +156,7 @@ export const registerUser = asyncHandler(async (req, res) => {
         createdAt: { $lt: new Date(Date.now() - 3 * 60 * 1000) }
       });
     } catch (error) {
-      log.red("Error deleting pending user:", error);
+      logger.error("Error deleting pending user:", error);
     }
   }, 3 * 60 * 1000);
 
@@ -260,7 +260,7 @@ export const authGoogle = (req, res) => {
 export const authGoogleCallback = (req, res) => {
   passport.authenticate("google", { failureRedirect: "/login" }, (err, user, info) => {
     if (err) {
-      log.red("Google Auth Callback Error:", err);
+      logger.error("Google Auth Callback Error:", err);
       return res.redirect("/login?message=Something+went+wrong&alertType=error");
     }
 
@@ -271,7 +271,7 @@ export const authGoogleCallback = (req, res) => {
 
     req.logIn(user, (err) => {
       if (err) {
-        log.red("Session Error:", err);
+        logger.error("Session Error:", err);
         return res.redirect("/login?message=Session+error&alertType=error");
       }
 
@@ -283,7 +283,7 @@ export const authGoogleCallback = (req, res) => {
 
       req.session.save((err) => {
         if (err) {
-          log.red("Session Save Error:", err);
+          logger.error("Session Save Error:", err);
           return res.redirect("/login?message=Session+save+error&alertType=error");
         }
         res.redirect('/home');
@@ -302,7 +302,7 @@ export const logoutUser = (req, res) => {
     res.render('user/auth/login', { message: SuccessMessage.LOGGED_OUT_SUCCESS, alertType: "success" });
 
   } catch (error) {
-    log.red('Error destroying session', error);
+    logger.error('Error destroying session', error);
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Unable to log out');
   }
 };

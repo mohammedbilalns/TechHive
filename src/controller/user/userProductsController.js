@@ -1,9 +1,9 @@
-import { log } from "mercedlogger";
 import productSchema from "../../model/productModel.js";
 import categorySchema from "../../model/categoryModel.js";
 import reviewModel from '../../model/reviewModel.js';
 import mongoose from 'mongoose';
 import { HttpStatus } from "../../constants/statusCodes.js";
+import logger from "../../utils/logger.js";
 
 
 // ---- load home ---- homepage 
@@ -34,7 +34,7 @@ const loadHome = async (req, res) => {
             fullname
         });
     } catch (error) {
-        log.red("ERROR", error);
+        logger.error("ERROR", error);
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).render('user/home', { 
             message: "Error loading products",
             alertType: "error" 
@@ -64,7 +64,7 @@ const loadLanding = async (req, res) => {
             newArrivals
         });
     } catch (error) {
-        log.red("ERROR", error);
+        logger.error("ERROR", error);
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).render('user/landing', { 
             message: "Error loading products",
             alertType: "error" 
@@ -343,7 +343,7 @@ const viewCategory = async (req, res) => {
         });
 
     } catch (error) {
-        log.red("VIEW_CATEGORY_ERROR", error);
+        logger.error("VIEW_CATEGORY_ERROR", error);
         if (req.xhr) {
             return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
                 error: "Error loading category"

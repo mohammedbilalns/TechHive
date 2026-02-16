@@ -1,6 +1,6 @@
 import userSchema from "../../model/userModel.js";
-import { log } from "mercedlogger";
 import bcrypt from 'bcryptjs';
+import logger from "../../utils/logger.js";
 import referralCodeUtils from '../../utils/referralCode.js';
 import referralModel from "../../model/referralModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
@@ -33,7 +33,7 @@ export const getAccountDetails = async (req, res) => {
             referralValues
         });
     } catch (error) {
-        log.red("FETCH_ACCOUNT_DETAILS_ERROR", error);
+        logger.error("FETCH_ACCOUNT_DETAILS_ERROR", error);
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).render("notfound");
     }
 };

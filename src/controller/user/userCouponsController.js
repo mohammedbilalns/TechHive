@@ -1,6 +1,6 @@
-import { log } from "mercedlogger";
 import Coupon from "../../model/couponModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
+import logger from "../../utils/logger.js";
 
 const getCoupons = async (req, res) => {
     try {
@@ -69,7 +69,7 @@ const getCoupons = async (req, res) => {
                     )?.usedAt
                 });
             } catch (err) {
-                log.red("COUPON_PROCESSING_ERROR", err);
+                logger.error("COUPON_PROCESSING_ERROR", err);
             }
         });
 
@@ -98,7 +98,7 @@ const getCoupons = async (req, res) => {
         });
 
     } catch (error) {
-        log.red("GET_COUPONS_ERROR", error);
+        logger.error("GET_COUPONS_ERROR", error);
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).render('error', {
             message: 'Failed to fetch coupons',
             error: {

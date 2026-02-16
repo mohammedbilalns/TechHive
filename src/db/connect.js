@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { log } from "mercedlogger";
+import logger from "../utils/logger.js";
 import { env } from "../utils/env.js";
 
 let isConnected = false;
@@ -12,9 +12,9 @@ export const connectDb = async () => {
 
     isConnected = true;
 
-    log.green("DB STATUS", `Connected: ${conn.connection.host}`);
+    logger.info("DB STATUS", `Connected: ${conn.connection.host}`);
   } catch (error) {
-    log.red("DB STATUS", error);
+    logger.error("DB STATUS", error);
     process.exit(1);
   }
 };
@@ -27,22 +27,22 @@ export const closeDb = async () => {
     await mongoose.connection.close(false);
     isConnected = false;
 
-    log.yellow("DB STATUS", "Connection closed successfully");
+    logger.warn("DB STATUS", "Connection closed successfully");
   } catch (error) {
-    log.red("DB STATUS", "Error closing DB connection");
+    logger.error("DB STATUS", "Error closing DB connection");
     console.error(error);
   }
 };
 
 
 mongoose.connection.on("connected", () => {
-  log.green("MONGOOSE EVENT", "connected");
+  logger.info("MONGOOSE EVENT", "connected");
 });
 
 mongoose.connection.on("disconnected", () => {
-  log.yellow("MONGOOSE EVENT", "disconnected");
+  logger.warn("MONGOOSE EVENT", "disconnected");
 });
 
 mongoose.connection.on("error", (err) => {
-  log.red("MONGOOSE EVENT", err);
+  logger.error("MONGOOSE EVENT", err);
 });

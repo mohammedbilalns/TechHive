@@ -1,7 +1,7 @@
 import reviewModel from "../../model/reviewModel.js";
 import productModel from "../../model/productModel.js";
-import { log } from "mercedlogger";
 import { HttpStatus } from "../../constants/statusCodes.js";
+import logger from "../../utils/logger.js";
 
 const addReview = async (req, res) => {
   try {
@@ -70,7 +70,7 @@ const addReview = async (req, res) => {
     });
 
   } catch (error) {
-    log.red("ADD_REVIEW_ERROR", error);
+    logger.error("ADD_REVIEW_ERROR", error);
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "Error adding review"
@@ -126,7 +126,7 @@ const getReview = async (req, res) => {
     });
 
   } catch (error) {
-    log.red("GET_REVIEW_ERROR", error);
+    logger.error("GET_REVIEW_ERROR", error);
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "Error fetching review"
