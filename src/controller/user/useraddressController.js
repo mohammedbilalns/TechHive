@@ -79,7 +79,7 @@ export const updateAddress = asyncHandler(async (req, res) => {
     state,
     pincode,
     phone,
-  })
+  });
 
   if (error) {
     throw new AppError(HttpStatus.BAD_REQUEST, error);

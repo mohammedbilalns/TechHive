@@ -1,4 +1,5 @@
 import userModel from "../model/userModel.js";
+import logger from "../utils/logger.js";
 
 const checkSession = async (req, res, next) => {
     try {
@@ -14,7 +15,7 @@ const checkSession = async (req, res, next) => {
 
         next();
     } catch (error) {
-        console.log('Session Check Error:', error);
+        logger.error('Session Check Error:', error);
         delete req.session.user;
         return res.redirect('/login?message=Session+error&alertType=error');
     }
@@ -27,7 +28,7 @@ const isLogin = (req, res, next) => {
         }
         next();
     } catch (error) {
-        console.log('Login Check Error:', error);
+        logger.error('Login Check Error:', error);
         next(error);
     }
 };

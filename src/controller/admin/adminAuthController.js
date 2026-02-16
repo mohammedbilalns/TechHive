@@ -8,7 +8,7 @@ import { env } from "../../utils/env.js";
 
 //---- Admin Login----
 const loadLogin = (req, res) => {
-  const { message, alertType, email } = req.query
+  const { message, alertType, email } = req.query;
   res.render("admin/login", { message, alertType, email });
 };
 

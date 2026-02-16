@@ -4,7 +4,7 @@ import { connectDb, closeDb } from "./db/connect.js";
 import logger from "./utils/logger.js";
 import { env } from "./utils/env.js";
 
-const PORT = env.PORT
+const PORT = env.PORT;
 
 const server = http.createServer(app);
 
@@ -26,15 +26,12 @@ const startServer = async () => {
 startServer();
 
 process.on("uncaughtException", (err) => {
-  logger.error("UNCAUGHT EXCEPTION! Shutting down...");
-  console.error(err);
+  logger.error("UNCAUGHT EXCEPTION! Shutting down...", err);
   process.exit(1);
 });
 
 process.on("unhandledRejection", (err) => {
-  logger.error("UNHANDLED REJECTION! Shutting down...");
-  console.error(err);
-
+  logger.error("UNHANDLED REJECTION! Shutting down...", err);
   server.close(() => {
     process.exit(1);
   });
@@ -44,7 +41,7 @@ const gracefulShutdown = async (signal) => {
   if (isShuttingDown) return;
   isShuttingDown = true;
 
-  console.log(`${signal} received. Closing server gracefully...`);
+  logger.info(`${signal} received. Closing server gracefully...`);
 
   const forceExit = setTimeout(() => {
     logger.error("Shutdown timed out. Forcing exit...");
@@ -54,10 +51,10 @@ const gracefulShutdown = async (signal) => {
   server.closeAllConnections();
   server.close(async () => {
     clearTimeout(forceExit);
-    console.log("HTTP server closed.");
+    logger.info("HTTP server closed.");
 
     try {
-      await closeDb()
+      await closeDb();
       logger.info("DB_CLOSE_STATUS", "Closed");
       process.exit(0);
     } catch (error) {

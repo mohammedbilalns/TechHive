@@ -80,11 +80,11 @@ const addMoney = asyncHandler(async (req, res) => {
         receipt: 'wallet_' + nanoid(8)
     };
 
-    console.log('Creating Razorpay order with options:', orderOptions);
+    logger.info('Creating Razorpay order with options:', orderOptions);
 
     try {
         const razorpayOrder = await razorpay.orders.create(orderOptions);
-        console.log('Razorpay order created:', razorpayOrder);
+        logger.info('Razorpay order created:', razorpayOrder);
 
         res.status(HttpStatus.OK).json({
             success: true,

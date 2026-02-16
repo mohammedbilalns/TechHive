@@ -7,4 +7,4 @@ export const HttpStatus =Object.freeze({
   TOO_MANY_REQUESTS: 429,
   UNAUTHORIZED: 401,
   INTERNAL_SERVER_ERROR: 500,
-})
+});

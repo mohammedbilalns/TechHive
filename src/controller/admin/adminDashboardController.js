@@ -1,7 +1,5 @@
 import Order from '../../model/orderModel.js';
-import { HttpStatus } from '../../constants/statusCodes.js';
 import { asyncHandler } from "../../utils/asyncHandler.js";
-import { AppError } from "../../utils/appError.js";
 
 
 const getDashboardData = asyncHandler(async (req, res) => {

@@ -12,9 +12,9 @@ export const validateLogin = ({ email, password }) => {
     return "Enter a valid email address";
   }
 
-  return null
+  return null;
 
-}
+};
 
 export const validateRegister = ({ fullname, phonenumber, email, password, confirmPassword }) => {
   fullname = fullname.trim();
@@ -34,8 +34,8 @@ export const validateRegister = ({ fullname, phonenumber, email, password, confi
   if (!isValidPassword(password)) return "Password must contain 8+ characters with uppercase, lowercase, number, and special character";
   if (password !== confirmPassword) return "Passwords do not match";
 
-  return null
-}
+  return null;
+};
 
 
 export const validateResetPassword = ({ email, password, confirmPassword }) => {
@@ -51,5 +51,5 @@ export const validateResetPassword = ({ email, password, confirmPassword }) => {
   if (!isValidPassword(password)) return "Password must contain 8+ characters with uppercase, lowercase, number, and special character";
   if (password !== confirmPassword) return "Passwords do not match";
 
-  return null
-}
+  return null;
+};

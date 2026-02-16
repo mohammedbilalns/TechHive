@@ -30,32 +30,32 @@ export const verifyLogin = asyncHandler(async (req, res) => {
     password
   });
 
-  if (error) throw new AppError(HttpStatus.BAD_REQUEST, error)
+  if (error) throw new AppError(HttpStatus.BAD_REQUEST, error);
 
   const user = await userSchema.findOne({ email });
 
   if (!user) {
-    throw new AppError(HttpStatus.UNAUTHORIZED, AuthErrorMessages.INVALID_EMAIL_OR_PASSWORD)
+    throw new AppError(HttpStatus.UNAUTHORIZED, AuthErrorMessages.INVALID_EMAIL_OR_PASSWORD);
   }
 
   // Check if user's status is pending and delete if found
   if (user.status === "Pending") {
     await userSchema.deleteOne({ _id: user._id });
-    throw new AppError(HttpStatus.UNAUTHORIZED, AuthErrorMessages.INCOMPLETE_REGISTRATION)
+    throw new AppError(HttpStatus.UNAUTHORIZED, AuthErrorMessages.INCOMPLETE_REGISTRATION);
   }
 
   //check the user is active 
-  if (user.status != "Active") throw new AppError(HttpStatus.UNAUTHORIZED, AuthErrorMessages.ACCOUNT_BLOCKED)
+  if (user.status != "Active") throw new AppError(HttpStatus.UNAUTHORIZED, AuthErrorMessages.ACCOUNT_BLOCKED);
 
 
   // Check if the user used Google login
   if (!user.password) {
-    throw new AppError(HttpStatus.UNAUTHORIZED, AuthErrorMessages.REGISTERED_WITH_GOOGLE)
+    throw new AppError(HttpStatus.UNAUTHORIZED, AuthErrorMessages.REGISTERED_WITH_GOOGLE);
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    throw new AppError(HttpStatus.UNAUTHORIZED, AuthErrorMessages.INVALID_EMAIL_OR_PASSWORD)
+    throw new AppError(HttpStatus.UNAUTHORIZED, AuthErrorMessages.INVALID_EMAIL_OR_PASSWORD);
   }
 
   req.session.user = {
@@ -89,7 +89,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (error) {
-    throw new AppError(HttpStatus.BAD_REQUEST, error)
+    throw new AppError(HttpStatus.BAD_REQUEST, error);
   }
 
   const otp = authUtils.generateOTP();
@@ -113,7 +113,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     } else {
       message = existingUser.email === email ? AuthErrorMessages.EMAIL_ALREADY_REGISTERED : AuthErrorMessages.PHONE_NUMBER_ALREADY_REGISTERED;
     }
-    throw new AppError(HttpStatus.CONFLICT, message)
+    throw new AppError(HttpStatus.CONFLICT, message);
   }
 
   // Hash the password 
@@ -178,7 +178,7 @@ export const verifyOTP = asyncHandler(async (req, res) => {
   const currentTime = Date.now();
 
   if (currentTime > user.otp.otpExpiresAt) {
-    throw new AppError(HttpStatus.BAD_REQUEST, AuthErrorMessages.OTP_EXPIRED)
+    throw new AppError(HttpStatus.BAD_REQUEST, AuthErrorMessages.OTP_EXPIRED);
   }
 
   if (user.otp.otpValue === userOTP) {
@@ -322,11 +322,11 @@ export const processForgotPassword = asyncHandler(async (req, res) => {
   const user = await userSchema.findOne({ email });
 
   if (!user) {
-    throw new AppError(HttpStatus.NOT_FOUND, AuthErrorMessages.INVALID_EMAIL_OR_PASSWORD)
+    throw new AppError(HttpStatus.NOT_FOUND, AuthErrorMessages.INVALID_EMAIL_OR_PASSWORD);
   }
 
   if (!user.password) {
-    throw new AppError(HttpStatus.BAD_REQUEST, AuthErrorMessages.REGISTERED_WITH_GOOGLE)
+    throw new AppError(HttpStatus.BAD_REQUEST, AuthErrorMessages.REGISTERED_WITH_GOOGLE);
   }
 
   const otp = authUtils.generateOTP();
@@ -355,11 +355,11 @@ export const verifyForgotPasswordOTP = asyncHandler(async (req, res) => {
   const currentTime = Date.now();
 
   if (!user) {
-    throw new AppError(HttpStatus.CONFLICT, ErrorMessages.INVALID_INPUT)
+    throw new AppError(HttpStatus.CONFLICT, ErrorMessages.INVALID_INPUT);
   }
 
   if (currentTime > user?.otp?.otpExpiresAt) {
-    throw new AppError(HttpStatus.CONFLICT, AuthErrorMessages.OTP_EXPIRED)
+    throw new AppError(HttpStatus.CONFLICT, AuthErrorMessages.OTP_EXPIRED);
   }
 
   if (user.otp.otpValue === userOTP) {
@@ -462,11 +462,11 @@ export const applyReferral = asyncHandler(async (req, res) => {
   const referrer = await userSchema.findOne({ referralCode });
 
   if (!referrer) {
-    throw new AppError(HttpStatus.CONFLICT, AuthErrorMessages.INVALID_REFERRAL_CODE)
+    throw new AppError(HttpStatus.CONFLICT, AuthErrorMessages.INVALID_REFERRAL_CODE);
   }
 
   if (referrer._id.toString() === currentUser._id.toString()) {
-    throw new AppError(HttpStatus.CONFLICT, AuthErrorMessages.YOU_CANNOT_USE_YOUR_OWN_REFERRAL_CODE)
+    throw new AppError(HttpStatus.CONFLICT, AuthErrorMessages.YOU_CANNOT_USE_YOUR_OWN_REFERRAL_CODE);
 
   }
 

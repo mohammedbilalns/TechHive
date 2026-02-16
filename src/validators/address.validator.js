@@ -32,4 +32,4 @@ export const validateAddAddress = ({name, houseName, localityStreet, city, state
   if(!isValidPincode(pincode)) return "Please enter a valid pincode";
 
   if(!isValidPhone(phone)) return "Please enter a 10-digit valid Phone number";
-}
+};

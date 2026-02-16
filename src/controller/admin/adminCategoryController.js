@@ -7,7 +7,7 @@ import { validateCategory } from "../../validators/category.validator.js";
 
 //---- Fetch the categories page----
 const getCategories = asyncHandler(async (req, res) => {
-  const { message, alertType } = req.query
+  const { message, alertType } = req.query;
   const page = parseInt(req.query.page) || 1;
   const limit = 10;
   const search = req.query.search || '';

@@ -44,4 +44,4 @@ export const SuccessMessage = {
   "PRODUCT_ACTIVATED": "Product activated successfully",
   "PRODUCT_ADDED": "Product added successfully",
   "PRODUCT_UPDATED": "Product updated successfully"
-}
+};

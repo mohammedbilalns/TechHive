@@ -13,7 +13,7 @@ const addReview = async (req, res) => {
       res.status(HttpStatus.BAD_REQUEST).json({
         success: false,
         message: error
-      })
+      });
     }
 
     // Format product name

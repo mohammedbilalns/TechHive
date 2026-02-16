@@ -20,7 +20,7 @@ export const AuthErrorMessages = Object.freeze({
   "EMAIL_REQUIRED": "Email is required",
   "PASSWORD_REQUIRED": "Password is required",
   "INVALID_CREDENTIALS": "Invalid credentials"
-})
+});
 
 export const ErrorMessages = {
   "INVALID_INPUT": "Invalid input",
@@ -142,5 +142,5 @@ export const ErrorMessages = {
   "INVALID_DATE_RANGE": "Invalid date range: Start date cannot be after end date",
   "FAILED_TO_GENERATE_REPORT": "Failed to generate sales report",
   "FAILED_TO_DOWNLOAD_REPORT": "Failed to download report"
-}
+};
 

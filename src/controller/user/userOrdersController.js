@@ -196,7 +196,7 @@ const placeOrder = async (req, res) => {
         });
       } catch (error) {
         // Save order with pending status
-        logger.error("FAILED TO CREATE RAZORPAY ORDER", error)
+        logger.error("FAILED TO CREATE RAZORPAY ORDER", error);
         order.paymentStatus = 'pending';
         order.items.forEach(item => item.status = 'pending');
         await order.save();

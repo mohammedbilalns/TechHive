@@ -15,16 +15,6 @@ const VALIDATION_PATTERNS = {
     }
 };
 
-const VALIDATION_MESSAGES = {
-    REQUIRED: (field) => `${field} is required`,
-    EMAIL_INVALID: 'Please enter a valid email address',
-    NAME_INVALID: 'Full name should contain only alphabets (3-30 characters)',
-    PHONE_INVALID: 'Phone number must be 10 digits',
-    PASSWORD_REQ: 'Password is required',
-    PASSWORD_COMPLEXITY: 'Password must contain at least 8 characters, including uppercase, lowercase letters, numbers, and special characters',
-    CONFIRM_PASSWORD_REQ: 'Please confirm your password',
-    PASSWORD_MISMATCH: 'Passwords do not match'
-};
 
 /**
  * Validates email format

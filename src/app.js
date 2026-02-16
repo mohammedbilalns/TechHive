@@ -47,6 +47,6 @@ app.use((req, res) => {
   });
 });
 
-app.use(errorMiddleware)
+app.use(errorMiddleware);
 
-export default app
+export default app;
