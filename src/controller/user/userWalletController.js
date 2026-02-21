@@ -92,6 +92,7 @@ const addMoney = asyncHandler(async (req, res) => {
             razorpayOrderId: razorpayOrder.id
         });
     } catch (error) {
+        logger.error('CREATE_RAZORPAY_ORDER_ERROR', error);
         throw new AppError(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessages.ERROR_CREATING_PAYMENT);
     }
 });

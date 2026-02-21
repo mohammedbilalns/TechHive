@@ -8,5 +8,4 @@ const  generateReferralCode = ()=> {
 }; 
 
 
-
 export default {generateReferralCode};

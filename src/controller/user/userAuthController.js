@@ -1,6 +1,6 @@
 import userSchema from "../../model/userModel.js";
 import bcrypt from "bcryptjs";
-import authUtils from "../../utils/authUtils.js";
+import cryptoUtils from "../../services/crypto.js";
 import passport from "passport";
 import referralSchema from "../../model/referralModel.js";
 import walletSchema from "../../model/walletModel.js";
@@ -78,21 +78,20 @@ export const loadSignup = (_req, res) => {
 
 // Register a new user
 export const registerUser = asyncHandler(async (req, res) => {
-  let { fullname, phonenumber, email, password, confirmPassword } = req.body;
+  let { fullname, phonenumber, email, password } = req.body;
 
   const error = validateRegister({
     fullname,
     phonenumber,
     email,
     password,
-    confirmPassword
   });
 
   if (error) {
     throw new AppError(HttpStatus.BAD_REQUEST, error);
   }
 
-  const otp = authUtils.generateOTP();
+  const otp = cryptoUtils.generateOTP();
 
   // Check if a user already exists with the given email or phone number
   const existingUser = await userSchema.findOne({
@@ -231,7 +230,7 @@ export const resendOTP = asyncHandler(async (req, res) => {
 
   }
 
-  const otp = authUtils.generateOTP();
+  const otp = cryptoUtils.generateOTP();
 
   user.otp.otpValue = otp;
   user.otp.otpExpiresAt = Date.now() + 60000;
@@ -329,7 +328,7 @@ export const processForgotPassword = asyncHandler(async (req, res) => {
     throw new AppError(HttpStatus.BAD_REQUEST, AuthErrorMessages.REGISTERED_WITH_GOOGLE);
   }
 
-  const otp = authUtils.generateOTP();
+  const otp = cryptoUtils.generateOTP();
 
   user.otp = {
     otpValue: otp,
@@ -406,7 +405,7 @@ export const resendForgotPasswordOTP = asyncHandler(async (req, res) => {
     });
   }
 
-  const otp = authUtils.generateOTP();
+  const otp = cryptoUtils.generateOTP();
   user.otp = {
     otpValue: otp,
     otpExpiresAt: Date.now() + 60000,
@@ -425,7 +424,7 @@ export const resendForgotPasswordOTP = asyncHandler(async (req, res) => {
 });
 
 export const resetPassword = asyncHandler(async (req, res) => {
-  let { email, password, confirmPassword } = req.body;
+  let { email, password} = req.body;
 
   const error = validateResetPassword(req.body);
   if (error) {

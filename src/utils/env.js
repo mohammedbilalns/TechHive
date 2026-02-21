@@ -1,4 +1,3 @@
-
 export const env = {
     QUEUE_PORT : parseInt(process.env.QUEUE_PORT),
     QUEUE_HOST : process.env.QUEUE_HOST,
@@ -14,6 +13,5 @@ export const env = {
     SESSIONSECRET: process.env.SESSIONSECRET,
     ADMIN_EMAIL:process.env.ADMIN_EMAIL,
     ADMIN_PASSWORD:process.env.ADMIN_PASSWORD
-    
 };
 

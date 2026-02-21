@@ -1,11 +1,11 @@
 import { Worker } from "bullmq";
-import authUtils from "../utils/authUtils.js";
+import { sendOTPEmail } from "../services/mail.js";
 import { env } from "../utils/env.js";
 import logger from "../utils/logger.js";
 
 const worker = new Worker("emailQueue", async (job) => {
   if(job.name === "sendOTP"){
-    await authUtils.sendOTPEmail(job.data.email, job.data.otp);
+    await sendOTPEmail(job.data.email, job.data.otp);
   }
 }, { connection: { host: env.QUEUE_HOST, port: env.QUEUE_PORT } });
 

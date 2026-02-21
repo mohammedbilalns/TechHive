@@ -16,15 +16,14 @@ export const validateLogin = ({ email, password }) => {
 
 };
 
-export const validateRegister = ({ fullname, phonenumber, email, password, confirmPassword }) => {
+export const validateRegister = ({ fullname, phonenumber, email, password}) => {
   fullname = fullname.trim();
   phonenumber = phonenumber.trim();
   email = email.trim();
   password = password.trim();
-  confirmPassword = confirmPassword.trim();
 
 
-  if (!fullname || !phonenumber || !email || !password || !confirmPassword) {
+  if (!fullname || !phonenumber || !email || !password ) {
     return "All fields are required";
   }
 
@@ -32,8 +31,6 @@ export const validateRegister = ({ fullname, phonenumber, email, password, confi
   if (!isValidPhone(phonenumber)) return "Phone number must be 10 digits";
   if (!isValidEmail(email)) return "Please enter a valid email address";
   if (!isValidPassword(password)) return "Password must contain 8+ characters with uppercase, lowercase, number, and special character";
-  if (password !== confirmPassword) return "Passwords do not match";
-
   return null;
 };
 
