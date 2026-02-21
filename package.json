@@ -10,7 +10,7 @@
     "dev:worker": "node --watch --env-file=.env ./src/workers/emailWorker.js",
     "lint": "eslint --fix --ext .js .",
     "lint:fix": "eslint --fix --ext .js . --fix",
-    "dev": "concurrently 'npm run tailwind' 'npm run dev:server' 'npm run worker'",
+    "dev": "concurrently 'npm run tailwind' 'npm run dev:server' 'npm run dev:worker'",
     "start": "node --env-file=.env ./src/server.js",
     "start:worker": "node --env-file=.env ./src/workers/emailWorker.js",
     "start:prod": "npm run build:css && concurrently \"npm run start\" \"npm run start:worker\""
@@ -20,11 +20,14 @@
   "author": "",
   "license": "ISC",
   "description": "",
+  "overrides":{
+    "minimatch":"^10.2.1"
+  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "bullmq": "^5.69.3",
     "compression": "^1.7.5",
-    "ejs": "^3.1.10",
+    "ejs": "^4.0.1",
     "exceljs": "^4.4.0",
     "express": "^4.22.1",
     "express-session": "^1.18.1",
@@ -42,7 +45,7 @@
   },
   "devDependencies": {
     "concurrently": "^9.1.0",
-    "eslint": "^9.37.0",
+    "eslint": "^10.0.1",
     "tailwindcss": "^3.4.15"
   }
 }
