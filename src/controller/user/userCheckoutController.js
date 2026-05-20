@@ -1,4 +1,4 @@
-import userModel from '../../model/userModel.js';
+import { UserModel } from '../../model/userModel.js';
 import cartModel from '../../model/cartModel.js';
 import addressModel from '../../model/addressModel.js';
 import walletModel from '../../model/walletModel.js';
@@ -14,7 +14,7 @@ const getCheckout = async (req, res) => {
   try {
     const userId = req.session.user.id;
     const [user, cart, addresses, wallet] = await Promise.all([
-      userModel.findById(userId),
+      UserModel.findById(userId),
       cartModel.findOne({ user: userId }).populate('items.productId'),
       addressModel.find({ userId: userId }),
       walletModel.findOne({ userId })

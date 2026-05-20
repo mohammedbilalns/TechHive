@@ -1,4 +1,4 @@
-import userSchema from "../../model/userModel.js";
+import { UserModel } from "../../model/userModel.js";
 import bcrypt from "bcryptjs";
 import cryptoUtils from "../../services/crypto.js";
 import passport from "passport";
@@ -6,7 +6,7 @@ import referralSchema from "../../model/referralModel.js";
 import walletSchema from "../../model/walletModel.js";
 import referralUtils from "../../utils/referralCode.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
-import { validateLogin, validateRegister, validateResetPassword } from "../../validators/auth.validator.js";
+import { validateLogin, validateRegisterBody, validateResetPassword } from "../../validators/auth.validator.js";
 import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AuthErrorMessages, ErrorMessages } from "../../constants/errorMessages.js";
@@ -14,12 +14,6 @@ import { SuccessMessage } from "../../constants/successMessage.js";
 import { WalletTransactionDescriptions } from "../../constants/walletTransactionDescriptions.js";
 import { sendOTPEmail } from "../../services/mail.js";
 import logger from "../../utils/logger.js";
-
-// ---- User Login ----  
-export const loadLogin = (req, res) => {
-  const { message, alertType } = req.query;
-  res.render('user/auth/login', { message, alertType });
-};
 
 // Verify user login 
 export const verifyLogin = asyncHandler(async (req, res) => {
@@ -32,7 +26,7 @@ export const verifyLogin = asyncHandler(async (req, res) => {
 
   if (error) throw new AppError(HttpStatus.BAD_REQUEST, error);
 
-  const user = await userSchema.findOne({ email });
+  const user = await UserModel.findOne({ email });
 
   if (!user) {
     throw new AppError(HttpStatus.UNAUTHORIZED, AuthErrorMessages.INVALID_EMAIL_OR_PASSWORD);
@@ -40,7 +34,7 @@ export const verifyLogin = asyncHandler(async (req, res) => {
 
   // Check if user's status is pending and delete if found
   if (user.status === "Pending") {
-    await userSchema.deleteOne({ _id: user._id });
+    await UserModel.deleteOne({ _id: user._id });
     throw new AppError(HttpStatus.UNAUTHORIZED, AuthErrorMessages.INCOMPLETE_REGISTRATION);
   }
 
@@ -72,15 +66,13 @@ export const verifyLogin = asyncHandler(async (req, res) => {
 });
 
 // ---- User Signup ----  
-export const loadSignup = (_req, res) => {
-  res.render('user/auth/signup');
-};
+
 
 // Register a new user
 export const registerUser = asyncHandler(async (req, res) => {
   let { fullname, phonenumber, email, password } = req.body;
 
-  const error = validateRegister({
+  const error = validateRegisterBody({
     fullname,
     phonenumber,
     email,
@@ -94,7 +86,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   const otp = cryptoUtils.generateOTP();
 
   // Check if a user already exists with the given email or phone number
-  const existingUser = await userSchema.findOne({
+  const existingUser = await UserModel.findOne({
     $or: [
       { email },
       { phonenumber }
@@ -103,7 +95,7 @@ export const registerUser = asyncHandler(async (req, res) => {
 
   // If the user already exists, return an error message
   if (existingUser && existingUser.status == "Pending") {
-    await userSchema.findOneAndDelete({ email });
+    await UserModel.findOneAndDelete({ email });
 
   } else if (existingUser) {
     let message;
@@ -123,14 +115,14 @@ export const registerUser = asyncHandler(async (req, res) => {
   let isUnique = false;
   while (!isUnique) {
     referralCode = referralUtils.generateReferralCode();
-    const existingUserWithCode = await userSchema.findOne({ referralCode });
+    const existingUserWithCode = await UserModel.findOne({ referralCode });
     if (!existingUserWithCode) {
       isUnique = true;
     }
   }
 
   // Create a new user document
-  const newUser = new userSchema({
+  const newUser = new UserModel({
     fullname,
     phonenumber,
     email,
@@ -149,7 +141,7 @@ export const registerUser = asyncHandler(async (req, res) => {
 
   setTimeout(async () => {
     try {
-      await userSchema.deleteOne({
+      await UserModel.deleteOne({
         email,
         status: "Pending",
         createdAt: { $lt: new Date(Date.now() - 3 * 60 * 1000) }
@@ -173,7 +165,7 @@ export const registerUser = asyncHandler(async (req, res) => {
 export const verifyOTP = asyncHandler(async (req, res) => {
   const { otp1, otp2, otp3, otp4, email } = req.body;
   const userOTP = otp1 + otp2 + otp3 + otp4;
-  const user = await userSchema.findOne({ email });
+  const user = await UserModel.findOne({ email });
   const currentTime = Date.now();
 
   if (currentTime > user.otp.otpExpiresAt) {
@@ -193,7 +185,7 @@ export const verifyOTP = asyncHandler(async (req, res) => {
     });
   } else {
     if (user.otp.otpAttempts >= 4) {
-      await userSchema.findOneAndDelete({ email });
+      await UserModel.findOneAndDelete({ email });
       return res.status(HttpStatus.BAD_REQUEST).json({
         success: false,
         message: AuthErrorMessages.OTP_ATTEMPTS_EXCEEDED,
@@ -218,10 +210,10 @@ export const resendOTP = asyncHandler(async (req, res) => {
   let { email } = req.body;
   email = email.trim();
 
-  const user = await userSchema.findOne({ email });
+  const user = await UserModel.findOne({ email });
 
   if (user.otp.otpAttempts >= 3) {
-    await userSchema.findOneAndDelete({ email });
+    await UserModel.findOneAndDelete({ email });
     return res.status(HttpStatus.TOO_MANY_REQUESTS).json({
       success: false,
       message: ErrorMessages.TOO_MANY_ATTEMPTS,
@@ -318,7 +310,7 @@ export const loadForgotpassword = (req, res) => {
 export const processForgotPassword = asyncHandler(async (req, res) => {
   let { email } = req.body;
   email = email.trim();
-  const user = await userSchema.findOne({ email });
+  const user = await UserModel.findOne({ email });
 
   if (!user) {
     throw new AppError(HttpStatus.NOT_FOUND, AuthErrorMessages.INVALID_EMAIL_OR_PASSWORD);
@@ -350,7 +342,7 @@ export const verifyForgotPasswordOTP = asyncHandler(async (req, res) => {
   const { otp1, otp2, otp3, otp4, email } = req.body;
   const userOTP = otp1 + otp2 + otp3 + otp4;
 
-  const user = await userSchema.findOne({ email });
+  const user = await UserModel.findOne({ email });
   const currentTime = Date.now();
 
   if (!user) {
@@ -394,7 +386,7 @@ export const resendForgotPasswordOTP = asyncHandler(async (req, res) => {
   let { email } = req.body;
   email = email.trim();
 
-  const user = await userSchema.findOne({ email });
+  const user = await UserModel.findOne({ email });
 
   if (user.otp?.otpAttempts >= 3) {
     user.otp = undefined;
@@ -428,19 +420,13 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
   const error = validateResetPassword(req.body);
   if (error) {
-    return res.status(HttpStatus.BAD_REQUEST).json({
-      success: false,
-      message: error
-    });
+    throw new AppError(HttpStatus.BAD_REQUEST, error);
   }
 
-  const user = await userSchema.findOne({ email });
+  const user = await UserModel.findOne({ email });
 
   if (!user) {
-    return res.status(HttpStatus.CONFLICT).json({
-      success: false,
-      message: AuthErrorMessages.INVALID_EMAIL
-    });
+    throw new AppError(HttpStatus.CONFLICT, AuthErrorMessages.INVALID_INPUT);
   }
 
   // Hash the new password
@@ -456,9 +442,9 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
 export const applyReferral = asyncHandler(async (req, res) => {
   const { referralCode } = req.body;
-  const currentUser = await userSchema.findById(req.session.user.id);
+  const currentUser = await UserModel.findById(req.session.user.id);
   // Find referrer
-  const referrer = await userSchema.findOne({ referralCode });
+  const referrer = await UserModel.findOne({ referralCode });
 
   if (!referrer) {
     throw new AppError(HttpStatus.CONFLICT, AuthErrorMessages.INVALID_REFERRAL_CODE);

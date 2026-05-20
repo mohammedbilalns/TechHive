@@ -1,5 +1,5 @@
 import walletModel from '../../model/walletModel.js';
-import userModel from '../../model/userModel.js';
+import { UserModel } from '../../model/userModel.js';
 import { nanoid } from 'nanoid';
 import razorpay from '../../utils/razorpayConfig.js';
 import crypto from 'crypto';
@@ -17,7 +17,7 @@ const getWallet = async (req, res) => {
         const skip = (page - 1) * limit;
 
         const wallet = await walletModel.findOne({ userId: req.session.user.id });
-        const user = await userModel.findOne({ _id: req.session.user.id });
+        const user = await UserModel.findOne({ _id: req.session.user.id });
 
         if (!wallet) {
             // Create wallet if it doesn't exist

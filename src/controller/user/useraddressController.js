@@ -1,4 +1,4 @@
-import userSchema from "../../model/userModel.js";
+import { UserModel } from "../../model/userModel.js";
 import addressSchema from "../../model/addressModel.js";
 import mongoose from 'mongoose';
 import { validateAddAddress } from "../../validators/address.validator.js";
@@ -13,7 +13,7 @@ import logger from "../../utils/logger.js";
 export const getAddresses = async (req, res) => {
   try {
     let email = req.session.user.email;
-    let user = await userSchema.findOne({ email });
+    let user = await UserModel.findOne({ email });
 
     let addresses = await addressSchema.find({ userId: user._id });
     res.render('user/profile/addresses', { addresses, user, page: "addresses" });

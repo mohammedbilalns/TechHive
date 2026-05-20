@@ -1,7 +1,5 @@
 import express from "express";
 import { Router } from "express";
-import adminAuthController from "../controller/admin/adminAuthController.js";
-import adminAuth from "../middlewares/adminAuth.js";
 import adminCategoryController from "../controller/admin/adminCategoryController.js";
 import adminProductController from "../controller/admin/adminProductsController.js";
 import adminOrderController from "../controller/admin/adminOrdersController.js";
@@ -11,18 +9,21 @@ import adminOfferController from "../controller/admin/adminOffersController.js";
 import adminSalesreportController from "../controller/admin/adminSalesReportController.js";
 import adminDashboardController from "../controller/admin/adminDashboardController.js";
 import adminOffersController from "../controller/admin/adminOffersController.js";
+import { renderAdminLoginPage } from "../controller/authentication/authViewsController.js";
+import { loginAdmin, logoutAdmin } from "../controller/authentication/adminAuthController.js";
+import { checkAdminSession, isAdminLoggedIn } from "../middlewares/adminAuth.js";
 
 const router = Router();
 router.use(express.static('static'));
 
 //---- login routes ----
 router.route('/login')
-      .all(adminAuth.isLogin)
-      .get(adminAuthController.loadLogin) // load login page 
-      .post(adminAuthController.verifyLogin); // verify login 
+      .all(isAdminLoggedIn)
+      .get(renderAdminLoginPage) // load login page 
+      .post(loginAdmin); // verify login 
 
-router.use(adminAuth.checkSession);
-router.get('/logout', adminAuthController.logoutAdmin);
+router.use(checkAdminSession);
+router.get('/logout',logoutAdmin);
 
 //---- products routes ---- 
 router.get('/products', adminProductController.getProducts); // get all products page 

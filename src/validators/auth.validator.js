@@ -16,7 +16,7 @@ export const validateLogin = ({ email, password }) => {
 
 };
 
-export const validateRegister = ({ fullname, phonenumber, email, password}) => {
+export const validateRegisterBody = ({ fullname, phonenumber, email, password}) => {
   fullname = fullname.trim();
   phonenumber = phonenumber.trim();
   email = email.trim();

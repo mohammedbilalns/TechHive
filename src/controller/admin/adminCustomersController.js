@@ -1,6 +1,6 @@
-import userSchema from "../../model/userModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
+import { UserModel } from "../../model/userModel.js";
 import { AppError } from "../../utils/appError.js";
 
 const getCustomers = asyncHandler(async (req, res) => {
@@ -18,10 +18,10 @@ const getCustomers = asyncHandler(async (req, res) => {
     ]
   };
 
-  const totalCustomers = await userSchema.countDocuments(searchQuery);
+  const totalCustomers = await UserModel.countDocuments(searchQuery);
   const totalPages = Math.ceil(totalCustomers / limit);
 
-  const customers = await userSchema.find(searchQuery)
+  const customers = await UserModel.find(searchQuery)
     .skip(skip)
     .limit(limit)
     .sort({ createdAt: -1 });
@@ -41,7 +41,7 @@ const getCustomers = asyncHandler(async (req, res) => {
 
 
 const blockCustomer = asyncHandler(async (req, res) => {
-  const customer = await userSchema.findByIdAndUpdate(
+  const customer = await UserModel.findByIdAndUpdate(
     req.params.customerid,
     { status: "Blocked" },
     { new: true }
@@ -63,7 +63,7 @@ const blockCustomer = asyncHandler(async (req, res) => {
 });
 
 const unblockCustomer = asyncHandler(async (req, res) => {
-  const customer = await userSchema.findByIdAndUpdate(
+  const customer = await UserModel.findByIdAndUpdate(
     req.params.customerid,
     { status: "Active" },
     { new: true }

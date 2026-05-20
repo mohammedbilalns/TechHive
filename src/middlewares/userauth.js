@@ -1,13 +1,14 @@
-import userModel from "../model/userModel.js";
+import { UserModel } from "../model/userModel.js";
 import logger from "../utils/logger.js";
 
-const checkSession = async (req, res, next) => {
+// Verifies user session exists and account is still active; redirects to login otherwise
+export const checkUserSession = async (req, res, next) => {
     try {
         if (!req.session.user) {
             return res.redirect('/login');
         }
 
-        const user = await userModel.findById(req.session.user.id);
+        const user = await UserModel.findById(req.session.user.id);
         if (!user || user.status !== "Active") {
             delete req.session.user;
             return res.redirect('/login?message=Your+account+has+been+blocked&alertType=error');
@@ -21,7 +22,8 @@ const checkSession = async (req, res, next) => {
     }
 };
 
-const isLogin = (req, res, next) => {
+// Redirects authenticated users away from login page to home
+export const isUserLoggedIn = (req, res, next) => {
     try {
         if (req.session.user) {
             return res.redirect('/home');
@@ -33,4 +35,3 @@ const isLogin = (req, res, next) => {
     }
 };
 
-export default { isLogin, checkSession };

@@ -1,4 +1,4 @@
-import userSchema from "../../model/userModel.js";
+import { UserModel } from "../../model/userModel.js";
 import bcrypt from 'bcryptjs';
 import logger from "../../utils/logger.js";
 import referralCodeUtils from '../../utils/referralCode.js';
@@ -13,7 +13,7 @@ import { SuccessMessage } from "../../constants/successMessage.js";
 export const getAccountDetails = async (req, res) => {
     try {
         let email = req.session.user.email;
-        let user = await userSchema.findOne({ email });
+        let user = await UserModel.findOne({ email });
 
         // Generate referral code 
         if (!user.referralCode) {
@@ -41,7 +41,7 @@ export const getAccountDetails = async (req, res) => {
 export const updateProfile = asyncHandler(async (req, res) => {
     const { fullname } = req.body;
     const userId = req.session.user.id;
-    const updatedUser = await userSchema.findByIdAndUpdate(
+    const updatedUser = await UserModel.findByIdAndUpdate(
         userId,
         { fullname },
         { new: true }
@@ -62,7 +62,7 @@ export const changePassword = asyncHandler(async (req, res) => {
     const userId = req.session.user.id;
 
     // Get user from database
-    const user = await userSchema.findById(userId);
+    const user = await UserModel.findById(userId);
     if (!user) {
         throw new AppError(HttpStatus.NOT_FOUND, AuthErrorMessages.USER_NOT_FOUND);
     }
