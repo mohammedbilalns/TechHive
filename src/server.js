@@ -26,7 +26,7 @@ const startServer = async () => {
 startServer();
 
 process.on("uncaughtException", (err) => {
-  logger.error("UNCAUGHT EXCEPTION! Shutting down...", err)
+  logger.error("UNCAUGHT EXCEPTION! Shutting down...", err);
   process.exit(1);
 });
 

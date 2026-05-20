@@ -7,25 +7,23 @@
     "tailwind": "npx tailwindcss -i ./src/static/styles/styles.css -o ./src/static/tailwind/output.css --watch ",
     "build:css": "tailwindcss -i ./src/static/styles/styles.css -o ./src/static/tailwind/output.css --minify",
     "dev:server": "node --inspect --watch --env-file=.env ./src/server.js",
-    "dev:worker": "node --watch --env-file=.env ./src/workers/emailWorker.js",
     "lint": "eslint --fix --ext .js .",
     "lint:fix": "eslint --fix --ext .js . --fix",
-    "dev": "concurrently 'npm run tailwind' 'npm run dev:server' 'npm run dev:worker'",
+    "dev": "concurrently 'npm run tailwind' 'npm run dev:server'",
     "start": "node --env-file=.env ./src/server.js",
-    "start:worker": "node --env-file=.env ./src/workers/emailWorker.js",
-    "start:prod": "npm run build:css && concurrently \"npm run start\" \"npm run start:worker\""
+    "start:prod": "npm run build:css && npm run start"
   },
   "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
-  "overrides":{
-    "minimatch":"^10.2.1"
+  "overrides": {
+    "minimatch": "^10.2.1"
   },
   "dependencies": {
+    "@getbrevo/brevo": "^6.0.1",
     "bcryptjs": "^2.4.3",
-    "bullmq": "^5.69.3",
     "compression": "^1.7.5",
     "ejs": "^4.0.1",
     "exceljs": "^4.4.0",
@@ -37,7 +35,6 @@
     "multer": "^2.0.1",
     "nanoid": "^5.0.9",
     "nocache": "^4.0.0",
-    "nodemailer": "^7.0.7",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "pdfkit": "^0.15.2",

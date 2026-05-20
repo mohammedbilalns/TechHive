@@ -12,7 +12,7 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AuthErrorMessages, ErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
 import { WalletTransactionDescriptions } from "../../constants/walletTransactionDescriptions.js";
-import { emailQueue } from "../../services/queue.js";
+import { sendOTPEmail } from "../../services/mail.js";
 import logger from "../../utils/logger.js";
 
 // ---- User Login ----  
@@ -160,7 +160,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   }, 3 * 60 * 1000);
 
   // Send OTP email to the user
-  await emailQueue.add("sendOTP", {email, otp});
+  await sendOTPEmail(email, otp);
 
   return res.status(HttpStatus.OK).json({
     success: true,
@@ -237,7 +237,7 @@ export const resendOTP = asyncHandler(async (req, res) => {
   user.otp.otpAttempts += 1;
   await user.save();
 
-  await emailQueue.add("sendOTP", {email, otp});
+  await sendOTPEmail(email, otp);
 
   return res.status(HttpStatus.OK).json({
     success: true,
@@ -337,7 +337,7 @@ export const processForgotPassword = asyncHandler(async (req, res) => {
   };
   await user.save();
 
-  await emailQueue.add("sendOTP", {email, otp});
+  await sendOTPEmail(email, otp);
 
   return res.status(HttpStatus.OK).json({
     success: true,
@@ -413,7 +413,7 @@ export const resendForgotPasswordOTP = asyncHandler(async (req, res) => {
   };
   await user.save();
 
-  await emailQueue.add("sendOTP", {email, otp});
+  await sendOTPEmail(email, otp);
 
 
   res.render("user/auth/forgotpasswordotp", {
@@ -516,4 +516,3 @@ export const applyReferral = asyncHandler(async (req, res) => {
   });
 
 });
-
