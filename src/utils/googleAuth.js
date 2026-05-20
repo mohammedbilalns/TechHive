@@ -1,22 +1,9 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import userSchema from "../model/userModel.js";
-import referralUtils from "./referralCode.js";
+import { UserModel } from "../model/userModel.js";
 import { env } from "./env.js";
+import { generateUniqueReferralCode } from "./referralCode.js";
 
-
-async function generateUniqueReferralCode() {
-  let referralCode;
-  let isUnique = false;
-  while (!isUnique) {
-    referralCode = referralUtils.generateReferralCode();
-    const existingUserWithCode = await userSchema.findOne({ referralCode });
-    if (!existingUserWithCode) {
-      isUnique = true;
-    }
-  }
-  return referralCode;
-}
 
 passport.use(new GoogleStrategy({
   clientID: env.GOOGLE_CLIENT_ID,
@@ -26,7 +13,7 @@ passport.use(new GoogleStrategy({
   async (token, tokenSecret, profile, done) => {
     try {
       // Check if user exists with the same email
-      const existingUser = await userSchema.findOne({ email: profile.emails[0].value });
+      const existingUser = await UserModel.findOne({ email: profile.emails[0].value });
 
       if (existingUser) {
         if (existingUser.status !== "Active") {
@@ -41,7 +28,7 @@ passport.use(new GoogleStrategy({
       }
 
       // If user doesn't exist, create a new user
-      const newUser = new userSchema({
+      const newUser = new UserModel({
         fullname: profile.displayName,
         email: profile.emails[0].value,
         googleId: profile.id,
@@ -70,7 +57,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await userSchema.findById(id);
+    const user = await UserModel.findById(id);
     if (!user) {
       return done(null, false);
     }
