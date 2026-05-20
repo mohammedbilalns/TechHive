@@ -1,4 +1,4 @@
-import Order from '../../model/orderModel.js';
+import { orderModel } from '../../model/orderModel.js';
 import ExcelJS from 'exceljs';
 import PDFDocument from 'pdfkit';
 import { HttpStatus } from '../../constants/statusCodes.js';
@@ -86,7 +86,7 @@ const getSalesReportData = asyncHandler(async (req, res) => {
   dateFilter.isReturned = { $ne: true };
 
   // First, get all orders to calculate overall totals
-  const allOrders = await Order.find({
+  const allOrders = await orderModel.find({
     'items.status': 'delivered',
     orderDate: dateFilter.orderDate
   }).populate('userId', 'fullname');
@@ -207,13 +207,13 @@ const generateExcelReport = async (res, orders, totals, filterType, startDate, e
 
   worksheet.addRow(['']);
   const headers = [
-    'Order ID',
+    'orderModel ID',
     'Date',
     'Customer',
     'Items',
     'Total Amount (₹)',
-    'Coupon Discount (₹)',
-    'Offer Discount (₹)',
+    'couponModel Discount (₹)',
+    'offerModel Discount (₹)',
     'Net Amount (₹)'
   ];
   const headerRow = worksheet.addRow(headers);
@@ -341,13 +341,13 @@ const generatePDFReport = async (res, orders, totals, filterType, startDate, end
   const tableLeftMargin = 50;
 
   const columns = [
-    { header: 'Order ID', width: 62 },
+    { header: 'orderModel ID', width: 62 },
     { header: 'Date', width: 62 },
     { header: 'Customer', width: 85 },
     { header: 'Items', width: 35 },
     { header: 'Total', width: 55 },
-    { header: 'Coupon', width: 50 },
-    { header: 'Offer', width: 50 },
+    { header: 'couponModel', width: 50 },
+    { header: 'offerModel', width: 50 },
     { header: 'Net', width: 50 }
   ];
 
@@ -572,7 +572,7 @@ const downloadReport = asyncHandler(async (req, res) => {
   dateFilter.status = 'Delivered';
   dateFilter.isReturned = { $ne: true }; // Exclude returned orders
 
-  const orders = await Order.find({
+  const orders = await orderModel.find({
     'items.status': 'delivered',  // At least one item is delivered
     orderDate: dateFilter.orderDate
   })

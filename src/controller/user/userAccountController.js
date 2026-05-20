@@ -2,7 +2,7 @@ import { UserModel } from "../../model/userModel.js";
 import bcrypt from 'bcryptjs';
 import logger from "../../utils/logger.js";
 import referralCodeUtils from '../../utils/referralCode.js';
-import referralModel from "../../model/referralModel.js";
+import { referralModel } from "../../model/referralModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
@@ -92,4 +92,3 @@ export const changePassword = asyncHandler(async (req, res) => {
         message: SuccessMessage.PASSWORD_UPDATED
     });
 });
-

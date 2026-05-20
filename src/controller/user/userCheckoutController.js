@@ -1,8 +1,8 @@
 import { UserModel } from '../../model/userModel.js';
-import cartModel from '../../model/cartModel.js';
-import addressModel from '../../model/addressModel.js';
-import walletModel from '../../model/walletModel.js';
-import couponModel from '../../model/couponModel.js';
+import { cartModel } from '../../model/cartModel.js';
+import { addressModel } from '../../model/addressModel.js';
+import { walletModel } from '../../model/walletModel.js';
+import { couponModel } from '../../model/couponModel.js';
 import { HttpStatus } from '../../constants/statusCodes.js';
 import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
@@ -149,4 +149,3 @@ export default {
   applyCoupon,
   removeCoupon
 };
-

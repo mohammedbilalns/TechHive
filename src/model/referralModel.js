@@ -13,4 +13,4 @@ const referralSchema = new mongoose.Schema({
 	}
 }, { timestamps: true });
 
-export default mongoose.model("referral", referralSchema);
+export const referralModel = mongoose.model("referral", referralSchema);

@@ -1,6 +1,6 @@
-import productSchema from "../../model/productModel.js";
-import categorySchema from "../../model/categoryModel.js";
-import reviewModel from '../../model/reviewModel.js';
+import { productModel } from "../../model/productModel.js";
+import { categoryModel } from "../../model/categoryModel.js";
+import { reviewModel } from '../../model/reviewModel.js';
 import mongoose from 'mongoose';
 import { HttpStatus } from "../../constants/statusCodes.js";
 import logger from "../../utils/logger.js";
@@ -9,16 +9,16 @@ import logger from "../../utils/logger.js";
 // ---- load home ---- homepage 
 const loadHome = async (req, res) => {
     try {
-        const allProducts = await productSchema
+        const allProducts = await productModel
             .find({ status: "Active" })
             .limit(6);
 
         // Fetch all categories
-        const categories = await categorySchema
+        const categories = await categoryModel
             .find({ status: "Active" })
             .limit(10);
 
-        const newArrivals = await productSchema
+        const newArrivals = await productModel
             .find({ status: "Active" })
             .sort({ createdAt: -1 })
             .limit(4);
@@ -44,16 +44,16 @@ const loadHome = async (req, res) => {
 
 const loadLanding = async (req, res) => {
     try {
-        const allProducts = await productSchema
+        const allProducts = await productModel
             .find({ status: "Active" })
             .limit(6);
 
         // Fetch all categories
-        const categories = await categorySchema
+        const categories = await categoryModel
             .find({ status: "Active" })
             .limit(10);
 
-        const newArrivals = await productSchema
+        const newArrivals = await productModel
             .find({ status: "Active" })
             .sort({ createdAt: -1 })
             .limit(4);
@@ -78,11 +78,11 @@ const loadAllProducts = async (req, res) => {
         const limit = 4; // Number of categories per page
 
         // Get total number of active categories
-        const totalCategories = await categorySchema.countDocuments({ status: "Active" });
+        const totalCategories = await categoryModel.countDocuments({ status: "Active" });
         const totalPages = Math.ceil(totalCategories / limit);
 
         // Get categories
-        const categories = await categorySchema
+        const categories = await categoryModel
             .find({ status: "Active" })
             .skip((page - 1) * limit)
             .limit(limit);
@@ -90,7 +90,7 @@ const loadAllProducts = async (req, res) => {
         // Get products for each category
         const categoriesWithProducts = await Promise.all(
             categories.map(async (category) => {
-                const products = await productSchema
+                const products = await productModel
                     .find({ 
                         category: category._id,
                         status: "Active"
@@ -168,13 +168,13 @@ const viewProduct = async (req, res) => {
         }
 
         // For regular page load, fetch the rest of the data
-        const product = await productSchema.findById(productId);
+        const product = await productModel.findById(productId);
         
         if (!product || product.status !== "Active") {
             return res.redirect('/notfound?message=Product+not+found&alertType=error');
         }
 
-        const relatedProducts = await productSchema.find({
+        const relatedProducts = await productModel.find({
             category: product.category,
             _id: { $ne: product._id },
             status: "Active"
@@ -249,7 +249,7 @@ const viewCategory = async (req, res) => {
         }
 
         // Fetch the category
-        const category = await categorySchema.findOne({
+        const category = await categoryModel.findOne({
             _id: categoryId,
             status: "Active"
         });
@@ -279,7 +279,7 @@ const viewCategory = async (req, res) => {
         };
 
         // Get all products matching the base query
-        let allProducts = await productSchema
+        let allProducts = await productModel
             .find(baseQuery);
 
         // Apply rating filter if needed

@@ -1,7 +1,7 @@
-import Offer from '../../model/offerModel.js';
-import Category from '../../model/categoryModel.js';
-import Product from '../../model/productModel.js';
-import Referral from '../../model/referralModel.js';
+import { offerModel } from '../../model/offerModel.js';
+import { categoryModel } from '../../model/categoryModel.js';
+import { productModel } from '../../model/productModel.js';
+import { referralModel } from '../../model/referralModel.js';
 import { HttpStatus } from '../../constants/statusCodes.js';
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AppError } from "../../utils/appError.js";
@@ -14,12 +14,12 @@ const updateProductDiscounts = async (offer, remove = false) => {
     const discountValue = remove ? 0 : offer.offerPercentage;
 
     if (offer.offerType === 'product') {
-        await Product.updateMany(
+        await productModel.updateMany(
             { _id: { $in: offer.applicableProducts } },
             { $set: { discount: discountValue } }
         );
     } else if (offer.offerType === 'category') {
-        await Product.updateMany(
+        await productModel.updateMany(
             { category: { $in: offer.applicableCategories } },
             { $set: { discount: discountValue } }
         );
@@ -40,7 +40,7 @@ const checkExistingOffers = async (offerType, items, startDate, endDate, exclude
         query.applicableCategories = { $in: items };
     }
 
-    const existingOffer = await Offer.findOne(query);
+    const existingOffer = await offerModel.findOne(query);
     return existingOffer;
 };
 
@@ -50,7 +50,7 @@ const getOffers = asyncHandler(async (req, res) => {
     const skip = (page - 1) * limit;
 
     // Fetch offers 
-    const offers = await Offer.find()
+    const offers = await offerModel.find()
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
@@ -62,15 +62,15 @@ const getOffers = asyncHandler(async (req, res) => {
         offer.isExpired = new Date(offer.endDate) < currentDate;
     });
 
-    const totalOffers = await Offer.countDocuments();
+    const totalOffers = await offerModel.countDocuments();
     const totalPages = Math.ceil(totalOffers / limit);
 
     // Fetch active categories and products
-    const categories = await Category.find({ status: 'Active' })
+    const categories = await categoryModel.find({ status: 'Active' })
         .select('_id name')
         .sort({ name: 1 });
 
-    const products = await Product.find({ status: 'Active' })
+    const products = await productModel.find({ status: 'Active' })
         .select('_id name price')
         .populate('category', 'name')
         .sort({ name: 1 });
@@ -81,9 +81,9 @@ const getOffers = asyncHandler(async (req, res) => {
     }));
 
     // Fetch referral settings
-    let referralSettings = await Referral.findOne();
+    let referralSettings = await referralModel.findOne();
     if (!referralSettings) {
-        referralSettings = await new Referral().save();
+        referralSettings = await new referralModel().save();
     }
 
     res.render('admin/offers', {
@@ -105,7 +105,7 @@ const getOfferDetails = asyncHandler(async (req, res) => {
         throw new AppError(HttpStatus.BAD_REQUEST, 'Offer ID is required');
     }
 
-    const offer = await Offer.findById(req.params.offerId)
+    const offer = await offerModel.findById(req.params.offerId)
         .populate('applicableCategories', '_id name')
         .populate('applicableProducts', '_id name');
 
@@ -161,7 +161,7 @@ const addOffer = asyncHandler(async (req, res) => {
         throw new AppError(HttpStatus.CONFLICT, `An active offer is already exists for some of the selected ${offerType}s`);
     }
 
-    const newOffer = new Offer({
+    const newOffer = new offerModel({
         name,
         offerType,
         offerPercentage,
@@ -182,7 +182,7 @@ const addOffer = asyncHandler(async (req, res) => {
 
 // Update offer
 const updateOffer = asyncHandler(async (req, res) => {
-    const oldOffer = await Offer.findById(req.params.offerId);
+    const oldOffer = await offerModel.findById(req.params.offerId);
     if (!oldOffer) {
         throw new AppError(HttpStatus.NOT_FOUND, 'Offer not found');
     }
@@ -219,7 +219,7 @@ const updateOffer = asyncHandler(async (req, res) => {
     // Remove old discounts
     await updateProductDiscounts(oldOffer, true);
 
-    const updatedOffer = await Offer.findByIdAndUpdate(
+    const updatedOffer = await offerModel.findByIdAndUpdate(
         req.params.offerId,
         {
             name,
@@ -240,7 +240,7 @@ const updateOffer = asyncHandler(async (req, res) => {
 
 // Toggle offer status
 const toggleOfferStatus = asyncHandler(async (req, res) => {
-    const offer = await Offer.findById(req.params.offerId);
+    const offer = await offerModel.findById(req.params.offerId);
     if (!offer) {
         throw new AppError(HttpStatus.NOT_FOUND, 'Offer not found');
     }
@@ -260,7 +260,7 @@ const toggleOfferStatus = asyncHandler(async (req, res) => {
         );
 
         if (existingOffer) {
-            throw new AppError(HttpStatus.CONFLICT, `Cannot activate: Offer is already active for some of the selected ${offer.offerType}s`);
+            throw new AppError(HttpStatus.CONFLICT, `Cannot activate: offerModel is already active for some of the selected ${offer.offerType}s`);
         }
     }
 
@@ -274,12 +274,12 @@ const toggleOfferStatus = asyncHandler(async (req, res) => {
         await updateProductDiscounts(offer);
     }
 
-    res.json({ success: true, message: `Offer ${offer.isActive ? 'activated' : 'deactivated'} successfully` });
+    res.json({ success: true, message: `offerModel ${offer.isActive ? 'activated' : 'deactivated'} successfully` });
 });
 
 // Delete offer
 const deleteOffer = asyncHandler(async (req, res) => {
-    const offer = await Offer.findById(req.params.offerId);
+    const offer = await offerModel.findById(req.params.offerId);
     if (!offer) {
         throw new AppError(HttpStatus.NOT_FOUND, 'Offer not found');
     }
@@ -288,7 +288,7 @@ const deleteOffer = asyncHandler(async (req, res) => {
     await updateProductDiscounts(offer, true);
     await offer.deleteOne();
 
-    res.json({ success: true, message: 'Offer deleted successfully' });
+    res.json({ success: true, message: 'offerModel deleted successfully' });
 });
 
 //  update referral settings
@@ -300,10 +300,10 @@ const updateReferralSettings = asyncHandler(async (req, res) => {
 
     const { referrerValue, refereeValue } = req.body;
 
-    let referralSettings = await Referral.findOne();
+    let referralSettings = await referralModel.findOne();
 
     if (!referralSettings) {
-        referralSettings = new Referral({
+        referralSettings = new referralModel({
             referrerValue,
             refereeValue
         });
@@ -316,7 +316,7 @@ const updateReferralSettings = asyncHandler(async (req, res) => {
 
     res.json({
         success: true,
-        message: 'Referral settings updated successfully'
+        message: 'referralModel settings updated successfully'
     });
 });
 

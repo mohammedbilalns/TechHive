@@ -1,12 +1,12 @@
-import orderModel from '../../model/orderModel.js';
-import cartModel from '../../model/cartModel.js';
-import productModel from '../../model/productModel.js';
-import addressModel from '../../model/addressModel.js';
+import { orderModel } from '../../model/orderModel.js';
+import { cartModel } from '../../model/cartModel.js';
+import { productModel } from '../../model/productModel.js';
+import { addressModel } from '../../model/addressModel.js';
 import { nanoid } from 'nanoid';
-import couponModel from '../../model/couponModel.js';
+import { couponModel } from '../../model/couponModel.js';
 import razorpay from '../../utils/razorpayConfig.js';
 import crypto from 'crypto';
-import walletModel from '../../model/walletModel.js';
+import { walletModel } from '../../model/walletModel.js';
 import mongoose from 'mongoose';
 import PDFDocument from 'pdfkit';
 import logger from '../../utils/logger.js';

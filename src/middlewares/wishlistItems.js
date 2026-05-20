@@ -1,4 +1,4 @@
-import wishlistSchema from "../model/wishlistModel.js";
+import { wishlistModel } from "../model/wishlistModel.js";
 import logger from "../utils/logger.js";
 
 const fetchWishlistItems = async (req, res, next)=>{
@@ -6,7 +6,7 @@ const fetchWishlistItems = async (req, res, next)=>{
         if(req.session.user){
             const userId = req.session.user.id; 
             
-            let wishlist = await wishlistSchema
+            let wishlist = await wishlistModel
                 .findOne({ userId })
                 .populate({
                     path: 'products',
@@ -15,7 +15,7 @@ const fetchWishlistItems = async (req, res, next)=>{
 
             // Create new wishlist if none exists
             if (!wishlist) {
-                wishlist = await wishlistSchema.create({ userId, products: [] });
+                wishlist = await wishlistModel.create({ userId, products: [] });
             }
             
             

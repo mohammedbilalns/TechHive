@@ -1,4 +1,4 @@
-import cartSchema from "../model/cartModel.js";
+import { cartModel } from "../model/cartModel.js";
 import logger from "../utils/logger.js";
 
 const fetchCartItems = async (req,res, next)=>{
@@ -6,7 +6,7 @@ const fetchCartItems = async (req,res, next)=>{
 
         if(req.session.user){
             const userid = req.session.user.id; 
-            const cart = await cartSchema.findOne({user: userid});
+            const cart = await cartModel.findOne({user: userid});
             const totalQuantity = cart?.items.reduce((sum , item)=> sum+ item.quantity,0);
             res.locals.cartQuantity = totalQuantity;
         }else {

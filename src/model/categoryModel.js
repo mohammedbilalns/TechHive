@@ -6,4 +6,4 @@ const categorySchema = new mongoose.Schema({
     status: { type: String, required: true, enum: ['Active', 'Inactive'] },
 },{ timestamps: true });
 
-export default mongoose.model('Category', categorySchema);
+export const categoryModel = mongoose.model('Category', categorySchema);

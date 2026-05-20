@@ -1,4 +1,4 @@
-import walletModel from '../../model/walletModel.js';
+import { walletModel } from '../../model/walletModel.js';
 import { UserModel } from '../../model/userModel.js';
 import { nanoid } from 'nanoid';
 import razorpay from '../../utils/razorpayConfig.js';

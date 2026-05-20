@@ -1,5 +1,5 @@
 import { UserModel } from "../../model/userModel.js";
-import addressSchema from "../../model/addressModel.js";
+import { addressModel } from "../../model/addressModel.js";
 import mongoose from 'mongoose';
 import { validateAddAddress } from "../../validators/address.validator.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
@@ -15,7 +15,7 @@ export const getAddresses = async (req, res) => {
     let email = req.session.user.email;
     let user = await UserModel.findOne({ email });
 
-    let addresses = await addressSchema.find({ userId: user._id });
+    let addresses = await addressModel.find({ userId: user._id });
     res.render('user/profile/addresses', { addresses, user, page: "addresses" });
   } catch (error) {
     logger.error("FETCH_ADDRESSES_ERROR", error);
@@ -25,7 +25,7 @@ export const getAddresses = async (req, res) => {
 
 // Add a new address
 export const addAddress = asyncHandler(async (req, res) => {
-  const addressCount = await addressSchema.countDocuments({ userId: req.session.user.id });
+  const addressCount = await addressModel.countDocuments({ userId: req.session.user.id });
   if (addressCount >= 4) {
     throw new AppError(HttpStatus.BAD_REQUEST, ErrorMessages.MAX_ADDRESS_LIMIT);
   }
@@ -46,7 +46,7 @@ export const addAddress = asyncHandler(async (req, res) => {
     throw new AppError(HttpStatus.BAD_REQUEST, error);
   }
 
-  const newAddress = new addressSchema({
+  const newAddress = new addressModel({
     userId: req.session.user.id,
     name,
     houseName,
@@ -85,7 +85,7 @@ export const updateAddress = asyncHandler(async (req, res) => {
     throw new AppError(HttpStatus.BAD_REQUEST, error);
   }
 
-  const address = await addressSchema.findOneAndUpdate(
+  const address = await addressModel.findOneAndUpdate(
     {
       _id: req.params.id,
       userId: req.session.user.id
@@ -116,7 +116,7 @@ export const updateAddress = asyncHandler(async (req, res) => {
 
 // Delete an address
 export const deleteAddress = asyncHandler(async (req, res) => {
-  const address = await addressSchema.findOneAndDelete({
+  const address = await addressModel.findOneAndDelete({
     _id: req.params.id,
     userId: req.session.user.id
   });
@@ -141,7 +141,7 @@ export const getAddress = asyncHandler(async (req, res) => {
       return res.redirect("/notfound?message=Invalid+Address+Id&alertType=error");
   }
 
-  const address = await addressSchema.findOne({
+  const address = await addressModel.findOne({
     _id: addressId,
     userId: userId
   });

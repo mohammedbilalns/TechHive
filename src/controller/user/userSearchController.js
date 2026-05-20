@@ -1,6 +1,6 @@
-import productSchema from "../../model/productModel.js";
-import categorySchema from "../../model/categoryModel.js";
-import reviewSchema from "../../model/reviewModel.js";
+import { productModel } from "../../model/productModel.js";
+import { categoryModel } from "../../model/categoryModel.js";
+import { reviewModel } from "../../model/reviewModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { ErrorMessages } from "../../constants/errorMessages.js";
 import logger from "../../utils/logger.js";
@@ -17,7 +17,7 @@ const searchProducts = async (req, res) => {
         const minRating = req.query.minRating ? parseFloat(req.query.minRating) : 0;
 
         // Get product ratings 
-        const productRatings = await reviewSchema.aggregate([
+        const productRatings = await reviewModel.aggregate([
             {
                 $group: {
                     _id: "$product",
@@ -36,7 +36,7 @@ const searchProducts = async (req, res) => {
 
         // Add search query
         if (query) {
-            const matchingCategories = await categorySchema.find({
+            const matchingCategories = await categoryModel.find({
                 name: { $regex: query, $options: 'i' },
                 status: 'Active'
             });
@@ -57,7 +57,7 @@ const searchProducts = async (req, res) => {
         }
 
         // Get all products 
-        let allProducts = await productSchema
+        let allProducts = await productModel
             .find(baseQuery)
             .populate('category', 'name');
 
@@ -100,7 +100,7 @@ const searchProducts = async (req, res) => {
         const products = allProducts.slice(startIndex, endIndex);
 
         // Get all categories for filter dropdown
-        const allCategories = await categorySchema.find({ status: 'Active' });
+        const allCategories = await categoryModel.find({ status: 'Active' });
 
         if (req.xhr || req.path === '/api/search') {
             return res.status(HttpStatus.OK).json({

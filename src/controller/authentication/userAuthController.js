@@ -2,8 +2,8 @@ import { UserModel } from "../../model/userModel.js";
 import bcrypt from "bcryptjs";
 import cryptoUtils from "../../services/crypto.js";
 import passport from "passport";
-import referralSchema from "../../model/referralModel.js";
-import walletSchema from "../../model/walletModel.js";
+import { referralModel } from "../../model/referralModel.js";
+import { walletModel } from "../../model/walletModel.js";
 import referralUtils from "../../utils/referralCode.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { validateLogin, validateRegisterBody, validateResetPassword } from "../../validators/auth.validator.js";
@@ -456,14 +456,14 @@ export const applyReferral = asyncHandler(async (req, res) => {
   }
 
   // Get referral values
-  const referralValues = await referralSchema.findOne({});
+  const referralValues = await referralModel.findOne({});
   const referrerAmount = referralValues.referrerValue;
   const refereeAmount = referralValues.refereeValue;
 
   // Handle referrer's wallet
-  let referrerWallet = await walletSchema.findOne({ userId: referrer._id });
+  let referrerWallet = await walletModel.findOne({ userId: referrer._id });
   if (!referrerWallet) {
-    referrerWallet = new walletSchema({
+    referrerWallet = new walletModel({
       userId: referrer._id,
       balance: 0
     });
@@ -479,9 +479,9 @@ export const applyReferral = asyncHandler(async (req, res) => {
   await referrerWallet.save();
 
   // Handle current user's wallet
-  let userWallet = await walletSchema.findOne({ userId: currentUser._id });
+  let userWallet = await walletModel.findOne({ userId: currentUser._id });
   if (!userWallet) {
-    userWallet = new walletSchema({
+    userWallet = new walletModel({
       userId: currentUser._id,
       balance: 0
     });

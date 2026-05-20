@@ -1,5 +1,5 @@
-import categorySchema from "../../model/categoryModel.js";
-import productSchema from "../../model/productModel.js";
+import { categoryModel } from "../../model/categoryModel.js";
+import { productModel } from "../../model/productModel.js";
 import multer from "multer";
 import fs from "node:fs";
 import path from "node:path";
@@ -50,11 +50,11 @@ const getProducts = asyncHandler(async (req, res) => {
         ]
     };
 
-    const totalProducts = await productSchema.countDocuments(searchQuery);
+    const totalProducts = await productModel.countDocuments(searchQuery);
     const totalPages = Math.ceil(totalProducts / limit);
     const skip = (page - 1) * limit;
 
-    const products = await productSchema.find(searchQuery)
+    const products = await productModel.find(searchQuery)
         .populate('category')
         .sort({ createdAt: 1 })
         .skip(skip)
@@ -75,7 +75,7 @@ const getProducts = asyncHandler(async (req, res) => {
 
 const deleteProduct = asyncHandler(async (req, res) => {
     // Get the product details 
-    const product = await productSchema.findById(req.params.productid);
+    const product = await productModel.findById(req.params.productid);
 
     if (!product) {
         throw new AppError(HttpStatus.NOT_FOUND, 'Product not found');
@@ -91,7 +91,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
     }
 
     // Delete the product from database
-    await productSchema.findByIdAndDelete(req.params.productid);
+    await productModel.findByIdAndDelete(req.params.productid);
 
     res.json({
         success: true,
@@ -100,7 +100,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 });
 
 const deactivateProduct = asyncHandler(async (req, res) => {
-    const product = await productSchema.findByIdAndUpdate(
+    const product = await productModel.findByIdAndUpdate(
         req.params.productid,
         { status: "Inactive" },
         { new: true }
@@ -118,7 +118,7 @@ const deactivateProduct = asyncHandler(async (req, res) => {
 });
 
 const activateProduct = asyncHandler(async (req, res) => {
-    const product = await productSchema.findByIdAndUpdate(
+    const product = await productModel.findByIdAndUpdate(
         req.params.productid,
         { status: "Active" },
         { new: true }
@@ -136,7 +136,7 @@ const activateProduct = asyncHandler(async (req, res) => {
 });
 
 const getAddProduct = asyncHandler(async (_req, res) => {
-    const categories = await categorySchema.find({ status: "Active" });
+    const categories = await categoryModel.find({ status: "Active" });
     res.render('admin/addProduct', { categories, page: 'products' });
 });
 
@@ -161,7 +161,7 @@ const addProduct = asyncHandler(async (req, res) => {
         throw new AppError(HttpStatus.BAD_REQUEST, validationError);
     }
 
-    let product = await productSchema.findOne({ name });
+    let product = await productModel.findOne({ name });
     if (product) {
         throw new AppError(HttpStatus.CONFLICT, 'Product with same name already exists');
     }
@@ -172,7 +172,7 @@ const addProduct = asyncHandler(async (req, res) => {
         filename: file.filename
     }));
 
-    const newProduct = new productSchema({
+    const newProduct = new productModel({
         name,
         description,
         brand,
@@ -202,7 +202,7 @@ const getEditProduct = asyncHandler(async (req, res) => {
         return;
     }
 
-    const product = await productSchema.findById(productId);
+    const product = await productModel.findById(productId);
 
     // Check if product exists
     if (!product) {
@@ -210,7 +210,7 @@ const getEditProduct = asyncHandler(async (req, res) => {
         return;
     }
 
-    const categories = await categorySchema.find({ status: "Active" });
+    const categories = await categoryModel.find({ status: "Active" });
     res.render('admin/editProduct', { product, categories, page: 'products' });
 });
 
@@ -248,7 +248,7 @@ const editProduct = asyncHandler(async (req, res) => {
         throw new AppError(HttpStatus.BAD_REQUEST, validationError);
     }
 
-    let existingproduct = await productSchema.findOne({
+    let existingproduct = await productModel.findOne({
         name,
         _id: { $ne: productId }
     });
@@ -256,7 +256,7 @@ const editProduct = asyncHandler(async (req, res) => {
         throw new AppError(HttpStatus.CONFLICT, 'Product with same name already exists');
     }
 
-    const product = await productSchema.findById(productId);
+    const product = await productModel.findById(productId);
     if (!product) {
         throw new AppError(HttpStatus.NOT_FOUND, 'Product not found');
     }
@@ -284,7 +284,7 @@ const editProduct = asyncHandler(async (req, res) => {
     }
 
     // Update product with new data
-    const updatedProduct = await productSchema.findByIdAndUpdate(
+    const updatedProduct = await productModel.findByIdAndUpdate(
         productId,
         {
             name,

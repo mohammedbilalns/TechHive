@@ -1,4 +1,4 @@
-import Coupon from "../../model/couponModel.js";
+import { couponModel } from "../../model/couponModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import logger from "../../utils/logger.js";
 
@@ -10,7 +10,7 @@ const getCoupons = async (req, res) => {
         const limit = 9;
         const skip = (page - 1) * limit;
 
-        const allCoupons = await Coupon.find({
+        const allCoupons = await couponModel.find({
             isActive: true
         }).lean();
 

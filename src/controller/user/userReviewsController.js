@@ -1,5 +1,5 @@
-import reviewModel from "../../model/reviewModel.js";
-import productModel from "../../model/productModel.js";
+import { reviewModel } from "../../model/reviewModel.js";
+import { productModel } from "../../model/productModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import logger from "../../utils/logger.js";
 

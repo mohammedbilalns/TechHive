@@ -1,7 +1,7 @@
-import reviewModel from "../model/reviewModel.js";
+import { reviewModel } from "../model/reviewModel.js";
 
 
-const calculateAverageRatings = async (req, res, next) => {
+const calculateAverageRatings = async (_req, res, next) => {
     try {
         // Get all reviews
         const reviews = await reviewModel.find();
@@ -37,4 +37,3 @@ const calculateAverageRatings = async (req, res, next) => {
 };
 
 export default { calculateAverageRatings };
-

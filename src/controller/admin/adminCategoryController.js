@@ -1,5 +1,5 @@
-import categorySchema from "../../model/categoryModel.js";
-import productSchema from "../../model/productModel.js";
+import { categoryModel } from "../../model/categoryModel.js";
+import { productModel } from "../../model/productModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AppError } from "../../utils/appError.js";
@@ -17,11 +17,11 @@ const getCategories = asyncHandler(async (req, res) => {
     name: { $regex: search, $options: 'i' }
   };
 
-  const totalCategories = await categorySchema.countDocuments(searchQuery);
+  const totalCategories = await categoryModel.countDocuments(searchQuery);
   const totalPages = Math.ceil(totalCategories / limit);
   const skip = (page - 1) * limit;
 
-  const categories = await categorySchema.find(searchQuery)
+  const categories = await categoryModel.find(searchQuery)
     .sort({ createdAt: 1 })
     .skip(skip)
     .limit(limit);
@@ -41,7 +41,7 @@ const getCategories = asyncHandler(async (req, res) => {
 
 //---- Delete a category----
 const deleteCategory = asyncHandler(async (req, res) => {
-  await categorySchema.findByIdAndDelete(req.params.categoryid);
+  await categoryModel.findByIdAndDelete(req.params.categoryid);
   res.json({
     success: true,
     message: 'Category deleted successfully'
@@ -50,10 +50,10 @@ const deleteCategory = asyncHandler(async (req, res) => {
 
 //---- Hide a category----
 const hideCategory = asyncHandler(async (req, res) => {
-  await categorySchema.findByIdAndUpdate(req.params.categoryid, { status: "Inactive" });
+  await categoryModel.findByIdAndUpdate(req.params.categoryid, { status: "Inactive" });
 
   // Update all products in this category to Inactive
-  await productSchema.updateMany(
+  await productModel.updateMany(
     { category: req.params.categoryid },
     { status: "Inactive" }
   );
@@ -66,10 +66,10 @@ const hideCategory = asyncHandler(async (req, res) => {
 
 //---- Unhide a category----
 const unhideCategory = asyncHandler(async (req, res) => {
-  await categorySchema.findByIdAndUpdate(req.params.categoryid, { status: "Active" });
+  await categoryModel.findByIdAndUpdate(req.params.categoryid, { status: "Active" });
 
   // Update all products in this category to Active
-  await productSchema.updateMany(
+  await productModel.updateMany(
     { category: req.params.categoryid },
     { status: "Active" }
   );
@@ -90,12 +90,12 @@ const addCategory = asyncHandler(async (req, res) => {
 
   const { name, description } = value;
 
-  const existingCategory = await categorySchema.findOne({ name });
+  const existingCategory = await categoryModel.findOne({ name });
   if (existingCategory) {
     throw new AppError(HttpStatus.CONFLICT, 'Category with same name already exists');
   }
 
-  let newCategory = new categorySchema({
+  let newCategory = new categoryModel({
     name,
     description,
     status: "Active"
@@ -120,7 +120,7 @@ const editCategory = asyncHandler(async (req, res) => {
   const { name, description } = value;
 
   // find if another category exists with name
-  const existingCategory = await categorySchema.findOne({
+  const existingCategory = await categoryModel.findOne({
     name: name,
     _id: { $ne: req.params.categoryid }
   });
@@ -129,7 +129,7 @@ const editCategory = asyncHandler(async (req, res) => {
     throw new AppError(HttpStatus.CONFLICT, 'Category name already exists');
   }
 
-  const updatedCategory = await categorySchema.findByIdAndUpdate(
+  const updatedCategory = await categoryModel.findByIdAndUpdate(
     req.params.categoryid,
     { name, description },
     { new: true }

@@ -1,4 +1,4 @@
-import Order from '../../model/orderModel.js';
+import { orderModel } from '../../model/orderModel.js';
 import { asyncHandler } from "../../utils/asyncHandler.js";
 
 
@@ -75,7 +75,7 @@ const getDashboardData = asyncHandler(async (req, res) => {
   };
 
   //  sales data calculations
-  const salesData = await Order.aggregate([
+  const salesData = await orderModel.aggregate([
     { $match: baseFilter },
     { $unwind: "$items" },
     { $match: { 'items.status': 'delivered' } },
@@ -130,7 +130,7 @@ const getDashboardData = asyncHandler(async (req, res) => {
   ]);
 
   // Get top products with proper calculations
-  const topProducts = await Order.aggregate([
+  const topProducts = await orderModel.aggregate([
     { $match: baseFilter },
     { $unwind: "$items" },
     { $match: { 'items.status': 'delivered' } },
@@ -166,7 +166,7 @@ const getDashboardData = asyncHandler(async (req, res) => {
   ]);
 
   // Get top categories 
-  const topCategories = await Order.aggregate([
+  const topCategories = await orderModel.aggregate([
     { $match: baseFilter },
     { $unwind: "$items" },
     { $match: { 'items.status': 'delivered' } },
@@ -220,7 +220,7 @@ const getDashboardData = asyncHandler(async (req, res) => {
   ]);
 
   // Get top brands 
-  const topBrands = await Order.aggregate([
+  const topBrands = await orderModel.aggregate([
     { $match: baseFilter },
     { $unwind: "$items" },
     { $match: { 'items.status': 'delivered' } },

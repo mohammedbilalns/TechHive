@@ -1,6 +1,6 @@
-import orderModel from '../../model/orderModel.js';
-import productModel from '../../model/productModel.js';
-import walletModel from '../../model/walletModel.js';
+import { orderModel } from '../../model/orderModel.js';
+import { productModel } from '../../model/productModel.js';
+import { walletModel } from '../../model/walletModel.js';
 import { nanoid } from 'nanoid';
 import { HttpStatus } from '../../constants/statusCodes.js';
 import { asyncHandler } from "../../utils/asyncHandler.js";

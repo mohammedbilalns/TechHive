@@ -1,6 +1,6 @@
-import cartSchema from "../../model/cartModel.js";
+import { cartModel } from "../../model/cartModel.js";
 import logger from "../../utils/logger.js";
-import productSchema from "../../model/productModel.js";
+import { productModel } from "../../model/productModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
@@ -12,12 +12,12 @@ const getCart = async (req, res) => {
         delete req.session.coupon;
 
         const userId = req.session.user.id;
-        let cart = await cartSchema.findOne({ user: userId })
+        let cart = await cartModel.findOne({ user: userId })
             .populate('items.productId');
 
         // Create cart if not found
         if (!cart) {
-            cart = await cartSchema.create({
+            cart = await cartModel.create({
                 user: userId,
                 items: []
             });
@@ -70,7 +70,7 @@ const addToCart = asyncHandler(async (req, res) => {
     const userId = req.session.user.id;
 
     // Check if product exists, has stock, and is active
-    const product = await productSchema.findById(productId);
+    const product = await productModel.findById(productId);
     if (!product || product.stock <= 0 || product.status !== 'Active') {
         throw new AppError(HttpStatus.BAD_REQUEST, !product ? ErrorMessages.PRODUCT_NOT_FOUND :
             product.status !== 'Active' ? ErrorMessages.PRODUCT_NOT_AVAILABLE :
@@ -78,9 +78,9 @@ const addToCart = asyncHandler(async (req, res) => {
     }
 
     // Find and create cart
-    let cart = await cartSchema.findOne({ user: userId });
+    let cart = await cartModel.findOne({ user: userId });
     if (!cart) {
-        cart = await cartSchema.create({
+        cart = await cartModel.create({
             user: userId,
             items: []
         });
@@ -122,7 +122,7 @@ const removeFromCart = asyncHandler(async (req, res) => {
     const { productId } = req.params;
     const userId = req.session.user.id;
 
-    const cart = await cartSchema.findOne({ user: userId })
+    const cart = await cartModel.findOne({ user: userId })
         .populate('items.productId');
 
     if (!cart) {
@@ -167,7 +167,7 @@ const updateQuantity = asyncHandler(async (req, res) => {
     const userId = req.session.user.id;
 
     // Find cart and populate product details
-    const cart = await cartSchema.findOne({ user: userId })
+    const cart = await cartModel.findOne({ user: userId })
         .populate('items.productId');
 
     if (!cart) {
@@ -175,7 +175,7 @@ const updateQuantity = asyncHandler(async (req, res) => {
     }
 
     // Find product
-    const product = await productSchema.findById(productId);
+    const product = await productModel.findById(productId);
     if (!product) {
         throw new AppError(HttpStatus.NOT_FOUND, ErrorMessages.PRODUCT_NOT_FOUND);
     }
@@ -247,7 +247,7 @@ const clearCart = asyncHandler(async (req, res) => {
     const userId = req.session.user.id;
 
     // Find and remove all items from cart
-    const cart = await cartSchema.findOne({ user: userId });
+    const cart = await cartModel.findOne({ user: userId });
     if (!cart) {
         throw new AppError(HttpStatus.NOT_FOUND, ErrorMessages.CART_NOT_FOUND);
     }

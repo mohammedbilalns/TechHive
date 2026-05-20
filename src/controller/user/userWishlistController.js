@@ -1,5 +1,5 @@
-import wishlistSchema from "../../model/wishlistModel.js";
-import productModel from "../../model/productModel.js";
+import { wishlistModel } from "../../model/wishlistModel.js";
+import { productModel } from "../../model/productModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
@@ -16,9 +16,9 @@ const getWishlist = async (req, res) => {
         const userId = req.session.user.id;
 
         // Find or create wishlist
-        let wishlist = await wishlistSchema.findOne({ userId });
+        let wishlist = await wishlistModel.findOne({ userId });
         if (!wishlist) {
-            wishlist = await wishlistSchema.create({ userId, products: [] });
+            wishlist = await wishlistModel.create({ userId, products: [] });
         }
 
         // Get total count for pagination
@@ -26,7 +26,7 @@ const getWishlist = async (req, res) => {
         const totalPages = Math.ceil(totalProducts / limit);
 
         // Get paginated wishlist
-        const paginatedWishlist = await wishlistSchema.findOne({ userId })
+        const paginatedWishlist = await wishlistModel.findOne({ userId })
             .populate({
                 path: 'products',
                 match: { status: 'Active' },
@@ -65,10 +65,10 @@ const addToWishlist = asyncHandler(async (req, res) => {
         throw new AppError(HttpStatus.BAD_REQUEST, ErrorMessages.PRODUCT_NOT_AVAILABLE);
     }
 
-    let wishlist = await wishlistSchema.findOne({ userId });
+    let wishlist = await wishlistModel.findOne({ userId });
 
     if (!wishlist) {
-        wishlist = await wishlistSchema.create({
+        wishlist = await wishlistModel.create({
             userId,
             products: [productId]
         });
@@ -90,7 +90,7 @@ const removeFromWishlist = asyncHandler(async (req, res) => {
     const { productId } = req.body;
     const userId = req.session.user.id;
 
-    const wishlist = await wishlistSchema.findOne({ userId });
+    const wishlist = await wishlistModel.findOne({ userId });
 
     if (!wishlist) {
         throw new AppError(HttpStatus.NOT_FOUND, ErrorMessages.WISHLIST_NOT_FOUND);
