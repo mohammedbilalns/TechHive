@@ -86,6 +86,36 @@ function showToast(message, type = 'success') {
     Toastify(baseConfig).showToast();
 }
 
+async function addToCart(productId) {
+    try {
+        const { data } = await axios.post('/cart', { productId });
+        const toastType = data.success ? 'success' : 'error';
+
+        const cartQuantityElement = document.getElementById('cart-quantity');
+        const cartQuantityMobileElement = document.getElementById('cart-quantity-mobile');
+        const cartCountElement = document.getElementById('cartCount');
+
+        if (cartQuantityElement && data.totalQuantity !== undefined) {
+            cartQuantityElement.innerText = data.totalQuantity;
+        }
+
+        if (cartQuantityMobileElement && data.totalQuantity !== undefined) {
+            cartQuantityMobileElement.innerText = data.totalQuantity;
+        }
+
+        if (cartCountElement && data.cartCount !== undefined) {
+            cartCountElement.textContent = data.cartCount;
+        }
+
+        showToast(data.message, toastType);
+        return data;
+    } catch (error) {
+        console.error('Error:', error);
+        showToast(error.response?.data?.message || 'Error adding item to cart', 'error');
+        throw error;
+    }
+}
+
 // Update toast styles
 const toastStyles = document.createElement('style');
 toastStyles.textContent = `
@@ -105,4 +135,4 @@ toastStyles.textContent = `
 `;
 document.head.appendChild(toastStyles);
 
-export { showToast, customConfirm }; 
+export { showToast, customConfirm, addToCart }; 

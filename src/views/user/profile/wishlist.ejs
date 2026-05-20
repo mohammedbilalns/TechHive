@@ -148,17 +148,6 @@
       }
     }
 
-    async function addToCart(productId) {
-      try {
-        const { data } = await axios.post('/cart', { productId });
-        showToast(data.message, data.success ? 'success' : 'error');
-        document.getElementById("cart-quantity").innerText = data.totalQuantity;
-        document.getElementById("cart-quantity-mobile").innerText = data.totalQuantity;
-      } catch (error) {
-        console.error('Error:', error);
-        showToast(error.response?.data?.message || 'Error adding item to cart', 'error');
-      }
-    }
   </script>
 
   <%- include('../../partials/footer') %>
