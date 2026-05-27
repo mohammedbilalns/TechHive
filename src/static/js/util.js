@@ -136,7 +136,7 @@ function getWishlistRemoveConfig(pathname) {
 
     if (pathname.startsWith('/allproducts')) {
         return {
-            addButtonClass: 'p-2 rounded-full bg-gray-100 hover:bg-primary-accent hover:text-white transition-colors duration-300',
+            addButtonClass: 'p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300',
             iconClass: 'h-4 w-4',
             addOnclick: "addToWishlist('%s')",
         };

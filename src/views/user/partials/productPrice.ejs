@@ -1,0 +1,8 @@
+<% if (product.discount > 0) { %>
+  <div class="<%= wrapperClass %>">
+    <p class="<%= currentPriceClass %>">₹<%= (product.price * (1 - product.discount / 100)).toFixed(2) %></p>
+    <p class="<%= originalPriceClass %>">₹<%= product.price.toFixed(2) %></p>
+  </div>
+<% } else { %>
+  <p class="<%= currentPriceClass %>">₹<%= product.price.toFixed(2) %></p>
+<% } %>
