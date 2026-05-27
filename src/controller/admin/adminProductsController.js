@@ -8,6 +8,8 @@ import { HttpStatus } from "../../constants/statusCodes.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AppError } from "../../utils/appError.js";
 import { validateProduct } from "../../validators/product.validator.js";
+import { AdminProductErrorMessages } from "../../constants/errorMessages.js";
+import { AdminProductSuccessMessages } from "../../constants/successMessage.js";
 
 //  multer configuration for local storage
 const productStorage = multer.diskStorage({
@@ -78,7 +80,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
     const product = await productModel.findById(req.params.productid);
 
     if (!product) {
-        throw new AppError(HttpStatus.NOT_FOUND, 'Product not found');
+        throw new AppError(HttpStatus.NOT_FOUND, AdminProductErrorMessages.PRODUCT_NOT_FOUND);
     }
 
     if (product.images && product.images.length > 1) {
@@ -95,7 +97,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 
     res.json({
         success: true,
-        message: 'Product deleted successfully'
+        message: AdminProductSuccessMessages.DELETED
     });
 });
 
@@ -107,12 +109,12 @@ const deactivateProduct = asyncHandler(async (req, res) => {
     );
 
     if (!product) {
-        throw new AppError(HttpStatus.NOT_FOUND, 'Product not found');
+        throw new AppError(HttpStatus.NOT_FOUND, AdminProductErrorMessages.PRODUCT_NOT_FOUND);
     }
 
     res.json({
         success: true,
-        message: 'Product deactivated successfully',
+        message: AdminProductSuccessMessages.DEACTIVATED,
         product
     });
 });
@@ -125,12 +127,12 @@ const activateProduct = asyncHandler(async (req, res) => {
     );
 
     if (!product) {
-        throw new AppError(HttpStatus.NOT_FOUND, 'Product not found');
+        throw new AppError(HttpStatus.NOT_FOUND, AdminProductErrorMessages.PRODUCT_NOT_FOUND);
     }
 
     res.json({
         success: true,
-        message: 'Product activated successfully',
+        message: AdminProductSuccessMessages.ACTIVATED,
         product
     });
 });
@@ -163,7 +165,7 @@ const addProduct = asyncHandler(async (req, res) => {
 
     let product = await productModel.findOne({ name });
     if (product) {
-        throw new AppError(HttpStatus.CONFLICT, 'Product with same name already exists');
+        throw new AppError(HttpStatus.CONFLICT, AdminProductErrorMessages.PRODUCT_EXISTS);
     }
 
     // Process images
@@ -187,7 +189,7 @@ const addProduct = asyncHandler(async (req, res) => {
     await newProduct.save();
     res.json({
         success: true,
-        message: 'Product added successfully'
+        message: AdminProductSuccessMessages.ADDED
     });
 });
 
@@ -198,7 +200,7 @@ const getEditProduct = asyncHandler(async (req, res) => {
 
 
     if (!mongoose.Types.ObjectId.isValid(productId)) {
-        res.redirect('/notfound?message=Invalid+Product+ID&alertType=error');
+        res.redirect(`/notfound?message=${encodeURIComponent(AdminProductErrorMessages.INVALID_PRODUCT_ID)}&alertType=error`);
         return;
     }
 
@@ -206,7 +208,7 @@ const getEditProduct = asyncHandler(async (req, res) => {
 
     // Check if product exists
     if (!product) {
-        res.redirect('/notfound?message=Product+not+found&alertType=error');
+        res.redirect(`/notfound?message=${encodeURIComponent(AdminProductErrorMessages.PRODUCT_NOT_FOUND)}&alertType=error`);
         return;
     }
 
@@ -218,12 +220,12 @@ const getEditProduct = asyncHandler(async (req, res) => {
 const editProduct = asyncHandler(async (req, res) => {
     const productId = req.params.productid;
     if (!productId) {
-        res.redirect('/notfound?message=Invalid+Product+id&alertType=error');
+        res.redirect(`/notfound?message=${encodeURIComponent(AdminProductErrorMessages.INVALID_PRODUCT_ID)}&alertType=error`);
         return;
 
     };
     if (!mongoose.Types.ObjectId.isValid(productId)) {
-        res.redirect('/notfound?message=Invalid+Product+id&alertType=error');
+        res.redirect(`/notfound?message=${encodeURIComponent(AdminProductErrorMessages.INVALID_PRODUCT_ID)}&alertType=error`);
         return;
 
     }
@@ -253,12 +255,12 @@ const editProduct = asyncHandler(async (req, res) => {
         _id: { $ne: productId }
     });
     if (existingproduct) {
-        throw new AppError(HttpStatus.CONFLICT, 'Product with same name already exists');
+        throw new AppError(HttpStatus.CONFLICT, AdminProductErrorMessages.PRODUCT_EXISTS);
     }
 
     const product = await productModel.findById(productId);
     if (!product) {
-        throw new AppError(HttpStatus.NOT_FOUND, 'Product not found');
+        throw new AppError(HttpStatus.NOT_FOUND, AdminProductErrorMessages.PRODUCT_NOT_FOUND);
     }
 
     // Handle image updates
@@ -300,12 +302,12 @@ const editProduct = asyncHandler(async (req, res) => {
     );
 
     if (!updatedProduct) {
-        throw new AppError(HttpStatus.NOT_FOUND, 'Failed to update product');
+        throw new AppError(HttpStatus.NOT_FOUND, AdminProductErrorMessages.FAILED_TO_UPDATE_PRODUCT);
     }
 
     res.json({
         success: true,
-        message: 'Product updated successfully'
+        message: AdminProductSuccessMessages.UPDATED
     });
 });
 

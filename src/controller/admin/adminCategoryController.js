@@ -4,6 +4,8 @@ import { HttpStatus } from "../../constants/statusCodes.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AppError } from "../../utils/appError.js";
 import { validateCategory } from "../../validators/category.validator.js";
+import { AdminCategoryErrorMessages } from "../../constants/errorMessages.js";
+import { CategorySuccessMessages } from "../../constants/successMessage.js";
 
 //---- Fetch the categories page----
 const getCategories = asyncHandler(async (req, res) => {
@@ -44,7 +46,7 @@ const deleteCategory = asyncHandler(async (req, res) => {
   await categoryModel.findByIdAndDelete(req.params.categoryid);
   res.json({
     success: true,
-    message: 'Category deleted successfully'
+    message: CategorySuccessMessages.Deleted
   });
 });
 
@@ -60,7 +62,7 @@ const hideCategory = asyncHandler(async (req, res) => {
 
   res.json({
     success: true,
-    message: 'Category and associated products hidden successfully'
+    message: CategorySuccessMessages.Disabled 
   });
 });
 
@@ -76,7 +78,7 @@ const unhideCategory = asyncHandler(async (req, res) => {
 
   res.json({
     success: true,
-    message: 'Category and associated products unhidden successfully'
+    message: CategorySuccessMessages.Enabled
   });
 });
 
@@ -92,7 +94,7 @@ const addCategory = asyncHandler(async (req, res) => {
 
   const existingCategory = await categoryModel.findOne({ name });
   if (existingCategory) {
-    throw new AppError(HttpStatus.CONFLICT, 'Category with same name already exists');
+    throw new AppError(HttpStatus.CONFLICT, AdminCategoryErrorMessages.Conflict);
   }
 
   let newCategory = new categoryModel({
@@ -104,7 +106,7 @@ const addCategory = asyncHandler(async (req, res) => {
   const savedCategory = await newCategory.save();
   res.json({
     success: true,
-    message: 'Category created successfully',
+    message: CategorySuccessMessages.Created,
     category: savedCategory
   });
 });
@@ -126,7 +128,7 @@ const editCategory = asyncHandler(async (req, res) => {
   });
 
   if (existingCategory) {
-    throw new AppError(HttpStatus.CONFLICT, 'Category name already exists');
+    throw new AppError(HttpStatus.CONFLICT, AdminCategoryErrorMessages.Conflict);
   }
 
   const updatedCategory = await categoryModel.findByIdAndUpdate(
@@ -136,12 +138,12 @@ const editCategory = asyncHandler(async (req, res) => {
   );
 
   if (!updatedCategory) {
-    throw new AppError(HttpStatus.NOT_FOUND, 'Category not found');
+    throw new AppError(HttpStatus.NOT_FOUND, AdminCategoryErrorMessages.Notfound);
   }
 
   res.json({
     success: true,
-    message: 'Category updated successfully',
+    message: CategorySuccessMessages.Updated,
     category: updatedCategory
   });
 });

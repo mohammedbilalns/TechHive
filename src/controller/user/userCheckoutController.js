@@ -6,12 +6,11 @@ import { couponModel } from '../../model/couponModel.js';
 import { HttpStatus } from '../../constants/statusCodes.js';
 import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
-import { ErrorMessages } from "../../constants/errorMessages.js";
+import { ErrorMessages, UserCheckoutErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
 import logger from '../../utils/logger.js';
 
-const getCheckout = async (req, res) => {
-  try {
+const getCheckout = asyncHandler( async (req, res) => {
     const userId = req.session.user.id;
     const [user, cart, addresses, wallet] = await Promise.all([
       UserModel.findById(userId),
@@ -30,7 +29,7 @@ const getCheckout = async (req, res) => {
       if (item.productId.stock < item.quantity) {
         return res.status(HttpStatus.BAD_REQUEST).json({
           success: false,
-          message: `${item.productId.name} is out of stock`
+          message: UserCheckoutErrorMessages.PRODUCT_OUT_OF_STOCK(item.productId.name)
         });
       }
     }
@@ -63,14 +62,7 @@ const getCheckout = async (req, res) => {
       page: "cart",
       sessionCoupon
     });
-  } catch (error) {
-    logger.error('CHECKOUT_ERROR', error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: ErrorMessages.SOMETHING_WENT_WRONG
-    });
-  }
-};
+});
 
 const applyCoupon = asyncHandler(async (req, res) => {
   const { couponCode } = req.body;
@@ -97,7 +89,7 @@ const applyCoupon = asyncHandler(async (req, res) => {
 
   // Check minimum purchase requirement
   if (subtotal < coupon.minPurchase) {
-    throw new AppError(HttpStatus.BAD_REQUEST, `Minimum purchase of ₹${coupon.minPurchase} required`);
+    throw new AppError(HttpStatus.BAD_REQUEST, UserCheckoutErrorMessages.MIN_PURCHASE_REQUIRED(coupon.minPurchase));
   }
 
   // Check usage limit

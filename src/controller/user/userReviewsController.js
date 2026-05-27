@@ -1,6 +1,8 @@
 import { reviewModel } from "../../model/reviewModel.js";
 import { productModel } from "../../model/productModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
+import { UserReviewErrorMessages } from "../../constants/errorMessages.js";
+import { UserReviewSuccessMessages } from "../../constants/successMessage.js";
 import logger from "../../utils/logger.js";
 
 const addReview = async (req, res) => {
@@ -33,7 +35,7 @@ const addReview = async (req, res) => {
     if (!product) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: "Product not found"
+        message: UserReviewErrorMessages.PRODUCT_NOT_FOUND
       });
     }
 
@@ -50,7 +52,7 @@ const addReview = async (req, res) => {
 
       return res.status(HttpStatus.OK).json({
         success: true,
-        message: "Review updated successfully"
+        message: UserReviewSuccessMessages.REVIEW_UPDATED
       });
     }
 
@@ -66,14 +68,14 @@ const addReview = async (req, res) => {
 
     res.status(HttpStatus.OK).json({
       success: true,
-      message: "Review added successfully"
+      message: UserReviewSuccessMessages.REVIEW_ADDED
     });
 
   } catch (error) {
     logger.error("ADD_REVIEW_ERROR", error);
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: "Error adding review"
+      message: UserReviewErrorMessages.ERROR_ADDING_REVIEW
     });
   }
 };
@@ -100,7 +102,7 @@ const getReview = async (req, res) => {
     if (!product) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: "Product not found"
+        message: UserReviewErrorMessages.PRODUCT_NOT_FOUND
       });
     }
 
@@ -113,7 +115,7 @@ const getReview = async (req, res) => {
     if (!review) {
       return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: "Review not found"
+        message: UserReviewErrorMessages.REVIEW_NOT_FOUND
       });
     }
 
@@ -129,7 +131,7 @@ const getReview = async (req, res) => {
     logger.error("GET_REVIEW_ERROR", error);
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: "Error fetching review"
+      message: UserReviewErrorMessages.ERROR_FETCHING_REVIEW
     });
   }
 };

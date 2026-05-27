@@ -1,4 +1,4 @@
-export const  loadNotfound = (req,res)=>{
+export const  loadNotfound =  asyncHandler((req,res)=>{
 
   const {message , alertType} = req.query;
 
@@ -7,6 +7,5 @@ export const  loadNotfound = (req,res)=>{
     message,
     alertType
   });
-
-};
+});
 

@@ -3,172 +3,173 @@ import { HttpStatus } from "../../constants/statusCodes.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AppError } from "../../utils/appError.js";
 import { validateCoupon } from "../../validators/coupon.validator.js";
+import { AdminCouponErrorMessages } from "../../constants/errorMessages.js";
 
 // get the coupons page 
 const getCoupons = asyncHandler(async (req, res) => {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 10;
-    const skip = (page - 1) * limit;
+  const page = parseInt(req.query.page) || 1;
+  const limit = 10;
+  const skip = (page - 1) * limit;
 
-    const totalCoupons = await couponModel.countDocuments();
-    const totalPages = Math.ceil(totalCoupons / limit);
+  const totalCoupons = await couponModel.countDocuments();
+  const totalPages = Math.ceil(totalCoupons / limit);
 
-    const coupons = await couponModel.find()
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean();
+  const coupons = await couponModel.find()
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .lean();
 
-    const now = new Date();
-    coupons.forEach(coupon => {
-        coupon.isExpired = new Date(coupon.expiryDate) < now;
-    });
+  const now = new Date();
+  coupons.forEach(coupon => {
+    coupon.isExpired = new Date(coupon.expiryDate) < now;
+  });
 
-    res.render('admin/coupons', {
-        coupons,
-        currentPage: page,
-        totalPages,
-        hasNextPage: page < totalPages,
-        hasPrevPage: page > 1,
-        page: 'coupons'
-    });
+  res.render('admin/coupons', {
+    coupons,
+    currentPage: page,
+    totalPages,
+    hasNextPage: page < totalPages,
+    hasPrevPage: page > 1,
+    page: 'coupons'
+  });
 });
 
 // get the coupon details for edit modal 
 const getCouponDetails = asyncHandler(async (req, res) => {
-    const coupon = await couponModel.findById(req.params.couponId);
-    if (!coupon) {
-        throw new AppError(HttpStatus.NOT_FOUND, 'couponModel not found');
-    }
-    res.json({ success: true, coupon });
+  const coupon = await couponModel.findById(req.params.couponId);
+  if (!coupon) {
+    throw new AppError(HttpStatus.NOT_FOUND, AdminCouponErrorMessages.Notfound);
+  }
+  res.json({ success: true, coupon });
 });
 
 const addCoupon = asyncHandler(async (req, res) => {
-    const { error, value } = validateCoupon(req.body);
-    if (error) {
-        throw new AppError(HttpStatus.BAD_REQUEST, error);
-    }
+  const { error, value } = validateCoupon(req.body);
+  if (error) {
+    throw new AppError(HttpStatus.BAD_REQUEST, error);
+  }
 
-    const {
-        code,
-        description,
-        discountType,
-        discountValue,
-        minPurchase,
-        maxDiscount,
-        usageLimit,
-        startDate,
-        expiryDate
-    } = value;
+  const {
+    code,
+    description,
+    discountType,
+    discountValue,
+    minPurchase,
+    maxDiscount,
+    usageLimit,
+    startDate,
+    expiryDate
+  } = value;
 
-    // Check the coupon code already exists 
-    const existingCoupon = await couponModel.findOne({ code: code });
-    if (existingCoupon) {
-        throw new AppError(HttpStatus.CONFLICT, 'couponModel code already exists');
-    }
+  // Check the coupon code already exists 
+  const existingCoupon = await couponModel.findOne({ code: code });
+  if (existingCoupon) {
+    throw new AppError(HttpStatus.CONFLICT, AdminCouponErrorMessages.Conflict);
+  }
 
-    const newCoupon = new couponModel({
-        code,
-        description,
-        discountType,
-        discountValue,
-        minPurchase,
-        maxDiscount: discountType === 'PERCENTAGE' ? maxDiscount : 0,
-        usageLimit,
-        startDate,
-        expiryDate,
-        isActive: true
-    });
+  const newCoupon = new couponModel({
+    code,
+    description,
+    discountType,
+    discountValue,
+    minPurchase,
+    maxDiscount: discountType === 'PERCENTAGE' ? maxDiscount : 0,
+    usageLimit,
+    startDate,
+    expiryDate,
+    isActive: true
+  });
 
-    await newCoupon.save();
-    res.json({
-        success: true,
-        message: 'couponModel created successfully',
-        couponId: newCoupon._id
-    });
+  await newCoupon.save();
+  res.json({
+    success: true,
+    message: CouponSuccessMessages.Created,
+    couponId: newCoupon._id
+  });
 });
 
 const updateCoupon = asyncHandler(async (req, res) => {
-    const { error, value } = validateCoupon(req.body, true);
-    if (error) {
-        throw new AppError(HttpStatus.BAD_REQUEST, error);
-    }
+  const { error, value } = validateCoupon(req.body, true);
+  if (error) {
+    throw new AppError(HttpStatus.BAD_REQUEST, error);
+  }
 
-    const {
-        code,
-        description,
-        discountType,
-        discountValue,
-        minPurchase,
-        maxDiscount,
-        usageLimit,
-        startDate,
-        expiryDate
-    } = value;
+  const {
+    code,
+    description,
+    discountType,
+    discountValue,
+    minPurchase,
+    maxDiscount,
+    usageLimit,
+    startDate,
+    expiryDate
+  } = value;
 
-    // Check for duplicate coupon code
-    const existingCoupon = await couponModel.findOne({
-        code: code,
-        _id: { $ne: req.params.couponId }
-    });
+  // Check for duplicate coupon code
+  const existingCoupon = await couponModel.findOne({
+    code: code,
+    _id: { $ne: req.params.couponId }
+  });
 
-    if (existingCoupon) {
-        throw new AppError(HttpStatus.CONFLICT, 'couponModel code already exists');
-    }
+  if (existingCoupon) {
+    throw new AppError(HttpStatus.CONFLICT, AdminCouponErrorMessages.Conflict);
+  }
 
-    const updatedCoupon = await couponModel.findByIdAndUpdate(
-        req.params.couponId,
-        {
-            code,
-            description,
-            discountType,
-            discountValue,
-            minPurchase,
-            maxDiscount: discountType === 'PERCENTAGE' ? maxDiscount : 0,
-            usageLimit,
-            startDate,
-            expiryDate
-        },
-        { new: true }
-    );
+  const updatedCoupon = await couponModel.findByIdAndUpdate(
+    req.params.couponId,
+    {
+      code,
+      description,
+      discountType,
+      discountValue,
+      minPurchase,
+      maxDiscount: discountType === 'PERCENTAGE' ? maxDiscount : 0,
+      usageLimit,
+      startDate,
+      expiryDate
+    },
+    { new: true }
+  );
 
-    if (!updatedCoupon) {
-        throw new AppError(HttpStatus.NOT_FOUND, 'couponModel not found');
-    }
+  if (!updatedCoupon) {
+    throw new AppError(HttpStatus.NOT_FOUND, AdminCouponErrorMessages.Notfound);
+  }
 
-    res.json({
-        success: true,
-        message: 'couponModel updated successfully'
-    });
+  res.json({
+    success: true,
+    message: CouponSuccessMessages.Updated
+  });
 });
 
 const toggleCouponStatus = asyncHandler(async (req, res) => {
-    const coupon = await couponModel.findById(req.params.couponId);
-    if (!coupon) {
-        throw new AppError(HttpStatus.NOT_FOUND, 'couponModel not found');
-    }
+  const coupon = await couponModel.findById(req.params.couponId);
+  if (!coupon) {
+    throw new AppError(HttpStatus.NOT_FOUND, AdminCouponErrorMessages.Notfound);
+  }
 
-    coupon.isActive = !coupon.isActive;
-    await coupon.save();
-    res.json({
-        success: true,
-        message: `couponModel ${coupon.isActive ? 'activated' : 'deactivated'} successfully`
-    });
+  coupon.isActive = !coupon.isActive;
+  await coupon.save();
+  res.json({
+    success: true,
+    message: coupon.isActive ? CouponSuccessMessages.Activated : CouponSuccessMessages.Deactivated
+  });
 });
 
 const deleteCoupon = asyncHandler(async (req, res) => {
-    const result = await couponModel.findByIdAndDelete(req.params.couponId);
-    if (!result) {
-        throw new AppError(HttpStatus.NOT_FOUND, 'couponModel not found');
-    }
-    res.json({ success: true, message: 'couponModel deleted successfully' });
+  const result = await couponModel.findByIdAndDelete(req.params.couponId);
+  if (!result) {
+    throw new AppError(HttpStatus.NOT_FOUND, AdminCouponErrorMessages.Notfound);
+  }
+  res.json({ success: true, message: CouponSuccessMessages.Deleted });
 });
 
 export default {
-    getCoupons,
-    getCouponDetails,
-    addCoupon,
-    updateCoupon,
-    toggleCouponStatus,
-    deleteCoupon
+  getCoupons,
+  getCouponDetails,
+  addCoupon,
+  updateCoupon,
+  toggleCouponStatus,
+  deleteCoupon
 };

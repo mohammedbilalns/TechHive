@@ -45,3 +45,60 @@ export const SuccessMessage = {
   "PRODUCT_ADDED": "Product added successfully",
   "PRODUCT_UPDATED": "Product updated successfully"
 };
+
+export const CategorySuccessMessages = Object.freeze({
+  Created: "Category created successfully",
+  Updated: "Category updated successfully",
+  Deleted: "Category deleted successfully",
+  Disabled: "Category disabled successfully",
+  Enabled: "Category enabled successfully",
+})
+
+export const CouponSuccessMessages = Object.freeze({
+  Created: "Coupon created successfully",
+  Updated: "Coupon updated successfully",
+  Deleted: "Coupon deleted successfully",
+  Deactivated: "Coupon deactivated successfully",
+  Activated: "Coupon activated successfully",
+})
+
+export const AdminCustomerSuccessMessages = Object.freeze({
+  Blocked: "Customer blocked successfully",
+  Unblocked: "Customer unblocked successfully",
+})
+
+export const AdminAuthSuccessMessages = Object.freeze({
+  LOGIN_SUCCESS: SuccessMessage.LOGIN_SUCCESS,
+  LOGOUT_SUCCESS: SuccessMessage.LOGGED_OUT_SUCCESS,
+});
+
+export const AdminOfferSuccessMessages = Object.freeze({
+  ADDED: SuccessMessage.OFFER_ADDED,
+  UPDATED: SuccessMessage.OFFER_UPDATED,
+  ACTIVATED: "Offer activated successfully",
+  DEACTIVATED: "Offer deactivated successfully",
+  DELETED: SuccessMessage.OFFER_DELETED,
+  REFERRAL_SETTINGS_UPDATED: SuccessMessage.REFERRAL_SETTINGS_UPDATED,
+});
+
+export const AdminProductSuccessMessages = Object.freeze({
+  DELETED: SuccessMessage.PRODUCT_DELETED,
+  DEACTIVATED: SuccessMessage.PRODUCT_DEACTIVATED,
+  ACTIVATED: SuccessMessage.PRODUCT_ACTIVATED,
+  ADDED: SuccessMessage.PRODUCT_ADDED,
+  UPDATED: SuccessMessage.PRODUCT_UPDATED,
+});
+
+export const AdminOrderSuccessMessages = Object.freeze({
+  ITEM_STATUS_UPDATED: SuccessMessage.ITEM_STATUS_UPDATED,
+});
+
+export const UserReviewSuccessMessages = Object.freeze({
+  REVIEW_UPDATED: SuccessMessage.REVIEW_UPDATED,
+  REVIEW_ADDED: SuccessMessage.REVIEW_ADDED,
+});
+
+export const UserOrderSuccessMessages = Object.freeze({
+  ITEM_CANCELLED: SuccessMessage.ITEM_CANCELLED,
+  RETURN_REQUEST_SUBMITTED: SuccessMessage.RETURN_REQUEST_SUBMITTED,
+});

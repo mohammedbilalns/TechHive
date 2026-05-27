@@ -55,7 +55,7 @@ export const ErrorMessages = {
   "PAYMENT_VERIFICATION_FAILED": "Payment verification failed",
   "ERROR_FETCHING_ORDERS": "Error fetching orders",
   "ORDER_ITEM_NOT_FOUND": "Order item not found",
-  "ITEM_CANNOT_BE_CANCELLED": "Item cannot be cancelled",
+"ITEM_CANNOT_BE_CANCELLED": "Item cannot be cancelled",
   "FAILED_TO_CANCEL_ITEM": "Failed to cancel item",
   "RETURN_REASON_INVALID": "Return reason must be between 10 and 300 characters",
   "ITEM_CANNOT_BE_RETURNED": "Item cannot be returned",
@@ -144,3 +144,114 @@ export const ErrorMessages = {
   "FAILED_TO_DOWNLOAD_REPORT": "Failed to download report"
 };
 
+export const AdminCategoryErrorMessages = Object.freeze({
+  Notfound: "Category not found",
+  Conflict: "Category with the name already exists",
+})
+export const AdminCouponErrorMessages = Object.freeze({
+  Notfound: "Coupon not found",
+  Conflict: "Coupon with the code already exists",
+})
+
+export const AdminCustomerErrorMessages = Object.freeze({
+  Notfound: "Customer not found",
+})
+
+export const AdminAuthErrorMessages = Object.freeze({
+  INVALID_CREDENTIALS: AuthErrorMessages.INVALID_CREDENTIALS,
+});
+
+export const AdminOfferErrorMessages = Object.freeze({
+  OFFER_ID_REQUIRED: ErrorMessages.OFFER_ID_REQUIRED,
+  OFFER_NOT_FOUND: ErrorMessages.OFFER_NOT_FOUND,
+  START_DATE_PAST: ErrorMessages.START_DATE_PAST,
+  ACTIVE_OFFER_EXISTS: (offerType) => `An active offer is already exists for some of the selected ${offerType}s`,
+  ACTIVE_OFFER_EXISTS_DURING_PERIOD: (offerType) => `An active offer already exists for some of the selected ${offerType}s during this period`,
+  ACTIVE_OFFER_CONFLICT_ON_ACTIVATE: (offerType) => `Cannot activate: offerModel is already active for some of the selected ${offerType}s`,
+});
+
+export const AdminProductErrorMessages = Object.freeze({
+  PRODUCT_NOT_FOUND: ErrorMessages.PRODUCT_NOT_FOUND,
+  PRODUCT_EXISTS: ErrorMessages.PRODUCT_EXISTS,
+  INVALID_PRODUCT_ID: ErrorMessages.INVALID_PRODUCT_ID,
+  FAILED_TO_UPDATE_PRODUCT: ErrorMessages.FAILED_TO_UPDATE_PRODUCT,
+});
+
+export const AdminOrderErrorMessages = Object.freeze({
+  ORDER_NOT_FOUND: ErrorMessages.ORDER_NOT_FOUND,
+  ORDER_ITEM_NOT_FOUND: ErrorMessages.ORDER_ITEM_NOT_FOUND,
+  INVALID_STATUS_TRANSITION: ErrorMessages.INVALID_STATUS_TRANSITION,
+});
+
+export const AdminSalesReportErrorMessages = Object.freeze({
+  DATE_RANGE_REQUIRED: ErrorMessages.DATE_RANGE_REQUIRED,
+  INVALID_DATE_RANGE: ErrorMessages.INVALID_DATE_RANGE,
+});
+
+export const UserCartErrorMessages = Object.freeze({
+  ERROR_LOADING_CART: "Error loading cart",
+});
+
+export const UserCheckoutErrorMessages = Object.freeze({
+  PRODUCT_OUT_OF_STOCK: (productName) => `${productName} is out of stock`,
+  MIN_PURCHASE_REQUIRED: (amount) => `Minimum purchase of ₹${amount} required`,
+});
+
+export const UserProductErrorMessages = Object.freeze({
+  ERROR_LOADING_PRODUCTS: "Error loading products",
+  INVALID_PRODUCT_ID: "Invalid product ID",
+  INVALID_PRODUCT_ID_REDIRECT: "Invalid Product id",
+  PRODUCT_NOT_FOUND: ErrorMessages.PRODUCT_NOT_FOUND,
+  PRODUCT_NOT_FOUND_REDIRECT: "Product not found",
+  ERROR_LOADING_REVIEWS: ErrorMessages.ERROR_LOADING_REVIEWS,
+  ERROR_LOADING_PRODUCT: "Error loading product",
+  INVALID_CATEGORY_ID: "Invalid category id",
+  CATEGORY_NOT_FOUND: "Category not found",
+  ERROR_LOADING_CATEGORY: ErrorMessages.ERROR_LOADING_CATEGORY,
+});
+
+export const UserReviewErrorMessages = Object.freeze({
+  PRODUCT_NOT_FOUND: ErrorMessages.PRODUCT_NOT_FOUND,
+  REVIEW_NOT_FOUND: ErrorMessages.REVIEW_NOT_FOUND,
+  ERROR_ADDING_REVIEW: ErrorMessages.ERROR_ADDING_REVIEW,
+  ERROR_FETCHING_REVIEW: ErrorMessages.ERROR_FETCHING_REVIEW,
+});
+
+export const UserCouponErrorMessages = Object.freeze({
+  FAILED_TO_FETCH_COUPONS: ErrorMessages.FAILED_TO_FETCH_COUPONS,
+});
+
+export const UserOrderErrorMessages = Object.freeze({
+  CART_EMPTY: ErrorMessages.CART_EMPTY,
+  PRODUCT_OUT_OF_STOCK: (productName) => `${productName} is out of stock`,
+  COD_NOT_AVAILABLE: ErrorMessages.COD_NOT_AVAILABLE,
+  INSUFFICIENT_WALLET_BALANCE: ErrorMessages.INSUFFICIENT_WALLET_BALANCE,
+  ORDER_PLACEMENT_FAILED: ErrorMessages.ORDER_PLACEMENT_FAILED,
+  PAYMENT_INIT_FAILED: ErrorMessages.PAYMENT_INIT_FAILED,
+  ORDER_NOT_FOUND: ErrorMessages.ORDER_NOT_FOUND,
+  PAYMENT_VERIFICATION_FAILED: ErrorMessages.PAYMENT_VERIFICATION_FAILED,
+  INVALID_ORDER_ID: "Invalid order id",
+  ERROR_FETCHING_ORDERS: ErrorMessages.ERROR_FETCHING_ORDERS,
+  FAILED_TO_LOAD_ORDERS: "Failed to load orders",
+  ORDER_ITEM_NOT_FOUND: ErrorMessages.ORDER_ITEM_NOT_FOUND,
+  ITEM_CANNOT_BE_CANCELLED: ErrorMessages.ITEM_CANNOT_BE_CANCELLED,
+  FAILED_TO_CANCEL_ITEM: ErrorMessages.FAILED_TO_CANCEL_ITEM,
+  RETURN_REASON_INVALID: ErrorMessages.RETURN_REASON_INVALID,
+  ITEM_CANNOT_BE_RETURNED: ErrorMessages.ITEM_CANNOT_BE_RETURNED,
+  FAILED_TO_PROCESS_RETURN: ErrorMessages.FAILED_TO_PROCESS_RETURN,
+  PAYMENT_ALREADY_PROCESSED: ErrorMessages.PAYMENT_ALREADY_PROCESSED,
+  INVOICE_NOT_AVAILABLE: ErrorMessages.INVOICE_NOT_AVAILABLE,
+  FAILED_TO_INITIALIZE_PAYMENT: "Failed to initialize payment",
+  FAILED_TO_GENERATE_INVOICE: "Failed to generate invoice",
+});
+
+export const UserAddressErrorMessages = Object.freeze({
+  INVALID_ADDRESS_ID: "Invalid Address Id",
+});
+
+export const UserAuthErrorMessages = Object.freeze({
+  SOMETHING_WENT_WRONG: ErrorMessages.SOMETHING_WENT_WRONG,
+  AUTHENTICATION_FAILED: "Authentication failed",
+  SESSION_ERROR: "Session error",
+  SESSION_SAVE_ERROR: "Session save error",
+});

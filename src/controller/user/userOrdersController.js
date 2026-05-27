@@ -12,6 +12,8 @@ import PDFDocument from 'pdfkit';
 import logger from '../../utils/logger.js';
 import { HttpStatus } from '../../constants/statusCodes.js';
 import { env } from '../../utils/env.js';
+import { UserOrderErrorMessages } from '../../constants/errorMessages.js';
+import { UserOrderSuccessMessages } from '../../constants/successMessage.js';
 
 const placeOrder = async (req, res) => {
   try {
@@ -26,7 +28,7 @@ const placeOrder = async (req, res) => {
     ]);
 
     if (!cart || cart.items.length === 0) {
-      return res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: 'Cart is empty' });
+      return res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: UserOrderErrorMessages.CART_EMPTY });
     }
 
     // Check stock availability for all items 
@@ -34,7 +36,7 @@ const placeOrder = async (req, res) => {
       if (item.productId.stock < item.quantity) {
         return res.status(HttpStatus.BAD_REQUEST).json({
           success: false,
-          message: `${item.productId.name} is out of stock`
+          message: UserOrderErrorMessages.PRODUCT_OUT_OF_STOCK(item.productId.name)
         });
       }
     }
@@ -70,7 +72,7 @@ const placeOrder = async (req, res) => {
     if (paymentMethod === 'cod' && finalAmount > 1000) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         success: false,
-        message: 'Cash on Delivery is not available for orders above ₹1,000'
+        message: UserOrderErrorMessages.COD_NOT_AVAILABLE
       });
     }
 
@@ -79,7 +81,7 @@ const placeOrder = async (req, res) => {
       if (!wallet || wallet.balance < finalAmount) {
         return res.status(HttpStatus.BAD_REQUEST).json({
           success: false,
-          message: 'Insufficient wallet balance'
+          message: UserOrderErrorMessages.INSUFFICIENT_WALLET_BALANCE
         });
       }
     }
@@ -204,7 +206,7 @@ const placeOrder = async (req, res) => {
         return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
           success: false,
           orderId: order._id,
-          error: 'Payment initialization failed'
+          error: UserOrderErrorMessages.PAYMENT_INIT_FAILED
         });
       }
     }
@@ -252,7 +254,7 @@ const placeOrder = async (req, res) => {
     logger.error('PLACE_ORDER_ERROR', error);
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: error.message || 'Failed to place order'
+      message: error.message || UserOrderErrorMessages.ORDER_PLACEMENT_FAILED
     });
   }
 };
@@ -278,7 +280,7 @@ const verifyPayment = async (req, res) => {
       const order = await orderModel.findById(orderId);
 
       if (!order) {
-        return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: 'Order not found' });
+        return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: UserOrderErrorMessages.ORDER_NOT_FOUND });
       }
 
       // Check stock availability for all items
@@ -287,7 +289,7 @@ const verifyPayment = async (req, res) => {
         if (!product || product.stock < item.quantity) {
           return res.status(HttpStatus.BAD_REQUEST).json({
             success: false,
-            message: `${item.name} is out of stock`
+            message: UserOrderErrorMessages.PRODUCT_OUT_OF_STOCK(item.name)
           });
         }
       }
@@ -316,14 +318,14 @@ const verifyPayment = async (req, res) => {
     } else {
       res.status(HttpStatus.BAD_REQUEST).json({
         success: false,
-        message: 'Payment verification failed'
+        message: UserOrderErrorMessages.PAYMENT_VERIFICATION_FAILED
       });
     }
   } catch (error) {
     console.error('Payment verification error:', error);
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: 'Payment verification failed'
+      message: UserOrderErrorMessages.PAYMENT_VERIFICATION_FAILED
     });
   }
 };
@@ -334,7 +336,7 @@ const getOrderSuccess = async (req, res) => {
 
     // Validate if orderId is a valid  ObjectId
     if (!mongoose.Types.ObjectId.isValid(orderId)) {
-      return res.redirect('/notfound?alertType=error&message=Invalid+order+id');
+      return res.redirect(`/notfound?alertType=error&message=${encodeURIComponent(UserOrderErrorMessages.INVALID_ORDER_ID)}`);
     }
 
     const order = await orderModel.findById(orderId);
@@ -408,11 +410,12 @@ const getOrders = async (req, res) => {
   } catch (error) {
     logger.error('GET_ORDERS_ERROR', error);
     if (req.xhr) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Error fetching orders' });
+      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: UserOrderErrorMessages.ERROR_FETCHING_ORDERS });
+      
     }
     res.render('user/profile/orders', {
       orders: [],
-      message: 'Failed to load orders',
+      message: UserOrderErrorMessages.FAILED_TO_LOAD_ORDERS,
       alertType: 'error',
       page: 'orders'
     });
@@ -427,17 +430,17 @@ const cancelOrderItem = async (req, res) => {
     const order = await orderModel.findOne({ _id: orderId, userId });
 
     if (!order) {
-      return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: 'Order not found' });
+      return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: UserOrderErrorMessages.ORDER_NOT_FOUND });
     }
 
     const orderItem = order.items.id(itemId);
     if (!orderItem) {
-      return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: 'Order item not found' });
+      return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: UserOrderErrorMessages.ORDER_ITEM_NOT_FOUND });
     }
 
     // Check if item can be cancelled
     if (['delivered', 'cancelled', 'returned'].includes(orderItem.status)) {
-      return res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: 'Item cannot be cancelled' });
+      return res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: UserOrderErrorMessages.ITEM_CANNOT_BE_CANCELLED });
     }
 
     // Update item status and set cancelled date
@@ -505,11 +508,11 @@ const cancelOrderItem = async (req, res) => {
       { $inc: { stock: orderItem.quantity } }
     );
 
-    res.status(HttpStatus.OK).json({ success: true, message: 'Item cancelled successfully' });
+    res.status(HttpStatus.OK).json({ success: true, message: UserOrderSuccessMessages.ITEM_CANCELLED });
 
   } catch (error) {
     logger.error('CANCEL_ORDER_ITEM_ERROR', error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Failed to cancel item' });
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: UserOrderErrorMessages.FAILED_TO_CANCEL_ITEM });
   }
 };
 
@@ -524,24 +527,24 @@ const returnOrderItem = async (req, res) => {
     if (!reason || reason.length < 10 || reason.length > 300) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         success: false,
-        message: 'Return reason must be between 10 and 300 characters'
+        message: UserOrderErrorMessages.RETURN_REASON_INVALID
       });
     }
 
     const order = await orderModel.findOne({ _id: orderId, userId });
 
     if (!order) {
-      return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: 'Order not found' });
+      return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: UserOrderErrorMessages.ORDER_NOT_FOUND });
     }
 
     const orderItem = order.items.id(itemId);
     if (!orderItem) {
-      return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: 'Order item not found' });
+      return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: UserOrderErrorMessages.ORDER_ITEM_NOT_FOUND });
     }
 
     // Check if item can be returned
     if (orderItem.status !== 'delivered') {
-      return res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: 'Item cannot be returned' });
+      return res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: UserOrderErrorMessages.ITEM_CANNOT_BE_RETURNED });
     }
 
     // Update item status to return_requested and add return information
@@ -553,11 +556,11 @@ const returnOrderItem = async (req, res) => {
 
     await order.save();
 
-    res.status(HttpStatus.OK).json({ success: true, message: 'Return request submitted successfully' });
+    res.status(HttpStatus.OK).json({ success: true, message: UserOrderSuccessMessages.RETURN_REQUEST_SUBMITTED });
 
   } catch (error) {
     logger.error('RETURN_ORDER_ITEM_ERROR', error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: 'Failed to process return request' });
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: UserOrderErrorMessages.FAILED_TO_PROCESS_RETURN });
   }
 };
 
@@ -569,11 +572,11 @@ const retryPayment = async (req, res) => {
     const order = await orderModel.findOne({ _id: orderId, userId });
 
     if (!order) {
-      return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: 'Order not found' });
+      return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: UserOrderErrorMessages.ORDER_NOT_FOUND });
     }
 
     if (order.paymentStatus !== 'pending') {
-      return res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: 'Payment already processed' });
+      return res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: UserOrderErrorMessages.PAYMENT_ALREADY_PROCESSED });
     }
 
     // Check stock availability for all items before proceeding
@@ -582,7 +585,7 @@ const retryPayment = async (req, res) => {
       if (!product || product.stock < item.quantity) {
         return res.status(HttpStatus.BAD_REQUEST).json({
           success: false,
-          message: `${item.name} is out of stock`
+          message: UserOrderErrorMessages.PRODUCT_OUT_OF_STOCK(item.name)
         });
       }
     }
@@ -611,7 +614,7 @@ const retryPayment = async (req, res) => {
     logger.error('RETRY_PAYMENT_ERROR', error);
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: 'Failed to initialize payment'
+      message: UserOrderErrorMessages.FAILED_TO_INITIALIZE_PAYMENT
     });
   }
 };
@@ -622,7 +625,7 @@ const getPaymentFailed = async (req, res) => {
 
     // Validate if orderId is a valid ObjectId
     if (!mongoose.Types.ObjectId.isValid(orderId)) {
-      return res.redirect('/notfound?alertType=error&message=Invalid+order+id');
+      return res.redirect(`/notfound?alertType=error&message=${encodeURIComponent(UserOrderErrorMessages.INVALID_ORDER_ID)}`);
     }
 
     const order = await orderModel.findById(orderId);
@@ -652,17 +655,17 @@ const downloadInvoice = async (req, res) => {
     }).populate('userId', 'fullname email');
 
     if (!order) {
-      return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: 'Order not found' });
+      return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: UserOrderErrorMessages.ORDER_NOT_FOUND });
     }
 
     const orderItem = order.items.id(itemId);
     if (!orderItem) {
-      return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: 'Order item not found' });
+      return res.status(HttpStatus.NOT_FOUND).json({ success: false, message: UserOrderErrorMessages.ORDER_ITEM_NOT_FOUND });
     }
 
     // Check if item status is valid for invoice
     if (!['delivered', 'return requested', 'returned'].includes(orderItem.status)) {
-      return res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: 'Invoice not available for this item' });
+      return res.status(HttpStatus.BAD_REQUEST).json({ success: false, message: UserOrderErrorMessages.INVOICE_NOT_AVAILABLE });
     }
 
     // Calculate item amount
@@ -918,7 +921,7 @@ const downloadInvoice = async (req, res) => {
     console.error('Download invoice error:', error);
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       success: false,
-      message: 'Failed to generate invoice'
+      message: UserOrderErrorMessages.FAILED_TO_GENERATE_INVOICE
     });
   }
 };
@@ -929,7 +932,7 @@ const getOrderDetails = async (req, res) => {
     const userId = req.session.user.id;
 
     if (!mongoose.Types.ObjectId.isValid(orderId)) {
-      return res.redirect('/notfound?message=Invalid+order+id&alertType=error');
+      return res.redirect(`/notfound?message=${encodeURIComponent(UserOrderErrorMessages.INVALID_ORDER_ID)}&alertType=error`);
     }
 
     const order = await orderModel.findOne({
@@ -938,7 +941,7 @@ const getOrderDetails = async (req, res) => {
     }).populate('userId', 'fullname email');
 
     if (!order) {
-      return res.redirect('/notfound?message=Order not found');
+      return res.redirect(`/notfound?message=${encodeURIComponent(UserOrderErrorMessages.ORDER_NOT_FOUND)}`);
     }
 
     res.render('user/profile/orderDetails', {

@@ -2,6 +2,8 @@ import { HttpStatus } from "../../constants/statusCodes.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { UserModel } from "../../model/userModel.js";
 import { AppError } from "../../utils/appError.js";
+import { AdminCustomerErrorMessages } from "../../constants/errorMessages.js";
+import { AdminCustomerSuccessMessages } from "../../constants/successMessage.js";
 
 const getCustomers = asyncHandler(async (req, res) => {
   let message = req.query.message;
@@ -48,7 +50,7 @@ const blockCustomer = asyncHandler(async (req, res) => {
   );
 
   if (!customer) {
-    throw new AppError(HttpStatus.NOT_FOUND, 'Customer not found');
+    throw new AppError(HttpStatus.NOT_FOUND,AdminCustomerErrorMessages.Notfound);
   }
 
   // delete the user's session if it is active 
@@ -57,7 +59,7 @@ const blockCustomer = asyncHandler(async (req, res) => {
   }
   res.status(HttpStatus.OK).json({
     success: true,
-    message: 'Customer blocked successfully',
+    message: AdminCustomerSuccessMessages.Blocked,
     customer
   });
 });
@@ -70,12 +72,12 @@ const unblockCustomer = asyncHandler(async (req, res) => {
   );
 
   if (!customer) {
-    throw new AppError(HttpStatus.NOT_FOUND, 'Customer not found');
+    throw new AppError(HttpStatus.NOT_FOUND, AdminCustomerErrorMessages.Notfound);
   }
 
   res.status(HttpStatus.OK).json({
     success: true,
-    message: 'Customer unblocked successfully',
+    message: AdminCustomerSuccessMessages.Unblocked,
     customer
   });
 });

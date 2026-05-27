@@ -9,7 +9,7 @@ import { HttpStatus } from "../../constants/statusCodes.js";
 import { validateLogin, validateRegisterBody, validateResetPassword } from "../../validators/auth.validator.js";
 import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
-import { AuthErrorMessages, ErrorMessages } from "../../constants/errorMessages.js";
+import { AuthErrorMessages, ErrorMessages, UserAuthErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
 import { WalletTransactionDescriptions } from "../../constants/walletTransactionDescriptions.js";
 import { sendOTPEmail } from "../../services/mail.js";
@@ -252,18 +252,18 @@ export const authGoogleCallback = (req, res) => {
   passport.authenticate("google", { failureRedirect: "/login" }, (err, user, info) => {
     if (err) {
       logger.error("Google Auth Callback Error:", err);
-      return res.redirect("/login?message=Something+went+wrong&alertType=error");
+      return res.redirect(`/login?message=${encodeURIComponent(UserAuthErrorMessages.SOMETHING_WENT_WRONG)}&alertType=error`);
     }
 
     if (!user) {
-      const message = info?.message || "Authentication failed";
-      return res.redirect(`/login?message=${message}&alertType=error`);
+      const message = info?.message || UserAuthErrorMessages.AUTHENTICATION_FAILED;
+      return res.redirect(`/login?message=${encodeURIComponent(message)}&alertType=error`);
     }
 
     req.logIn(user, (err) => {
       if (err) {
         logger.error("Session Error:", err);
-        return res.redirect("/login?message=Session+error&alertType=error");
+        return res.redirect(`/login?message=${encodeURIComponent(UserAuthErrorMessages.SESSION_ERROR)}&alertType=error`);
       }
 
       req.session.user = {
@@ -275,7 +275,7 @@ export const authGoogleCallback = (req, res) => {
       req.session.save((err) => {
         if (err) {
           logger.error("Session Save Error:", err);
-          return res.redirect("/login?message=Session+save+error&alertType=error");
+          return res.redirect(`/login?message=${encodeURIComponent(UserAuthErrorMessages.SESSION_SAVE_ERROR)}&alertType=error`);
         }
         res.redirect('/home');
       });
@@ -377,7 +377,7 @@ export const verifyForgotPasswordOTP = asyncHandler(async (req, res) => {
 
     return res.status(HttpStatus.CONFLICT).json({
       success: false,
-      message: "Invalid OTP, please try again"
+      message: AuthErrorMessages.OTP_INVALID
     });
   }
 });

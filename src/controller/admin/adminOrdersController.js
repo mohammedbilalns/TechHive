@@ -5,6 +5,8 @@ import { nanoid } from 'nanoid';
 import { HttpStatus } from '../../constants/statusCodes.js';
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AppError } from "../../utils/appError.js";
+import { AdminOrderErrorMessages } from "../../constants/errorMessages.js";
+import { AdminOrderSuccessMessages } from "../../constants/successMessage.js";
 
 // Get all orders
 const getOrders = asyncHandler(async (req, res) => {
@@ -49,12 +51,12 @@ const updateOrderItemStatus = asyncHandler(async (req, res) => {
 
   const order = await orderModel.findById(orderId);
   if (!order) {
-    throw new AppError(HttpStatus.NOT_FOUND, 'Order not found');
+    throw new AppError(HttpStatus.NOT_FOUND, AdminOrderErrorMessages.ORDER_NOT_FOUND);
   }
 
   const orderItem = order.items.id(itemId);
   if (!orderItem) {
-    throw new AppError(HttpStatus.NOT_FOUND, 'Order item not found');
+    throw new AppError(HttpStatus.NOT_FOUND, AdminOrderErrorMessages.ORDER_ITEM_NOT_FOUND);
   }
 
   // Validate status transition
@@ -69,7 +71,7 @@ const updateOrderItemStatus = asyncHandler(async (req, res) => {
   };
 
   if (!validTransitions[orderItem.status]?.includes(status)) {
-    throw new AppError(HttpStatus.BAD_REQUEST, 'Invalid status transition');
+    throw new AppError(HttpStatus.BAD_REQUEST, AdminOrderErrorMessages.INVALID_STATUS_TRANSITION);
   }
 
   if ((status === 'returned' && orderItem.status === 'return requested') ||
@@ -160,7 +162,7 @@ const updateOrderItemStatus = asyncHandler(async (req, res) => {
     await order.save();
   }
 
-  res.json({ success: true, message: 'Item status updated successfully' });
+  res.json({ success: true, message: AdminOrderSuccessMessages.ITEM_STATUS_UPDATED });
 });
 
 export default {

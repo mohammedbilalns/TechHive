@@ -4,6 +4,7 @@ import PDFDocument from 'pdfkit';
 import { HttpStatus } from '../../constants/statusCodes.js';
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AppError } from "../../utils/appError.js";
+import { AdminSalesReportErrorMessages } from "../../constants/errorMessages.js";
 
 const renderSalesReport = asyncHandler(async (_req, res) => {
   res.render('admin/salesReport', {
@@ -18,14 +19,14 @@ const getSalesReportData = asyncHandler(async (req, res) => {
 
   if (filterType === 'custom') {
     if (!startDate || !endDate) {
-      throw new AppError(HttpStatus.BAD_REQUEST, 'Start date and end date are required');
+      throw new AppError(HttpStatus.BAD_REQUEST, AdminSalesReportErrorMessages.DATE_RANGE_REQUIRED);
     }
 
     const startDateTime = new Date(startDate);
     const endDateTime = new Date(endDate);
 
     if (startDateTime > endDateTime) {
-      throw new AppError(HttpStatus.BAD_REQUEST, 'Invalid date range: Start date cannot be after end date');
+      throw new AppError(HttpStatus.BAD_REQUEST, AdminSalesReportErrorMessages.INVALID_DATE_RANGE);
     }
   }
 

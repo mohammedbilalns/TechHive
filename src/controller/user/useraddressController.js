@@ -5,7 +5,7 @@ import { validateAddAddress } from "../../validators/address.validator.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
-import { ErrorMessages } from "../../constants/errorMessages.js";
+import { ErrorMessages, UserAddressErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
 import logger from "../../utils/logger.js";
 
@@ -138,7 +138,7 @@ export const getAddress = asyncHandler(async (req, res) => {
 
   // Validate if addressId is a valid  ObjectId
   if (!mongoose.Types.ObjectId.isValid(addressId)) {
-      return res.redirect("/notfound?message=Invalid+Address+Id&alertType=error");
+      return res.redirect(`/notfound?message=${encodeURIComponent(UserAddressErrorMessages.INVALID_ADDRESS_ID)}&alertType=error`);
   }
 
   const address = await addressModel.findOne({

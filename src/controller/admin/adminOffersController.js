@@ -7,6 +7,8 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AppError } from "../../utils/appError.js";
 import { validateOffer } from "../../validators/offer.validator.js";
 import { validateReferralSettings } from "../../validators/referral.validator.js";
+import { AdminOfferErrorMessages } from "../../constants/errorMessages.js";
+import { AdminOfferSuccessMessages } from "../../constants/successMessage.js";
 
 const updateProductDiscounts = async (offer, remove = false) => {
     if (!offer.isActive && !remove) return;
@@ -102,7 +104,7 @@ const getOffers = asyncHandler(async (req, res) => {
 // Get offer details
 const getOfferDetails = asyncHandler(async (req, res) => {
     if (!req.params.offerId) {
-        throw new AppError(HttpStatus.BAD_REQUEST, 'Offer ID is required');
+        throw new AppError(HttpStatus.BAD_REQUEST, AdminOfferErrorMessages.OFFER_ID_REQUIRED);
     }
 
     const offer = await offerModel.findById(req.params.offerId)
@@ -111,7 +113,7 @@ const getOfferDetails = asyncHandler(async (req, res) => {
 
 
     if (!offer) {
-        throw new AppError(HttpStatus.NOT_FOUND, 'Offer not found');
+        throw new AppError(HttpStatus.NOT_FOUND, AdminOfferErrorMessages.OFFER_NOT_FOUND);
     }
 
     const response = {
@@ -150,7 +152,7 @@ const addOffer = asyncHandler(async (req, res) => {
     const name = req.body.name.trim();
 
     if (startDate < new Date()) {
-        throw new AppError(HttpStatus.BAD_REQUEST, 'Start date cannot be in the past');
+        throw new AppError(HttpStatus.BAD_REQUEST, AdminOfferErrorMessages.START_DATE_PAST);
     }
 
     // Check for existing active offers
@@ -158,7 +160,7 @@ const addOffer = asyncHandler(async (req, res) => {
     const existingOffer = await checkExistingOffers(offerType, items, startDate, endDate);
 
     if (existingOffer) {
-        throw new AppError(HttpStatus.CONFLICT, `An active offer is already exists for some of the selected ${offerType}s`);
+        throw new AppError(HttpStatus.CONFLICT, AdminOfferErrorMessages.ACTIVE_OFFER_EXISTS(offerType));
     }
 
     const newOffer = new offerModel({
@@ -175,7 +177,7 @@ const addOffer = asyncHandler(async (req, res) => {
     await updateProductDiscounts(newOffer);
     res.json({
         success: true,
-        message: 'Offer added successfully',
+        message: AdminOfferSuccessMessages.ADDED,
         offerId: newOffer._id
     });
 });
@@ -184,7 +186,7 @@ const addOffer = asyncHandler(async (req, res) => {
 const updateOffer = asyncHandler(async (req, res) => {
     const oldOffer = await offerModel.findById(req.params.offerId);
     if (!oldOffer) {
-        throw new AppError(HttpStatus.NOT_FOUND, 'Offer not found');
+        throw new AppError(HttpStatus.NOT_FOUND, AdminOfferErrorMessages.OFFER_NOT_FOUND);
     }
 
     const error = validateOffer(req.body);
@@ -213,7 +215,7 @@ const updateOffer = asyncHandler(async (req, res) => {
     );
 
     if (existingOffer) {
-        throw new AppError(HttpStatus.CONFLICT, `An active offer already exists for some of the selected ${offerType}s during this period`);
+        throw new AppError(HttpStatus.CONFLICT, AdminOfferErrorMessages.ACTIVE_OFFER_EXISTS_DURING_PERIOD(offerType));
     }
 
     // Remove old discounts
@@ -235,14 +237,14 @@ const updateOffer = asyncHandler(async (req, res) => {
 
     // Apply new discounts
     await updateProductDiscounts(updatedOffer);
-    res.json({ success: true, message: 'Offer updated successfully' });
+    res.json({ success: true, message: AdminOfferSuccessMessages.UPDATED });
 });
 
 // Toggle offer status
 const toggleOfferStatus = asyncHandler(async (req, res) => {
     const offer = await offerModel.findById(req.params.offerId);
     if (!offer) {
-        throw new AppError(HttpStatus.NOT_FOUND, 'Offer not found');
+        throw new AppError(HttpStatus.NOT_FOUND, AdminOfferErrorMessages.OFFER_NOT_FOUND);
     }
 
     //  check for conflicts when activating
@@ -260,7 +262,7 @@ const toggleOfferStatus = asyncHandler(async (req, res) => {
         );
 
         if (existingOffer) {
-            throw new AppError(HttpStatus.CONFLICT, `Cannot activate: offerModel is already active for some of the selected ${offer.offerType}s`);
+            throw new AppError(HttpStatus.CONFLICT, AdminOfferErrorMessages.ACTIVE_OFFER_CONFLICT_ON_ACTIVATE(offer.offerType));
         }
     }
 
@@ -274,21 +276,21 @@ const toggleOfferStatus = asyncHandler(async (req, res) => {
         await updateProductDiscounts(offer);
     }
 
-    res.json({ success: true, message: `offerModel ${offer.isActive ? 'activated' : 'deactivated'} successfully` });
+    res.json({ success: true, message: offer.isActive ? AdminOfferSuccessMessages.ACTIVATED : AdminOfferSuccessMessages.DEACTIVATED });
 });
 
 // Delete offer
 const deleteOffer = asyncHandler(async (req, res) => {
     const offer = await offerModel.findById(req.params.offerId);
     if (!offer) {
-        throw new AppError(HttpStatus.NOT_FOUND, 'Offer not found');
+        throw new AppError(HttpStatus.NOT_FOUND, AdminOfferErrorMessages.OFFER_NOT_FOUND);
     }
 
     // Remove discounts before deleting
     await updateProductDiscounts(offer, true);
     await offer.deleteOne();
 
-    res.json({ success: true, message: 'offerModel deleted successfully' });
+    res.json({ success: true, message: AdminOfferSuccessMessages.DELETED });
 });
 
 //  update referral settings
@@ -316,7 +318,7 @@ const updateReferralSettings = asyncHandler(async (req, res) => {
 
     res.json({
         success: true,
-        message: 'referralModel settings updated successfully'
+        message: AdminOfferSuccessMessages.REFERRAL_SETTINGS_UPDATED
     });
 });
 

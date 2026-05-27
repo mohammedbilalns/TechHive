@@ -3,6 +3,7 @@ import { categoryModel } from "../../model/categoryModel.js";
 import { reviewModel } from '../../model/reviewModel.js';
 import mongoose from 'mongoose';
 import { HttpStatus } from "../../constants/statusCodes.js";
+import { UserProductErrorMessages } from "../../constants/errorMessages.js";
 import logger from "../../utils/logger.js";
 
 
@@ -36,7 +37,7 @@ const loadHome = async (req, res) => {
     } catch (error) {
         logger.error("ERROR", error);
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).render('user/home', { 
-            message: "Error loading products",
+            message: UserProductErrorMessages.ERROR_LOADING_PRODUCTS,
             alertType: "error" 
         });
     }
@@ -66,7 +67,7 @@ const loadLanding = async (req, res) => {
     } catch (error) {
         logger.error("ERROR", error);
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).render('user/landing', { 
-            message: "Error loading products",
+            message: UserProductErrorMessages.ERROR_LOADING_PRODUCTS,
             alertType: "error" 
         });
     }
@@ -131,7 +132,7 @@ const loadAllProducts = async (req, res) => {
     } catch (error) {
         console.error("Error in loadAllProducts:", error);
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).render('notfound', {
-            message: "Error loading products",
+            message: UserProductErrorMessages.ERROR_LOADING_PRODUCTS,
             alertType: "error"
         });
     }
@@ -145,9 +146,9 @@ const viewProduct = async (req, res) => {
         
         if (!mongoose.Types.ObjectId.isValid(productId)) {
             if (req.xhr) {
-                return res.status(HttpStatus.BAD_REQUEST).json({ error: 'Invalid product ID' });
+                return res.status(HttpStatus.BAD_REQUEST).json({ error: UserProductErrorMessages.INVALID_PRODUCT_ID });
             }
-            return res.redirect('/notfound?message=Invalid+Product+id&alertType=error');
+            return res.redirect(`/notfound?message=${encodeURIComponent(UserProductErrorMessages.INVALID_PRODUCT_ID_REDIRECT)}&alertType=error`);
         }
         
         // Fetch reviews first
@@ -171,7 +172,7 @@ const viewProduct = async (req, res) => {
         const product = await productModel.findById(productId);
         
         if (!product || product.status !== "Active") {
-            return res.redirect('/notfound?message=Product+not+found&alertType=error');
+            return res.redirect(`/notfound?message=${encodeURIComponent(UserProductErrorMessages.PRODUCT_NOT_FOUND_REDIRECT)}&alertType=error`);
         }
 
         const relatedProducts = await productModel.find({
@@ -220,10 +221,10 @@ const viewProduct = async (req, res) => {
     } catch (error) {
         console.error("VIEWPRODUCT_ERROR:", error);
         if (req.xhr) {
-            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: "Error loading reviews" });
+            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: UserProductErrorMessages.ERROR_LOADING_REVIEWS });
         }
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).render('notFound', {
-            message: "Error loading product",
+            message: UserProductErrorMessages.ERROR_LOADING_PRODUCT,
             alertType: "error"
         });
     }
@@ -241,7 +242,7 @@ const viewCategory = async (req, res) => {
 
         // Validate if the ID is a valid  ObjectId
         if (!mongoose.Types.ObjectId.isValid(categoryId)) {
-            return res.redirect('/notfound?message=Invalid+category+id&alertType=error');
+            return res.redirect(`/notfound?message=${encodeURIComponent(UserProductErrorMessages.INVALID_CATEGORY_ID)}&alertType=error`);
         }
 
         // Fetch the category
@@ -251,7 +252,7 @@ const viewCategory = async (req, res) => {
         });
 
         if (!category) {
-            return res.redirect('/notfound?message=Category+not+found&alertType=error');
+            return res.redirect(`/notfound?message=${encodeURIComponent(UserProductErrorMessages.CATEGORY_NOT_FOUND)}&alertType=error`);
 
         }
 
@@ -342,11 +343,11 @@ const viewCategory = async (req, res) => {
         logger.error("VIEW_CATEGORY_ERROR", error);
         if (req.xhr) {
             return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-                error: "Error loading category"
+                error: UserProductErrorMessages.ERROR_LOADING_CATEGORY
             });
         }
         res.status(HttpStatus.INTERNAL_SERVER_ERROR).render('notfound', {
-            message: "Error loading category",
+            message: UserProductErrorMessages.ERROR_LOADING_CATEGORY,
             alertType: "error"
         });
     }
