@@ -11,6 +11,7 @@ import './utils/googleAuth.js';
 import { HttpStatus } from "./constants/statusCodes.js";
 import { errorMiddleware } from "./middlewares/errorHandler.js";
 import { env } from "./utils/env.js";
+import {requestLogger} from "./middlewares/requestLogger.js";
 
 const app = express();
 
@@ -35,8 +36,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
-
+app.use(requestLogger);
 // Routes
+
 app.use('/', userRoutes);
 app.use('/admin', adminRoutes);
 
