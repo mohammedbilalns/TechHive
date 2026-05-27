@@ -4,10 +4,8 @@
   <div class="flex flex-col md:flex-row">
     <%- include('../partials/usersidebar') %>
 
-      <!-- Main Content -->
       <main class="flex-grow p-4 md:py-12">
         <div class="max-w-6xl mx-auto">
-          <!-- Breadcrumbs -->
           <nav class="flex mb-6 text-sm">
             <a href="/home" class="text-gray-500 hover:text-primary-accent">Home</a>
             <span class="mx-2 text-gray-500">/</span>
@@ -19,59 +17,55 @@
           <div class="bg-white rounded-lg shadow-lg p-6">
             <h1 class="text-2xl font-semibold text-gray-800 mb-6">Checkout</h1>
 
-            <!-- Delivery Address Section -->
             <div class="mb-8">
               <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-semibold">Delivery Address</h2>
                 <% if (addresses.length < 4) { %>
-                  <button onclick="toggleAddAddress()" class="text-primary-accent hover:underline">
+                  <button id="checkout-add-address-button" onclick="toggleAddAddress()" class="text-primary-accent hover:underline">
                     + Add New Address
                   </button>
-                  <% } %>
+                <% } %>
               </div>
 
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <% addresses.forEach((address, index)=> { %>
+              <div id="checkout-address-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <% addresses.forEach((address, index) => { %>
                   <div class="border rounded-lg p-4 relative">
-                    <input type="radio" name="selectedAddress" value="<%= address._id %>" class="absolute right-4 top-4"
-                      <%=index===0 ? 'checked' : '' %>>
-                    <h3 class="font-semibold">
-                      <%= address.name %>
-                    </h3>
+                    <input
+                      type="radio"
+                      name="selectedAddress"
+                      value="<%= address._id %>"
+                      class="absolute right-4 top-4"
+                      <%= index === 0 ? 'checked' : '' %>
+                    >
+                    <h3 class="font-semibold"><%= address.name %></h3>
                     <p class="text-gray-600">
                       <%= address.houseName %>
-                        <%= address.localitystreet %><br>
-                          <%= address.city %>, <%= address.state %>
-                              <%= address.pincode %><br>
-                                Phone: <%= address.phone %>
+                      <%= address.localityStreet %><br>
+                      <%= address.city %>, <%= address.state %>
+                      <%= address.pincode %><br>
+                      Phone: <%= address.phone %>
                     </p>
                     <div class="mt-2">
-                      <button onclick="editAddress('<%= address._id %>')"
-                        class="text-primary-accent hover:underline mr-2">
+                      <button onclick="editAddress('<%= address._id %>')" class="text-primary-accent hover:underline mr-2">
                         Edit
                       </button>
                     </div>
                   </div>
-                  <% }) %>
+                <% }) %>
               </div>
             </div>
 
-            <!-- Order Summary -->
             <div class="mb-8">
               <h2 class="text-xl font-semibold mb-4">Order Summary</h2>
               <div class="space-y-4">
-                <% cart.items.forEach(item=> { %>
-                  <div class="cart-item flex flex-col sm:flex-row items-start border rounded-lg p-4 gap-4"
-                    data-product="<%= item.productId._id %>">
+                <% cart.items.forEach(item => { %>
+                  <div class="cart-item flex flex-col sm:flex-row items-start border rounded-lg p-4 gap-4" data-product="<%= item.productId._id %>">
                     <div class="flex gap-4 w-full sm:w-auto">
                       <div class="w-20 h-20 flex-shrink-0">
-                        <img src="<%= item.productId.images[0].path %>" alt="<%= item.productId.name %>"
-                          class="w-full h-full object-contain rounded">
+                        <img src="<%= item.productId.images[0].path %>" alt="<%= item.productId.name %>" class="w-full h-full object-contain rounded">
                       </div>
                       <div class="flex-grow min-w-0">
-                        <h3 class="font-semibold text-sm sm:text-base">
-                          <%= item.productId.name %>
-                        </h3>
+                        <h3 class="font-semibold text-sm sm:text-base"><%= item.productId.name %></h3>
                         <p class="text-gray-600 text-sm item-price mt-1">
                           ₹<%= (item.productId.price * (1 - item.productId.discount/100)).toFixed(2) %>
                         </p>
@@ -84,10 +78,9 @@
                       </p>
                     </div>
                   </div>
-                  <% }) %>
+                <% }) %>
               </div>
 
-              <!-- Price Details -->
               <div class="mt-6 border-t pt-4">
                 <h3 class="font-semibold mb-2">Price Details</h3>
                 <div class="space-y-2">
@@ -100,11 +93,9 @@
                     <span>Free</span>
                   </div>
 
-                  <!-- Updated Coupon Section -->
                   <div class="border-t border-b py-3 my-2">
                     <div id="couponToggle">
-                      <button onclick="toggleCouponInput()"
-                        class="text-primary-accent hover:underline flex items-center gap-2">
+                      <button onclick="toggleCouponInput()" class="text-primary-accent hover:underline flex items-center gap-2">
                         <i class="fas fa-tag"></i>
                         Have a coupon code?
                       </button>
@@ -112,11 +103,13 @@
 
                     <div id="couponInputSection" class="hidden mt-2">
                       <div class="flex flex-col sm:flex-row gap-2">
-                        <input type="text" id="couponCode"
+                        <input
+                          type="text"
+                          id="couponCode"
                           class="border rounded px-3 py-2 w-full sm:w-auto flex-grow focus:ring-2 focus:ring-primary-accent uppercase"
-                          placeholder="Enter coupon code">
-                        <button onclick="applyCoupon()"
-                          class="bg-primary-accent text-white px-4 py-2 rounded hover:bg-primary-accent/90 w-full sm:w-auto">
+                          placeholder="Enter coupon code"
+                        >
+                        <button onclick="applyCoupon()" class="bg-primary-accent text-white px-4 py-2 rounded hover:bg-primary-accent/90 w-full sm:w-auto">
                           Apply
                         </button>
                       </div>
@@ -149,65 +142,68 @@
               </div>
             </div>
 
-            <!-- Payment Method -->
             <div class="mb-8">
               <h2 class="text-xl font-semibold mb-4">Payment Method</h2>
               <div class="space-y-3">
-                <!-- Add Wallet Option -->
                 <div class="border rounded-lg p-4">
                   <label class="flex items-center">
-                    <input type="radio" name="paymentMethod" value="wallet" class="form-radio text-primary-accent"
-                      onchange="handlePaymentMethodChange(this)" <%=wallet.balance < total ? 'disabled' : '' %>
-                    <%= wallet.balance>= total ? 'checked' : '' %>>
-                      <div class="ml-2 flex-grow">
-                        <span>Pay using Wallet</span>
-                        <span class="ml-2 text-sm text-gray-600">
-                          (Balance: ₹<%= wallet.balance.toFixed(2) %>)
-                        </span>
-                        <% if (wallet.balance < total) { %>
-                          <div class="flex items-center mt-1">
-                            <span class="text-sm text-red-500">
-                              Insufficient wallet balance
-                            </span>
-                            <a href="/wallet" class="ml-2 text-sm text-primary-accent hover:underline">
-                              Add Money to Wallet
-                            </a>
-                          </div>
-                          <% } %>
-                      </div>
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="wallet"
+                      class="form-radio text-primary-accent"
+                      onchange="handlePaymentMethodChange(this)"
+                      <%= wallet.balance < total ? 'disabled' : '' %>
+                      <%= wallet.balance >= total ? 'checked' : '' %>
+                    >
+                    <div class="ml-2 flex-grow">
+                      <span>Pay using Wallet</span>
+                      <span class="ml-2 text-sm text-gray-600">(Balance: ₹<%= wallet.balance.toFixed(2) %>)</span>
+                      <% if (wallet.balance < total) { %>
+                        <div class="flex items-center mt-1">
+                          <span class="text-sm text-red-500">Insufficient wallet balance</span>
+                          <a href="/wallet" class="ml-2 text-sm text-primary-accent hover:underline">Add Money to Wallet</a>
+                        </div>
+                      <% } %>
+                    </div>
                   </label>
                 </div>
 
-                <!-- COD Option -->
                 <div class="border rounded-lg p-4">
                   <label class="flex items-center">
-                    <input type="radio" name="paymentMethod" value="cod" class="form-radio text-primary-accent"
-                      onchange="handlePaymentMethodChange(this)" <%=total> 1000 ? 'disabled' : '' %>
-                    <%= (wallet.balance < total && total <=1000) ? 'checked' : '' %>>
-                      <span class="ml-2">Cash on Delivery</span>
-                      <% if (total> 1000) { %>
-                        <span class="ml-2 text-sm text-red-500">
-                          (Not available for orders above ₹1,000)
-                        </span>
-                        <% } %>
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="cod"
+                      class="form-radio text-primary-accent"
+                      onchange="handlePaymentMethodChange(this)"
+                      <%= total > 1000 ? 'disabled' : '' %>
+                      <%= (wallet.balance < total && total <= 1000) ? 'checked' : '' %>
+                    >
+                    <span class="ml-2">Cash on Delivery</span>
+                    <% if (total > 1000) { %>
+                      <span class="ml-2 text-sm text-red-500">(Not available for orders above ₹1,000)</span>
+                    <% } %>
                   </label>
                 </div>
 
-                <!-- Online Payment Option -->
                 <div class="border rounded-lg p-4">
                   <label class="flex items-center">
-                    <input type="radio" name="paymentMethod" value="online" class="form-radio text-primary-accent"
-                      onchange="handlePaymentMethodChange(this)" <%=(wallet.balance < total && total> 1000) ? 'checked'
-                    : '' %>>
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="online"
+                      class="form-radio text-primary-accent"
+                      onchange="handlePaymentMethodChange(this)"
+                      <%= (wallet.balance < total && total > 1000) ? 'checked' : '' %>
+                    >
                     <span class="ml-2">Pay Online (UPI/Card/NetBanking)</span>
                   </label>
                 </div>
               </div>
             </div>
 
-            <!-- Place Order Button -->
-            <button onclick="placeOrder()"
-              class="w-full bg-primary-accent text-white px-6 py-3 rounded-lg hover:bg-primary-accent/90">
+            <button onclick="placeOrder()" class="w-full bg-primary-accent text-white px-6 py-3 rounded-lg hover:bg-primary-accent/90">
               Place Order
             </button>
           </div>
@@ -215,263 +211,139 @@
       </main>
   </div>
 
-  <!-- Add Address Modal -->
-  <div id="addAddressModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-semibold text-gray-800">Add New Address</h2>
-        <button onclick="toggleAddAddress()" class="text-gray-600 hover:text-gray-900">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
+  <%- include('./partials/addressFormModal', {
+    modalId: 'addAddressModal',
+    formId: 'addAddressForm',
+    formType: 'add',
+    includeAddressId: false,
+    title: 'Add New Address',
+    closeHandler: 'toggleAddAddress',
+    submitHandler: 'submitAddAddress',
+    submitLabel: 'Save Address'
+  }) %>
 
-      <form id="addAddressForm">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-gray-600 mb-2">Name</label>
-            <input type="text" name="name" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-            <p class="text-red-500 text-sm mt-1 hidden" id="addNameError"></p>
-          </div>
-          <div>
-            <label class="block text-gray-600 mb-2">House Name</label>
-            <input type="text" name="houseName"
-              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-            <p class="text-red-500 text-sm mt-1 hidden" id="addHouseNameError"></p>
-          </div>
-          <div>
-            <label class="block text-gray-600 mb-2">Locality/Street</label>
-            <input type="text" name="localityStreet"
-              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-            <p class="text-red-500 text-sm mt-1 hidden" id="addLocalityStreetError"></p>
-          </div>
-          <div>
-            <label class="block text-gray-600 mb-2">City</label>
-            <input type="text" name="city" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-            <p class="text-red-500 text-sm mt-1 hidden" id="addCityError"></p>
-          </div>
-          <div>
-            <label class="block text-gray-600 mb-2">State</label>
-            <select name="state" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-              <option value="">Select State</option>
-              <option value="Andhra Pradesh">Andhra Pradesh</option>
-              <option value="Arunachal Pradesh">Arunachal Pradesh</option>
-              <option value="Assam">Assam</option>
-              <option value="Bihar">Bihar</option>
-              <option value="Chhattisgarh">Chhattisgarh</option>
-              <option value="Goa">Goa</option>
-              <option value="Gujarat">Gujarat</option>
-              <option value="Haryana">Haryana</option>
-              <option value="Himachal Pradesh">Himachal Pradesh</option>
-              <option value="Jharkhand">Jharkhand</option>
-              <option value="Karnataka">Karnataka</option>
-              <option value="Kerala">Kerala</option>
-              <option value="Madhya Pradesh">Madhya Pradesh</option>
-              <option value="Maharashtra">Maharashtra</option>
-              <option value="Manipur">Manipur</option>
-              <option value="Meghalaya">Meghalaya</option>
-              <option value="Mizoram">Mizoram</option>
-              <option value="Nagaland">Nagaland</option>
-              <option value="Odisha">Odisha</option>
-              <option value="Punjab">Punjab</option>
-              <option value="Rajasthan">Rajasthan</option>
-              <option value="Sikkim">Sikkim</option>
-              <option value="Tamil Nadu">Tamil Nadu</option>
-              <option value="Telangana">Telangana</option>
-              <option value="Tripura">Tripura</option>
-              <option value="Uttar Pradesh">Uttar Pradesh</option>
-              <option value="Uttarakhand">Uttarakhand</option>
-              <option value="West Bengal">West Bengal</option>
-              <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
-              <option value="Chandigarh">Chandigarh</option>
-              <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
-              <option value="Lakshadweep">Lakshadweep</option>
-              <option value="Delhi">Delhi</option>
-              <option value="Puducherry">Puducherry</option>
-              <option value="Ladakh">Ladakh</option>
-              <option value="Jammu and Kashmir">Jammu and Kashmir</option>
-            </select>
-            <p class="text-red-500 text-sm mt-1 hidden" id="addStateError"></p>
-          </div>
-          <div>
-            <label class="block text-gray-600 mb-2">Pincode</label>
-            <input type="text" name="pincode"
-              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-            <p class="text-red-500 text-sm mt-1 hidden" id="addPincodeError"></p>
-          </div>
-          <div>
-            <label class="block text-gray-600 mb-2">Phone</label>
-            <input type="tel" name="phone" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-            <p class="text-red-500 text-sm mt-1 hidden" id="addPhoneError"></p>
-          </div>
-          <div>
-            <label class="block text-gray-600 mb-2">Alternate Phone (Optional)</label>
-            <input type="tel" name="alternatePhone"
-              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-            <p class="text-red-500 text-sm mt-1 hidden" id="addAlternatePhoneError"></p>
-          </div>
-        </div>
-        <div class="flex justify-end space-x-4 mt-4">
-          <button type="button" onclick="toggleAddAddress()"
-            class="px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
-          <button type="button" onclick="submitAddAddress()"
-            class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-primary-accent/90">
-            Save Address
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+  <%- include('./partials/addressFormModal', {
+    modalId: 'editAddressModal',
+    formId: 'editAddressForm',
+    formType: 'edit',
+    includeAddressId: true,
+    title: 'Edit Address',
+    closeHandler: 'toggleEditAddress',
+    submitHandler: 'submitEditAddress',
+    submitLabel: 'Save Address'
+  }) %>
 
-  <!-- Edit Address Modal -->
-  <div id="editAddressModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-xl p-6 m-4 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-semibold text-gray-800">Edit Address</h2>
-        <button onclick="toggleEditAddress()" class="text-gray-600 hover:text-gray-900">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
+  <script type="module">
+    import {
+      attachModalBackdropClose,
+      bindAddressFormInputs,
+      openModal,
+      populateAddressForm,
+      readAddressForm,
+      resetErrors,
+      toggleModal,
+      validateAddressData
+    } from '/js/addressUtils.js';
+    import { createCheckoutAddressCard } from '/js/addressTemplates.js';
 
-      <form id="editAddressForm">
-        <input type="hidden" name="addressId">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-gray-600 mb-2">Name</label>
-            <input type="text" name="name" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-            <p class="text-red-500 text-sm mt-1 hidden" id="editNameError"></p>
-          </div>
-          <div>
-            <label class="block text-gray-600 mb-2">House Name</label>
-            <input type="text" name="houseName"
-              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-            <p class="text-red-500 text-sm mt-1 hidden" id="editHouseNameError"></p>
-          </div>
-          <div>
-            <label class="block text-gray-600 mb-2">Locality/Street</label>
-            <input type="text" name="localityStreet"
-              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-            <p class="text-red-500 text-sm mt-1 hidden" id="editLocalityStreetError"></p>
-          </div>
-          <div>
-            <label class="block text-gray-600 mb-2">City</label>
-            <input type="text" name="city" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-            <p class="text-red-500 text-sm mt-1 hidden" id="editCityError"></p>
-          </div>
-          <div>
-            <label class="block text-gray-600 mb-2">State</label>
-            <select name="state" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-              <option value="">Select State</option>
-              <option value="Andhra Pradesh">Andhra Pradesh</option>
-              <option value="Arunachal Pradesh">Arunachal Pradesh</option>
-              <option value="Assam">Assam</option>
-              <option value="Bihar">Bihar</option>
-              <option value="Chhattisgarh">Chhattisgarh</option>
-              <option value="Goa">Goa</option>
-              <option value="Gujarat">Gujarat</option>
-              <option value="Haryana">Haryana</option>
-              <option value="Himachal Pradesh">Himachal Pradesh</option>
-              <option value="Jharkhand">Jharkhand</option>
-              <option value="Karnataka">Karnataka</option>
-              <option value="Kerala">Kerala</option>
-              <option value="Madhya Pradesh">Madhya Pradesh</option>
-              <option value="Maharashtra">Maharashtra</option>
-              <option value="Manipur">Manipur</option>
-              <option value="Meghalaya">Meghalaya</option>
-              <option value="Mizoram">Mizoram</option>
-              <option value="Nagaland">Nagaland</option>
-              <option value="Odisha">Odisha</option>
-              <option value="Punjab">Punjab</option>
-              <option value="Rajasthan">Rajasthan</option>
-              <option value="Sikkim">Sikkim</option>
-              <option value="Tamil Nadu">Tamil Nadu</option>
-              <option value="Telangana">Telangana</option>
-              <option value="Tripura">Tripura</option>
-              <option value="Uttar Pradesh">Uttar Pradesh</option>
-              <option value="Uttarakhand">Uttarakhand</option>
-              <option value="West Bengal">West Bengal</option>
-              <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
-              <option value="Chandigarh">Chandigarh</option>
-              <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
-              <option value="Lakshadweep">Lakshadweep</option>
-              <option value="Delhi">Delhi</option>
-              <option value="Puducherry">Puducherry</option>
-              <option value="Ladakh">Ladakh</option>
-              <option value="Jammu and Kashmir">Jammu and Kashmir</option>
-            </select>
-            <p class="text-red-500 text-sm mt-1 hidden" id="editStateError"></p>
-          </div>
-          <div>
-            <label class="block text-gray-600 mb-2">Pincode</label>
-            <input type="text" name="pincode"
-              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-            <p class="text-red-500 text-sm mt-1 hidden" id="editPincodeError"></p>
-          </div>
-          <div>
-            <label class="block text-gray-600 mb-2">Phone</label>
-            <input type="tel" name="phone" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-            <p class="text-red-500 text-sm mt-1 hidden" id="editPhoneError"></p>
-          </div>
-          <div>
-            <label class="block text-gray-600 mb-2">Alternate Phone (Optional)</label>
-            <input type="tel" name="alternatePhone"
-              class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
-            <p class="text-red-500 text-sm mt-1 hidden" id="editAlternatePhoneError"></p>
-          </div>
-        </div>
-        <div class="flex justify-end space-x-4 mt-4">
-          <button type="button" onclick="toggleEditAddress()"
-            class="px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
-          <button type="button" onclick="submitEditAddress()"
-            class="bg-primary-accent text-white px-4 py-2 rounded-lg hover:bg-primary-accent/90">
-            Save Address
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+    const MAX_ADDRESSES = 4;
+    const originalTotal = Number('<%= total %>');
+    const addressGrid = document.getElementById('checkout-address-grid');
+    const addAddressButton = document.getElementById('checkout-add-address-button');
+    const placeOrderButton = document.querySelector('button[onclick="placeOrder()"]');
 
-  <!-- Razorpay Script -->
-  <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
+    let currentCouponCode = null;
+    let currentCouponDiscount = 0;
 
-  <script>
-    let razorpayInstance = null;
+    function updateAddAddressButton() {
+      if (!addAddressButton) return;
+      addAddressButton.style.display = addressGrid.children.length >= MAX_ADDRESSES ? 'none' : '';
+    }
+
+    function toggleAddAddress() {
+      toggleModal('addAddressModal', 'addAddressForm', 'add');
+    }
+
+    function toggleEditAddress() {
+      toggleModal('editAddressModal', 'editAddressForm', 'edit');
+    }
+
+    async function editAddress(addressId) {
+      try {
+        const response = await axios.get(`/address/${addressId}`);
+        if (!response.data.success) {
+          showToast('Address not found', 'error');
+          return;
+        }
+
+        populateAddressForm('editAddressForm', {
+          addressId,
+          ...response.data.address
+        });
+        resetErrors('edit');
+        openModal('editAddressModal');
+      } catch (error) {
+        console.error('Error fetching address details:', error);
+        showToast(error.response?.data?.message || 'Failed to load address details', 'error');
+      }
+    }
+
+    async function submitAddAddress() {
+      try {
+        resetErrors('add');
+        const data = validateAddressData(readAddressForm('addAddressForm'), 'add');
+        if (!data) return;
+
+        const response = await axios.post('/addresses', data);
+        if (!response.data.success) {
+          showToast(response.data.message || 'Failed to add address', 'error');
+          return;
+        }
+
+        const isFirstAddress = addressGrid.children.length === 0;
+        addressGrid.insertAdjacentHTML('beforeend', createCheckoutAddressCard(response.data.address, { checked: isFirstAddress }));
+
+        toggleAddAddress();
+        updateAddAddressButton();
+        showToast('Address added successfully', 'success');
+      } catch (error) {
+        console.error('Add Address Error:', error);
+        showToast(error.response?.data?.message || 'Failed to add address', 'error');
+      }
+    }
+
+    async function submitEditAddress() {
+      try {
+        resetErrors('edit');
+        const rawData = readAddressForm('editAddressForm');
+        const data = validateAddressData(rawData, 'edit');
+        if (!data) return;
+
+        const selectedInput = document.querySelector(`input[name="selectedAddress"][value="${rawData.addressId}"]`);
+        const wasChecked = selectedInput ? selectedInput.checked : false;
+        const response = await axios.put(`/address/${rawData.addressId}`, data);
+
+        if (!response.data.success) {
+          showToast(response.data.message || 'Failed to update address', 'error');
+          return;
+        }
+
+        const addressCard = selectedInput?.closest('.border.rounded-lg');
+        if (addressCard) {
+          addressCard.outerHTML = createCheckoutAddressCard(response.data.address, { checked: wasChecked });
+        }
+
+        toggleEditAddress();
+        showToast('Address updated successfully', 'success');
+      } catch (error) {
+        console.error('Edit Address Error:', error);
+        showToast(error.response?.data?.message || 'Failed to update address', 'error');
+      }
+    }
 
     function handlePaymentMethodChange(radio) {
       if (radio.disabled) return;
-
-      const placeOrderBtn = document.querySelector('button[onclick="placeOrder()"]');
-      placeOrderBtn.textContent = radio.value === 'cod' ? 'Place Order' : 'Proceed to Payment';
-    }
-
-    async function initializeRazorpay(orderData) {
-      const options = {
-        key: '<%= process.env.RAZORPAY_KEY_ID %>',
-        amount: orderData.amount,
-        currency: "INR",
-        name: "TechHive",
-        description: "Order Payment",
-        order_id: orderData.razorpayOrderId,
-        handler: function (response) {
-          // Handle successful payment
-          verifyPayment({
-            razorpay_payment_id: response.razorpay_payment_id,
-            razorpay_order_id: response.razorpay_order_id,
-            razorpay_signature: response.razorpay_signature,
-            orderId: orderData.orderId
-          });
-        },
-        prefill: {
-          name: "<%= user.name %>",
-          email: "<%= user.email %>",
-          contact: "<%= addresses[0]?.phone %>"
-        },
-        theme: {
-          color: "#DA0037"
-        }
-      };
-
-      razorpayInstance = new Razorpay(options);
-      razorpayInstance.open();
+      placeOrderButton.textContent = radio.value === 'cod' ? 'Place Order' : 'Proceed to Payment';
     }
 
     async function placeOrder() {
@@ -496,354 +368,89 @@
         };
 
         const response = await axios.post('/checkout/placeorder', orderData);
-
-        if (response.data.success) {
-          if (orderData.paymentMethod === 'online') {
-            // Initialize Razorpay payment
-            const options = {
-              key: '<%= process.env.RAZORPAY_KEY_ID %>',
-              amount: response.data.amount,
-              currency: "INR",
-              name: "TechHive",
-              description: "Order Payment",
-              order_id: response.data.razorpayOrderId,
-              handler: async function (paymentResponse) {
-                try {
-                  const verificationResponse = await axios.post('/checkout/verifypayment', {
-                    razorpay_payment_id: paymentResponse.razorpay_payment_id,
-                    razorpay_order_id: paymentResponse.razorpay_order_id,
-                    razorpay_signature: paymentResponse.razorpay_signature,
-                    orderId: response.data.orderId
-                  });
-
-                  if (verificationResponse.data.success) {
-                    window.location.href = `/order/success/${response.data.orderId}`;
-                  } else {
-                    window.location.href = `/payment/failed/${response.data.orderId}`;
-                  }
-                } catch (error) {
-                  console.error('Payment verification error:', error);
-                  window.location.href = `/payment/failed/${response.data.orderId}`;
-                }
-              },
-              modal: {
-                ondismiss: function () {
-                  window.location.href = `/payment/failed/${response.data.orderId}`;
-                }
-              },
-              prefill: {
-                name: "<%= user.name %>",
-                email: "<%= user.email %>",
-                contact: "<%= addresses[0]?.phone %>"
-              },
-              theme: {
-                color: "#DA0037"
-              }
-            };
-
-            const rzp = new Razorpay(options);
-            rzp.open();
-          } else {
-            // For COD or wallet payments
-            window.location.href = `/order/success/${response.data.orderId}`;
-          }
-        } else {
+        if (!response.data.success) {
           showToast(response.data.message || 'Failed to place order', 'error');
+          return;
         }
+
+        if (orderData.paymentMethod !== 'online') {
+          window.location.href = `/order/success/${response.data.orderId}`;
+          return;
+        }
+
+        const razorpayOptions = {
+          key: '<%= process.env.RAZORPAY_KEY_ID %>',
+          amount: response.data.amount,
+          currency: 'INR',
+          name: 'TechHive',
+          description: 'Order Payment',
+          order_id: response.data.razorpayOrderId,
+          handler: async function (paymentResponse) {
+            try {
+              const verificationResponse = await axios.post('/checkout/verifypayment', {
+                razorpay_payment_id: paymentResponse.razorpay_payment_id,
+                razorpay_order_id: paymentResponse.razorpay_order_id,
+                razorpay_signature: paymentResponse.razorpay_signature,
+                orderId: response.data.orderId
+              });
+
+              window.location.href = verificationResponse.data.success
+                ? `/order/success/${response.data.orderId}`
+                : `/payment/failed/${response.data.orderId}`;
+            } catch (error) {
+              console.error('Payment verification error:', error);
+              window.location.href = `/payment/failed/${response.data.orderId}`;
+            }
+          },
+          modal: {
+            ondismiss: function () {
+              window.location.href = `/payment/failed/${response.data.orderId}`;
+            }
+          },
+          prefill: {
+            name: '<%= user.name %>',
+            email: '<%= user.email %>',
+            contact: '<%= addresses[0]?.phone %>'
+          },
+          theme: {
+            color: '#DA0037'
+          }
+        };
+
+        const razorpay = new Razorpay(razorpayOptions);
+        razorpay.open();
       } catch (error) {
         console.error('Error:', error);
         showToast(error.response?.data?.message || 'Failed to place order', 'error');
       }
     }
 
-    // toggle add address modal
-    function toggleAddAddress() {
-      const modal = document.getElementById('addAddressModal');
-      modal.classList.toggle('hidden');
-      modal.classList.toggle('flex');
-
-      if (modal.classList.contains('hidden')) {
-        document.getElementById('addAddressForm').reset();
-      }
-    }
-
-    // toggle edit address modal
-
-    function toggleEditAddress() {
-      const modal = document.getElementById('editAddressModal');
-      modal.classList.toggle('hidden');
-      modal.classList.toggle('flex');
-
-      if (modal.classList.contains('hidden')) {
-        document.getElementById('editAddressForm').reset();
-      }
-    }
-
-    // validate address forms
-
-    function validateAddressForm(data) {
-      if (!data.name || !data.houseName || !data.localityStreet ||
-        !data.city || !data.state || !data.pincode || !data.phone) {
-        showToast('Please fill in all required fields', 'error');
-        return false;
-      }
-
-      if (!/^\d{6}$/.test(data.pincode)) {
-        showToast('Please enter a valid 6-digit pincode', 'error');
-        return false;
-      }
-
-      if (!/^\d{10}$/.test(data.phone)) {
-        showToast('Please enter a valid 10-digit phone number', 'error');
-        return false;
-      }
-
-      if (data.alternatePhone && !/^\d{10}$/.test(data.alternatePhone)) {
-        showToast('Please enter a valid 10-digit alternate phone number', 'error');
-        return false;
-      }
-      return true;
-    }
-    // submit new address 
-    async function submitAddAddress() {
-      try {
-        const form = document.getElementById('addAddressForm');
-        resetErrors('add');
-
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-
-        let hasError = false;
-
-        if (!data.name?.trim()) {
-          showError('name', 'Name is required', 'add');
-          hasError = true;
-        } else if (data.name.trim().length < 3 || data.name.trim().length > 50) {
-          showError('name', 'Name must be between 3 and 50 characters', 'add');
-          hasError = true;
-        }
-
-        if (!data.houseName?.trim()) {
-          showError('houseName', 'House name is required', 'add');
-          hasError = true;
-        } else if (data.houseName.trim().length < 3 || data.houseName.trim().length > 50) {
-          showError('houseName', 'House name must be between 3 and 50 characters', 'add');
-          hasError = true;
-        }
-
-        if (!data.localityStreet?.trim()) {
-          showError('localityStreet', 'Locality/Street is required', 'add');
-          hasError = true;
-        } else if (data.localityStreet.trim().length < 3 || data.localityStreet.trim().length > 50) {
-          showError('localityStreet', 'Locality/Street must be between 3 and 50 characters', 'add');
-          hasError = true;
-        }
-
-        if (!data.city?.trim()) {
-          showError('city', 'City is required', 'add');
-          hasError = true;
-        } else if (data.city.trim().length < 3 || data.city.trim().length > 50) {
-          showError('city', 'City must be between 3 and 50 characters', 'add');
-          hasError = true;
-        }
-
-        if (!data.state) {
-          showError('state', 'Please select a state', 'add');
-          hasError = true;
-        }
-
-        if (!data.pincode?.trim()) {
-          showError('pincode', 'Pincode is required', 'add');
-          hasError = true;
-        } else if (!/^\d{6}$/.test(data.pincode)) {
-          showError('pincode', 'Please enter a valid 6-digit pincode', 'add');
-          hasError = true;
-        }
-
-        if (!data.phone?.trim()) {
-          showError('phone', 'Phone number is required', 'add');
-          hasError = true;
-        } else if (!/^\d{10}$/.test(data.phone)) {
-          showError('phone', 'Please enter a valid 10-digit phone number', 'add');
-          hasError = true;
-        }
-
-        if (hasError) return;
-
-        const response = await axios.post('/addresses', data);
-
-        if (response.data.success) {
-          const addressesContainer = document.querySelector('.grid.grid-cols-1.md\\:grid-cols-2.gap-4');
-          const isFirstAddress = addressesContainer.children.length === 0;
-          const newAddressCard = createAddressCard(response.data.address, isFirstAddress);
-
-          // Add the new address card to the grid
-          addressesContainer.insertAdjacentHTML('beforeend', newAddressCard);
-
-          // Update the "Add New Address" button visibility
-          const addAddressBtn = document.querySelector('button[onclick="toggleAddAddress()"]');
-          if (addressesContainer.children.length >= 4) {
-            addAddressBtn.style.display = 'none';
-          }
-
-          toggleAddAddress();
-          showToast('Address added successfully', 'success');
-        } else {
-          showToast(response.data.message || 'Failed to add address', 'error');
-        }
-      } catch (error) {
-        console.error('Add Address Error:', error);
-        const errorMessage = error.response?.data?.message || 'Failed to add address';
-        showToast(errorMessage, 'error');
-      }
-    }
-
-    async function editAddress(addressId) {
-      try {
-        // Fetch address details
-        const response = await axios.get(`/address/${addressId}`);
-        if (!response.data.success) {
-          showToast('Address not found', 'error');
-          return;
-        }
-
-        const address = response.data.address;
-        const form = document.getElementById('editAddressForm');
-
-        // Populate the form with address details
-        form.querySelector('[name="addressId"]').value = address._id;
-        form.querySelector('[name="name"]').value = address.name;
-        form.querySelector('[name="houseName"]').value = address.houseName;
-        form.querySelector('[name="localityStreet"]').value = address.localityStreet;
-        form.querySelector('[name="city"]').value = address.city;
-        form.querySelector('[name="state"]').value = address.state;
-        form.querySelector('[name="pincode"]').value = address.pincode;
-        form.querySelector('[name="phone"]').value = address.phone;
-        form.querySelector('[name="alternatePhone"]').value = address.alternatePhone || '';
-
-        // Reset any previous errors
-        resetErrors('edit');
-
-        // Show the modal
-        document.getElementById('editAddressModal').classList.remove('hidden');
-        document.getElementById('editAddressModal').classList.add('flex');
-      } catch (error) {
-        console.error('Error fetching address details:', error);
-        showToast('Failed to load address details', 'error');
-      }
-    }
-    // submit edited address
-    async function submitEditAddress() {
-      try {
-        const form = document.getElementById('editAddressForm');
-        resetErrors('edit');
-
-        const addressId = form.querySelector('[name="addressId"]').value;
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-
-        let hasError = false;
-
-        if (!data.name?.trim()) {
-          showError('name', 'Name is required', 'edit');
-          hasError = true;
-        } else if (data.name.trim().length < 3 || data.name.trim().length > 50) {
-          showError('name', 'Name must be between 3 and 50 characters', 'edit');
-          hasError = true;
-        }
-
-        if (!data.houseName?.trim()) {
-          showError('houseName', 'House name is required', 'edit');
-          hasError = true;
-        } else if (data.houseName.trim().length < 3 || data.houseName.trim().length > 50) {
-          showError('houseName', 'House name must be between 3 and 50 characters', 'edit');
-          hasError = true;
-        }
-
-        if (!data.localityStreet?.trim()) {
-          showError('localityStreet', 'Locality/Street is required', 'edit');
-          hasError = true;
-        } else if (data.localityStreet.trim().length < 3 || data.localityStreet.trim().length > 50) {
-          showError('localityStreet', 'Locality/Street must be between 3 and 50 characters', 'edit');
-          hasError = true;
-        }
-
-        if (!data.city?.trim()) {
-          showError('city', 'City is required', 'edit');
-          hasError = true;
-        } else if (data.city.trim().length < 3 || data.city.trim().length > 50) {
-          showError('city', 'City must be between 3 and 50 characters', 'edit');
-          hasError = true;
-        }
-
-        if (!data.state) {
-          showError('state', 'Please select a state', 'edit');
-          hasError = true;
-        }
-
-        if (!data.pincode?.trim()) {
-          showError('pincode', 'Pincode is required', 'edit');
-          hasError = true;
-        } else if (!/^\d{6}$/.test(data.pincode)) {
-          showError('pincode', 'Please enter a valid 6-digit pincode', 'edit');
-          hasError = true;
-        }
-
-        if (!data.phone?.trim()) {
-          showError('phone', 'Phone number is required', 'edit');
-          hasError = true;
-        } else if (!/^\d{10}$/.test(data.phone)) {
-          showError('phone', 'Please enter a valid 10-digit phone number', 'edit');
-          hasError = true;
-        }
-
-        if (hasError) return;
-
-        const response = await axios.put(`/address/${addressId}`, data);
-        if (response.data.success) {
-          // Find and update the existing address card
-          const addressCard = document.querySelector(`input[value="${addressId}"]`).closest('.border.rounded-lg');
-          const wasChecked = addressCard.querySelector('input[type="radio"]').checked;
-          const newAddressCard = createAddressCard(response.data.address, wasChecked);
-
-          // Replace the old card with the new one
-          addressCard.outerHTML = newAddressCard;
-
-          toggleEditAddress();
-          showToast('Address updated successfully', 'success');
-        }
-      } catch (error) {
-        console.error('Edit Address Error:', error);
-        const errorMessage = error.response?.data?.message || 'Failed to update address';
-        showToast(errorMessage, 'error');
-      }
-    }
-
-    document.getElementById('addAddressModal').addEventListener('click', function (e) {
-      if (e.target === this) {
-        toggleAddAddress();
-      }
-    });
-
-    document.getElementById('editAddressModal').addEventListener('click', function (e) {
-      if (e.target === this) {
-        toggleEditAddress();
-      }
-    });
-
-    let originalTotal = parseFloat('<%= total %>');
-
-    let currentCouponCode = null;
-    let currentCouponDiscount = 0;
-
     function toggleCouponInput() {
-      const inputSection = document.getElementById('couponInputSection');
-      inputSection.classList.toggle('hidden');
+      document.getElementById('couponInputSection').classList.toggle('hidden');
+    }
+
+    function getCurrentTotal() {
+      return parseFloat(document.querySelector('[data-total]').textContent.replace('₹', ''));
+    }
+
+    function updatePaymentMethods() {
+      const total = getCurrentTotal();
+      const codRadio = document.querySelector('input[value="cod"]');
+      const onlineRadio = document.querySelector('input[value="online"]');
+
+      if (total > 1000) {
+        codRadio.disabled = true;
+        if (codRadio.checked) {
+          onlineRadio.checked = true;
+          handlePaymentMethodChange(onlineRadio);
+        }
+      } else {
+        codRadio.disabled = false;
+      }
     }
 
     async function applyCoupon() {
       const couponCode = document.getElementById('couponCode').value.trim();
-
       if (!couponCode) {
         showToast('Please enter a coupon code', 'error');
         return;
@@ -851,200 +458,95 @@
 
       try {
         const response = await axios.post('/checkout/apply-coupon', { couponCode });
-
-        if (response.data.success) {
-          // Store coupon information in memory
-          currentCouponCode = response.data.couponCode;
-          currentCouponDiscount = response.data.discount;
-
-          // Update UI to show applied coupon
-          document.getElementById('couponInputSection').classList.add('hidden');
-          document.getElementById('appliedCouponSection').classList.remove('hidden');
-          document.getElementById('couponToggle').classList.add('hidden');
-
-          document.getElementById('appliedCouponCode').textContent = currentCouponCode;
-          document.getElementById('couponDiscount').textContent = `-₹${currentCouponDiscount.toFixed(2)}`;
-
-          // Update total amount
-          const newTotal = originalTotal - currentCouponDiscount;
-          document.querySelector('[data-total]').textContent = `₹${newTotal.toFixed(2)}`;
-
-          showToast(response.data.message, 'success');
-          updatePaymentMethods();
+        if (!response.data.success) {
+          showToast(response.data.message || 'Error applying coupon', 'error');
+          return;
         }
+
+        currentCouponCode = response.data.couponCode;
+        currentCouponDiscount = response.data.discount;
+
+        document.getElementById('couponInputSection').classList.add('hidden');
+        document.getElementById('appliedCouponSection').classList.remove('hidden');
+        document.getElementById('couponToggle').classList.add('hidden');
+        document.getElementById('appliedCouponCode').textContent = currentCouponCode;
+        document.getElementById('couponDiscount').textContent = `-₹${currentCouponDiscount.toFixed(2)}`;
+        document.querySelector('[data-total]').textContent = `₹${(originalTotal - currentCouponDiscount).toFixed(2)}`;
+
+        updatePaymentMethods();
+        showToast(response.data.message, 'success');
       } catch (error) {
-        const message = error.response?.data?.message || 'Error applying coupon';
-        showToast(message, 'error');
+        showToast(error.response?.data?.message || 'Error applying coupon', 'error');
       }
     }
 
     async function removeCoupon() {
       try {
         const response = await axios.post('/checkout/remove-coupon');
-
-        if (response.data.success) {
-          // Clear coupon information
-          currentCouponCode = null;
-          currentCouponDiscount = 0;
-
-          // Reset UI
-          document.getElementById('couponInputSection').classList.add('hidden');
-          document.getElementById('appliedCouponSection').classList.add('hidden');
-          document.getElementById('couponToggle').classList.remove('hidden');
-          document.getElementById('couponCode').value = '';
-
-          // Reset total amount to original
-          document.querySelector('[data-total]').textContent = `₹${originalTotal.toFixed(2)}`;
-
-          showToast('Coupon removed successfully', 'success');
-          updatePaymentMethods();
+        if (!response.data.success) {
+          showToast(response.data.message || 'Error removing coupon', 'error');
+          return;
         }
+
+        currentCouponCode = null;
+        currentCouponDiscount = 0;
+
+        document.getElementById('couponInputSection').classList.add('hidden');
+        document.getElementById('appliedCouponSection').classList.add('hidden');
+        document.getElementById('couponToggle').classList.remove('hidden');
+        document.getElementById('couponCode').value = '';
+        document.querySelector('[data-total]').textContent = `₹${originalTotal.toFixed(2)}`;
+
+        updatePaymentMethods();
+        showToast('Coupon removed successfully', 'success');
       } catch (error) {
-        showToast('Error removing coupon', 'error');
+        showToast(error.response?.data?.message || 'Error removing coupon', 'error');
       }
     }
 
-    //  event listener for Enter key on coupon input
-    document.getElementById('couponCode').addEventListener('keypress', function (e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        applyCoupon();
-      }
-    });
+    window.toggleAddAddress = toggleAddAddress;
+    window.toggleEditAddress = toggleEditAddress;
+    window.editAddress = editAddress;
+    window.submitAddAddress = submitAddAddress;
+    window.submitEditAddress = submitEditAddress;
+    window.handlePaymentMethodChange = handlePaymentMethodChange;
+    window.placeOrder = placeOrder;
+    window.toggleCouponInput = toggleCouponInput;
+    window.applyCoupon = applyCoupon;
+    window.removeCoupon = removeCoupon;
 
-    function updatePaymentMethods() {
-      const total = parseFloat(document.querySelector('[data-total]').textContent.replace('₹', ''));
-      const codRadio = document.querySelector('input[value="cod"]');
-
-      if (total > 1000) {
-        codRadio.disabled = true;
-        if (codRadio.checked) {
-          // If COD was selected but now disabled, select online payment
-          document.querySelector('input[value="online"]').checked = true;
-          handlePaymentMethodChange(document.querySelector('input[value="online"]'));
+    document.addEventListener('DOMContentLoaded', () => {
+      bindAddressFormInputs('add');
+      bindAddressFormInputs('edit');
+      attachModalBackdropClose('addAddressModal', toggleAddAddress);
+      attachModalBackdropClose('editAddressModal', toggleEditAddress);
+      document.getElementById('couponCode').addEventListener('keypress', (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          applyCoupon();
         }
-      } else {
-        codRadio.disabled = false;
-      }
-    }
+      });
 
-    // Initialize coupon from session if exists
-    <% if (sessionCoupon) { %>
-      document.addEventListener('DOMContentLoaded', function () {
+      updateAddAddressButton();
+      updatePaymentMethods();
+
+      const selectedPayment = document.querySelector('input[name="paymentMethod"]:checked');
+      if (selectedPayment) {
+        handlePaymentMethodChange(selectedPayment);
+      }
+
+      <% if (sessionCoupon) { %>
         currentCouponCode = '<%= sessionCoupon.code %>';
         currentCouponDiscount = <%= sessionCoupon.discount %>;
-
-        // Update UI to show applied coupon
         document.getElementById('couponInputSection').classList.add('hidden');
         document.getElementById('appliedCouponSection').classList.remove('hidden');
         document.getElementById('couponToggle').classList.add('hidden');
-
         document.getElementById('appliedCouponCode').textContent = currentCouponCode;
         document.getElementById('couponDiscount').textContent = `-₹${currentCouponDiscount.toFixed(2)}`;
-
-        // Update total amount
-        const newTotal = originalTotal - currentCouponDiscount;
-        document.querySelector('[data-total]').textContent = `₹${newTotal.toFixed(2)}`;
-
+        document.querySelector('[data-total]').textContent = `₹${(originalTotal - currentCouponDiscount).toFixed(2)}`;
         updatePaymentMethods();
-      });
-    <% } %>
-
-      document.addEventListener('DOMContentLoaded', updatePaymentMethods);
-
-    //  validation helper functions
-    function showError(fieldId, message, formType) {
-      const errorId = `${formType}${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}Error`;
-      const input = document.querySelector(`#${formType}AddressForm [name="${fieldId}"]`);
-      const errorElement = document.getElementById(errorId);
-
-      if (input && errorElement) {
-        input.classList.add('border-red-500');
-        errorElement.textContent = message;
-        errorElement.classList.remove('hidden');
-      }
-    }
-
-    function resetErrors(formType) {
-      const form = document.getElementById(`${formType}AddressForm`);
-      const inputs = form.querySelectorAll('input, select');
-      inputs.forEach(input => {
-        input.classList.remove('border-red-500');
-        const fieldName = input.getAttribute('name');
-        const errorId = `${formType}${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}Error`;
-        const errorElement = document.getElementById(errorId);
-        if (errorElement) {
-          errorElement.classList.add('hidden');
-          errorElement.textContent = '';
-        }
-      });
-    }
-
-    //  input listeners to clear errors
-    function addInputListeners(formType) {
-      const form = document.getElementById(`${formType}AddressForm`);
-      const inputs = form.querySelectorAll('input, select');
-
-      inputs.forEach(input => {
-        input.addEventListener('input', function () {
-          this.classList.remove('border-red-500');
-          const fieldName = this.getAttribute('name');
-          const errorId = `${formType}${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}Error`;
-          const errorElement = document.getElementById(errorId);
-          if (errorElement) {
-            errorElement.classList.add('hidden');
-          }
-        });
-      });
-    }
-
-    // Initialize input listeners
-    document.addEventListener('DOMContentLoaded', function () {
-      addInputListeners('add');
-      addInputListeners('edit');
+      <% } %>
     });
-
-    document.addEventListener('DOMContentLoaded', function () {
-      const editForm = document.getElementById('editAddressForm');
-      if (editForm) {
-        const inputs = editForm.querySelectorAll('input, select');
-        inputs.forEach(input => {
-          input.addEventListener('input', function () {
-            this.classList.remove('border-red-500');
-            const fieldName = this.getAttribute('name');
-            const errorId = `edit${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}Error`;
-            const errorElement = document.getElementById(errorId);
-            if (errorElement) {
-              errorElement.classList.add('hidden');
-            }
-          });
-        });
-      }
-    });
-
-    function createAddressCard(address, isFirstAddress = false) {
-      return `
-        <div class="border rounded-lg p-4 relative">
-          <input type="radio" name="selectedAddress" value="${address._id}" class="absolute right-4 top-4"
-            ${isFirstAddress ? 'checked' : ''}>
-          <h3 class="font-semibold">
-            ${address.name}
-          </h3>
-          <p class="text-gray-600">
-            ${address.houseName},<br>
-            ${address.city}, ${address.state}
-            ${address.pincode}<br>
-            Phone: ${address.phone}
-          </p>
-          <div class="mt-2">
-            <button onclick="editAddress('${address._id}')"
-              class="text-primary-accent hover:underline mr-2">
-              Edit
-            </button>
-          </div>
-        </div>
-      `;
-    }
   </script>
 
   <%- include('../partials/footer') %>
