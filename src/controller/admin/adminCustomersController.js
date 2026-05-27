@@ -4,6 +4,7 @@ import { UserModel } from "../../model/userModel.js";
 import { AppError } from "../../utils/appError.js";
 import { AdminCustomerErrorMessages } from "../../constants/errorMessages.js";
 import { AdminCustomerSuccessMessages } from "../../constants/successMessage.js";
+import { ADMIN_VIEW_PATHS } from "../../constants/viewPaths.js";
 
 const getCustomers = asyncHandler(async (req, res) => {
   let message = req.query.message;
@@ -28,7 +29,7 @@ const getCustomers = asyncHandler(async (req, res) => {
     .limit(limit)
     .sort({ createdAt: -1 });
 
-  res.render('admin/customers', {
+  res.render(ADMIN_VIEW_PATHS.Customers, {
     customers,
     message,
     alertType,

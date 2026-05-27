@@ -7,21 +7,15 @@ import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ErrorMessages, UserAddressErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
-import logger from "../../utils/logger.js";
 
 // get all addresses of a user
-export const getAddresses = async (req, res) => {
-  try {
-    let email = req.session.user.email;
-    let user = await UserModel.findOne({ email });
+export const getAddresses = asyncHandler(async (req, res) => {
+  let email = req.session.user.email;
+  let user = await UserModel.findOne({ email });
 
-    let addresses = await addressModel.find({ userId: user._id });
-    res.render('user/profile/addresses', { addresses, user, page: "addresses" });
-  } catch (error) {
-    logger.error("FETCH_ADDRESSES_ERROR", error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).render("notfound");
-  }
-};
+  let addresses = await addressModel.find({ userId: user._id });
+  res.render('user/profile/addresses', { addresses, user, page: "addresses" });
+});
 
 // Add a new address
 export const addAddress = asyncHandler(async (req, res) => {

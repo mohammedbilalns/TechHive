@@ -1,22 +1,14 @@
 import { reviewModel } from "../../model/reviewModel.js";
 import { productModel } from "../../model/productModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
+import { AppError } from "../../utils/appError.js";
 import { UserReviewErrorMessages } from "../../constants/errorMessages.js";
 import { UserReviewSuccessMessages } from "../../constants/successMessage.js";
-import logger from "../../utils/logger.js";
 
-const addReview = async (req, res) => {
-  try {
+const addReview = asyncHandler(async (req, res) => {
     const { productName, rating, comment } = req.body;
     const userId = req.session.user.id;
-
-
-    if(error){
-      res.status(HttpStatus.BAD_REQUEST).json({
-        success: false,
-        message: error
-      });
-    }
 
     // Format product name
     const formattedProductName = productName
@@ -33,10 +25,7 @@ const addReview = async (req, res) => {
     });
 
     if (!product) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        success: false,
-        message: UserReviewErrorMessages.PRODUCT_NOT_FOUND
-      });
+      throw new AppError(HttpStatus.NOT_FOUND, UserReviewErrorMessages.PRODUCT_NOT_FOUND);
     }
 
     // Check for existing review and update if found
@@ -70,18 +59,9 @@ const addReview = async (req, res) => {
       success: true,
       message: UserReviewSuccessMessages.REVIEW_ADDED
     });
+});
 
-  } catch (error) {
-    logger.error("ADD_REVIEW_ERROR", error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: UserReviewErrorMessages.ERROR_ADDING_REVIEW
-    });
-  }
-};
-
-const getReview = async (req, res) => {
-  try {
+const getReview = asyncHandler(async (req, res) => {
     const { productName } = req.query;
     const userId = req.session.user.id;
 
@@ -100,10 +80,7 @@ const getReview = async (req, res) => {
     });
 
     if (!product) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        success: false,
-        message: UserReviewErrorMessages.PRODUCT_NOT_FOUND
-      });
+      throw new AppError(HttpStatus.NOT_FOUND, UserReviewErrorMessages.PRODUCT_NOT_FOUND);
     }
 
     // Find review
@@ -113,10 +90,7 @@ const getReview = async (req, res) => {
     });
 
     if (!review) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        success: false,
-        message: UserReviewErrorMessages.REVIEW_NOT_FOUND
-      });
+      throw new AppError(HttpStatus.NOT_FOUND, UserReviewErrorMessages.REVIEW_NOT_FOUND);
     }
 
     res.status(HttpStatus.OK).json({
@@ -126,14 +100,6 @@ const getReview = async (req, res) => {
         comment: review.comment
       }
     });
-
-  } catch (error) {
-    logger.error("GET_REVIEW_ERROR", error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: UserReviewErrorMessages.ERROR_FETCHING_REVIEW
-    });
-  }
-};
+});
 
 export default { addReview, getReview };

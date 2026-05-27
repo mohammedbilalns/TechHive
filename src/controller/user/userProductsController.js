@@ -4,12 +4,11 @@ import { reviewModel } from '../../model/reviewModel.js';
 import mongoose from 'mongoose';
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { UserProductErrorMessages } from "../../constants/errorMessages.js";
-import logger from "../../utils/logger.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
 
 
 // ---- load home ---- homepage 
-const loadHome = async (req, res) => {
-    try {
+const loadHome = asyncHandler(async (req, res) => {
         const allProducts = await productModel
             .find({ status: "Active" })
             .limit(6);
@@ -34,17 +33,9 @@ const loadHome = async (req, res) => {
             newArrivals,
             fullname
         });
-    } catch (error) {
-        logger.error("ERROR", error);
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).render('user/home', { 
-            message: UserProductErrorMessages.ERROR_LOADING_PRODUCTS,
-            alertType: "error" 
-        });
-    }
-};
+});
 
-const loadLanding = async (req, res) => {
-    try {
+const loadLanding = asyncHandler(async (req, res) => {
         const allProducts = await productModel
             .find({ status: "Active" })
             .limit(6);
@@ -64,17 +55,9 @@ const loadLanding = async (req, res) => {
             categories,
             newArrivals
         });
-    } catch (error) {
-        logger.error("ERROR", error);
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).render('user/landing', { 
-            message: UserProductErrorMessages.ERROR_LOADING_PRODUCTS,
-            alertType: "error" 
-        });
-    }
-};
+});
 
-const loadAllProducts = async (req, res) => {
-    try {
+const loadAllProducts = asyncHandler(async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = 4; // Number of categories per page
 
@@ -128,18 +111,9 @@ const loadAllProducts = async (req, res) => {
             hasPrevPage: page > 1,
             fullname: req.session.user?.fullname,
         });
+});
 
-    } catch (error) {
-        console.error("Error in loadAllProducts:", error);
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).render('notfound', {
-            message: UserProductErrorMessages.ERROR_LOADING_PRODUCTS,
-            alertType: "error"
-        });
-    }
-};
-
-const viewProduct = async (req, res) => {
-    try {
+const viewProduct = asyncHandler(async (req, res) => {
         const productId = req.params.id;
         const page = parseInt(req.query.page) || 1;
         const reviewsPerPage = 5;
@@ -217,21 +191,9 @@ const viewProduct = async (req, res) => {
             wishlistItems,
             productRatings: Object.fromEntries(ratingMap)
         });
+});
 
-    } catch (error) {
-        console.error("VIEWPRODUCT_ERROR:", error);
-        if (req.xhr) {
-            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: UserProductErrorMessages.ERROR_LOADING_REVIEWS });
-        }
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).render('notFound', {
-            message: UserProductErrorMessages.ERROR_LOADING_PRODUCT,
-            alertType: "error"
-        });
-    }
-};
-
-const viewCategory = async (req, res) => {
-    try {
+const viewCategory = asyncHandler(async (req, res) => {
         const categoryId = req.params.id;
         const page = parseInt(req.query.page) || 1;
         const limit = 8;
@@ -338,20 +300,7 @@ const viewCategory = async (req, res) => {
             hasPrevPage: page > 1,
             fullname: req.session.user?.fullname,
         });
-
-    } catch (error) {
-        logger.error("VIEW_CATEGORY_ERROR", error);
-        if (req.xhr) {
-            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-                error: UserProductErrorMessages.ERROR_LOADING_CATEGORY
-            });
-        }
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).render('notfound', {
-            message: UserProductErrorMessages.ERROR_LOADING_CATEGORY,
-            alertType: "error"
-        });
-    }
-};
+});
 
 export default {
     loadHome, loadLanding, loadAllProducts, viewProduct, viewCategory

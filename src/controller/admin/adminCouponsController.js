@@ -4,6 +4,7 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AppError } from "../../utils/appError.js";
 import { validateCoupon } from "../../validators/coupon.validator.js";
 import { AdminCouponErrorMessages } from "../../constants/errorMessages.js";
+import { ADMIN_VIEW_PATHS } from "../../constants/viewPaths.js";
 
 // get the coupons page 
 const getCoupons = asyncHandler(async (req, res) => {
@@ -25,7 +26,7 @@ const getCoupons = asyncHandler(async (req, res) => {
     coupon.isExpired = new Date(coupon.expiryDate) < now;
   });
 
-  res.render('admin/coupons', {
+  res.render(ADMIN_VIEW_PATHS.Coupons, {
     coupons,
     currentPage: page,
     totalPages,

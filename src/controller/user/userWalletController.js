@@ -10,60 +10,51 @@ import { ErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
 import logger from '../../utils/logger.js';
 
-const getWallet = async (req, res) => {
-    try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = 10;
-        const skip = (page - 1) * limit;
+const getWallet = asyncHandler(async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 10;
+    const skip = (page - 1) * limit;
 
-        const wallet = await walletModel.findOne({ userId: req.session.user.id });
-        const user = await UserModel.findOne({ _id: req.session.user.id });
+    const wallet = await walletModel.findOne({ userId: req.session.user.id });
+    const user = await UserModel.findOne({ _id: req.session.user.id });
 
-        if (!wallet) {
-            // Create wallet if it doesn't exist
-            const newWallet = new walletModel({
-                userId: req.session.user.id,
-                balance: 0,
-                transactions: []
-            });
-            await newWallet.save();
-            return res.render('user/profile/wallet', {
-                wallet: newWallet,
-                user,
-                currentPage: 1,
-                totalPages: 1,
-                page: "wallet"
-            });
-        }
-
-        // Get total count for pagination
-        const totalTransactions = wallet.transactions.length;
-        const totalPages = Math.ceil(totalTransactions / limit);
-
-        // Get paginated transactions
-        const transactions = wallet.transactions
-            .sort((a, b) => b.date - a.date)
-            .slice(skip, skip + limit);
-
-        res.render('user/profile/wallet', {
-            wallet: {
-                ...wallet.toObject(),
-                transactions
-            },
+    if (!wallet) {
+        // Create wallet if it doesn't exist
+        const newWallet = new walletModel({
+            userId: req.session.user.id,
+            balance: 0,
+            transactions: []
+        });
+        await newWallet.save();
+        return res.render('user/profile/wallet', {
+            wallet: newWallet,
             user,
-            currentPage: page,
-            totalPages,
+            currentPage: 1,
+            totalPages: 1,
             page: "wallet"
         });
-
-    } catch (error) {
-        logger.error('GET_WALLET_ERROR', error);
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-            success: false,
-            message: ErrorMessages.ERROR_FETCHING_WALLET
-        });
     }
-};
+
+    // Get total count for pagination
+    const totalTransactions = wallet.transactions.length;
+    const totalPages = Math.ceil(totalTransactions / limit);
+
+    // Get paginated transactions
+    const transactions = wallet.transactions
+        .sort((a, b) => b.date - a.date)
+        .slice(skip, skip + limit);
+
+    res.render('user/profile/wallet', {
+        wallet: {
+            ...wallet.toObject(),
+            transactions
+        },
+        user,
+        currentPage: page,
+        totalPages,
+        page: "wallet"
+    });
+});
 
 const addMoney = asyncHandler(async (req, res) => {
     const { amount } = req.body;

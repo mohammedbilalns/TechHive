@@ -14,9 +14,9 @@ import { HttpStatus } from '../../constants/statusCodes.js';
 import { env } from '../../utils/env.js';
 import { UserOrderErrorMessages } from '../../constants/errorMessages.js';
 import { UserOrderSuccessMessages } from '../../constants/successMessage.js';
+import { asyncHandler } from '../../utils/asyncHandler.js';
 
-const placeOrder = async (req, res) => {
-  try {
+const placeOrder = asyncHandler(async (req, res) => {
     const { addressId, paymentMethod, couponCode } = req.body;
     const userId = req.session.user.id;
 
@@ -249,19 +249,10 @@ const placeOrder = async (req, res) => {
       orderId: order._id,
       displayOrderId: order.orderId
     });
-
-  } catch (error) {
-    logger.error('PLACE_ORDER_ERROR', error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: error.message || UserOrderErrorMessages.ORDER_PLACEMENT_FAILED
-    });
-  }
-};
+});
 
 
-const verifyPayment = async (req, res) => {
-  try {
+const verifyPayment = asyncHandler(async (req, res) => {
     const {
       razorpay_payment_id,
       razorpay_order_id,
@@ -316,22 +307,14 @@ const verifyPayment = async (req, res) => {
 
       res.status(HttpStatus.OK).json({ success: true });
     } else {
-      res.status(HttpStatus.BAD_REQUEST).json({
+      return res.status(HttpStatus.BAD_REQUEST).json({
         success: false,
         message: UserOrderErrorMessages.PAYMENT_VERIFICATION_FAILED
       });
     }
-  } catch (error) {
-    console.error('Payment verification error:', error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: UserOrderErrorMessages.PAYMENT_VERIFICATION_FAILED
-    });
-  }
-};
+});
 
-const getOrderSuccess = async (req, res) => {
-  try {
+const getOrderSuccess = asyncHandler(async (req, res) => {
     const orderId = req.params.orderId;
 
     // Validate if orderId is a valid  ObjectId
@@ -348,14 +331,9 @@ const getOrderSuccess = async (req, res) => {
     res.render('user/orderSuccess', {
       orderId: order.orderId
     });
-  } catch (error) {
-    logger.error('GET_ORDER_SUCCESS_ERROR', error);
-    res.redirect('/home');
-  }
-};
+});
 
-const getOrders = async (req, res) => {
-  try {
+const getOrders = asyncHandler(async (req, res) => {
     const userId = req.session.user.id;
     const page = parseInt(req.query.page) || 1;
     const limit = 10;
@@ -406,24 +384,9 @@ const getOrders = async (req, res) => {
       search,
       page: 'orders'
     });
+});
 
-  } catch (error) {
-    logger.error('GET_ORDERS_ERROR', error);
-    if (req.xhr) {
-      return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: UserOrderErrorMessages.ERROR_FETCHING_ORDERS });
-      
-    }
-    res.render('user/profile/orders', {
-      orders: [],
-      message: UserOrderErrorMessages.FAILED_TO_LOAD_ORDERS,
-      alertType: 'error',
-      page: 'orders'
-    });
-  }
-};
-
-const cancelOrderItem = async (req, res) => {
-  try {
+const cancelOrderItem = asyncHandler(async (req, res) => {
     const { orderId, itemId } = req.params;
     const userId = req.session.user.id;
 
@@ -509,16 +472,10 @@ const cancelOrderItem = async (req, res) => {
     );
 
     res.status(HttpStatus.OK).json({ success: true, message: UserOrderSuccessMessages.ITEM_CANCELLED });
-
-  } catch (error) {
-    logger.error('CANCEL_ORDER_ITEM_ERROR', error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: UserOrderErrorMessages.FAILED_TO_CANCEL_ITEM });
-  }
-};
+});
 
 
-const returnOrderItem = async (req, res) => {
-  try {
+const returnOrderItem = asyncHandler(async (req, res) => {
     const { orderId, itemId } = req.params;
     const { reason } = req.body;
     const userId = req.session.user.id;
@@ -557,15 +514,9 @@ const returnOrderItem = async (req, res) => {
     await order.save();
 
     res.status(HttpStatus.OK).json({ success: true, message: UserOrderSuccessMessages.RETURN_REQUEST_SUBMITTED });
+});
 
-  } catch (error) {
-    logger.error('RETURN_ORDER_ITEM_ERROR', error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: UserOrderErrorMessages.FAILED_TO_PROCESS_RETURN });
-  }
-};
-
-const retryPayment = async (req, res) => {
-  try {
+const retryPayment = asyncHandler(async (req, res) => {
     const { orderId } = req.params;
     const userId = req.session.user.id;
 
@@ -609,18 +560,9 @@ const retryPayment = async (req, res) => {
       amount: razorpayOrder.amount,
       razorpayOrderId: razorpayOrder.id
     });
+});
 
-  } catch (error) {
-    logger.error('RETRY_PAYMENT_ERROR', error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: UserOrderErrorMessages.FAILED_TO_INITIALIZE_PAYMENT
-    });
-  }
-};
-
-const getPaymentFailed = async (req, res) => {
-  try {
+const getPaymentFailed = asyncHandler(async (req, res) => {
     const orderId = req.params.orderId;
 
     // Validate if orderId is a valid ObjectId
@@ -638,14 +580,9 @@ const getPaymentFailed = async (req, res) => {
       orderId: order.orderId,
       user: req.session.user
     });
-  } catch (error) {
-    logger.error('GET_PAYMENT', error);
-    res.redirect('/home');
-  }
-};
+});
 
-const downloadInvoice = async (req, res) => {
-  try {
+const downloadInvoice = asyncHandler(async (req, res) => {
     const { orderId, itemId } = req.params;
     const userId = req.session.user.id;
 
@@ -916,18 +853,9 @@ const downloadInvoice = async (req, res) => {
       );
 
     doc.end();
+});
 
-  } catch (error) {
-    console.error('Download invoice error:', error);
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-      success: false,
-      message: UserOrderErrorMessages.FAILED_TO_GENERATE_INVOICE
-    });
-  }
-};
-
-const getOrderDetails = async (req, res) => {
-  try {
+const getOrderDetails = asyncHandler(async (req, res) => {
     const orderId = req.params.orderId;
     const userId = req.session.user.id;
 
@@ -949,12 +877,7 @@ const getOrderDetails = async (req, res) => {
       order,
       page: 'orders'
     });
-
-  } catch (error) {
-    logger.error('GET_ORDER_DETAILS_ERROR', error);
-    res.redirect('/orders');
-  }
-};
+});
 
 export default {
   placeOrder,

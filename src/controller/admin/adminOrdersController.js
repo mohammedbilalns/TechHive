@@ -7,6 +7,7 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AppError } from "../../utils/appError.js";
 import { AdminOrderErrorMessages } from "../../constants/errorMessages.js";
 import { AdminOrderSuccessMessages } from "../../constants/successMessage.js";
+import { ADMIN_VIEW_PATHS } from '../../constants/viewPaths.js';
 
 // Get all orders
 const getOrders = asyncHandler(async (req, res) => {
@@ -34,7 +35,7 @@ const getOrders = asyncHandler(async (req, res) => {
     .skip(skip)
     .limit(limit);
 
-  res.render('admin/orders', {
+  res.render(ADMIN_VIEW_PATHS.Orders, {
     orders,
     page: 'orders',
     currentPage: page,

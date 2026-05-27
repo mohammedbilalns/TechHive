@@ -5,9 +5,10 @@ import { HttpStatus } from '../../constants/statusCodes.js';
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AppError } from "../../utils/appError.js";
 import { AdminSalesReportErrorMessages } from "../../constants/errorMessages.js";
+import { ADMIN_VIEW_PATHS } from '../../constants/viewPaths.js';
 
 const renderSalesReport = asyncHandler(async (_req, res) => {
-  res.render('admin/salesReport', {
+  res.render(ADMIN_VIEW_PATHS.SalesReport, {
     page: "salesreport"
   });
 });

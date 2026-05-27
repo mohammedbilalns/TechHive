@@ -1,3 +1,5 @@
+import { asyncHandler } from "../../utils/asyncHandler.js";
+
 export const  loadNotfound =  asyncHandler((req,res)=>{
 
   const {message , alertType} = req.query;
@@ -8,4 +10,3 @@ export const  loadNotfound =  asyncHandler((req,res)=>{
     alertType
   });
 });
-

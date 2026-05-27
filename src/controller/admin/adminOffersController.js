@@ -9,6 +9,7 @@ import { validateOffer } from "../../validators/offer.validator.js";
 import { validateReferralSettings } from "../../validators/referral.validator.js";
 import { AdminOfferErrorMessages } from "../../constants/errorMessages.js";
 import { AdminOfferSuccessMessages } from "../../constants/successMessage.js";
+import { ADMIN_VIEW_PATHS } from '../../constants/viewPaths.js';
 
 const updateProductDiscounts = async (offer, remove = false) => {
     if (!offer.isActive && !remove) return;
@@ -88,7 +89,7 @@ const getOffers = asyncHandler(async (req, res) => {
         referralSettings = await new referralModel().save();
     }
 
-    res.render('admin/offers', {
+    res.render(ADMIN_VIEW_PATHS.Offers, {
         offers,
         currentPage: page,
         totalPages,

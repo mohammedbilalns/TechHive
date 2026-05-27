@@ -9,7 +9,7 @@ import { AuthErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
 
 
-export const getAccountDetails = async (req, res) => {
+export const getAccountDetails = asyncHandler(async (req, res) => {
   let email = req.session.user.email;
   let user = await UserModel.findOne({ email });
 
@@ -30,7 +30,7 @@ export const getAccountDetails = async (req, res) => {
     page: "account",
     referralValues
   });
-};
+});
 
 export const updateProfile = asyncHandler(async (req, res) => {
   const { fullname } = req.body;

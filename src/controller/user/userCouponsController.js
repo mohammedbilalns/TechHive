@@ -1,4 +1,5 @@
 import { couponModel } from "../../model/couponModel.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
 import logger from "../../utils/logger.js";
 
 const getCoupons = asyncHandler ( async (req, res) => {

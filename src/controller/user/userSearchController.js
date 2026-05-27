@@ -2,11 +2,9 @@ import { productModel } from "../../model/productModel.js";
 import { categoryModel } from "../../model/categoryModel.js";
 import { reviewModel } from "../../model/reviewModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
-import { ErrorMessages } from "../../constants/errorMessages.js";
-import logger from "../../utils/logger.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
 
-const searchProducts = async (req, res) => {
-    try {
+const searchProducts = asyncHandler(async (req, res) => {
         const query = req.query.q || '';
         const page = parseInt(req.query.page) || 1;
         const limit = 8;
@@ -124,20 +122,7 @@ const searchProducts = async (req, res) => {
             hasPrevPage: page > 1,
             fullname: req.session.user?.fullname,
         });
-
-    } catch (error) {
-        logger.error("ERROR", error);
-        if (req.xhr || req.path === '/api/search') {
-            return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-                error: ErrorMessages.ERROR_SEARCHING_PRODUCTS
-            });
-        }
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).render('notfound', {
-            message: ErrorMessages.ERROR_SEARCHING_PRODUCTS,
-            alertType: "error"
-        });
-    }
-};
+});
 
 export default {
     searchProducts

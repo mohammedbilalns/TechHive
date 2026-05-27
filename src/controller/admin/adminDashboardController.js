@@ -1,3 +1,4 @@
+import { ADMIN_VIEW_PATHS } from '../../constants/viewPaths.js';
 import { orderModel } from '../../model/orderModel.js';
 import { asyncHandler } from "../../utils/asyncHandler.js";
 
@@ -262,8 +263,8 @@ const getDashboardData = asyncHandler(async (req, res) => {
   });
 });
 
-const renderDashboard = asyncHandler(async (req, res) => {
-  res.render('admin/dashboard', { page: "dashboard" });
+const renderDashboard = asyncHandler(async (_req, res) => {
+  res.render(ADMIN_VIEW_PATHS.Dashboard, { page: "dashboard" });
 });
 
 

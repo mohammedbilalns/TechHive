@@ -6,6 +6,7 @@ import { AppError } from "../../utils/appError.js";
 import { validateCategory } from "../../validators/category.validator.js";
 import { AdminCategoryErrorMessages } from "../../constants/errorMessages.js";
 import { CategorySuccessMessages } from "../../constants/successMessage.js";
+import { ADMIN_VIEW_PATHS } from "../../constants/viewPaths.js";
 
 //---- Fetch the categories page----
 const getCategories = asyncHandler(async (req, res) => {
@@ -28,7 +29,7 @@ const getCategories = asyncHandler(async (req, res) => {
     .skip(skip)
     .limit(limit);
 
-  res.render('admin/categories', {
+  res.render(ADMIN_VIEW_PATHS.categories, {
     categories,
     message,
     page: 'categories',

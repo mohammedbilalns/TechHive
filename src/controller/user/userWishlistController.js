@@ -5,51 +5,45 @@ import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
-import logger from "../../utils/logger.js";
 
-const getWishlist = async (req, res) => {
-    try {
-        const page = parseInt(req.query.page) || 1;
-        const limit = 8;
-        const skip = (page - 1) * limit;
+const getWishlist = asyncHandler(async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 8;
+    const skip = (page - 1) * limit;
 
-        const userId = req.session.user.id;
+    const userId = req.session.user.id;
 
-        // Find or create wishlist
-        let wishlist = await wishlistModel.findOne({ userId });
-        if (!wishlist) {
-            wishlist = await wishlistModel.create({ userId, products: [] });
-        }
-
-        // Get total count for pagination
-        const totalProducts = wishlist.products.length;
-        const totalPages = Math.ceil(totalProducts / limit);
-
-        // Get paginated wishlist
-        const paginatedWishlist = await wishlistModel.findOne({ userId })
-            .populate({
-                path: 'products',
-                match: { status: 'Active' },
-                options: {
-                    skip: skip,
-                    limit: limit
-                }
-            });
-
-        res.render('user/profile/wishlist', {
-            wishlist: paginatedWishlist ? paginatedWishlist : [],
-            page: "wishlist",
-            user: req.session.user,
-            currentPage: page,
-            totalPages,
-            hasNextPage: page < totalPages,
-            hasPrevPage: page > 1
-        });
-    } catch (error) {
-        logger.error("FETCH_WISHLIST_ERROR", error);
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ success: false, message: ErrorMessages.ERROR_FETCHING_WISHLIST });
+    // Find or create wishlist
+    let wishlist = await wishlistModel.findOne({ userId });
+    if (!wishlist) {
+        wishlist = await wishlistModel.create({ userId, products: [] });
     }
-};
+
+    // Get total count for pagination
+    const totalProducts = wishlist.products.length;
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    // Get paginated wishlist
+    const paginatedWishlist = await wishlistModel.findOne({ userId })
+        .populate({
+            path: 'products',
+            match: { status: 'Active' },
+            options: {
+                skip: skip,
+                limit: limit
+            }
+        });
+
+    res.render('user/profile/wishlist', {
+        wishlist: paginatedWishlist ? paginatedWishlist : [],
+        page: "wishlist",
+        user: req.session.user,
+        currentPage: page,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1
+    });
+});
 
 const addToWishlist = asyncHandler(async (req, res) => {
     const { productId } = req.body;

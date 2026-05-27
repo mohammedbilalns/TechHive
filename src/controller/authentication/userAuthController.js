@@ -286,17 +286,10 @@ export const authGoogleCallback = (req, res) => {
 
 // ---- user logout --- 
 
-export const logoutUser = (req, res) => {
-
-  try {
-    delete req.session.user;
-    res.render('user/auth/login', { message: SuccessMessage.LOGGED_OUT_SUCCESS, alertType: "success" });
-
-  } catch (error) {
-    logger.error('Error destroying session', error);
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Unable to log out');
-  }
-};
+export const logoutUser = asyncHandler(async (req, res) => {
+  delete req.session.user;
+  res.render('user/auth/login', { message: SuccessMessage.LOGGED_OUT_SUCCESS, alertType: "success" });
+});
 
 
 
