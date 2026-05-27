@@ -20,12 +20,7 @@
 
     <!-- Add Toastify CSS and JS -->
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
-    <script>
-        function toggleMenu() {
-            const mobileMenu = document.getElementById('mobile-menu');
-            mobileMenu.classList.toggle('hidden');
-        }
-    </script>
+    <script src="/js/layout.js" defer></script>
 
 </head>
 
@@ -112,9 +107,3 @@
             </div>
         </div>
     </header>
-    <script>
-        function validateSearch(form) {
-            const searchQuery = form.q.value.trim();
-            return searchQuery.length > 0;
-        }
-    </script>
