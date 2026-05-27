@@ -1,6 +1,29 @@
 
 export const USER_VIEW_PATHS = {
-}
+  Home: 'user/home',
+  Landing: 'user/landing',
+  AllProducts: 'user/allProducts',
+  ViewProduct: 'user/viewProduct',
+  ViewCategory: 'user/viewCategory',
+  SearchResults: 'user/searchResults',
+  Checkout: 'user/checkout',
+  OrderSuccess: 'user/orderSuccess',
+  PaymentFailed: 'user/paymentFailed',
+  ProfileAccount: 'user/profile/account',
+  ProfileAddresses: 'user/profile/addresses',
+  ProfileCart: 'user/profile/cart',
+  ProfileCoupons: 'user/profile/coupons',
+  ProfileOrders: 'user/profile/orders',
+  ProfileOrderDetails: 'user/profile/orderDetails',
+  ProfileWallet: 'user/profile/wallet',
+  ProfileWishlist: 'user/profile/wishlist',
+  AuthLogin: 'user/auth/login',
+  AuthSignup: 'user/auth/signup',
+  AuthForgotPassword: 'user/auth/forgotpassword',
+  AuthForgotPasswordOtp: 'user/auth/forgotpasswordotp',
+  NotFound: 'notFound',
+  SomethingWentWrong: 'somethingWentWrong',
+};
 
 export const ADMIN_VIEW_PATHS = {
   Dashboard: 'admin/dashboard',
@@ -10,4 +33,8 @@ export const ADMIN_VIEW_PATHS = {
   Offers: 'admin/offers',
   SalesReport: 'admin/salesReport',
   Orders: 'admin/orders',
-}
+  Products: 'admin/products',
+  AddProduct: 'admin/addProduct',
+  EditProduct: 'admin/editProduct',
+  Login: 'admin/login',
+};

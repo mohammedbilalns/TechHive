@@ -5,6 +5,7 @@ import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ErrorMessages} from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
+import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 
 const getCart = asyncHandler(async (req, res) => {
   delete req.session.coupon;
@@ -39,7 +40,7 @@ const getCart = asyncHandler(async (req, res) => {
   const shipping = 0;
   const total = subtotal;
 
-  res.render('user/profile/cart', {
+  res.render(USER_VIEW_PATHS.ProfileCart, {
     cart,
     subtotal: subtotal.toFixed(2),
     shipping: shipping.toFixed(2),

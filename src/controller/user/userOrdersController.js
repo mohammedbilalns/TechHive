@@ -15,6 +15,7 @@ import { env } from '../../utils/env.js';
 import { UserOrderErrorMessages } from '../../constants/errorMessages.js';
 import { UserOrderSuccessMessages } from '../../constants/successMessage.js';
 import { asyncHandler } from '../../utils/asyncHandler.js';
+import { USER_VIEW_PATHS } from '../../constants/viewPaths.js';
 
 const placeOrder = asyncHandler(async (req, res) => {
     const { addressId, paymentMethod, couponCode } = req.body;
@@ -328,7 +329,7 @@ const getOrderSuccess = asyncHandler(async (req, res) => {
       return res.redirect('/home');
     }
 
-    res.render('user/orderSuccess', {
+    res.render(USER_VIEW_PATHS.OrderSuccess, {
       orderId: order.orderId
     });
 });
@@ -374,7 +375,7 @@ const getOrders = asyncHandler(async (req, res) => {
       });
     }
 
-    res.render('user/profile/orders', {
+    res.render(USER_VIEW_PATHS.ProfileOrders, {
       user: req.session.user,
       orders,
       currentPage: page,
@@ -576,7 +577,7 @@ const getPaymentFailed = asyncHandler(async (req, res) => {
       return res.redirect('/home');
     }
 
-    res.render('user/paymentFailed', {
+    res.render(USER_VIEW_PATHS.PaymentFailed, {
       orderId: order.orderId,
       user: req.session.user
     });
@@ -872,7 +873,7 @@ const getOrderDetails = asyncHandler(async (req, res) => {
       return res.redirect(`/notfound?message=${encodeURIComponent(UserOrderErrorMessages.ORDER_NOT_FOUND)}`);
     }
 
-    res.render('user/profile/orderDetails', {
+    res.render(USER_VIEW_PATHS.ProfileOrderDetails, {
       user: req.session.user,
       order,
       page: 'orders'

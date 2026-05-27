@@ -3,6 +3,7 @@ import { categoryModel } from "../../model/categoryModel.js";
 import { reviewModel } from "../../model/reviewModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
+import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 
 const searchProducts = asyncHandler(async (req, res) => {
         const query = req.query.q || '';
@@ -111,7 +112,7 @@ const searchProducts = asyncHandler(async (req, res) => {
             });
         }
 
-        res.render('user/searchResults', {
+        res.render(USER_VIEW_PATHS.SearchResults, {
             products,
             query,
             productRatings: Object.fromEntries(ratingMap),

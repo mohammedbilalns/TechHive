@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { UserProductErrorMessages } from "../../constants/errorMessages.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
+import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 
 
 // ---- load home ---- homepage 
@@ -27,7 +28,7 @@ const loadHome = asyncHandler(async (req, res) => {
             
         let fullname = req.session.user?.fullname;
         
-        res.render('user/home', {
+        res.render(USER_VIEW_PATHS.Home, {
             allProducts,
             categories,
             newArrivals,
@@ -50,7 +51,7 @@ const loadLanding = asyncHandler(async (req, res) => {
             .sort({ createdAt: -1 })
             .limit(4);
 
-        res.render('user/landing', {
+        res.render(USER_VIEW_PATHS.Landing, {
             allProducts,
             categories,
             newArrivals
@@ -102,7 +103,7 @@ const loadAllProducts = asyncHandler(async (req, res) => {
             productRatings.map(item => [item._id.toString(), item.avgRating])
         );
 
-        res.render('user/allProducts', {
+        res.render(USER_VIEW_PATHS.AllProducts, {
             categoriesWithProducts,
             productRatings: Object.fromEntries(ratingMap),
             currentPage: page,
@@ -179,7 +180,7 @@ const viewProduct = asyncHandler(async (req, res) => {
         // Get user's wishlist if logged in
         const wishlistItems = res.locals.wishlistItems || [];
 
-        res.render('user/viewProduct', {
+        res.render(USER_VIEW_PATHS.ViewProduct, {
             product,
             relatedProducts,
             reviews,
@@ -290,7 +291,7 @@ const viewCategory = asyncHandler(async (req, res) => {
             });
         }
 
-        res.render('user/viewCategory', {
+        res.render(USER_VIEW_PATHS.ViewCategory, {
             category,
             products,
             productRatings: Object.fromEntries(ratingMap),

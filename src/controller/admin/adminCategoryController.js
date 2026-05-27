@@ -29,7 +29,7 @@ const getCategories = asyncHandler(async (req, res) => {
     .skip(skip)
     .limit(limit);
 
-  res.render(ADMIN_VIEW_PATHS.categories, {
+  res.render(ADMIN_VIEW_PATHS.Categories, {
     categories,
     message,
     page: 'categories',

@@ -10,6 +10,7 @@ import { AppError } from "../../utils/appError.js";
 import { validateProduct } from "../../validators/product.validator.js";
 import { AdminProductErrorMessages } from "../../constants/errorMessages.js";
 import { AdminProductSuccessMessages } from "../../constants/successMessage.js";
+import { ADMIN_VIEW_PATHS } from "../../constants/viewPaths.js";
 
 //  multer configuration for local storage
 const productStorage = multer.diskStorage({
@@ -62,7 +63,7 @@ const getProducts = asyncHandler(async (req, res) => {
         .skip(skip)
         .limit(limit);
 
-    res.render("admin/products", {
+    res.render(ADMIN_VIEW_PATHS.Products, {
         products,
         page: "products",
         message,
@@ -139,7 +140,7 @@ const activateProduct = asyncHandler(async (req, res) => {
 
 const getAddProduct = asyncHandler(async (_req, res) => {
     const categories = await categoryModel.find({ status: "Active" });
-    res.render('admin/addProduct', { categories, page: 'products' });
+    res.render(ADMIN_VIEW_PATHS.AddProduct, { categories, page: 'products' });
 });
 
 const addProduct = asyncHandler(async (req, res) => {
@@ -213,7 +214,7 @@ const getEditProduct = asyncHandler(async (req, res) => {
     }
 
     const categories = await categoryModel.find({ status: "Active" });
-    res.render('admin/editProduct', { product, categories, page: 'products' });
+    res.render(ADMIN_VIEW_PATHS.EditProduct, { product, categories, page: 'products' });
 });
 
 

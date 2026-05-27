@@ -5,6 +5,7 @@ import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
+import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 
 const getWishlist = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
@@ -34,7 +35,7 @@ const getWishlist = asyncHandler(async (req, res) => {
             }
         });
 
-    res.render('user/profile/wishlist', {
+    res.render(USER_VIEW_PATHS.ProfileWishlist, {
         wishlist: paginatedWishlist ? paginatedWishlist : [],
         page: "wishlist",
         user: req.session.user,

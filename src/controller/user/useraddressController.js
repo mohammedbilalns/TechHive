@@ -7,6 +7,7 @@ import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ErrorMessages, UserAddressErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
+import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 
 // get all addresses of a user
 export const getAddresses = asyncHandler(async (req, res) => {
@@ -14,7 +15,7 @@ export const getAddresses = asyncHandler(async (req, res) => {
   let user = await UserModel.findOne({ email });
 
   let addresses = await addressModel.find({ userId: user._id });
-  res.render('user/profile/addresses', { addresses, user, page: "addresses" });
+  res.render(USER_VIEW_PATHS.ProfileAddresses, { addresses, user, page: "addresses" });
 });
 
 // Add a new address

@@ -7,6 +7,7 @@ import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AuthErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
+import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 
 
 export const getAccountDetails = asyncHandler(async (req, res) => {
@@ -25,7 +26,7 @@ export const getAccountDetails = asyncHandler(async (req, res) => {
     refereeValue: 50
   };
 
-  res.render('user/profile/account', {
+  res.render(USER_VIEW_PATHS.ProfileAccount, {
     user,
     page: "account",
     referralValues

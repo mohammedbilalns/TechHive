@@ -9,6 +9,7 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
 import logger from '../../utils/logger.js';
+import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 
 const getWallet = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
@@ -26,7 +27,7 @@ const getWallet = asyncHandler(async (req, res) => {
             transactions: []
         });
         await newWallet.save();
-        return res.render('user/profile/wallet', {
+        return res.render(USER_VIEW_PATHS.ProfileWallet, {
             wallet: newWallet,
             user,
             currentPage: 1,
@@ -44,7 +45,7 @@ const getWallet = asyncHandler(async (req, res) => {
         .sort((a, b) => b.date - a.date)
         .slice(skip, skip + limit);
 
-    res.render('user/profile/wallet', {
+    res.render(USER_VIEW_PATHS.ProfileWallet, {
         wallet: {
             ...wallet.toObject(),
             transactions

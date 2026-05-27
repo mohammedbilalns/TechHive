@@ -12,6 +12,7 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AuthErrorMessages, ErrorMessages, UserAuthErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
 import { WalletTransactionDescriptions } from "../../constants/walletTransactionDescriptions.js";
+import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 import { sendOTPEmail } from "../../services/mail.js";
 import logger from "../../utils/logger.js";
 
@@ -288,7 +289,7 @@ export const authGoogleCallback = (req, res) => {
 
 export const logoutUser = asyncHandler(async (req, res) => {
   delete req.session.user;
-  res.render('user/auth/login', { message: SuccessMessage.LOGGED_OUT_SUCCESS, alertType: "success" });
+  res.render(USER_VIEW_PATHS.AuthLogin, { message: SuccessMessage.LOGGED_OUT_SUCCESS, alertType: "success" });
 });
 
 
@@ -296,7 +297,7 @@ export const logoutUser = asyncHandler(async (req, res) => {
 // ---- forgot password ---- 
 export const loadForgotpassword = (req, res) => {
   const { message, alertType, email } = req.query;
-  res.render('user/auth/forgotpassword', { message, alertType, email });
+  res.render(USER_VIEW_PATHS.AuthForgotPassword, { message, alertType, email });
 };
 
 
@@ -384,7 +385,7 @@ export const resendForgotPasswordOTP = asyncHandler(async (req, res) => {
   if (user.otp?.otpAttempts >= 3) {
     user.otp = undefined;
     await user.save();
-    return res.render("user/auth/forgotpassword", {
+    return res.render(USER_VIEW_PATHS.AuthForgotPassword, {
       message: ErrorMessages.TOO_MANY_ATTEMPTS,
       alertType: "error",
     });
@@ -401,7 +402,7 @@ export const resendForgotPasswordOTP = asyncHandler(async (req, res) => {
   await sendOTPEmail(email, otp);
 
 
-  res.render("user/auth/forgotpasswordotp", {
+  res.render(USER_VIEW_PATHS.AuthForgotPasswordOtp, {
     email,
     message: SuccessMessage.OTP_SENT_SUCCESS,
     alertType: "success",

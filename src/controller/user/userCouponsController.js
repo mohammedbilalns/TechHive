@@ -1,5 +1,6 @@
 import { couponModel } from "../../model/couponModel.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
+import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 import logger from "../../utils/logger.js";
 
 const getCoupons = asyncHandler ( async (req, res) => {
@@ -84,7 +85,7 @@ const getCoupons = asyncHandler ( async (req, res) => {
 
   const paginatedCoupons = combinedCoupons.slice(skip, skip + limit);
 
-  res.render('user/profile/coupons', {
+  res.render(USER_VIEW_PATHS.ProfileCoupons, {
     user: req.session.user,
     title: 'My Coupons',
     page: "coupons",

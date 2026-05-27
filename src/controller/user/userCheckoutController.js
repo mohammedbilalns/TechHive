@@ -8,7 +8,7 @@ import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ErrorMessages, UserCheckoutErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
-import logger from '../../utils/logger.js';
+import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 
 const getCheckout = asyncHandler( async (req, res) => {
     const userId = req.session.user.id;
@@ -51,7 +51,7 @@ const getCheckout = asyncHandler( async (req, res) => {
     // Apply coupon from session if exists
     const sessionCoupon = req.session.coupon;
 
-    res.render('user/checkout', {
+    res.render(USER_VIEW_PATHS.Checkout, {
       user,
       cart,
       addresses,
