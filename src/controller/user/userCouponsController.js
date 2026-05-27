@@ -3,32 +3,35 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 import logger from "../../utils/logger.js";
 
-const getCoupons = asyncHandler ( async (req, res) => {
+const getCoupons = asyncHandler(async (req, res) => {
   const currentDate = new Date();
   const userId = req.session.user.id;
   const page = parseInt(req.query.page) || 1;
   const limit = 9;
   const skip = (page - 1) * limit;
 
-  const allCoupons = await couponModel.find({
-    isActive: true
-  }).lean();
+  const allCoupons = await couponModel
+    .find({
+      isActive: true,
+    })
+    .lean();
 
   const categorizedCoupons = {
     available: [],
     used: [],
-    expired: []
+    expired: [],
   };
 
-  allCoupons.forEach(coupon => {
+  allCoupons.forEach((coupon) => {
     try {
       const expiryDate = new Date(coupon.expiryDate);
       const startDate = new Date(coupon.startDate);
 
-      // Count usage count of this coupon 
-      const userUsageCount = coupon.usageHistory?.filter(usage =>
-        usage.userId?.toString() === userId.toString()
-      ).length || 0;
+      // Count usage count of this coupon
+      const userUsageCount =
+        coupon.usageHistory?.filter(
+          (usage) => usage.userId?.toString() === userId.toString(),
+        ).length || 0;
 
       // Calculate remaining uses for this user
       const remainingUses = coupon.usageLimit - userUsageCount;
@@ -36,10 +39,10 @@ const getCoupons = asyncHandler ( async (req, res) => {
       if (expiryDate < currentDate) {
         categorizedCoupons.expired.push({
           ...coupon,
-          usedDate: coupon.usageHistory?.find(usage =>
-            usage.userId?.toString() === userId.toString()
+          usedDate: coupon.usageHistory?.find(
+            (usage) => usage.userId?.toString() === userId.toString(),
           )?.usedAt,
-          remainingUses
+          remainingUses,
         });
         return;
       }
@@ -52,21 +55,21 @@ const getCoupons = asyncHandler ( async (req, res) => {
       if (remainingUses <= 0) {
         categorizedCoupons.used.push({
           ...coupon,
-          usedDate: coupon.usageHistory?.find(usage =>
-            usage.userId?.toString() === userId.toString()
+          usedDate: coupon.usageHistory?.find(
+            (usage) => usage.userId?.toString() === userId.toString(),
           )?.usedAt,
-          remainingUses: 0
+          remainingUses: 0,
         });
         return;
       }
 
-      // push the available coupons 
+      // push the available coupons
       categorizedCoupons.available.push({
         ...coupon,
         remainingUses,
-        userUsedDate: coupon.usageHistory?.find(usage =>
-          usage.userId?.toString() === userId.toString()
-        )?.usedAt
+        userUsedDate: coupon.usageHistory?.find(
+          (usage) => usage.userId?.toString() === userId.toString(),
+        )?.usedAt,
       });
     } catch (err) {
       logger.error("COUPON_PROCESSING_ERROR", err);
@@ -77,7 +80,7 @@ const getCoupons = asyncHandler ( async (req, res) => {
   const combinedCoupons = [
     ...categorizedCoupons.available,
     ...categorizedCoupons.used,
-    ...categorizedCoupons.expired
+    ...categorizedCoupons.expired,
   ];
 
   const totalCoupons = combinedCoupons.length;
@@ -87,17 +90,17 @@ const getCoupons = asyncHandler ( async (req, res) => {
 
   res.render(USER_VIEW_PATHS.ProfileCoupons, {
     user: req.session.user,
-    title: 'My Coupons',
+    title: "My Coupons",
     page: "coupons",
     coupons: paginatedCoupons,
     currentPage: page,
     totalPages,
     hasNextPage: page < totalPages,
     hasPrevPage: page > 1,
-    currentDate
+    currentDate,
   });
 });
 
 export default {
-  getCoupons
+  getCoupons,
 };

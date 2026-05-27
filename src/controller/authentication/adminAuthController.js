@@ -15,18 +15,23 @@ export const loginAdmin = asyncHandler(async (req, res) => {
   }
 
   if (email != env.ADMIN_EMAIL || password != env.ADMIN_PASSWORD) {
-    throw new AppError(HttpStatus.UNAUTHORIZED, AdminAuthErrorMessages.INVALID_CREDENTIALS);
+    throw new AppError(
+      HttpStatus.UNAUTHORIZED,
+      AdminAuthErrorMessages.INVALID_CREDENTIALS,
+    );
   }
 
   req.session.admin = true;
   res.status(HttpStatus.OK).json({
     success: true,
     message: AdminAuthSuccessMessages.LOGIN_SUCCESS,
-    redirectUrl: '/admin/dashboard'
+    redirectUrl: "/admin/dashboard",
   });
 });
 
 export const logoutAdmin = asyncHandler(async (req, res) => {
   delete req.session.admin;
-  res.redirect(`/admin/login?message=${encodeURIComponent(AdminAuthSuccessMessages.LOGOUT_SUCCESS)}&alertType=success`);
+  res.redirect(
+    `/admin/login?message=${encodeURIComponent(AdminAuthSuccessMessages.LOGOUT_SUCCESS)}&alertType=success`,
+  );
 });

@@ -4,55 +4,61 @@ import { UserModel } from "../model/userModel.js";
 import { env } from "./env.js";
 import { generateUniqueReferralCode } from "./referralCode.js";
 
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
+      callbackURL: env.GOOGLE_CALLBACK_URL,
+    },
+    async (token, tokenSecret, profile, done) => {
+      try {
+        // Check if user exists with the same email
+        const existingUser = await UserModel.findOne({
+          email: profile.emails[0].value,
+        });
 
-passport.use(new GoogleStrategy({
-  clientID: env.GOOGLE_CLIENT_ID,
-  clientSecret: env.GOOGLE_CLIENT_SECRET,
-  callbackURL: env.GOOGLE_CALLBACK_URL
-},
-  async (token, tokenSecret, profile, done) => {
-    try {
-      // Check if user exists with the same email
-      const existingUser = await UserModel.findOne({ email: profile.emails[0].value });
+        if (existingUser) {
+          if (existingUser.status !== "Active") {
+            return done(null, false, {
+              message: "Your account is currently blocked",
+            });
+          }
 
-      if (existingUser) {
-        if (existingUser.status !== "Active") {
-          return done(null, false, { message: "Your account is currently blocked" });
+          if (!existingUser.googleId) {
+            existingUser.googleId = profile.id;
+            await existingUser.save();
+          }
+          return done(null, existingUser);
         }
 
-        if (!existingUser.googleId) {
-          existingUser.googleId = profile.id;
-          await existingUser.save();
+        // If user doesn't exist, create a new user
+        const newUser = new UserModel({
+          fullname: profile.displayName,
+          email: profile.emails[0].value,
+          googleId: profile.id,
+          status: "Active",
+          referralCode: await generateUniqueReferralCode(),
+        });
+
+        const savedUser = await newUser.save();
+
+        if (!savedUser) {
+          return done(new Error("Failed to save user"), null);
         }
-        return done(null, existingUser);
+
+        return done(null, savedUser);
+      } catch (error) {
+        console.error("Google Strategy Error:", error);
+        return done(error, null);
       }
+    },
+  ),
+);
 
-      // If user doesn't exist, create a new user
-      const newUser = new UserModel({
-        fullname: profile.displayName,
-        email: profile.emails[0].value,
-        googleId: profile.id,
-        status: "Active",
-        referralCode: await generateUniqueReferralCode(),
-      });
-
-      const savedUser = await newUser.save();
-
-      if (!savedUser) {
-        return done(new Error("Failed to save user"), null);
-      }
-
-      return done(null, savedUser);
-
-    } catch (error) {
-      console.error("Google Strategy Error:", error);
-      return done(error, null);
-    }
-  }));
-
-// = serialization 
+// = serialization
 passport.serializeUser((user, done) => {
-  done(null, user.id); 
+  done(null, user.id);
 });
 
 passport.deserializeUser(async (id, done) => {

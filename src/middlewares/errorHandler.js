@@ -17,13 +17,13 @@ export const errorMiddleware = (err, req, res, _next) => {
     return res.status(statusCode).render("somethingWentWrong", {
       fullname: req.session?.user?.fullname || null,
       message,
-      alertType: "error"
+      alertType: "error",
     });
   }
 
   return res.status(statusCode).json({
     success: false,
     message,
-    error: message
+    error: message,
   });
 };

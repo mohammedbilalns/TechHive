@@ -1,73 +1,78 @@
 import mongoose, { Schema } from "mongoose";
 
-const couponSchema = new Schema({
+const couponSchema = new Schema(
+  {
     code: {
-        type: String,
-        required: true,
-        unique: true,
-        uppercase: true,
-        trim: true
+      type: String,
+      required: true,
+      unique: true,
+      uppercase: true,
+      trim: true,
     },
     description: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     discountType: {
-        type: String,
-        required: true,
-        enum: ['PERCENTAGE', 'FIXED']  
+      type: String,
+      required: true,
+      enum: ["PERCENTAGE", "FIXED"],
     },
     discountValue: {
-        type: Number,
-        required: true,
-        min: 0
+      type: Number,
+      required: true,
+      min: 0,
     },
     minPurchase: {
-        type: Number,
-        default: 0
+      type: Number,
+      default: 0,
     },
     maxDiscount: {
-        type: Number,
-        default: null
+      type: Number,
+      default: null,
     },
     startDate: {
-        type: Date,
-        default: Date.now
+      type: Date,
+      default: Date.now,
     },
     expiryDate: {
-        type: Date,
-        required: true
+      type: Date,
+      required: true,
     },
     isActive: {
-        type: Boolean,
-        default: true
+      type: Boolean,
+      default: true,
     },
     usageLimit: {
-        type: Number,
-        default: 1
+      type: Number,
+      default: 1,
     },
-    usageHistory: [{
+    usageHistory: [
+      {
         userId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'users',
-            required: true
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "users",
+          required: true,
         },
         orderId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Order',
-            required: true
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Order",
+          required: true,
         },
         usedAt: {
-            type: Date,
-            default: Date.now
+          type: Date,
+          default: Date.now,
         },
         discountAmount: {
-            type: Number,
-            required: true
-        }
-    }]
-}, {
-    timestamps: true
-});
+          type: Number,
+          required: true,
+        },
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  },
+);
 
-export const couponModel = mongoose.model('Coupon', couponSchema);
+export const couponModel = mongoose.model("Coupon", couponSchema);

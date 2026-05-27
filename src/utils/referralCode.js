@@ -1,14 +1,14 @@
 import { UserModel } from "../model/userModel.js";
 
 // Generates a random 8-character alphanumeric referral code
-const  generateReferralCode = ()=> {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = '';
-    for (let i = 0; i < 8; i++) {
-        code += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return code;
-}; 
+const generateReferralCode = () => {
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let code = "";
+  for (let i = 0; i < 8; i++) {
+    code += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return code;
+};
 
 // Generates a unique referral code by retrying until no existing user has it
 export async function generateUniqueReferralCode() {
@@ -24,5 +24,4 @@ export async function generateUniqueReferralCode() {
   return referralCode;
 }
 
-
-export default {generateReferralCode};
+export default { generateReferralCode };

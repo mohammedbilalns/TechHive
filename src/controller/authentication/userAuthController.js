@@ -6,23 +6,31 @@ import { referralModel } from "../../model/referralModel.js";
 import { walletModel } from "../../model/walletModel.js";
 import referralUtils from "../../utils/referralCode.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
-import { validateLogin, validateRegisterBody, validateResetPassword } from "../../validators/auth.validator.js";
+import {
+  validateLogin,
+  validateRegisterBody,
+  validateResetPassword,
+} from "../../validators/auth.validator.js";
 import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
-import { AuthErrorMessages, ErrorMessages, UserAuthErrorMessages } from "../../constants/errorMessages.js";
+import {
+  AuthErrorMessages,
+  ErrorMessages,
+  UserAuthErrorMessages,
+} from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
 import { WalletTransactionDescriptions } from "../../constants/walletTransactionDescriptions.js";
 import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 import { sendOTPEmail } from "../../services/mail.js";
 import logger from "../../utils/logger.js";
 
-// Verify user login 
+// Verify user login
 export const verifyLogin = asyncHandler(async (req, res) => {
   let { email, password } = req.body;
 
   const error = validateLogin({
     email,
-    password
+    password,
   });
 
   if (error) throw new AppError(HttpStatus.BAD_REQUEST, error);
@@ -30,44 +38,57 @@ export const verifyLogin = asyncHandler(async (req, res) => {
   const user = await UserModel.findOne({ email });
 
   if (!user) {
-    throw new AppError(HttpStatus.UNAUTHORIZED, AuthErrorMessages.INVALID_EMAIL_OR_PASSWORD);
+    throw new AppError(
+      HttpStatus.UNAUTHORIZED,
+      AuthErrorMessages.INVALID_EMAIL_OR_PASSWORD,
+    );
   }
 
   // Check if user's status is pending and delete if found
   if (user.status === "Pending") {
     await UserModel.deleteOne({ _id: user._id });
-    throw new AppError(HttpStatus.UNAUTHORIZED, AuthErrorMessages.INCOMPLETE_REGISTRATION);
+    throw new AppError(
+      HttpStatus.UNAUTHORIZED,
+      AuthErrorMessages.INCOMPLETE_REGISTRATION,
+    );
   }
 
-  //check the user is active 
-  if (user.status != "Active") throw new AppError(HttpStatus.UNAUTHORIZED, AuthErrorMessages.ACCOUNT_BLOCKED);
-
+  //check the user is active
+  if (user.status != "Active")
+    throw new AppError(
+      HttpStatus.UNAUTHORIZED,
+      AuthErrorMessages.ACCOUNT_BLOCKED,
+    );
 
   // Check if the user used Google login
   if (!user.password) {
-    throw new AppError(HttpStatus.UNAUTHORIZED, AuthErrorMessages.REGISTERED_WITH_GOOGLE);
+    throw new AppError(
+      HttpStatus.UNAUTHORIZED,
+      AuthErrorMessages.REGISTERED_WITH_GOOGLE,
+    );
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
-    throw new AppError(HttpStatus.UNAUTHORIZED, AuthErrorMessages.INVALID_EMAIL_OR_PASSWORD);
+    throw new AppError(
+      HttpStatus.UNAUTHORIZED,
+      AuthErrorMessages.INVALID_EMAIL_OR_PASSWORD,
+    );
   }
 
   req.session.user = {
     id: user._id,
     fullname: user.fullname,
-    email: user.email
+    email: user.email,
   };
 
   res.status(HttpStatus.OK).json({
     success: true,
-    message: SuccessMessage.LOGIN_SUCCESS
+    message: SuccessMessage.LOGIN_SUCCESS,
   });
-
 });
 
-// ---- User Signup ----  
-
+// ---- User Signup ----
 
 // Register a new user
 export const registerUser = asyncHandler(async (req, res) => {
@@ -88,27 +109,26 @@ export const registerUser = asyncHandler(async (req, res) => {
 
   // Check if a user already exists with the given email or phone number
   const existingUser = await UserModel.findOne({
-    $or: [
-      { email },
-      { phonenumber }
-    ]
+    $or: [{ email }, { phonenumber }],
   });
 
   // If the user already exists, return an error message
   if (existingUser && existingUser.status == "Pending") {
     await UserModel.findOneAndDelete({ email });
-
   } else if (existingUser) {
     let message;
     if (!existingUser.password) {
       message = AuthErrorMessages.REGISTERED_WITH_GOOGLE;
     } else {
-      message = existingUser.email === email ? AuthErrorMessages.EMAIL_ALREADY_REGISTERED : AuthErrorMessages.PHONE_NUMBER_ALREADY_REGISTERED;
+      message =
+        existingUser.email === email
+          ? AuthErrorMessages.EMAIL_ALREADY_REGISTERED
+          : AuthErrorMessages.PHONE_NUMBER_ALREADY_REGISTERED;
     }
     throw new AppError(HttpStatus.CONFLICT, message);
   }
 
-  // Hash the password 
+  // Hash the password
   const hashedPassword = await bcrypt.hash(password, 10);
 
   // Generate a unique referral code
@@ -140,29 +160,31 @@ export const registerUser = asyncHandler(async (req, res) => {
   // Save the new user to the database
   await newUser.save();
 
-  setTimeout(async () => {
-    try {
-      await UserModel.deleteOne({
-        email,
-        status: "Pending",
-        createdAt: { $lt: new Date(Date.now() - 3 * 60 * 1000) }
-      });
-    } catch (error) {
-      logger.error("Error deleting pending user:", error);
-    }
-  }, 3 * 60 * 1000);
+  setTimeout(
+    async () => {
+      try {
+        await UserModel.deleteOne({
+          email,
+          status: "Pending",
+          createdAt: { $lt: new Date(Date.now() - 3 * 60 * 1000) },
+        });
+      } catch (error) {
+        logger.error("Error deleting pending user:", error);
+      }
+    },
+    3 * 60 * 1000,
+  );
 
   // Send OTP email to the user
   await sendOTPEmail(email, otp);
 
   return res.status(HttpStatus.OK).json({
     success: true,
-    email: email
+    email: email,
   });
-
 });
 
-// Verify OTP entered by the user 
+// Verify OTP entered by the user
 export const verifyOTP = asyncHandler(async (req, res) => {
   const { otp1, otp2, otp3, otp4, email } = req.body;
   const userOTP = otp1 + otp2 + otp3 + otp4;
@@ -178,11 +200,15 @@ export const verifyOTP = asyncHandler(async (req, res) => {
     user.otp = undefined;
     await user.save();
 
-    req.session.user = { id: user._id, fullname: user.fullname, email: user.email };
+    req.session.user = {
+      id: user._id,
+      fullname: user.fullname,
+      email: user.email,
+    };
 
     return res.status(HttpStatus.OK).json({
       success: true,
-      message: SuccessMessage.OTP_VERIFIED_SUCCESS
+      message: SuccessMessage.OTP_VERIFIED_SUCCESS,
     });
   } else {
     if (user.otp.otpAttempts >= 4) {
@@ -190,7 +216,7 @@ export const verifyOTP = asyncHandler(async (req, res) => {
       return res.status(HttpStatus.BAD_REQUEST).json({
         success: false,
         message: AuthErrorMessages.OTP_ATTEMPTS_EXCEEDED,
-        maxAttemptsExceeded: true
+        maxAttemptsExceeded: true,
       });
     }
 
@@ -199,14 +225,12 @@ export const verifyOTP = asyncHandler(async (req, res) => {
 
     return res.status(HttpStatus.BAD_REQUEST).json({
       success: false,
-      message: AuthErrorMessages.OTP_INVALID
+      message: AuthErrorMessages.OTP_INVALID,
     });
   }
-
 });
 
-
-// Resend OTP 
+// Resend OTP
 export const resendOTP = asyncHandler(async (req, res) => {
   let { email } = req.body;
   email = email.trim();
@@ -218,9 +242,8 @@ export const resendOTP = asyncHandler(async (req, res) => {
     return res.status(HttpStatus.TOO_MANY_REQUESTS).json({
       success: false,
       message: ErrorMessages.TOO_MANY_ATTEMPTS,
-      maxAttemptsExceeded: true
+      maxAttemptsExceeded: true,
     });
-
   }
 
   const otp = cryptoUtils.generateOTP();
@@ -234,11 +257,9 @@ export const resendOTP = asyncHandler(async (req, res) => {
 
   return res.status(HttpStatus.OK).json({
     success: true,
-    message: SuccessMessage.OTP_SENT_SUCCESS
+    message: SuccessMessage.OTP_SENT_SUCCESS,
   });
-
 });
-
 
 // ---- Google OAuth ----
 // Redirect the user to Google for authentication
@@ -250,56 +271,68 @@ export const authGoogle = (req, res) => {
 
 // Callback for Google OAuth, handle success or failure
 export const authGoogleCallback = (req, res) => {
-  passport.authenticate("google", { failureRedirect: "/login" }, (err, user, info) => {
-    if (err) {
-      logger.error("Google Auth Callback Error:", err);
-      return res.redirect(`/login?message=${encodeURIComponent(UserAuthErrorMessages.SOMETHING_WENT_WRONG)}&alertType=error`);
-    }
-
-    if (!user) {
-      const message = info?.message || UserAuthErrorMessages.AUTHENTICATION_FAILED;
-      return res.redirect(`/login?message=${encodeURIComponent(message)}&alertType=error`);
-    }
-
-    req.logIn(user, (err) => {
+  passport.authenticate(
+    "google",
+    { failureRedirect: "/login" },
+    (err, user, info) => {
       if (err) {
-        logger.error("Session Error:", err);
-        return res.redirect(`/login?message=${encodeURIComponent(UserAuthErrorMessages.SESSION_ERROR)}&alertType=error`);
+        logger.error("Google Auth Callback Error:", err);
+        return res.redirect(
+          `/login?message=${encodeURIComponent(UserAuthErrorMessages.SOMETHING_WENT_WRONG)}&alertType=error`,
+        );
       }
 
-      req.session.user = {
-        id: user.id,
-        fullname: user.fullname,
-        email: user.email
-      };
+      if (!user) {
+        const message =
+          info?.message || UserAuthErrorMessages.AUTHENTICATION_FAILED;
+        return res.redirect(
+          `/login?message=${encodeURIComponent(message)}&alertType=error`,
+        );
+      }
 
-      req.session.save((err) => {
+      req.logIn(user, (err) => {
         if (err) {
-          logger.error("Session Save Error:", err);
-          return res.redirect(`/login?message=${encodeURIComponent(UserAuthErrorMessages.SESSION_SAVE_ERROR)}&alertType=error`);
+          logger.error("Session Error:", err);
+          return res.redirect(
+            `/login?message=${encodeURIComponent(UserAuthErrorMessages.SESSION_ERROR)}&alertType=error`,
+          );
         }
-        res.redirect('/home');
+
+        req.session.user = {
+          id: user.id,
+          fullname: user.fullname,
+          email: user.email,
+        };
+
+        req.session.save((err) => {
+          if (err) {
+            logger.error("Session Save Error:", err);
+            return res.redirect(
+              `/login?message=${encodeURIComponent(UserAuthErrorMessages.SESSION_SAVE_ERROR)}&alertType=error`,
+            );
+          }
+          res.redirect("/home");
+        });
       });
-    });
-  })(req, res);
+    },
+  )(req, res);
 };
 
-
-// ---- user logout --- 
+// ---- user logout ---
 
 export const logoutUser = asyncHandler(async (req, res) => {
   delete req.session.user;
-  res.render(USER_VIEW_PATHS.AuthLogin, { message: SuccessMessage.LOGGED_OUT_SUCCESS, alertType: "success" });
+  res.render(USER_VIEW_PATHS.AuthLogin, {
+    message: SuccessMessage.LOGGED_OUT_SUCCESS,
+    alertType: "success",
+  });
 });
 
-
-
-// ---- forgot password ---- 
+// ---- forgot password ----
 export const loadForgotpassword = (req, res) => {
   const { message, alertType, email } = req.query;
   res.render(USER_VIEW_PATHS.AuthForgotPassword, { message, alertType, email });
 };
-
 
 export const processForgotPassword = asyncHandler(async (req, res) => {
   let { email } = req.body;
@@ -307,11 +340,17 @@ export const processForgotPassword = asyncHandler(async (req, res) => {
   const user = await UserModel.findOne({ email });
 
   if (!user) {
-    throw new AppError(HttpStatus.NOT_FOUND, AuthErrorMessages.INVALID_EMAIL_OR_PASSWORD);
+    throw new AppError(
+      HttpStatus.NOT_FOUND,
+      AuthErrorMessages.INVALID_EMAIL_OR_PASSWORD,
+    );
   }
 
   if (!user.password) {
-    throw new AppError(HttpStatus.BAD_REQUEST, AuthErrorMessages.REGISTERED_WITH_GOOGLE);
+    throw new AppError(
+      HttpStatus.BAD_REQUEST,
+      AuthErrorMessages.REGISTERED_WITH_GOOGLE,
+    );
   }
 
   const otp = cryptoUtils.generateOTP();
@@ -327,9 +366,8 @@ export const processForgotPassword = asyncHandler(async (req, res) => {
 
   return res.status(HttpStatus.OK).json({
     success: true,
-    message: SuccessMessage.OTP_SENT_SUCCESS
+    message: SuccessMessage.OTP_SENT_SUCCESS,
   });
-
 });
 
 export const verifyForgotPasswordOTP = asyncHandler(async (req, res) => {
@@ -353,7 +391,7 @@ export const verifyForgotPasswordOTP = asyncHandler(async (req, res) => {
 
     return res.status(HttpStatus.OK).json({
       success: true,
-      message: SuccessMessage.OTP_VERIFIED_SUCCESS
+      message: SuccessMessage.OTP_VERIFIED_SUCCESS,
     });
   } else {
     if (user.otp.otpAttempts >= 3) {
@@ -362,7 +400,7 @@ export const verifyForgotPasswordOTP = asyncHandler(async (req, res) => {
       return res.status(HttpStatus.CONFLICT).json({
         success: false,
         message: ErrorMessages.TOO_MANY_ATTEMPTS,
-        maxAttemptsExceeded: true
+        maxAttemptsExceeded: true,
       });
     }
 
@@ -371,7 +409,7 @@ export const verifyForgotPasswordOTP = asyncHandler(async (req, res) => {
 
     return res.status(HttpStatus.CONFLICT).json({
       success: false,
-      message: AuthErrorMessages.OTP_INVALID
+      message: AuthErrorMessages.OTP_INVALID,
     });
   }
 });
@@ -401,7 +439,6 @@ export const resendForgotPasswordOTP = asyncHandler(async (req, res) => {
 
   await sendOTPEmail(email, otp);
 
-
   res.render(USER_VIEW_PATHS.AuthForgotPasswordOtp, {
     email,
     message: SuccessMessage.OTP_SENT_SUCCESS,
@@ -410,7 +447,7 @@ export const resendForgotPasswordOTP = asyncHandler(async (req, res) => {
 });
 
 export const resetPassword = asyncHandler(async (req, res) => {
-  let { email, password} = req.body;
+  let { email, password } = req.body;
 
   const error = validateResetPassword(req.body);
   if (error) {
@@ -430,7 +467,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
   return res.status(HttpStatus.OK).json({
     success: true,
-    message: SuccessMessage.PASSWORD_RESET_SUCCESS
+    message: SuccessMessage.PASSWORD_RESET_SUCCESS,
   });
 });
 
@@ -441,12 +478,17 @@ export const applyReferral = asyncHandler(async (req, res) => {
   const referrer = await UserModel.findOne({ referralCode });
 
   if (!referrer) {
-    throw new AppError(HttpStatus.CONFLICT, AuthErrorMessages.INVALID_REFERRAL_CODE);
+    throw new AppError(
+      HttpStatus.CONFLICT,
+      AuthErrorMessages.INVALID_REFERRAL_CODE,
+    );
   }
 
   if (referrer._id.toString() === currentUser._id.toString()) {
-    throw new AppError(HttpStatus.CONFLICT, AuthErrorMessages.YOU_CANNOT_USE_YOUR_OWN_REFERRAL_CODE);
-
+    throw new AppError(
+      HttpStatus.CONFLICT,
+      AuthErrorMessages.YOU_CANNOT_USE_YOUR_OWN_REFERRAL_CODE,
+    );
   }
 
   // Get referral values
@@ -459,7 +501,7 @@ export const applyReferral = asyncHandler(async (req, res) => {
   if (!referrerWallet) {
     referrerWallet = new walletModel({
       userId: referrer._id,
-      balance: 0
+      balance: 0,
     });
   }
 
@@ -468,7 +510,7 @@ export const applyReferral = asyncHandler(async (req, res) => {
     transactionId: `REF${Date.now()}`,
     type: "CREDIT",
     amount: referrerAmount,
-    description: WalletTransactionDescriptions.REFERRAL(currentUser.fullname)
+    description: WalletTransactionDescriptions.REFERRAL(currentUser.fullname),
   });
   await referrerWallet.save();
 
@@ -477,7 +519,7 @@ export const applyReferral = asyncHandler(async (req, res) => {
   if (!userWallet) {
     userWallet = new walletModel({
       userId: currentUser._id,
-      balance: 0
+      balance: 0,
     });
   }
 
@@ -486,13 +528,12 @@ export const applyReferral = asyncHandler(async (req, res) => {
     transactionId: `REF${Date.now()}`,
     type: "CREDIT",
     amount: refereeAmount,
-    description: WalletTransactionDescriptions.REFERRAL(referrer.fullname)
+    description: WalletTransactionDescriptions.REFERRAL(referrer.fullname),
   });
   await userWallet.save();
 
   return res.status(HttpStatus.OK).json({
     success: true,
-    message: SuccessMessage.REFERRAL_CODE_APPLIED_SUCCESS
+    message: SuccessMessage.REFERRAL_CODE_APPLIED_SUCCESS,
   });
-
 });

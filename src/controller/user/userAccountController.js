@@ -1,6 +1,6 @@
 import { UserModel } from "../../model/userModel.js";
-import bcrypt from 'bcryptjs';
-import referralCodeUtils from '../../utils/referralCode.js';
+import bcrypt from "bcryptjs";
+import referralCodeUtils from "../../utils/referralCode.js";
 import { referralModel } from "../../model/referralModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { AppError } from "../../utils/appError.js";
@@ -9,27 +9,26 @@ import { AuthErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
 import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 
-
 export const getAccountDetails = asyncHandler(async (req, res) => {
   let email = req.session.user.email;
   let user = await UserModel.findOne({ email });
 
-  // Generate referral code 
+  // Generate referral code
   if (!user.referralCode) {
     user.referralCode = referralCodeUtils.generateReferralCode();
     await user.save();
   }
 
   // Fetch referral values
-  const referralValues = await referralModel.findOne({}) || {
+  const referralValues = (await referralModel.findOne({})) || {
     referrerValue: 100,
-    refereeValue: 50
+    refereeValue: 50,
   };
 
   res.render(USER_VIEW_PATHS.ProfileAccount, {
     user,
     page: "account",
-    referralValues
+    referralValues,
   });
 });
 
@@ -39,7 +38,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
   const updatedUser = await UserModel.findByIdAndUpdate(
     userId,
     { fullname },
-    { new: true }
+    { new: true },
   );
   if (!updatedUser) {
     throw new AppError(HttpStatus.NOT_FOUND, AuthErrorMessages.USER_NOT_FOUND);
@@ -48,7 +47,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
   res.status(HttpStatus.OK).json({
     success: true,
     message: SuccessMessage.PROFILE_UPDATED,
-    user: updatedUser
+    user: updatedUser,
   });
 });
 
@@ -65,13 +64,19 @@ export const changePassword = asyncHandler(async (req, res) => {
   // Verify current password
   const isMatch = await bcrypt.compare(currentPassword, user.password);
   if (!isMatch) {
-    throw new AppError(HttpStatus.BAD_REQUEST, AuthErrorMessages.CURRENT_PASSWORD_INCORRECT);
+    throw new AppError(
+      HttpStatus.BAD_REQUEST,
+      AuthErrorMessages.CURRENT_PASSWORD_INCORRECT,
+    );
   }
 
   // Check if new password is same as current password
   const isSamePassword = await bcrypt.compare(newPassword, user.password);
   if (isSamePassword) {
-    throw new AppError(HttpStatus.BAD_REQUEST, AuthErrorMessages.NEW_PASSWORD_SAME_AS_CURRENT);
+    throw new AppError(
+      HttpStatus.BAD_REQUEST,
+      AuthErrorMessages.NEW_PASSWORD_SAME_AS_CURRENT,
+    );
   }
 
   // Hash new password
@@ -84,6 +89,6 @@ export const changePassword = asyncHandler(async (req, res) => {
 
   res.status(HttpStatus.OK).json({
     success: true,
-    message: SuccessMessage.PASSWORD_UPDATED
+    message: SuccessMessage.PASSWORD_UPDATED,
   });
 });

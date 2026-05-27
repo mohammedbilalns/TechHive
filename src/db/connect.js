@@ -19,7 +19,6 @@ export const connectDb = async () => {
   }
 };
 
-
 export const closeDb = async () => {
   try {
     if (!isConnected) return;
@@ -33,7 +32,6 @@ export const closeDb = async () => {
     console.error(error);
   }
 };
-
 
 mongoose.connection.on("connected", () => {
   logger.info("MONGOOSE EVENT", "connected");

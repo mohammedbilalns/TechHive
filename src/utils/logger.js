@@ -1,21 +1,21 @@
-const reset = '[0m';
+const reset = "[0m";
 
 // Foreground colors
 const fg = {
-  white: '[37m',
-  black: '[30m',
-  green: '[32m',
-  red: '[31m',
-  yellow: '[33m',
-  blue: '[34m',
+  white: "[37m",
+  black: "[30m",
+  green: "[32m",
+  red: "[31m",
+  yellow: "[33m",
+  blue: "[34m",
 };
 
 // Background colors
 const bg = {
-  green: '[42m',
-  red: '[41m',
-  yellow: '[43m',
-  blue: '[44m',
+  green: "[42m",
+  red: "[41m",
+  yellow: "[43m",
+  blue: "[44m",
 };
 
 const logger = {

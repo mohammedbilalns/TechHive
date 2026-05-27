@@ -12,13 +12,13 @@ const getCustomers = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = 10;
   const skip = (page - 1) * limit;
-  const search = req.query.search || '';
+  const search = req.query.search || "";
 
   const searchQuery = {
     $or: [
-      { fullname: { $regex: search, $options: 'i' } },
-      { email: { $regex: search, $options: 'i' } }
-    ]
+      { fullname: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+    ],
   };
 
   const totalCustomers = await UserModel.countDocuments(searchQuery);
@@ -33,35 +33,37 @@ const getCustomers = asyncHandler(async (req, res) => {
     customers,
     message,
     alertType,
-    page: 'customers',
+    page: "customers",
     currentPage: page,
     totalPages,
     hasNextPage: page < totalPages,
     hasPrevPage: page > 1,
-    search
+    search,
   });
 });
-
 
 const blockCustomer = asyncHandler(async (req, res) => {
   const customer = await UserModel.findByIdAndUpdate(
     req.params.customerid,
     { status: "Blocked" },
-    { new: true }
+    { new: true },
   );
 
   if (!customer) {
-    throw new AppError(HttpStatus.NOT_FOUND,AdminCustomerErrorMessages.Notfound);
+    throw new AppError(
+      HttpStatus.NOT_FOUND,
+      AdminCustomerErrorMessages.Notfound,
+    );
   }
 
-  // delete the user's session if it is active 
+  // delete the user's session if it is active
   if (req.session.user?.id == customer._id) {
     delete req.session.user;
   }
   res.status(HttpStatus.OK).json({
     success: true,
     message: AdminCustomerSuccessMessages.Blocked,
-    customer
+    customer,
   });
 });
 
@@ -69,22 +71,25 @@ const unblockCustomer = asyncHandler(async (req, res) => {
   const customer = await UserModel.findByIdAndUpdate(
     req.params.customerid,
     { status: "Active" },
-    { new: true }
+    { new: true },
   );
 
   if (!customer) {
-    throw new AppError(HttpStatus.NOT_FOUND, AdminCustomerErrorMessages.Notfound);
+    throw new AppError(
+      HttpStatus.NOT_FOUND,
+      AdminCustomerErrorMessages.Notfound,
+    );
   }
 
   res.status(HttpStatus.OK).json({
     success: true,
     message: AdminCustomerSuccessMessages.Unblocked,
-    customer
+    customer,
   });
 });
 
-
-
 export default {
-  getCustomers, blockCustomer, unblockCustomer
+  getCustomers,
+  blockCustomer,
+  unblockCustomer,
 };

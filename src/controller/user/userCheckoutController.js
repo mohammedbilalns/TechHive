@@ -1,67 +1,73 @@
-import { UserModel } from '../../model/userModel.js';
-import { cartModel } from '../../model/cartModel.js';
-import { addressModel } from '../../model/addressModel.js';
-import { walletModel } from '../../model/walletModel.js';
-import { couponModel } from '../../model/couponModel.js';
-import { HttpStatus } from '../../constants/statusCodes.js';
+import { UserModel } from "../../model/userModel.js";
+import { cartModel } from "../../model/cartModel.js";
+import { addressModel } from "../../model/addressModel.js";
+import { walletModel } from "../../model/walletModel.js";
+import { couponModel } from "../../model/couponModel.js";
+import { HttpStatus } from "../../constants/statusCodes.js";
 import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
-import { ErrorMessages, UserCheckoutErrorMessages } from "../../constants/errorMessages.js";
+import {
+  ErrorMessages,
+  UserCheckoutErrorMessages,
+} from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
 import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 
-const getCheckout = asyncHandler( async (req, res) => {
-    const userId = req.session.user.id;
-    const [user, cart, addresses, wallet] = await Promise.all([
-      UserModel.findById(userId),
-      cartModel.findOne({ user: userId }).populate('items.productId'),
-      addressModel.find({ userId: userId }),
-      walletModel.findOne({ userId })
-    ]);
+const getCheckout = asyncHandler(async (req, res) => {
+  const userId = req.session.user.id;
+  const [user, cart, addresses, wallet] = await Promise.all([
+    UserModel.findById(userId),
+    cartModel.findOne({ user: userId }).populate("items.productId"),
+    addressModel.find({ userId: userId }),
+    walletModel.findOne({ userId }),
+  ]);
 
-    if (!cart || cart.items.length === 0) {
-      delete req.session.coupon;
-      return res.redirect('/profile/cart');
+  if (!cart || cart.items.length === 0) {
+    delete req.session.coupon;
+    return res.redirect("/profile/cart");
+  }
+
+  // Check stock availability
+  for (const item of cart.items) {
+    if (item.productId.stock < item.quantity) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+        success: false,
+        message: UserCheckoutErrorMessages.PRODUCT_OUT_OF_STOCK(
+          item.productId.name,
+        ),
+      });
     }
+  }
 
-    // Check stock availability
-    for (const item of cart.items) {
-      if (item.productId.stock < item.quantity) {
-        return res.status(HttpStatus.BAD_REQUEST).json({
-          success: false,
-          message: UserCheckoutErrorMessages.PRODUCT_OUT_OF_STOCK(item.productId.name)
-        });
-      }
-    }
+  // Calculate totals
+  let originalPrice = 0;
+  let totalSavings = 0;
 
-    // Calculate totals
-    let originalPrice = 0;
-    let totalSavings = 0;
+  cart.items.forEach((item) => {
+    const itemOriginalPrice = item.productId.price * item.quantity;
+    const discountedPrice =
+      itemOriginalPrice * (1 - item.productId.discount / 100);
+    originalPrice += itemOriginalPrice;
+    totalSavings += itemOriginalPrice - discountedPrice;
+  });
 
-    cart.items.forEach(item => {
-      const itemOriginalPrice = item.productId.price * item.quantity;
-      const discountedPrice = itemOriginalPrice * (1 - item.productId.discount / 100);
-      originalPrice += itemOriginalPrice;
-      totalSavings += itemOriginalPrice - discountedPrice;
-    });
+  const subtotal = originalPrice - totalSavings;
+  let total = subtotal;
 
-    const subtotal = originalPrice - totalSavings;
-    let total = subtotal;
+  // Apply coupon from session if exists
+  const sessionCoupon = req.session.coupon;
 
-    // Apply coupon from session if exists
-    const sessionCoupon = req.session.coupon;
-
-    res.render(USER_VIEW_PATHS.Checkout, {
-      user,
-      cart,
-      addresses,
-      originalPrice,
-      total,
-      totalSavings,
-      wallet: wallet || { balance: 0 },
-      page: "cart",
-      sessionCoupon
-    });
+  res.render(USER_VIEW_PATHS.Checkout, {
+    user,
+    cart,
+    addresses,
+    originalPrice,
+    total,
+    totalSavings,
+    wallet: wallet || { balance: 0 },
+    page: "cart",
+    sessionCoupon,
+  });
 });
 
 const applyCoupon = asyncHandler(async (req, res) => {
@@ -69,10 +75,13 @@ const applyCoupon = asyncHandler(async (req, res) => {
   const userId = req.session.user.id;
 
   // Find cart and calculate total
-  const cart = await cartModel.findOne({ user: userId }).populate('items.productId');
+  const cart = await cartModel
+    .findOne({ user: userId })
+    .populate("items.productId");
   let subtotal = 0;
-  cart.items.forEach(item => {
-    const itemPrice = item.productId.price * (1 - item.productId.discount / 100);
+  cart.items.forEach((item) => {
+    const itemPrice =
+      item.productId.price * (1 - item.productId.discount / 100);
     subtotal += itemPrice * item.quantity;
   });
 
@@ -80,7 +89,7 @@ const applyCoupon = asyncHandler(async (req, res) => {
   const coupon = await couponModel.findOne({
     code: couponCode.toUpperCase(),
     isActive: true,
-    expiryDate: { $gt: new Date() }
+    expiryDate: { $gt: new Date() },
   });
 
   if (!coupon) {
@@ -89,21 +98,27 @@ const applyCoupon = asyncHandler(async (req, res) => {
 
   // Check minimum purchase requirement
   if (subtotal < coupon.minPurchase) {
-    throw new AppError(HttpStatus.BAD_REQUEST, UserCheckoutErrorMessages.MIN_PURCHASE_REQUIRED(coupon.minPurchase));
+    throw new AppError(
+      HttpStatus.BAD_REQUEST,
+      UserCheckoutErrorMessages.MIN_PURCHASE_REQUIRED(coupon.minPurchase),
+    );
   }
 
   // Check usage limit
   const userUsageCount = coupon.usageHistory.filter(
-    history => history.userId.toString() === userId
+    (history) => history.userId.toString() === userId,
   ).length;
 
   if (userUsageCount >= coupon.usageLimit) {
-    throw new AppError(HttpStatus.BAD_REQUEST, ErrorMessages.COUPON_LIMIT_EXCEEDED);
+    throw new AppError(
+      HttpStatus.BAD_REQUEST,
+      ErrorMessages.COUPON_LIMIT_EXCEEDED,
+    );
   }
 
   // Calculate discount
   let discountAmount;
-  if (coupon.discountType === 'PERCENTAGE') {
+  if (coupon.discountType === "PERCENTAGE") {
     discountAmount = (subtotal * coupon.discountValue) / 100;
     if (coupon.maxDiscount) {
       discountAmount = Math.min(discountAmount, coupon.maxDiscount);
@@ -115,14 +130,14 @@ const applyCoupon = asyncHandler(async (req, res) => {
   // Store coupon in session
   req.session.coupon = {
     code: couponCode,
-    discount: discountAmount
+    discount: discountAmount,
   };
 
   return res.status(HttpStatus.OK).json({
     success: true,
     couponCode: couponCode,
     discount: discountAmount,
-    message: SuccessMessage.COUPON_APPLIED
+    message: SuccessMessage.COUPON_APPLIED,
   });
 });
 
@@ -132,12 +147,12 @@ const removeCoupon = asyncHandler(async (req, res) => {
 
   return res.status(HttpStatus.OK).json({
     success: true,
-    message: SuccessMessage.COUPON_REMOVED
+    message: SuccessMessage.COUPON_REMOVED,
   });
 });
 
 export default {
   getCheckout,
   applyCoupon,
-  removeCoupon
+  removeCoupon,
 };

@@ -3,7 +3,7 @@ import { productModel } from "../../model/productModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
-import { ErrorMessages} from "../../constants/errorMessages.js";
+import { ErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
 import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 
@@ -11,14 +11,15 @@ const getCart = asyncHandler(async (req, res) => {
   delete req.session.coupon;
 
   const userId = req.session.user.id;
-  let cart = await cartModel.findOne({ user: userId })
-    .populate('items.productId');
+  let cart = await cartModel
+    .findOne({ user: userId })
+    .populate("items.productId");
 
   // Create cart if not found
   if (!cart) {
     cart = await cartModel.create({
       user: userId,
-      items: []
+      items: [],
     });
   }
 
@@ -27,9 +28,10 @@ const getCart = asyncHandler(async (req, res) => {
   let originalPrice = 0;
 
   if (cart.items && cart.items.length > 0) {
-    cart.items.forEach(item => {
+    cart.items.forEach((item) => {
       const itemOriginalPrice = item.productId.price * item.quantity;
-      const discountedPrice = itemOriginalPrice * (1 - item.productId.discount / 100);
+      const discountedPrice =
+        itemOriginalPrice * (1 - item.productId.discount / 100);
 
       originalPrice += itemOriginalPrice;
       subtotal += discountedPrice;
@@ -48,7 +50,7 @@ const getCart = asyncHandler(async (req, res) => {
     originalPrice: originalPrice.toFixed(2),
     totalDiscount: totalDiscount.toFixed(2),
     user: req.session.user,
-    page: 'cart'
+    page: "cart",
   });
 });
 
@@ -58,10 +60,15 @@ const addToCart = asyncHandler(async (req, res) => {
 
   // Check if product exists, has stock, and is active
   const product = await productModel.findById(productId);
-  if (!product || product.stock <= 0 || product.status !== 'Active') {
-    throw new AppError(HttpStatus.BAD_REQUEST, !product ? ErrorMessages.PRODUCT_NOT_FOUND :
-      product.status !== 'Active' ? ErrorMessages.PRODUCT_NOT_AVAILABLE :
-        ErrorMessages.PRODUCT_OUT_OF_STOCK);
+  if (!product || product.stock <= 0 || product.status !== "Active") {
+    throw new AppError(
+      HttpStatus.BAD_REQUEST,
+      !product
+        ? ErrorMessages.PRODUCT_NOT_FOUND
+        : product.status !== "Active"
+          ? ErrorMessages.PRODUCT_NOT_AVAILABLE
+          : ErrorMessages.PRODUCT_OUT_OF_STOCK,
+    );
   }
 
   // Find and create cart
@@ -69,39 +76,47 @@ const addToCart = asyncHandler(async (req, res) => {
   if (!cart) {
     cart = await cartModel.create({
       user: userId,
-      items: []
+      items: [],
     });
   }
 
   // Check if product already in cart
   const existingItem = cart.items.find(
-    item => item.productId.toString() === productId
+    (item) => item.productId.toString() === productId,
   );
 
   if (existingItem) {
     if (existingItem.quantity >= 4) {
-      throw new AppError(HttpStatus.BAD_REQUEST, ErrorMessages.MAX_QUANTITY_REACHED);
+      throw new AppError(
+        HttpStatus.BAD_REQUEST,
+        ErrorMessages.MAX_QUANTITY_REACHED,
+      );
     }
     if (existingItem.quantity >= product.stock) {
-      throw new AppError(HttpStatus.BAD_REQUEST, ErrorMessages.NOT_ENOUGH_STOCK);
+      throw new AppError(
+        HttpStatus.BAD_REQUEST,
+        ErrorMessages.NOT_ENOUGH_STOCK,
+      );
     }
     existingItem.quantity += 1;
-
   } else {
     cart.items.push({
       productId,
-      quantity: 1
+      quantity: 1,
     });
   }
 
   await cart.save();
 
-  const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+  const totalQuantity = cart.items.reduce(
+    (sum, item) => sum + item.quantity,
+    0,
+  );
 
   return res.status(HttpStatus.OK).json({
     success: true,
     message: SuccessMessage.PRODUCT_ADDED_TO_CART,
-    totalQuantity
+    totalQuantity,
   });
 });
 
@@ -109,16 +124,17 @@ const removeFromCart = asyncHandler(async (req, res) => {
   const { productId } = req.params;
   const userId = req.session.user.id;
 
-  const cart = await cartModel.findOne({ user: userId })
-    .populate('items.productId');
+  const cart = await cartModel
+    .findOne({ user: userId })
+    .populate("items.productId");
 
   if (!cart) {
     throw new AppError(HttpStatus.NOT_FOUND, ErrorMessages.CART_NOT_FOUND);
   }
 
   // Remove the item from cart
-  cart.items = cart.items.filter(item =>
-    item.productId._id.toString() !== productId
+  cart.items = cart.items.filter(
+    (item) => item.productId._id.toString() !== productId,
   );
 
   await cart.save();
@@ -127,16 +143,20 @@ const removeFromCart = asyncHandler(async (req, res) => {
   let subtotal = 0;
   let originalPrice = 0;
 
-  cart.items.forEach(item => {
+  cart.items.forEach((item) => {
     const itemOriginalPrice = item.productId.price * item.quantity;
-    const discountedPrice = itemOriginalPrice * (1 - item.productId.discount / 100);
+    const discountedPrice =
+      itemOriginalPrice * (1 - item.productId.discount / 100);
     originalPrice += itemOriginalPrice;
     subtotal += discountedPrice;
   });
 
   const totalDiscount = originalPrice - subtotal;
   const total = subtotal - (cart.discount || 0);
-  const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+  const totalQuantity = cart.items.reduce(
+    (sum, item) => sum + item.quantity,
+    0,
+  );
 
   res.status(HttpStatus.OK).json({
     success: true,
@@ -145,7 +165,7 @@ const removeFromCart = asyncHandler(async (req, res) => {
     total: total.toFixed(2),
     originalPrice: originalPrice.toFixed(2),
     totalDiscount: totalDiscount.toFixed(2),
-    message: SuccessMessage.ITEM_REMOVED_FROM_CART
+    message: SuccessMessage.ITEM_REMOVED_FROM_CART,
   });
 });
 
@@ -154,8 +174,9 @@ const updateQuantity = asyncHandler(async (req, res) => {
   const userId = req.session.user.id;
 
   // Find cart and populate product details
-  const cart = await cartModel.findOne({ user: userId })
-    .populate('items.productId');
+  const cart = await cartModel
+    .findOne({ user: userId })
+    .populate("items.productId");
 
   if (!cart) {
     throw new AppError(HttpStatus.NOT_FOUND, ErrorMessages.CART_NOT_FOUND);
@@ -168,8 +189,8 @@ const updateQuantity = asyncHandler(async (req, res) => {
   }
 
   // Find item in cart
-  const cartItem = cart.items.find(item =>
-    item.productId._id.toString() === productId
+  const cartItem = cart.items.find(
+    (item) => item.productId._id.toString() === productId,
   );
 
   if (!cartItem) {
@@ -178,18 +199,24 @@ const updateQuantity = asyncHandler(async (req, res) => {
 
   // Update quantity
   let newQuantity = cartItem.quantity;
-  if (action === 'increase') {
+  if (action === "increase") {
     if (cartItem.quantity >= 4) {
-      throw new AppError(HttpStatus.BAD_REQUEST, ErrorMessages.MAX_QUANTITY_REACHED);
+      throw new AppError(
+        HttpStatus.BAD_REQUEST,
+        ErrorMessages.MAX_QUANTITY_REACHED,
+      );
     }
     if (cartItem.quantity >= product.stock) {
-      throw new AppError(HttpStatus.BAD_REQUEST, ErrorMessages.NOT_ENOUGH_STOCK);
+      throw new AppError(
+        HttpStatus.BAD_REQUEST,
+        ErrorMessages.NOT_ENOUGH_STOCK,
+      );
     }
     newQuantity = cartItem.quantity + 1;
-  } else if (action === 'decrease') {
+  } else if (action === "decrease") {
     if (cartItem.quantity <= 1) {
-      cart.items = cart.items.filter(item =>
-        item.productId._id.toString() !== productId
+      cart.items = cart.items.filter(
+        (item) => item.productId._id.toString() !== productId,
       );
     } else {
       newQuantity = cartItem.quantity - 1;
@@ -197,7 +224,7 @@ const updateQuantity = asyncHandler(async (req, res) => {
   }
 
   // Update cart item quantity if not removed
-  if (cart.items.find(item => item.productId._id.toString() === productId)) {
+  if (cart.items.find((item) => item.productId._id.toString() === productId)) {
     cartItem.quantity = newQuantity;
   }
 
@@ -208,16 +235,20 @@ const updateQuantity = asyncHandler(async (req, res) => {
   let subtotal = 0;
   let originalPrice = 0;
 
-  cart.items.forEach(item => {
+  cart.items.forEach((item) => {
     const itemOriginalPrice = item.productId.price * item.quantity;
-    const discountedPrice = itemOriginalPrice * (1 - item.productId.discount / 100);
+    const discountedPrice =
+      itemOriginalPrice * (1 - item.productId.discount / 100);
     originalPrice += itemOriginalPrice;
     subtotal += discountedPrice;
   });
 
   const totalDiscount = originalPrice - subtotal;
   const total = subtotal - (cart.discount || 0);
-  const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+  const totalQuantity = cart.items.reduce(
+    (sum, item) => sum + item.quantity,
+    0,
+  );
 
   return res.status(HttpStatus.OK).json({
     success: true,
@@ -226,7 +257,7 @@ const updateQuantity = asyncHandler(async (req, res) => {
     originalPrice: originalPrice.toFixed(2),
     totalDiscount: totalDiscount.toFixed(2),
     totalQuantity,
-    message: SuccessMessage.CART_UPDATED
+    message: SuccessMessage.CART_UPDATED,
   });
 });
 
@@ -244,7 +275,7 @@ const clearCart = asyncHandler(async (req, res) => {
 
   return res.status(HttpStatus.OK).json({
     success: true,
-    message: SuccessMessage.CART_CLEARED
+    message: SuccessMessage.CART_CLEARED,
   });
 });
 
@@ -253,5 +284,5 @@ export default {
   addToCart,
   updateQuantity,
   removeFromCart,
-  clearCart
+  clearCart,
 };

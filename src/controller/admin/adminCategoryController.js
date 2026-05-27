@@ -13,18 +13,19 @@ const getCategories = asyncHandler(async (req, res) => {
   const { message, alertType } = req.query;
   const page = parseInt(req.query.page) || 1;
   const limit = 10;
-  const search = req.query.search || '';
+  const search = req.query.search || "";
 
   // search query
   const searchQuery = {
-    name: { $regex: search, $options: 'i' }
+    name: { $regex: search, $options: "i" },
   };
 
   const totalCategories = await categoryModel.countDocuments(searchQuery);
   const totalPages = Math.ceil(totalCategories / limit);
   const skip = (page - 1) * limit;
 
-  const categories = await categoryModel.find(searchQuery)
+  const categories = await categoryModel
+    .find(searchQuery)
     .sort({ createdAt: 1 })
     .skip(skip)
     .limit(limit);
@@ -32,13 +33,13 @@ const getCategories = asyncHandler(async (req, res) => {
   res.render(ADMIN_VIEW_PATHS.Categories, {
     categories,
     message,
-    page: 'categories',
+    page: "categories",
     alertType,
     currentPage: page,
     totalPages,
     hasNextPage: page < totalPages,
     hasPrevPage: page > 1,
-    search
+    search,
   });
 });
 
@@ -47,39 +48,43 @@ const deleteCategory = asyncHandler(async (req, res) => {
   await categoryModel.findByIdAndDelete(req.params.categoryid);
   res.json({
     success: true,
-    message: CategorySuccessMessages.Deleted
+    message: CategorySuccessMessages.Deleted,
   });
 });
 
 //---- Hide a category----
 const hideCategory = asyncHandler(async (req, res) => {
-  await categoryModel.findByIdAndUpdate(req.params.categoryid, { status: "Inactive" });
+  await categoryModel.findByIdAndUpdate(req.params.categoryid, {
+    status: "Inactive",
+  });
 
   // Update all products in this category to Inactive
   await productModel.updateMany(
     { category: req.params.categoryid },
-    { status: "Inactive" }
+    { status: "Inactive" },
   );
 
   res.json({
     success: true,
-    message: CategorySuccessMessages.Disabled 
+    message: CategorySuccessMessages.Disabled,
   });
 });
 
 //---- Unhide a category----
 const unhideCategory = asyncHandler(async (req, res) => {
-  await categoryModel.findByIdAndUpdate(req.params.categoryid, { status: "Active" });
+  await categoryModel.findByIdAndUpdate(req.params.categoryid, {
+    status: "Active",
+  });
 
   // Update all products in this category to Active
   await productModel.updateMany(
     { category: req.params.categoryid },
-    { status: "Active" }
+    { status: "Active" },
   );
 
   res.json({
     success: true,
-    message: CategorySuccessMessages.Enabled
+    message: CategorySuccessMessages.Enabled,
   });
 });
 
@@ -95,20 +100,23 @@ const addCategory = asyncHandler(async (req, res) => {
 
   const existingCategory = await categoryModel.findOne({ name });
   if (existingCategory) {
-    throw new AppError(HttpStatus.CONFLICT, AdminCategoryErrorMessages.Conflict);
+    throw new AppError(
+      HttpStatus.CONFLICT,
+      AdminCategoryErrorMessages.Conflict,
+    );
   }
 
   let newCategory = new categoryModel({
     name,
     description,
-    status: "Active"
+    status: "Active",
   });
 
   const savedCategory = await newCategory.save();
   res.json({
     success: true,
     message: CategorySuccessMessages.Created,
-    category: savedCategory
+    category: savedCategory,
   });
 });
 
@@ -125,27 +133,33 @@ const editCategory = asyncHandler(async (req, res) => {
   // find if another category exists with name
   const existingCategory = await categoryModel.findOne({
     name: name,
-    _id: { $ne: req.params.categoryid }
+    _id: { $ne: req.params.categoryid },
   });
 
   if (existingCategory) {
-    throw new AppError(HttpStatus.CONFLICT, AdminCategoryErrorMessages.Conflict);
+    throw new AppError(
+      HttpStatus.CONFLICT,
+      AdminCategoryErrorMessages.Conflict,
+    );
   }
 
   const updatedCategory = await categoryModel.findByIdAndUpdate(
     req.params.categoryid,
     { name, description },
-    { new: true }
+    { new: true },
   );
 
   if (!updatedCategory) {
-    throw new AppError(HttpStatus.NOT_FOUND, AdminCategoryErrorMessages.Notfound);
+    throw new AppError(
+      HttpStatus.NOT_FOUND,
+      AdminCategoryErrorMessages.Notfound,
+    );
   }
 
   res.json({
     success: true,
     message: CategorySuccessMessages.Updated,
-    category: updatedCategory
+    category: updatedCategory,
   });
 });
 
@@ -155,5 +169,5 @@ export default {
   hideCategory,
   unhideCategory,
   addCategory,
-  editCategory
+  editCategory,
 };

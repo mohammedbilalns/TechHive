@@ -1,5 +1,7 @@
-
-import { ADMIN_VIEW_PATHS, USER_VIEW_PATHS } from "../../constants/viewPaths.js";
+import {
+  ADMIN_VIEW_PATHS,
+  USER_VIEW_PATHS,
+} from "../../constants/viewPaths.js";
 
 export const renderLoginPage = (req, res) => {
   const { message, alertType } = req.query;

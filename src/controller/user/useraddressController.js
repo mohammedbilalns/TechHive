@@ -1,11 +1,14 @@
 import { UserModel } from "../../model/userModel.js";
 import { addressModel } from "../../model/addressModel.js";
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 import { validateAddAddress } from "../../validators/address.validator.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
-import { ErrorMessages, UserAddressErrorMessages } from "../../constants/errorMessages.js";
+import {
+  ErrorMessages,
+  UserAddressErrorMessages,
+} from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
 import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 
@@ -15,17 +18,32 @@ export const getAddresses = asyncHandler(async (req, res) => {
   let user = await UserModel.findOne({ email });
 
   let addresses = await addressModel.find({ userId: user._id });
-  res.render(USER_VIEW_PATHS.ProfileAddresses, { addresses, user, page: "addresses" });
+  res.render(USER_VIEW_PATHS.ProfileAddresses, {
+    addresses,
+    user,
+    page: "addresses",
+  });
 });
 
 // Add a new address
 export const addAddress = asyncHandler(async (req, res) => {
-  const addressCount = await addressModel.countDocuments({ userId: req.session.user.id });
+  const addressCount = await addressModel.countDocuments({
+    userId: req.session.user.id,
+  });
   if (addressCount >= 4) {
     throw new AppError(HttpStatus.BAD_REQUEST, ErrorMessages.MAX_ADDRESS_LIMIT);
   }
 
-  const { state, pincode, phone, alternatePhone, name, houseName, localityStreet, city } = req.body;
+  const {
+    state,
+    pincode,
+    phone,
+    alternatePhone,
+    name,
+    houseName,
+    localityStreet,
+    city,
+  } = req.body;
 
   const error = validateAddAddress({
     name,
@@ -34,7 +52,7 @@ export const addAddress = asyncHandler(async (req, res) => {
     city,
     state,
     pincode,
-    phone
+    phone,
   });
 
   if (error) {
@@ -50,7 +68,7 @@ export const addAddress = asyncHandler(async (req, res) => {
     state,
     pincode,
     phone,
-    alternatePhone
+    alternatePhone,
   });
 
   const savedAddress = await newAddress.save();
@@ -58,13 +76,22 @@ export const addAddress = asyncHandler(async (req, res) => {
   res.status(HttpStatus.CREATED).json({
     success: true,
     message: SuccessMessage.ADDRESS_ADDED,
-    address: savedAddress
+    address: savedAddress,
   });
 });
 
 // Update an address
 export const updateAddress = asyncHandler(async (req, res) => {
-  const { name, houseName, localityStreet, city, state, pincode, phone, alternatePhone } = req.body;
+  const {
+    name,
+    houseName,
+    localityStreet,
+    city,
+    state,
+    pincode,
+    phone,
+    alternatePhone,
+  } = req.body;
 
   const error = validateAddAddress({
     name,
@@ -83,7 +110,7 @@ export const updateAddress = asyncHandler(async (req, res) => {
   const address = await addressModel.findOneAndUpdate(
     {
       _id: req.params.id,
-      userId: req.session.user.id
+      userId: req.session.user.id,
     },
     {
       name,
@@ -93,9 +120,9 @@ export const updateAddress = asyncHandler(async (req, res) => {
       state,
       pincode,
       phone,
-      alternatePhone
+      alternatePhone,
     },
-    { new: true }
+    { new: true },
   );
 
   if (!address) {
@@ -105,7 +132,7 @@ export const updateAddress = asyncHandler(async (req, res) => {
   res.status(HttpStatus.OK).json({
     success: true,
     message: SuccessMessage.ADDRESS_UPDATED,
-    address
+    address,
   });
 });
 
@@ -113,7 +140,7 @@ export const updateAddress = asyncHandler(async (req, res) => {
 export const deleteAddress = asyncHandler(async (req, res) => {
   const address = await addressModel.findOneAndDelete({
     _id: req.params.id,
-    userId: req.session.user.id
+    userId: req.session.user.id,
   });
 
   if (!address) {
@@ -122,7 +149,7 @@ export const deleteAddress = asyncHandler(async (req, res) => {
 
   res.status(HttpStatus.OK).json({
     success: true,
-    message: SuccessMessage.ADDRESS_DELETED
+    message: SuccessMessage.ADDRESS_DELETED,
   });
 });
 
@@ -133,12 +160,14 @@ export const getAddress = asyncHandler(async (req, res) => {
 
   // Validate if addressId is a valid  ObjectId
   if (!mongoose.Types.ObjectId.isValid(addressId)) {
-      return res.redirect(`/notfound?message=${encodeURIComponent(UserAddressErrorMessages.INVALID_ADDRESS_ID)}&alertType=error`);
+    return res.redirect(
+      `/notfound?message=${encodeURIComponent(UserAddressErrorMessages.INVALID_ADDRESS_ID)}&alertType=error`,
+    );
   }
 
   const address = await addressModel.findOne({
     _id: addressId,
-    userId: userId
+    userId: userId,
   });
 
   if (!address) {
@@ -147,6 +176,6 @@ export const getAddress = asyncHandler(async (req, res) => {
 
   res.status(HttpStatus.OK).json({
     success: true,
-    address
+    address,
   });
 });

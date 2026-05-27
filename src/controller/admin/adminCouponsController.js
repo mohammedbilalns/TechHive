@@ -6,7 +6,7 @@ import { validateCoupon } from "../../validators/coupon.validator.js";
 import { AdminCouponErrorMessages } from "../../constants/errorMessages.js";
 import { ADMIN_VIEW_PATHS } from "../../constants/viewPaths.js";
 
-// get the coupons page 
+// get the coupons page
 const getCoupons = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = 10;
@@ -15,14 +15,15 @@ const getCoupons = asyncHandler(async (req, res) => {
   const totalCoupons = await couponModel.countDocuments();
   const totalPages = Math.ceil(totalCoupons / limit);
 
-  const coupons = await couponModel.find()
+  const coupons = await couponModel
+    .find()
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit)
     .lean();
 
   const now = new Date();
-  coupons.forEach(coupon => {
+  coupons.forEach((coupon) => {
     coupon.isExpired = new Date(coupon.expiryDate) < now;
   });
 
@@ -32,11 +33,11 @@ const getCoupons = asyncHandler(async (req, res) => {
     totalPages,
     hasNextPage: page < totalPages,
     hasPrevPage: page > 1,
-    page: 'coupons'
+    page: "coupons",
   });
 });
 
-// get the coupon details for edit modal 
+// get the coupon details for edit modal
 const getCouponDetails = asyncHandler(async (req, res) => {
   const coupon = await couponModel.findById(req.params.couponId);
   if (!coupon) {
@@ -60,10 +61,10 @@ const addCoupon = asyncHandler(async (req, res) => {
     maxDiscount,
     usageLimit,
     startDate,
-    expiryDate
+    expiryDate,
   } = value;
 
-  // Check the coupon code already exists 
+  // Check the coupon code already exists
   const existingCoupon = await couponModel.findOne({ code: code });
   if (existingCoupon) {
     throw new AppError(HttpStatus.CONFLICT, AdminCouponErrorMessages.Conflict);
@@ -75,18 +76,18 @@ const addCoupon = asyncHandler(async (req, res) => {
     discountType,
     discountValue,
     minPurchase,
-    maxDiscount: discountType === 'PERCENTAGE' ? maxDiscount : 0,
+    maxDiscount: discountType === "PERCENTAGE" ? maxDiscount : 0,
     usageLimit,
     startDate,
     expiryDate,
-    isActive: true
+    isActive: true,
   });
 
   await newCoupon.save();
   res.json({
     success: true,
     message: CouponSuccessMessages.Created,
-    couponId: newCoupon._id
+    couponId: newCoupon._id,
   });
 });
 
@@ -105,13 +106,13 @@ const updateCoupon = asyncHandler(async (req, res) => {
     maxDiscount,
     usageLimit,
     startDate,
-    expiryDate
+    expiryDate,
   } = value;
 
   // Check for duplicate coupon code
   const existingCoupon = await couponModel.findOne({
     code: code,
-    _id: { $ne: req.params.couponId }
+    _id: { $ne: req.params.couponId },
   });
 
   if (existingCoupon) {
@@ -126,12 +127,12 @@ const updateCoupon = asyncHandler(async (req, res) => {
       discountType,
       discountValue,
       minPurchase,
-      maxDiscount: discountType === 'PERCENTAGE' ? maxDiscount : 0,
+      maxDiscount: discountType === "PERCENTAGE" ? maxDiscount : 0,
       usageLimit,
       startDate,
-      expiryDate
+      expiryDate,
     },
-    { new: true }
+    { new: true },
   );
 
   if (!updatedCoupon) {
@@ -140,7 +141,7 @@ const updateCoupon = asyncHandler(async (req, res) => {
 
   res.json({
     success: true,
-    message: CouponSuccessMessages.Updated
+    message: CouponSuccessMessages.Updated,
   });
 });
 
@@ -154,7 +155,9 @@ const toggleCouponStatus = asyncHandler(async (req, res) => {
   await coupon.save();
   res.json({
     success: true,
-    message: coupon.isActive ? CouponSuccessMessages.Activated : CouponSuccessMessages.Deactivated
+    message: coupon.isActive
+      ? CouponSuccessMessages.Activated
+      : CouponSuccessMessages.Deactivated,
   });
 });
 
@@ -172,5 +175,5 @@ export default {
   addCoupon,
   updateCoupon,
   toggleCouponStatus,
-  deleteCoupon
+  deleteCoupon,
 };

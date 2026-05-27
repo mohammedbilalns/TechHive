@@ -1,4 +1,4 @@
-export const HttpStatus =Object.freeze({
+export const HttpStatus = Object.freeze({
   OK: 200,
   CREATED: 201,
   NOT_FOUND: 404,
