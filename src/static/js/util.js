@@ -116,6 +116,92 @@ async function addToCart(productId) {
     }
 }
 
+function getWishlistRemoveConfig(pathname) {
+    if (pathname.startsWith('/product/')) {
+        return {
+            addButtonClass: 'w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-primary-accent hover:text-black transition-colors duration-300',
+            iconClass: 'h-5 w-5',
+            addOnclick: "addToWishlist('%s')",
+        };
+    }
+
+    if (pathname.startsWith('/search')) {
+        return {
+            addButtonClass: 'p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300',
+            iconClass: 'h-4 w-4',
+            addOnclick: "event.preventDefault(); addToWishlist('%s')",
+            updateWishlistItems: true,
+        };
+    }
+
+    if (pathname.startsWith('/allproducts')) {
+        return {
+            addButtonClass: 'p-2 rounded-full bg-gray-100 hover:bg-primary-accent hover:text-white transition-colors duration-300',
+            iconClass: 'h-4 w-4',
+            addOnclick: "addToWishlist('%s')",
+        };
+    }
+
+    return {
+        addButtonClass: 'p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300',
+        iconClass: 'h-4 w-4',
+        addOnclick: "addToWishlist('%s')",
+    };
+}
+
+function createWishlistAddButton(productId, config) {
+    const button = document.createElement('button');
+    button.setAttribute('onclick', config.addOnclick.replace('%s', productId));
+    button.className = config.addButtonClass;
+    button.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" class="${config.iconClass}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg>
+    `;
+    return button;
+}
+
+async function removeFromWishlist(productId) {
+    try {
+        const response = await axios.put('/wishlist', { productId });
+        const data = response.data;
+
+        if (!data.success) {
+            showToast(data.message || 'Failed to remove item', 'error');
+            return data;
+        }
+
+        const config = getWishlistRemoveConfig(window.location.pathname);
+        const wishlistButtons = document.querySelectorAll(`button[onclick*="removeFromWishlist('${productId}')"]`);
+
+        wishlistButtons.forEach((button) => {
+            button.parentNode.replaceChild(createWishlistAddButton(productId, config), button);
+        });
+
+        if (config.updateWishlistItems && Array.isArray(window.wishlistItems)) {
+            window.wishlistItems = window.wishlistItems.filter((id) => id !== productId);
+        }
+
+        const wishlistQuantityElement = document.getElementById('wishlist-quantity');
+        const wishlistQuantityMobileElement = document.getElementById('wishlist-quantity-mobile');
+
+        if (wishlistQuantityElement && data.totalQuantity !== undefined) {
+            wishlistQuantityElement.innerText = data.totalQuantity;
+        }
+
+        if (wishlistQuantityMobileElement && data.totalQuantity !== undefined) {
+            wishlistQuantityMobileElement.innerText = data.totalQuantity;
+        }
+
+        showToast('Product removed from wishlist successfully', 'success');
+        return data;
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('Error removing item from wishlist', 'error');
+        throw error;
+    }
+}
+
 // Update toast styles
 const toastStyles = document.createElement('style');
 toastStyles.textContent = `
@@ -135,4 +221,4 @@ toastStyles.textContent = `
 `;
 document.head.appendChild(toastStyles);
 
-export { showToast, customConfirm, addToCart }; 
+export { showToast, customConfirm, addToCart, removeFromWishlist }; 

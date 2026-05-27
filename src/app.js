@@ -39,8 +39,9 @@ app.use(passport.session());
 app.use(requestLogger);
 // Routes
 
-app.use('/', userRoutes);
 app.use('/admin', adminRoutes);
+app.use('/', userRoutes);
+
 
 // 404 handler
 app.use((req, res) => {

@@ -380,37 +380,6 @@
       }
     }
 
-    async function removeFromWishlist(productId) {
-      try {
-        const response = await axios.put('/wishlist', { productId });
-        if (response.data.success) {
-          const wishlistButtons = document.querySelectorAll(`button[onclick="removeFromWishlist('${productId}')"]`);
-
-          wishlistButtons.forEach(button => {
-            const newButton = document.createElement('button');
-            newButton.setAttribute('onclick', `addToWishlist('${productId}')`);
-            newButton.className = 'w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-primary-accent hover:text-black transition-colors duration-300';
-
-            newButton.innerHTML = `
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-            `;
-
-            button.parentNode.replaceChild(newButton, button);
-          });
-          showToast('Product removed from wishlist successfully', 'success');
-          document.getElementById("wishlist-quantity").innerText = response.data.totalQuantity
-          document.getElementById("wishlist-quantity-mobile").innerText = response.data.totalQuantity
-        } else {
-          showToast(response.data.message || 'Failed to remove item', 'error');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        showToast('Error removing item from wishlist', 'error');
-      }
-    }
-
     document.getElementById('load-more-reviews')?.addEventListener('click', async function () {
       const button = this;
       const nextPage = parseInt(button.dataset.page) + 1;
