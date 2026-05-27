@@ -143,7 +143,9 @@
       </main>
   </div>
 
-  <script>
+  <script type="module">
+    import { copyTextToClipboard } from '/js/clipboard.js';
+
     async function toggleEdit() {
       const viewMode = document.getElementById('viewMode');
       const editMode = document.getElementById('editMode');
@@ -239,32 +241,15 @@
 
     async function copyReferralCode() {
       const referralCode = document.getElementById('referralCode').textContent;
-
-      if (navigator.clipboard && window.isSecureContext) {
-        try {
-          await navigator.clipboard.writeText(referralCode);
-          showToast('Referral code copied to clipboard!');
-          return;
-        } catch (err) {
-          console.error('Clipboard API failed:', err);
-        }
-      }
-
-      try {
-        const textarea = document.createElement('textarea');
-        textarea.value = referralCode;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        showToast('Referral code copied to clipboard!');
-      } catch (err) {
-        console.error('Fallback copy method failed:', err);
-        showToast('Failed to copy referral code', 'error');
-      }
+      await copyTextToClipboard(referralCode, {
+        successMessage: 'Referral code copied to clipboard!',
+        errorMessage: 'Failed to copy referral code',
+        onSuccess: (message) => showToast(message),
+        onError: (message) => showToast(message, 'error')
+      });
     }
+
+    window.copyReferralCode = copyReferralCode;
   </script>
 
   <%- include('../../partials/footer') %>

@@ -162,14 +162,34 @@
           </div>
 
           <script type="module">
+            import { initProductImageCropper } from '/js/productImageCropper.js';
             import { validateProductData } from '/js/productFormValidation.js';
 
             document.addEventListener("DOMContentLoaded", () => {
               const addProductForm = document.getElementById("addProductForm");
-              let cropper;
-              let currentImageInput;
-              let currentPreviewId;
-              let currentUploadLabelId;
+              const { handleImageUpload, closeCropper, applyCrop } = initProductImageCropper({
+                modalId: 'cropperModal',
+                imageId: 'cropperImage',
+                createPreviewUpdater: ({ previewId, uploadLabelId, dataUrl, input }) => {
+                  const previewContainer = document.getElementById(previewId);
+                  const uploadLabel = document.getElementById(uploadLabelId);
+                  const existingPreview = previewContainer.querySelector('img');
+                  const previewImg = existingPreview || document.createElement('img');
+
+                  if (!existingPreview) {
+                    previewImg.classList.add('h-20', 'w-20', 'object-cover', 'rounded', 'cursor-pointer', 'hover:opacity-75', 'transition-opacity');
+                    previewImg.onclick = () => input.click();
+                    previewContainer.appendChild(previewImg);
+                  }
+
+                  previewImg.src = dataUrl;
+                  previewContainer.classList.remove('hidden');
+
+                  if (uploadLabel) {
+                    uploadLabel.classList.add('hidden');
+                  }
+                }
+              });
 
               // Form validation 
               function validateProductForm() {
@@ -286,77 +306,9 @@
                 }
               });
 
-              // Image handling functions
-              function handleImageUpload(input, previewId, uploadLabelId, modalId, cropperImageId) {
-                if (input.files && input.files[0]) {
-                  const reader = new FileReader();
-                  currentImageInput = input;
-                  currentPreviewId = previewId;
-                  currentUploadLabelId = uploadLabelId;
-
-                  reader.onload = function (e) {
-                    const cropperImg = document.getElementById(cropperImageId);
-                    cropperImg.src = e.target.result;
-
-                    document.getElementById(modalId).style.display = 'flex';
-
-                    if (cropper) {
-                      cropper.destroy();
-                    }
-
-                    cropper = new Cropper(cropperImg, {
-                      aspectRatio: 1,
-                      viewMode: 1,
-                      autoCropArea: 1,
-                      background: false,
-                      zoomable: true,
-                      scalable: true
-                    });
-                  };
-
-                  reader.readAsDataURL(input.files[0]);
-                }
-              }
-
-              function closeCropper() {
-                document.getElementById("cropperModal").style.display = 'none';
-                if (cropper) {
-                  cropper.destroy();
-                  cropper = null;
-                }
-              }
-
-              function applyCrop() {
-                if (cropper) {
-                  const canvas = cropper.getCroppedCanvas();
-                  canvas.toBlob((blob) => {
-                    const file = new File([blob], "croppedImage.png", { type: "image/png" });
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    currentImageInput.files = dataTransfer.files;
-
-                    // Update preview
-                    const previewContainer = document.getElementById(currentPreviewId);
-                    const previewImg = previewContainer.querySelector('img') || document.createElement('img');
-                    if (!previewContainer.querySelector('img')) {
-                      previewImg.classList.add('h-20', 'w-20', 'object-cover', 'rounded', 'cursor-pointer', 'hover:opacity-75', 'transition-opacity');
-                      previewImg.onclick = () => currentImageInput.click();
-                      previewContainer.appendChild(previewImg);
-                    }
-                    previewImg.src = canvas.toDataURL();
-
-                    previewContainer.classList.remove('hidden');
-                    const uploadLabel = document.getElementById(currentUploadLabelId);
-                    if (uploadLabel) {
-                      uploadLabel.classList.add('hidden');
-                    }
-
-                    closeCropper();
-                  });
-                }
-              }
-
-              window.handleImageUpload = handleImageUpload;
+              window.handleImageUpload = (input, previewId, uploadLabelId) => {
+                handleImageUpload(input, previewId, uploadLabelId);
+              };
               window.closeCropper = closeCropper;
               window.applyCrop = applyCrop;
             });

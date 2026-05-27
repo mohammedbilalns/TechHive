@@ -194,76 +194,24 @@
         </div>
 
         <script type="module">
+          import { initProductImageCropper } from '/js/productImageCropper.js';
           import { validateProductData } from '/js/productFormValidation.js';
 
           document.addEventListener("DOMContentLoaded", () => {
             const addProductForm = document.getElementById("addProductForm");
-            let cropper;
-            let currentImageInput;
-            let currentPreviewId;
-            let currentUploadLabelId;
+            const { handleImageUpload, closeCropper, applyCrop } = initProductImageCropper({
+              modalId: 'cropperModal',
+              imageId: 'cropperImage',
+              createPreviewUpdater: ({ previewId, uploadLabelId, dataUrl }) => {
+                const previewContainer = document.getElementById(previewId);
+                const previewImg = previewContainer.querySelector('img');
+                const uploadLabel = document.getElementById(uploadLabelId);
 
-            function handleImageUpload(input, previewId, uploadLabelId, modalId, cropperImageId) {
-              if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                currentImageInput = input;
-                currentPreviewId = previewId;
-                currentUploadLabelId = uploadLabelId;
-
-                reader.onload = function (e) {
-                  const cropperImg = document.getElementById(cropperImageId);
-                  cropperImg.src = e.target.result;
-
-                  document.getElementById(modalId).style.display = 'flex';
-
-                  if (cropper) {
-                    cropper.destroy();
-                  }
-
-                  cropper = new Cropper(cropperImg, {
-                    aspectRatio: 1,
-                    viewMode: 1,
-                    autoCropArea: 1,
-                    background: false,
-                    zoomable: true,
-                    scalable: true
-                  });
-                };
-
-                reader.readAsDataURL(input.files[0]);
+                previewImg.src = dataUrl;
+                previewContainer.classList.remove('hidden');
+                uploadLabel.classList.add('hidden');
               }
-            }
-
-            function closeCropper() {
-              document.getElementById("cropperModal").style.display = 'none';
-              if (cropper) {
-                cropper.destroy();
-                cropper = null;
-              }
-            }
-
-            function applyCrop() {
-              if (cropper) {
-                const canvas = cropper.getCroppedCanvas();
-                canvas.toBlob((blob) => {
-                  const file = new File([blob], "croppedImage.png", { type: "image/png" });
-                  const dataTransfer = new DataTransfer();
-                  dataTransfer.items.add(file);
-                  currentImageInput.files = dataTransfer.files;
-
-                  // Show preview and hide upload label
-                  const previewContainer = document.getElementById(currentPreviewId);
-                  const previewImg = previewContainer.querySelector('img');
-                  const uploadLabel = document.getElementById(currentUploadLabelId);
-
-                  previewImg.src = canvas.toDataURL();
-                  previewContainer.classList.remove('hidden');
-                  uploadLabel.classList.add('hidden'); // Hide the upload label after successful upload
-
-                  closeCropper();
-                });
-              }
-            }
+            });
 
             const alertMessage = document.getElementById("alertMessage");
             const alertText = document.getElementById("alertText");
@@ -384,7 +332,9 @@
                 showToast(error.response?.data?.message || 'Failed to add product', 'error');
               }
             });
-            window.handleImageUpload = handleImageUpload;
+            window.handleImageUpload = (input, previewId, uploadLabelId) => {
+              handleImageUpload(input, previewId, uploadLabelId);
+            };
             window.closeCropper = closeCropper;
             window.applyCrop = applyCrop;
 
