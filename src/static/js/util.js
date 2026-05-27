@@ -149,6 +149,39 @@ function getWishlistRemoveConfig(pathname) {
     };
 }
 
+function getWishlistAddConfig(pathname) {
+    if (pathname.startsWith('/product/')) {
+        return {
+            removeButtonClass: 'w-10 h-10 flex items-center justify-center rounded-full bg-primary-accent text-white hover:bg-gray-100 hover:text-black transition-colors duration-300',
+            iconClass: 'h-5 w-5',
+            removeOnclick: "removeFromWishlist('%s')",
+        };
+    }
+
+    if (pathname.startsWith('/search')) {
+        return {
+            removeButtonClass: 'p-2 rounded-full bg-primary-accent text-white hover:bg-gray-100 hover:text-black transition-colors duration-300',
+            iconClass: 'h-4 w-4',
+            removeOnclick: "event.preventDefault(); removeFromWishlist('%s')",
+            updateWishlistItems: true,
+        };
+    }
+
+    if (pathname.startsWith('/allproducts')) {
+        return {
+            removeButtonClass: 'p-2 rounded-full bg-primary-accent text-white hover:bg-gray-100 hover:text-black transition-colors duration-300',
+            iconClass: 'h-4 w-4',
+            removeOnclick: "removeFromWishlist('%s')",
+        };
+    }
+
+    return {
+        removeButtonClass: 'p-2 rounded-full bg-primary-accent text-white hover:bg-gray-100 hover:text-black transition-colors duration-300',
+        iconClass: 'h-4 w-4',
+        removeOnclick: "removeFromWishlist('%s')",
+    };
+}
+
 function createWishlistAddButton(productId, config) {
     const button = document.createElement('button');
     button.setAttribute('onclick', config.addOnclick.replace('%s', productId));
@@ -159,6 +192,58 @@ function createWishlistAddButton(productId, config) {
         </svg>
     `;
     return button;
+}
+
+function createWishlistRemoveButton(productId, config) {
+    const button = document.createElement('button');
+    button.setAttribute('onclick', config.removeOnclick.replace('%s', productId));
+    button.className = config.removeButtonClass;
+    button.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" class="${config.iconClass}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        </svg>
+    `;
+    return button;
+}
+
+async function addToWishlist(productId) {
+    try {
+        const { data } = await axios.post('/wishlist', { productId });
+
+        if (!data.success) {
+            showToast(data.message || 'Failed to add item', 'error');
+            return data;
+        }
+
+        const config = getWishlistAddConfig(window.location.pathname);
+        const wishlistButtons = document.querySelectorAll(`button[onclick*="addToWishlist('${productId}')"]`);
+
+        wishlistButtons.forEach((button) => {
+            button.parentNode.replaceChild(createWishlistRemoveButton(productId, config), button);
+        });
+
+        if (config.updateWishlistItems && Array.isArray(window.wishlistItems) && !window.wishlistItems.includes(productId)) {
+            window.wishlistItems.push(productId);
+        }
+
+        const wishlistQuantityElement = document.getElementById('wishlist-quantity');
+        const wishlistQuantityMobileElement = document.getElementById('wishlist-quantity-mobile');
+
+        if (wishlistQuantityElement && data.totalQuantity !== undefined) {
+            wishlistQuantityElement.innerText = data.totalQuantity;
+        }
+
+        if (wishlistQuantityMobileElement && data.totalQuantity !== undefined) {
+            wishlistQuantityMobileElement.innerText = data.totalQuantity;
+        }
+
+        showToast(data.message || 'Item added to wishlist successfully', 'success');
+        return data;
+    } catch (error) {
+        console.error('Error:', error);
+        showToast(error.response?.data?.message || 'Error adding item to wishlist', 'error');
+        throw error;
+    }
 }
 
 async function removeFromWishlist(productId) {
@@ -221,4 +306,4 @@ toastStyles.textContent = `
 `;
 document.head.appendChild(toastStyles);
 
-export { showToast, customConfirm, addToCart, removeFromWishlist }; 
+export { showToast, customConfirm, addToCart, addToWishlist, removeFromWishlist }; 

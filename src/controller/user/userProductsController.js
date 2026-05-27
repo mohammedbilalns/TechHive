@@ -202,11 +202,7 @@ const viewProduct = async (req, res) => {
         );
 
         // Get user's wishlist if logged in
-        let wishlistItems = [];
-        if (req.session.user) {
-            const user = await mongoose.model('users').findById(req.session.user._id);
-            wishlistItems = user ? user.wishlist || [] : [];
-        }
+        const wishlistItems = res.locals.wishlistItems || [];
 
         res.render('user/viewProduct', {
             product,
@@ -226,7 +222,7 @@ const viewProduct = async (req, res) => {
         if (req.xhr) {
             return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: "Error loading reviews" });
         }
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).render('notfound', {
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).render('notFound', {
             message: "Error loading product",
             alertType: "error"
         });

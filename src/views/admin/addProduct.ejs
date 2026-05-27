@@ -193,7 +193,9 @@
           </div>
         </div>
 
-        <script>
+        <script type="module">
+          import { validateProductData } from '/js/productFormValidation.js';
+
           document.addEventListener("DOMContentLoaded", () => {
             const addProductForm = document.getElementById("addProductForm");
             let cropper;
@@ -268,96 +270,34 @@
 
             // Form validation function
             function validateProductForm() {
-              let isValid = true;
-              
               // Reset all previous errors
               resetErrors();
 
-              const name = addProductForm.name.value.trim();
-              const brand = addProductForm.brand.value.trim();
-              const description = addProductForm.description.value.trim();
-              const price = addProductForm.price.value.trim();
-              const stock = addProductForm.stock.value.trim();
-              const category = addProductForm.category.value.trim();
-              const specifications = Array.from(addProductForm.querySelectorAll('input[name="specifications"]')).map(input => input.value.trim());
-              
-              // Name validation
-              if (!name) {
-                showError('name', 'Product name is required');
-                isValid = false;
-              } else if (name.length < 2 || name.length > 100) {
-                showError('name', 'Product name must be between 2 and 100 characters');
-                isValid = false;
-              } else if (!/^[A-Za-z0-9\s()%]+$/.test(name)) {
-                showError('name', 'Product name can only contain letters, numbers, spaces, parentheses () and % symbol');
-                isValid = false;
-              }
-
-              if (!brand) {
-                showError('brand', 'Brand is required');
-                isValid = false;
-              } else if (brand.length < 2 || brand.length > 100) {
-                showError('brand', 'Brand must be between 2 and 100 characters');
-                isValid = false;
-              } else if (!/^[A-Za-z0-9\s]+$/.test(brand)) {
-                showError('brand', 'Brand can only contain letters, numbers, and spaces');
-                isValid = false;
-              }
-
-              // Description validation
-              if (!description || description.replace(/\s/g, '').length === 0) {
-                showError('description', 'Product description is required');
-                isValid = false;
-              }
-              if(description.length > 200 || description.length < 10){
-                showError('description', 'Product description must be between 10 and 200 characters');
-                isValid = false;
-              }
-
-              if (!category) {
-                showError('category', 'Please select a category');
-                isValid = false;
-              }
-
-              if (!price) {
-                showError('price', 'Price is required');
-                isValid = false;
-              } else if (parseFloat(price) < 50 ) {
-                showError('price', 'Price must be at least ₹50');
-                isValid = false;
-              }
-
-              // Stock validation
-              if (!stock) {
-                showError('stock', 'Stock is required');
-                isValid = false;
-              } else if (parseInt(stock) < 0) {
-                showError('stock', 'Stock cannot be negative');
-                isValid = false;
-              }
-
-              // Specifications validation
-              const invalidSpecs = specifications.some(spec => !spec || spec.replace(/\s/g, '').length === 0);
-              const invalidSpecLength = specifications.some(spec => spec.length < 10 || spec.length > 100);
-              if (invalidSpecs  ) {
-                showError('specifications', 'All four specifications are required ');
-                isValid = false;
-              }else if(invalidSpecLength){
-                showError('specifications', 'Specifications must be between 10 and 100 characters');
-                isValid = false;
-              }
-
-              // Image validation
               const imageInputs = addProductForm.querySelectorAll('input[type="file"]');
-              const imageFiles = Array.from(imageInputs).map(input => input.files[0]);
-              const allImagesSelected = imageFiles.every(file => file !== undefined);
-              
-              if (!allImagesSelected) {
-                showError('mainImages', 'All four images must be selected');
-                isValid = false;
-              }
+              const validationErrors = validateProductData(
+                {
+                  name: addProductForm.name.value.trim(),
+                  brand: addProductForm.brand.value.trim(),
+                  description: addProductForm.description.value.trim(),
+                  price: addProductForm.price.value.trim(),
+                  stock: addProductForm.stock.value.trim(),
+                  category: addProductForm.category.value.trim(),
+                  specifications: Array.from(addProductForm.querySelectorAll('input[name="specifications"]')).map(input => input.value.trim()),
+                  allImagesSelected: Array.from(imageInputs).every(input => input.files[0] !== undefined)
+                },
+                {
+                  requireImages: true,
+                  validateDescriptionLength: true,
+                  validateSpecificationLength: true,
+                  emptySpecificationMessage: 'All four specifications are required '
+                }
+              );
 
-              return isValid;
+              Object.entries(validationErrors).forEach(([fieldId, message]) => {
+                showError(fieldId, message);
+              });
+
+              return Object.keys(validationErrors).length === 0;
             }
 
             function showError(fieldId, message) {
