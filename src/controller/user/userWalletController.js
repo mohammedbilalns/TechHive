@@ -10,19 +10,24 @@ import { ErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
 import logger from "../../utils/logger.js";
 import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
+import {
+  getPageNumber,
+  getPaginationMeta,
+  getSessionUserId,
+} from "../../utils/controllerHelpers.js";
 
 const getWallet = asyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
+  const page = getPageNumber(req.query.page);
   const limit = 10;
-  const skip = (page - 1) * limit;
+  const userId = getSessionUserId(req);
 
-  const wallet = await walletModel.findOne({ userId: req.session.user.id });
-  const user = await UserModel.findOne({ _id: req.session.user.id });
+  const wallet = await walletModel.findOne({ userId });
+  const user = await UserModel.findOne({ _id: userId });
 
   if (!wallet) {
     // Create wallet if it doesn't exist
     const newWallet = new walletModel({
-      userId: req.session.user.id,
+      userId,
       balance: 0,
       transactions: [],
     });
@@ -38,7 +43,7 @@ const getWallet = asyncHandler(async (req, res) => {
 
   // Get total count for pagination
   const totalTransactions = wallet.transactions.length;
-  const totalPages = Math.ceil(totalTransactions / limit);
+  const { totalPages, skip } = getPaginationMeta(page, totalTransactions, limit);
 
   // Get paginated transactions
   const transactions = wallet.transactions

@@ -11,6 +11,10 @@ import { validateProduct } from "../../validators/product.validator.js";
 import { AdminProductErrorMessages } from "../../constants/errorMessages.js";
 import { AdminProductSuccessMessages } from "../../constants/successMessage.js";
 import { ADMIN_VIEW_PATHS } from "../../constants/viewPaths.js";
+import {
+  getPageNumber,
+  getPaginationMeta,
+} from "../../utils/controllerHelpers.js";
 
 //  multer configuration for local storage
 const productStorage = multer.diskStorage({
@@ -27,7 +31,7 @@ const productStorage = multer.diskStorage({
   },
 });
 
-const productUpload = multer({
+export const productUpload = multer({
   storage: productStorage,
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith("image/")) {
@@ -38,10 +42,10 @@ const productUpload = multer({
   },
 });
 
-const getProducts = asyncHandler(async (req, res) => {
+export const getProducts = asyncHandler(async (req, res) => {
   let message = req.query.message;
   let alertType = req.query.alertType;
-  const page = parseInt(req.query.page) || 1;
+  const page = getPageNumber(req.query.page);
   const limit = 10;
   const search = req.query.search || "";
 
@@ -54,8 +58,11 @@ const getProducts = asyncHandler(async (req, res) => {
   };
 
   const totalProducts = await productModel.countDocuments(searchQuery);
-  const totalPages = Math.ceil(totalProducts / limit);
-  const skip = (page - 1) * limit;
+  const { totalPages, hasNextPage, hasPrevPage, skip } = getPaginationMeta(
+    page,
+    totalProducts,
+    limit,
+  );
 
   const products = await productModel
     .find(searchQuery)
@@ -71,13 +78,13 @@ const getProducts = asyncHandler(async (req, res) => {
     alertType,
     currentPage: page,
     totalPages,
-    hasNextPage: page < totalPages,
-    hasPrevPage: page > 1,
+    hasNextPage,
+    hasPrevPage,
     search,
   });
 });
 
-const deleteProduct = asyncHandler(async (req, res) => {
+export const deleteProduct = asyncHandler(async (req, res) => {
   // Get the product details
   const product = await productModel.findById(req.params.productid);
 
@@ -106,7 +113,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
   });
 });
 
-const deactivateProduct = asyncHandler(async (req, res) => {
+export const deactivateProduct = asyncHandler(async (req, res) => {
   const product = await productModel.findByIdAndUpdate(
     req.params.productid,
     { status: "Inactive" },
@@ -127,7 +134,7 @@ const deactivateProduct = asyncHandler(async (req, res) => {
   });
 });
 
-const activateProduct = asyncHandler(async (req, res) => {
+export const activateProduct = asyncHandler(async (req, res) => {
   const product = await productModel.findByIdAndUpdate(
     req.params.productid,
     { status: "Active" },
@@ -148,12 +155,12 @@ const activateProduct = asyncHandler(async (req, res) => {
   });
 });
 
-const getAddProduct = asyncHandler(async (_req, res) => {
+export const getAddProduct = asyncHandler(async (_req, res) => {
   const categories = await categoryModel.find({ status: "Active" });
   res.render(ADMIN_VIEW_PATHS.AddProduct, { categories, page: "products" });
 });
 
-const addProduct = asyncHandler(async (req, res) => {
+export const addProduct = asyncHandler(async (req, res) => {
   let { name, description, price, stock, brand, category, specifications } =
     req.body;
 
@@ -223,7 +230,7 @@ const addProduct = asyncHandler(async (req, res) => {
   });
 });
 
-const getEditProduct = asyncHandler(async (req, res) => {
+export const getEditProduct = asyncHandler(async (req, res) => {
   const productId = req.params.productid;
 
   if (!mongoose.Types.ObjectId.isValid(productId)) {
@@ -251,7 +258,7 @@ const getEditProduct = asyncHandler(async (req, res) => {
   });
 });
 
-const editProduct = asyncHandler(async (req, res) => {
+export const editProduct = asyncHandler(async (req, res) => {
   const productId = req.params.productid;
   if (!productId) {
     res.redirect(
@@ -372,14 +379,3 @@ const editProduct = asyncHandler(async (req, res) => {
   });
 });
 
-export default {
-  getProducts,
-  deleteProduct,
-  deactivateProduct,
-  activateProduct,
-  getAddProduct,
-  addProduct,
-  getEditProduct,
-  editProduct,
-  productUpload,
-};

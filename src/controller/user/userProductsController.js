@@ -6,6 +6,7 @@ import { HttpStatus } from "../../constants/statusCodes.js";
 import { UserProductErrorMessages } from "../../constants/errorMessages.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
+import { getPageNumber } from "../../utils/controllerHelpers.js";
 
 // ---- load home ---- homepage
 const loadHome = asyncHandler(async (req, res) => {
@@ -48,7 +49,7 @@ const loadLanding = asyncHandler(async (req, res) => {
 });
 
 const loadAllProducts = asyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
+  const page = getPageNumber(req.query.page);
   const limit = 4; // Number of categories per page
 
   // Get total number of active categories
@@ -107,7 +108,7 @@ const loadAllProducts = asyncHandler(async (req, res) => {
 
 const viewProduct = asyncHandler(async (req, res) => {
   const productId = req.params.id;
-  const page = parseInt(req.query.page) || 1;
+  const page = getPageNumber(req.query.page);
   const reviewsPerPage = 5;
 
   if (!mongoose.Types.ObjectId.isValid(productId)) {
@@ -197,7 +198,7 @@ const viewProduct = asyncHandler(async (req, res) => {
 
 const viewCategory = asyncHandler(async (req, res) => {
   const categoryId = req.params.id;
-  const page = parseInt(req.query.page) || 1;
+  const page = getPageNumber(req.query.page);
   const limit = 8;
   const sortBy = req.query.sort || "newest";
   const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice) : 0;

@@ -1,4 +1,3 @@
-import { UserModel } from "../../model/userModel.js";
 import { cartModel } from "../../model/cartModel.js";
 import { addressModel } from "../../model/addressModel.js";
 import { walletModel } from "../../model/walletModel.js";
@@ -12,11 +11,18 @@ import {
 } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
 import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
+import {
+  calculateCartTotals,
+  calculateCouponDiscount,
+  getCouponUsageCount,
+  getSessionUserId,
+  getUserFromSession,
+} from "../../utils/controllerHelpers.js";
 
 const getCheckout = asyncHandler(async (req, res) => {
-  const userId = req.session.user.id;
+  const userId = getSessionUserId(req);
   const [user, cart, addresses, wallet] = await Promise.all([
-    UserModel.findById(userId),
+    getUserFromSession(req),
     cartModel.findOne({ user: userId }).populate("items.productId"),
     addressModel.find({ userId: userId }),
     walletModel.findOne({ userId }),
@@ -39,20 +45,8 @@ const getCheckout = asyncHandler(async (req, res) => {
     }
   }
 
-  // Calculate totals
-  let originalPrice = 0;
-  let totalSavings = 0;
-
-  cart.items.forEach((item) => {
-    const itemOriginalPrice = item.productId.price * item.quantity;
-    const discountedPrice =
-      itemOriginalPrice * (1 - item.productId.discount / 100);
-    originalPrice += itemOriginalPrice;
-    totalSavings += itemOriginalPrice - discountedPrice;
-  });
-
-  const subtotal = originalPrice - totalSavings;
-  let total = subtotal;
+  const { originalPrice, totalSavings, total } =
+    calculateCartTotals(cart.items);
 
   // Apply coupon from session if exists
   const sessionCoupon = req.session.coupon;
@@ -72,18 +66,13 @@ const getCheckout = asyncHandler(async (req, res) => {
 
 const applyCoupon = asyncHandler(async (req, res) => {
   const { couponCode } = req.body;
-  const userId = req.session.user.id;
+  const userId = getSessionUserId(req);
 
   // Find cart and calculate total
   const cart = await cartModel
     .findOne({ user: userId })
     .populate("items.productId");
-  let subtotal = 0;
-  cart.items.forEach((item) => {
-    const itemPrice =
-      item.productId.price * (1 - item.productId.discount / 100);
-    subtotal += itemPrice * item.quantity;
-  });
+  const { subtotal } = calculateCartTotals(cart.items);
 
   // Find and validate coupon
   const coupon = await couponModel.findOne({
@@ -105,9 +94,7 @@ const applyCoupon = asyncHandler(async (req, res) => {
   }
 
   // Check usage limit
-  const userUsageCount = coupon.usageHistory.filter(
-    (history) => history.userId.toString() === userId,
-  ).length;
+  const userUsageCount = getCouponUsageCount(coupon, userId);
 
   if (userUsageCount >= coupon.usageLimit) {
     throw new AppError(
@@ -116,16 +103,7 @@ const applyCoupon = asyncHandler(async (req, res) => {
     );
   }
 
-  // Calculate discount
-  let discountAmount;
-  if (coupon.discountType === "PERCENTAGE") {
-    discountAmount = (subtotal * coupon.discountValue) / 100;
-    if (coupon.maxDiscount) {
-      discountAmount = Math.min(discountAmount, coupon.maxDiscount);
-    }
-  } else {
-    discountAmount = coupon.discountValue;
-  }
+  const discountAmount = calculateCouponDiscount(coupon, subtotal);
 
   // Store coupon in session
   req.session.coupon = {

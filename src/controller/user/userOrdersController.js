@@ -16,6 +16,7 @@ import { UserOrderErrorMessages } from "../../constants/errorMessages.js";
 import { UserOrderSuccessMessages } from "../../constants/successMessage.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
+import { getPageNumber } from "../../utils/controllerHelpers.js";
 
 const placeOrder = asyncHandler(async (req, res) => {
   const { addressId, paymentMethod, couponCode } = req.body;
@@ -350,7 +351,7 @@ const getOrderSuccess = asyncHandler(async (req, res) => {
 
 const getOrders = asyncHandler(async (req, res) => {
   const userId = req.session.user.id;
-  const page = parseInt(req.query.page) || 1;
+  const page = getPageNumber(req.query.page);
   const limit = 10;
   const skip = (page - 1) * limit;
   const search = req.query.search || "";

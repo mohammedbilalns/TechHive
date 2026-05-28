@@ -5,13 +5,16 @@ import { AppError } from "../../utils/appError.js";
 import { AdminCustomerErrorMessages } from "../../constants/errorMessages.js";
 import { AdminCustomerSuccessMessages } from "../../constants/successMessage.js";
 import { ADMIN_VIEW_PATHS } from "../../constants/viewPaths.js";
+import {
+  getPageNumber,
+  getPaginationMeta,
+} from "../../utils/controllerHelpers.js";
 
-const getCustomers = asyncHandler(async (req, res) => {
+export const getCustomers = asyncHandler(async (req, res) => {
   let message = req.query.message;
   let alertType = req.query.alertType;
-  const page = parseInt(req.query.page) || 1;
+  const page = getPageNumber(req.query.page);
   const limit = 10;
-  const skip = (page - 1) * limit;
   const search = req.query.search || "";
 
   const searchQuery = {
@@ -22,7 +25,11 @@ const getCustomers = asyncHandler(async (req, res) => {
   };
 
   const totalCustomers = await UserModel.countDocuments(searchQuery);
-  const totalPages = Math.ceil(totalCustomers / limit);
+  const { totalPages, hasNextPage, hasPrevPage, skip } = getPaginationMeta(
+    page,
+    totalCustomers,
+    limit,
+  );
 
   const customers = await UserModel.find(searchQuery)
     .skip(skip)
@@ -36,13 +43,13 @@ const getCustomers = asyncHandler(async (req, res) => {
     page: "customers",
     currentPage: page,
     totalPages,
-    hasNextPage: page < totalPages,
-    hasPrevPage: page > 1,
+    hasNextPage,
+    hasPrevPage,
     search,
   });
 });
 
-const blockCustomer = asyncHandler(async (req, res) => {
+export const blockCustomer = asyncHandler(async (req, res) => {
   const customer = await UserModel.findByIdAndUpdate(
     req.params.customerid,
     { status: "Blocked" },
@@ -67,7 +74,7 @@ const blockCustomer = asyncHandler(async (req, res) => {
   });
 });
 
-const unblockCustomer = asyncHandler(async (req, res) => {
+export const unblockCustomer = asyncHandler(async (req, res) => {
   const customer = await UserModel.findByIdAndUpdate(
     req.params.customerid,
     { status: "Active" },
@@ -88,8 +95,4 @@ const unblockCustomer = asyncHandler(async (req, res) => {
   });
 });
 
-export default {
-  getCustomers,
-  blockCustomer,
-  unblockCustomer,
-};
+;

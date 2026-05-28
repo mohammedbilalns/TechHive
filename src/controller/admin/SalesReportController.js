@@ -6,16 +6,17 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AppError } from "../../utils/appError.js";
 import { AdminSalesReportErrorMessages } from "../../constants/errorMessages.js";
 import { ADMIN_VIEW_PATHS } from "../../constants/viewPaths.js";
+import { getPageNumber } from "../../utils/controllerHelpers.js";
 
-const renderSalesReport = asyncHandler(async (_req, res) => {
+export const renderSalesReport = asyncHandler(async (_req, res) => {
   res.render(ADMIN_VIEW_PATHS.SalesReport, {
     page: "salesreport",
   });
 });
 
-const getSalesReportData = asyncHandler(async (req, res) => {
+export const getSalesReportData = asyncHandler(async (req, res) => {
   const { filterType, startDate, endDate } = req.query;
-  const page = parseInt(req.query.page) || 1;
+  const page = getPageNumber(req.query.page);
   const limit = 10;
 
   if (filterType === "custom") {
@@ -184,7 +185,7 @@ const getSalesReportData = asyncHandler(async (req, res) => {
   });
 });
 
-const getFormattedDateRange = (filterType, startDate, endDate) => {
+export const getFormattedDateRange = (filterType, startDate, endDate) => {
   const today = new Date();
 
   switch (filterType) {
@@ -205,7 +206,7 @@ const getFormattedDateRange = (filterType, startDate, endDate) => {
   }
 };
 
-const generateExcelReport = async (
+export const generateExcelReport = async (
   res,
   orders,
   totals,
@@ -596,7 +597,7 @@ const generatePDFReport = async (
   doc.end();
 };
 
-const downloadReport = asyncHandler(async (req, res) => {
+export const downloadReport = asyncHandler(async (req, res) => {
   const { format, filterType, startDate, endDate } = req.query;
   let dateFilter = {};
 
@@ -748,10 +749,3 @@ const downloadReport = asyncHandler(async (req, res) => {
   }
 });
 
-export default {
-  renderSalesReport,
-  getSalesReportData,
-  downloadReport,
-  generateExcelReport,
-  generatePDFReport,
-};

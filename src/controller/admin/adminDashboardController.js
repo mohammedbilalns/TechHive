@@ -2,7 +2,7 @@ import { ADMIN_VIEW_PATHS } from "../../constants/viewPaths.js";
 import { orderModel } from "../../model/orderModel.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 
-const getDashboardData = asyncHandler(async (req, res) => {
+export const getDashboardData = asyncHandler(async (req, res) => {
   const { filterType, startDate, endDate } = req.query;
   let dateFilter = {};
 
@@ -275,8 +275,7 @@ const getDashboardData = asyncHandler(async (req, res) => {
   });
 });
 
-const renderDashboard = asyncHandler(async (_req, res) => {
+export const renderDashboard = asyncHandler(async (_req, res) => {
   res.render(ADMIN_VIEW_PATHS.Dashboard, { page: "dashboard" });
 });
 
-export default { getDashboardData, renderDashboard };

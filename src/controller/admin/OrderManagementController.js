@@ -8,12 +8,15 @@ import { AppError } from "../../utils/appError.js";
 import { AdminOrderErrorMessages } from "../../constants/errorMessages.js";
 import { AdminOrderSuccessMessages } from "../../constants/successMessage.js";
 import { ADMIN_VIEW_PATHS } from "../../constants/viewPaths.js";
+import {
+  getPageNumber,
+  getPaginationMeta,
+} from "../../utils/controllerHelpers.js";
 
 // Get all orders
-const getOrders = asyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
+export const getOrders = asyncHandler(async (req, res) => {
+  const page = getPageNumber(req.query.page);
   const limit = 10;
-  const skip = (page - 1) * limit;
   const search = req.query.search || "";
 
   //  search query
@@ -26,7 +29,11 @@ const getOrders = asyncHandler(async (req, res) => {
   };
 
   const totalOrders = await orderModel.countDocuments(searchQuery);
-  const totalPages = Math.ceil(totalOrders / limit);
+  const { totalPages, hasNextPage, hasPrevPage, skip } = getPaginationMeta(
+    page,
+    totalOrders,
+    limit,
+  );
 
   // Get paginated orders
   const orders = await orderModel
@@ -41,13 +48,13 @@ const getOrders = asyncHandler(async (req, res) => {
     page: "orders",
     currentPage: page,
     totalPages,
-    hasNextPage: page < totalPages,
-    hasPrevPage: page > 1,
+    hasNextPage,
+    hasPrevPage,
     search,
   });
 });
 
-const updateOrderItemStatus = asyncHandler(async (req, res) => {
+export const updateOrderItemStatus = asyncHandler(async (req, res) => {
   const { orderId, itemId } = req.params;
   const { status } = req.body;
 
@@ -185,7 +192,3 @@ const updateOrderItemStatus = asyncHandler(async (req, res) => {
   });
 });
 
-export default {
-  getOrders,
-  updateOrderItemStatus,
-};

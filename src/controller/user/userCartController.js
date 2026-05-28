@@ -6,11 +6,15 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
 import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
+import {
+  calculateCartTotals,
+  getSessionUserId,
+} from "../../utils/controllerHelpers.js";
 
 const getCart = asyncHandler(async (req, res) => {
   delete req.session.coupon;
 
-  const userId = req.session.user.id;
+  const userId = getSessionUserId(req);
   let cart = await cartModel
     .findOne({ user: userId })
     .populate("items.productId");
@@ -23,24 +27,9 @@ const getCart = asyncHandler(async (req, res) => {
     });
   }
 
-  // Calculate cart totals
-  let subtotal = 0;
-  let originalPrice = 0;
-
-  if (cart.items && cart.items.length > 0) {
-    cart.items.forEach((item) => {
-      const itemOriginalPrice = item.productId.price * item.quantity;
-      const discountedPrice =
-        itemOriginalPrice * (1 - item.productId.discount / 100);
-
-      originalPrice += itemOriginalPrice;
-      subtotal += discountedPrice;
-    });
-  }
-
-  const totalDiscount = originalPrice - subtotal;
+  const { subtotal, originalPrice, totalDiscount, total } =
+    calculateCartTotals(cart.items);
   const shipping = 0;
-  const total = subtotal;
 
   res.render(USER_VIEW_PATHS.ProfileCart, {
     cart,
@@ -56,7 +45,7 @@ const getCart = asyncHandler(async (req, res) => {
 
 const addToCart = asyncHandler(async (req, res) => {
   const { productId } = req.body;
-  const userId = req.session.user.id;
+  const userId = getSessionUserId(req);
 
   // Check if product exists, has stock, and is active
   const product = await productModel.findById(productId);
@@ -122,7 +111,7 @@ const addToCart = asyncHandler(async (req, res) => {
 
 const removeFromCart = asyncHandler(async (req, res) => {
   const { productId } = req.params;
-  const userId = req.session.user.id;
+  const userId = getSessionUserId(req);
 
   const cart = await cartModel
     .findOne({ user: userId })
@@ -139,24 +128,8 @@ const removeFromCart = asyncHandler(async (req, res) => {
 
   await cart.save();
 
-  // Calculate new totals
-  let subtotal = 0;
-  let originalPrice = 0;
-
-  cart.items.forEach((item) => {
-    const itemOriginalPrice = item.productId.price * item.quantity;
-    const discountedPrice =
-      itemOriginalPrice * (1 - item.productId.discount / 100);
-    originalPrice += itemOriginalPrice;
-    subtotal += discountedPrice;
-  });
-
-  const totalDiscount = originalPrice - subtotal;
-  const total = subtotal - (cart.discount || 0);
-  const totalQuantity = cart.items.reduce(
-    (sum, item) => sum + item.quantity,
-    0,
-  );
+  const { subtotal, originalPrice, totalDiscount, total, totalQuantity } =
+    calculateCartTotals(cart.items, cart.discount || 0);
 
   res.status(HttpStatus.OK).json({
     success: true,
@@ -171,7 +144,7 @@ const removeFromCart = asyncHandler(async (req, res) => {
 
 const updateQuantity = asyncHandler(async (req, res) => {
   const { productId, action } = req.body;
-  const userId = req.session.user.id;
+  const userId = getSessionUserId(req);
 
   // Find cart and populate product details
   const cart = await cartModel
@@ -231,24 +204,8 @@ const updateQuantity = asyncHandler(async (req, res) => {
   // Save cart
   await cart.save();
 
-  // Calculate new totals
-  let subtotal = 0;
-  let originalPrice = 0;
-
-  cart.items.forEach((item) => {
-    const itemOriginalPrice = item.productId.price * item.quantity;
-    const discountedPrice =
-      itemOriginalPrice * (1 - item.productId.discount / 100);
-    originalPrice += itemOriginalPrice;
-    subtotal += discountedPrice;
-  });
-
-  const totalDiscount = originalPrice - subtotal;
-  const total = subtotal - (cart.discount || 0);
-  const totalQuantity = cart.items.reduce(
-    (sum, item) => sum + item.quantity,
-    0,
-  );
+  const { subtotal, originalPrice, totalDiscount, total, totalQuantity } =
+    calculateCartTotals(cart.items, cart.discount || 0);
 
   return res.status(HttpStatus.OK).json({
     success: true,
@@ -262,7 +219,7 @@ const updateQuantity = asyncHandler(async (req, res) => {
 });
 
 const clearCart = asyncHandler(async (req, res) => {
-  const userId = req.session.user.id;
+  const userId = getSessionUserId(req);
 
   // Find and remove all items from cart
   const cart = await cartModel.findOne({ user: userId });

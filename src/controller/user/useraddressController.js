@@ -1,4 +1,3 @@
-import { UserModel } from "../../model/userModel.js";
 import { addressModel } from "../../model/addressModel.js";
 import mongoose from "mongoose";
 import { validateAddAddress } from "../../validators/address.validator.js";
@@ -11,11 +10,14 @@ import {
 } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
 import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
+import {
+  getSessionUserId,
+  getUserFromSession,
+} from "../../utils/controllerHelpers.js";
 
 // get all addresses of a user
 export const getAddresses = asyncHandler(async (req, res) => {
-  let email = req.session.user.email;
-  let user = await UserModel.findOne({ email });
+  const user = await getUserFromSession(req);
 
   let addresses = await addressModel.find({ userId: user._id });
   res.render(USER_VIEW_PATHS.ProfileAddresses, {
@@ -27,9 +29,8 @@ export const getAddresses = asyncHandler(async (req, res) => {
 
 // Add a new address
 export const addAddress = asyncHandler(async (req, res) => {
-  const addressCount = await addressModel.countDocuments({
-    userId: req.session.user.id,
-  });
+  const userId = getSessionUserId(req);
+  const addressCount = await addressModel.countDocuments({ userId });
   if (addressCount >= 4) {
     throw new AppError(HttpStatus.BAD_REQUEST, ErrorMessages.MAX_ADDRESS_LIMIT);
   }
@@ -60,7 +61,7 @@ export const addAddress = asyncHandler(async (req, res) => {
   }
 
   const newAddress = new addressModel({
-    userId: req.session.user.id,
+    userId,
     name,
     houseName,
     localityStreet,
@@ -110,7 +111,7 @@ export const updateAddress = asyncHandler(async (req, res) => {
   const address = await addressModel.findOneAndUpdate(
     {
       _id: req.params.id,
-      userId: req.session.user.id,
+      userId: getSessionUserId(req),
     },
     {
       name,
@@ -140,7 +141,7 @@ export const updateAddress = asyncHandler(async (req, res) => {
 export const deleteAddress = asyncHandler(async (req, res) => {
   const address = await addressModel.findOneAndDelete({
     _id: req.params.id,
-    userId: req.session.user.id,
+    userId: getSessionUserId(req),
   });
 
   if (!address) {
@@ -156,7 +157,7 @@ export const deleteAddress = asyncHandler(async (req, res) => {
 // get a single address
 export const getAddress = asyncHandler(async (req, res) => {
   const addressId = req.params.id;
-  const userId = req.session.user.id;
+  const userId = getSessionUserId(req);
 
   // Validate if addressId is a valid  ObjectId
   if (!mongoose.Types.ObjectId.isValid(addressId)) {

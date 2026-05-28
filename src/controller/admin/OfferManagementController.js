@@ -10,8 +10,12 @@ import { validateReferralSettings } from "../../validators/referral.validator.js
 import { AdminOfferErrorMessages } from "../../constants/errorMessages.js";
 import { AdminOfferSuccessMessages } from "../../constants/successMessage.js";
 import { ADMIN_VIEW_PATHS } from "../../constants/viewPaths.js";
+import {
+  getPageNumber,
+  getPaginationMeta,
+} from "../../utils/controllerHelpers.js";
 
-const updateProductDiscounts = async (offer, remove = false) => {
+export const updateProductDiscounts = async (offer, remove = false) => {
   if (!offer.isActive && !remove) return;
 
   const discountValue = remove ? 0 : offer.offerPercentage;
@@ -53,10 +57,15 @@ const checkExistingOffers = async (
   return existingOffer;
 };
 
-const getOffers = asyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
+export const getOffers = asyncHandler(async (req, res) => {
+  const page = getPageNumber(req.query.page);
   const limit = 10;
-  const skip = (page - 1) * limit;
+  const totalOffers = await offerModel.countDocuments();
+  const { totalPages, hasNextPage, hasPrevPage, skip } = getPaginationMeta(
+    page,
+    totalOffers,
+    limit,
+  );
 
   // Fetch offers
   const offers = await offerModel
@@ -70,9 +79,6 @@ const getOffers = asyncHandler(async (req, res) => {
   offers.forEach((offer) => {
     offer.isExpired = new Date(offer.endDate) < currentDate;
   });
-
-  const totalOffers = await offerModel.countDocuments();
-  const totalPages = Math.ceil(totalOffers / limit);
 
   // Fetch active categories and products
   const categories = await categoryModel
@@ -101,8 +107,8 @@ const getOffers = asyncHandler(async (req, res) => {
     offers,
     currentPage: page,
     totalPages,
-    hasNextPage: page < totalPages,
-    hasPrevPage: page > 1,
+    hasNextPage,
+    hasPrevPage,
     categories,
     products: formattedProducts,
     referralSettings,
@@ -111,7 +117,7 @@ const getOffers = asyncHandler(async (req, res) => {
 });
 
 // Get offer details
-const getOfferDetails = asyncHandler(async (req, res) => {
+export const getOfferDetails = asyncHandler(async (req, res) => {
   if (!req.params.offerId) {
     throw new AppError(
       HttpStatus.BAD_REQUEST,
@@ -150,7 +156,7 @@ const getOfferDetails = asyncHandler(async (req, res) => {
 });
 
 // Add new offer
-const addOffer = asyncHandler(async (req, res) => {
+export const addOffer = asyncHandler(async (req, res) => {
   const error = validateOffer(req.body);
   if (error) {
     throw new AppError(HttpStatus.BAD_REQUEST, error);
@@ -209,7 +215,7 @@ const addOffer = asyncHandler(async (req, res) => {
 });
 
 // Update offer
-const updateOffer = asyncHandler(async (req, res) => {
+export const updateOffer = asyncHandler(async (req, res) => {
   const oldOffer = await offerModel.findById(req.params.offerId);
   if (!oldOffer) {
     throw new AppError(
@@ -273,7 +279,7 @@ const updateOffer = asyncHandler(async (req, res) => {
 });
 
 // Toggle offer status
-const toggleOfferStatus = asyncHandler(async (req, res) => {
+export const toggleOfferStatus = asyncHandler(async (req, res) => {
   const offer = await offerModel.findById(req.params.offerId);
   if (!offer) {
     throw new AppError(
@@ -326,7 +332,7 @@ const toggleOfferStatus = asyncHandler(async (req, res) => {
 });
 
 // Delete offer
-const deleteOffer = asyncHandler(async (req, res) => {
+export const deleteOffer = asyncHandler(async (req, res) => {
   const offer = await offerModel.findById(req.params.offerId);
   if (!offer) {
     throw new AppError(
@@ -343,7 +349,7 @@ const deleteOffer = asyncHandler(async (req, res) => {
 });
 
 //  update referral settings
-const updateReferralSettings = asyncHandler(async (req, res) => {
+export const updateReferralSettings = asyncHandler(async (req, res) => {
   const error = validateReferralSettings(req.body);
   if (error) {
     throw new AppError(HttpStatus.BAD_REQUEST, error);
@@ -371,12 +377,3 @@ const updateReferralSettings = asyncHandler(async (req, res) => {
   });
 });
 
-export default {
-  getOffers,
-  getOfferDetails,
-  addOffer,
-  updateOffer,
-  toggleOfferStatus,
-  deleteOffer,
-  updateReferralSettings,
-};

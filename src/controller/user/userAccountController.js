@@ -1,4 +1,3 @@
-import { UserModel } from "../../model/userModel.js";
 import bcrypt from "bcryptjs";
 import referralCodeUtils from "../../utils/referralCode.js";
 import { referralModel } from "../../model/referralModel.js";
@@ -8,10 +7,13 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AuthErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
 import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
+import {
+  getSessionUserId,
+  getUserFromSession,
+} from "../../utils/controllerHelpers.js";
 
 export const getAccountDetails = asyncHandler(async (req, res) => {
-  let email = req.session.user.email;
-  let user = await UserModel.findOne({ email });
+  const user = await getUserFromSession(req);
 
   // Generate referral code
   if (!user.referralCode) {
@@ -34,7 +36,7 @@ export const getAccountDetails = asyncHandler(async (req, res) => {
 
 export const updateProfile = asyncHandler(async (req, res) => {
   const { fullname } = req.body;
-  const userId = req.session.user.id;
+  const userId = getSessionUserId(req);
   const updatedUser = await UserModel.findByIdAndUpdate(
     userId,
     { fullname },
@@ -53,7 +55,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
 
 export const changePassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = req.body;
-  const userId = req.session.user.id;
+  const userId = getSessionUserId(req);
 
   // Get user from database
   const user = await UserModel.findById(userId);

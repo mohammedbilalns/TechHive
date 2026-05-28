@@ -7,11 +7,15 @@ import { validateCategory } from "../../validators/category.validator.js";
 import { AdminCategoryErrorMessages } from "../../constants/errorMessages.js";
 import { CategorySuccessMessages } from "../../constants/successMessage.js";
 import { ADMIN_VIEW_PATHS } from "../../constants/viewPaths.js";
+import {
+  getPageNumber,
+  getPaginationMeta,
+} from "../../utils/controllerHelpers.js";
 
 //---- Fetch the categories page----
-const getCategories = asyncHandler(async (req, res) => {
+export const getCategories = asyncHandler(async (req, res) => {
   const { message, alertType } = req.query;
-  const page = parseInt(req.query.page) || 1;
+  const page = getPageNumber(req.query.page);
   const limit = 10;
   const search = req.query.search || "";
 
@@ -21,8 +25,11 @@ const getCategories = asyncHandler(async (req, res) => {
   };
 
   const totalCategories = await categoryModel.countDocuments(searchQuery);
-  const totalPages = Math.ceil(totalCategories / limit);
-  const skip = (page - 1) * limit;
+  const { totalPages, hasNextPage, hasPrevPage, skip } = getPaginationMeta(
+    page,
+    totalCategories,
+    limit,
+  );
 
   const categories = await categoryModel
     .find(searchQuery)
@@ -37,14 +44,14 @@ const getCategories = asyncHandler(async (req, res) => {
     alertType,
     currentPage: page,
     totalPages,
-    hasNextPage: page < totalPages,
-    hasPrevPage: page > 1,
+    hasNextPage,
+    hasPrevPage,
     search,
   });
 });
 
 //---- Delete a category----
-const deleteCategory = asyncHandler(async (req, res) => {
+export const deleteCategory = asyncHandler(async (req, res) => {
   await categoryModel.findByIdAndDelete(req.params.categoryid);
   res.json({
     success: true,
@@ -53,7 +60,7 @@ const deleteCategory = asyncHandler(async (req, res) => {
 });
 
 //---- Hide a category----
-const hideCategory = asyncHandler(async (req, res) => {
+export const disableCategory = asyncHandler(async (req, res) => {
   await categoryModel.findByIdAndUpdate(req.params.categoryid, {
     status: "Inactive",
   });
@@ -71,7 +78,7 @@ const hideCategory = asyncHandler(async (req, res) => {
 });
 
 //---- Unhide a category----
-const unhideCategory = asyncHandler(async (req, res) => {
+export const enableCategory = asyncHandler(async (req, res) => {
   await categoryModel.findByIdAndUpdate(req.params.categoryid, {
     status: "Active",
   });
@@ -89,7 +96,7 @@ const unhideCategory = asyncHandler(async (req, res) => {
 });
 
 //---- Add a new category----
-const addCategory = asyncHandler(async (req, res) => {
+export const addCategory = asyncHandler(async (req, res) => {
   const { error, value } = validateCategory(req.body);
 
   if (error) {
@@ -121,7 +128,7 @@ const addCategory = asyncHandler(async (req, res) => {
 });
 
 //---- Edit a category----
-const editCategory = asyncHandler(async (req, res) => {
+export const editCategory = asyncHandler(async (req, res) => {
   const { error, value } = validateCategory(req.body);
 
   if (error) {
@@ -163,11 +170,4 @@ const editCategory = asyncHandler(async (req, res) => {
   });
 });
 
-export default {
-  getCategories,
-  deleteCategory,
-  hideCategory,
-  unhideCategory,
-  addCategory,
-  editCategory,
-};
+

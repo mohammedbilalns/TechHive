@@ -4,16 +4,24 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AppError } from "../../utils/appError.js";
 import { validateCoupon } from "../../validators/coupon.validator.js";
 import { AdminCouponErrorMessages } from "../../constants/errorMessages.js";
+import { CouponSuccessMessages } from "../../constants/successMessage.js";
 import { ADMIN_VIEW_PATHS } from "../../constants/viewPaths.js";
+import {
+  getPageNumber,
+  getPaginationMeta,
+} from "../../utils/controllerHelpers.js";
 
 // get the coupons page
-const getCoupons = asyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
+export const getCoupons = asyncHandler(async (req, res) => {
+  const page = getPageNumber(req.query.page);
   const limit = 10;
-  const skip = (page - 1) * limit;
 
   const totalCoupons = await couponModel.countDocuments();
-  const totalPages = Math.ceil(totalCoupons / limit);
+  const { totalPages, hasNextPage, hasPrevPage, skip } = getPaginationMeta(
+    page,
+    totalCoupons,
+    limit,
+  );
 
   const coupons = await couponModel
     .find()
@@ -31,14 +39,14 @@ const getCoupons = asyncHandler(async (req, res) => {
     coupons,
     currentPage: page,
     totalPages,
-    hasNextPage: page < totalPages,
-    hasPrevPage: page > 1,
+    hasNextPage,
+    hasPrevPage,
     page: "coupons",
   });
 });
 
 // get the coupon details for edit modal
-const getCouponDetails = asyncHandler(async (req, res) => {
+export const getCouponDetails = asyncHandler(async (req, res) => {
   const coupon = await couponModel.findById(req.params.couponId);
   if (!coupon) {
     throw new AppError(HttpStatus.NOT_FOUND, AdminCouponErrorMessages.Notfound);
@@ -46,7 +54,7 @@ const getCouponDetails = asyncHandler(async (req, res) => {
   res.json({ success: true, coupon });
 });
 
-const addCoupon = asyncHandler(async (req, res) => {
+export const addCoupon = asyncHandler(async (req, res) => {
   const { error, value } = validateCoupon(req.body);
   if (error) {
     throw new AppError(HttpStatus.BAD_REQUEST, error);
@@ -91,7 +99,7 @@ const addCoupon = asyncHandler(async (req, res) => {
   });
 });
 
-const updateCoupon = asyncHandler(async (req, res) => {
+export const updateCoupon = asyncHandler(async (req, res) => {
   const { error, value } = validateCoupon(req.body, true);
   if (error) {
     throw new AppError(HttpStatus.BAD_REQUEST, error);
@@ -145,7 +153,7 @@ const updateCoupon = asyncHandler(async (req, res) => {
   });
 });
 
-const toggleCouponStatus = asyncHandler(async (req, res) => {
+export const toggleCouponStatus = asyncHandler(async (req, res) => {
   const coupon = await couponModel.findById(req.params.couponId);
   if (!coupon) {
     throw new AppError(HttpStatus.NOT_FOUND, AdminCouponErrorMessages.Notfound);
@@ -161,7 +169,7 @@ const toggleCouponStatus = asyncHandler(async (req, res) => {
   });
 });
 
-const deleteCoupon = asyncHandler(async (req, res) => {
+export const deleteCoupon = asyncHandler(async (req, res) => {
   const result = await couponModel.findByIdAndDelete(req.params.couponId);
   if (!result) {
     throw new AppError(HttpStatus.NOT_FOUND, AdminCouponErrorMessages.Notfound);
@@ -169,11 +177,3 @@ const deleteCoupon = asyncHandler(async (req, res) => {
   res.json({ success: true, message: CouponSuccessMessages.Deleted });
 });
 
-export default {
-  getCoupons,
-  getCouponDetails,
-  addCoupon,
-  updateCoupon,
-  toggleCouponStatus,
-  deleteCoupon,
-};

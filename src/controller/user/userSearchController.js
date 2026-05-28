@@ -4,10 +4,11 @@ import { reviewModel } from "../../model/reviewModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
+import { getPageNumber } from "../../utils/controllerHelpers.js";
 
 const searchProducts = asyncHandler(async (req, res) => {
   const query = req.query.q || "";
-  const page = parseInt(req.query.page) || 1;
+  const page = getPageNumber(req.query.page);
   const limit = 8;
   const sortBy = req.query.sort || "newest";
   const categoryFilter = req.query.category;

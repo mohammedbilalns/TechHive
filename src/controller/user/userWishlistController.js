@@ -6,13 +6,17 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { ErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
 import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
+import {
+  getPageNumber,
+  getPaginationMeta,
+  getSessionUserId,
+} from "../../utils/controllerHelpers.js";
 
 const getWishlist = asyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
+  const page = getPageNumber(req.query.page);
   const limit = 8;
-  const skip = (page - 1) * limit;
 
-  const userId = req.session.user.id;
+  const userId = getSessionUserId(req);
 
   // Find or create wishlist
   let wishlist = await wishlistModel.findOne({ userId });
@@ -22,7 +26,11 @@ const getWishlist = asyncHandler(async (req, res) => {
 
   // Get total count for pagination
   const totalProducts = wishlist.products.length;
-  const totalPages = Math.ceil(totalProducts / limit);
+  const { totalPages, hasNextPage, hasPrevPage, skip } = getPaginationMeta(
+    page,
+    totalProducts,
+    limit,
+  );
 
   // Get paginated wishlist
   const paginatedWishlist = await wishlistModel.findOne({ userId }).populate({
@@ -40,14 +48,14 @@ const getWishlist = asyncHandler(async (req, res) => {
     user: req.session.user,
     currentPage: page,
     totalPages,
-    hasNextPage: page < totalPages,
-    hasPrevPage: page > 1,
+    hasNextPage,
+    hasPrevPage,
   });
 });
 
 const addToWishlist = asyncHandler(async (req, res) => {
   const { productId } = req.body;
-  const userId = req.session.user.id;
+  const userId = getSessionUserId(req);
 
   // Check if product is active
   const product = await productModel.findOne({
@@ -85,7 +93,7 @@ const addToWishlist = asyncHandler(async (req, res) => {
 
 const removeFromWishlist = asyncHandler(async (req, res) => {
   const { productId } = req.body;
-  const userId = req.session.user.id;
+  const userId = getSessionUserId(req);
 
   const wishlist = await wishlistModel.findOne({ userId });
 
