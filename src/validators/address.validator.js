@@ -1,7 +1,14 @@
 import { isValidPhone, isValidPincode } from "../utils/validations.js";
 
-export const validateAddAddress = ({name, houseName, localityStreet, city, state, pincode, phone}) => {
-
+export const validateAddAddress = ({
+  name,
+  houseName,
+  localityStreet,
+  city,
+  state,
+  pincode,
+  phone,
+}) => {
   name = name.trim();
   houseName = houseName.trim();
   localityStreet = localityStreet.trim();
@@ -10,8 +17,15 @@ export const validateAddAddress = ({name, houseName, localityStreet, city, state
   pincode = pincode.trim();
   phone = phone.trim();
 
-
-  if (!name || !houseName || !localityStreet || !city || !state || !pincode || !phone) {
+  if (
+    !name ||
+    !houseName ||
+    !localityStreet ||
+    !city ||
+    !state ||
+    !pincode ||
+    !phone
+  ) {
     return "Missing required fields";
   }
 
@@ -27,9 +41,10 @@ export const validateAddAddress = ({name, houseName, localityStreet, city, state
     return "Locality/Street must be between 3 and 50 characters";
   }
 
-  if (city.length < 3 || city.length > 50) return 'City must be between 3 and 50 characters';
+  if (city.length < 3 || city.length > 50)
+    return "City must be between 3 and 50 characters";
 
-  if(!isValidPincode(pincode)) return "Please enter a valid pincode";
+  if (!isValidPincode(pincode)) return "Please enter a valid pincode";
 
-  if(!isValidPhone(phone)) return "Please enter a 10-digit valid Phone number";
+  if (!isValidPhone(phone)) return "Please enter a 10-digit valid Phone number";
 };

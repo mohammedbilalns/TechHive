@@ -1,0 +1,47 @@
+<% if (includeAddressId) { %>
+  <input type="hidden" name="addressId">
+<% } %>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <div>
+    <label class="block text-gray-600 mb-2">Name</label>
+    <input type="text" name="name" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+    <p class="text-red-500 text-sm mt-1 hidden" id="<%= formType %>NameError"></p>
+  </div>
+  <div>
+    <label class="block text-gray-600 mb-2">House Name</label>
+    <input type="text" name="houseName" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+    <p class="text-red-500 text-sm mt-1 hidden" id="<%= formType %>HouseNameError"></p>
+  </div>
+  <div>
+    <label class="block text-gray-600 mb-2">Locality/Street</label>
+    <input type="text" name="localityStreet" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+    <p class="text-red-500 text-sm mt-1 hidden" id="<%= formType %>LocalityStreetError"></p>
+  </div>
+  <div>
+    <label class="block text-gray-600 mb-2">City</label>
+    <input type="text" name="city" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+    <p class="text-red-500 text-sm mt-1 hidden" id="<%= formType %>CityError"></p>
+  </div>
+  <div>
+    <label class="block text-gray-600 mb-2">State</label>
+    <select name="state" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+      <%- include('./addressStateOptions') %>
+    </select>
+    <p class="text-red-500 text-sm mt-1 hidden" id="<%= formType %>StateError"></p>
+  </div>
+  <div>
+    <label class="block text-gray-600 mb-2">Pincode</label>
+    <input type="text" name="pincode" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+    <p class="text-red-500 text-sm mt-1 hidden" id="<%= formType %>PincodeError"></p>
+  </div>
+  <div>
+    <label class="block text-gray-600 mb-2">Phone</label>
+    <input type="tel" name="phone" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+    <p class="text-red-500 text-sm mt-1 hidden" id="<%= formType %>PhoneError"></p>
+  </div>
+  <div>
+    <label class="block text-gray-600 mb-2">Alternate Phone (Optional)</label>
+    <input type="tel" name="alternatePhone" class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-primary-accent">
+    <p class="text-red-500 text-sm mt-1 hidden" id="<%= formType %>AlternatePhoneError"></p>
+  </div>
+</div>

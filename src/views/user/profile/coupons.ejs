@@ -131,35 +131,20 @@
       </main>
   </div>
 
-  <script>
+  <script type="module">
+    import { copyTextToClipboard } from '/js/clipboard.js';
+
     async function copyCouponCode(couponId) {
       const couponCode = document.getElementById(`couponCode-${couponId}`).textContent.trim();
-
-      if (navigator.clipboard && window.isSecureContext) {
-        try {
-          await navigator.clipboard.writeText(couponCode);
-          showToast('Coupon code copied to clipboard!');
-          return;
-        } catch (err) {
-          console.error('Clipboard API failed:', err);
-        }
-      }
-
-      try {
-        const textarea = document.createElement('textarea');
-        textarea.value = couponCode;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        showToast('Coupon code copied to clipboard!');
-      } catch (err) {
-        console.error('Fallback copy method failed:', err);
-        showToast('Failed to copy coupon code', 'error');
-      }
+      await copyTextToClipboard(couponCode, {
+        successMessage: 'Coupon code copied to clipboard!',
+        errorMessage: 'Failed to copy coupon code',
+        onSuccess: (message) => showToast(message),
+        onError: (message) => showToast(message, 'error')
+      });
     }
+
+    window.copyCouponCode = copyCouponCode;
   </script>
 
   <%- include('../../partials/footer') %>

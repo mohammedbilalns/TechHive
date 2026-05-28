@@ -1,4 +1,9 @@
-import { isValidName, isValidEmail, isValidPassword, isValidPhone } from "../utils/validations.js";
+import {
+  isValidName,
+  isValidEmail,
+  isValidPassword,
+  isValidPhone,
+} from "../utils/validations.js";
 
 export const validateLogin = ({ email, password }) => {
   email = email.trim();
@@ -13,27 +18,31 @@ export const validateLogin = ({ email, password }) => {
   }
 
   return null;
-
 };
 
-export const validateRegisterBody = ({ fullname, phonenumber, email, password}) => {
+export const validateRegisterBody = ({
+  fullname,
+  phonenumber,
+  email,
+  password,
+}) => {
   fullname = fullname.trim();
   phonenumber = phonenumber.trim();
   email = email.trim();
   password = password.trim();
 
-
-  if (!fullname || !phonenumber || !email || !password ) {
+  if (!fullname || !phonenumber || !email || !password) {
     return "All fields are required";
   }
 
-  if (!isValidName(fullname)) return "Full name should containe only alphabets (3-30 characters)";
+  if (!isValidName(fullname))
+    return "Full name should containe only alphabets (3-30 characters)";
   if (!isValidPhone(phonenumber)) return "Phone number must be 10 digits";
   if (!isValidEmail(email)) return "Please enter a valid email address";
-  if (!isValidPassword(password)) return "Password must contain 8+ characters with uppercase, lowercase, number, and special character";
+  if (!isValidPassword(password))
+    return "Password must contain 8+ characters with uppercase, lowercase, number, and special character";
   return null;
 };
-
 
 export const validateResetPassword = ({ email, password, confirmPassword }) => {
   email = email.trim();
@@ -45,7 +54,8 @@ export const validateResetPassword = ({ email, password, confirmPassword }) => {
   }
 
   if (!isValidEmail(email)) return "Please enter a valid email address";
-  if (!isValidPassword(password)) return "Password must contain 8+ characters with uppercase, lowercase, number, and special character";
+  if (!isValidPassword(password))
+    return "Password must contain 8+ characters with uppercase, lowercase, number, and special character";
   if (password !== confirmPassword) return "Passwords do not match";
 
   return null;

@@ -1,113 +1,108 @@
 import { couponModel } from "../../model/couponModel.js";
-import { HttpStatus } from "../../constants/statusCodes.js";
+import { asyncHandler } from "../../utils/asyncHandler.js";
+import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 import logger from "../../utils/logger.js";
+import {
+  getCouponUsageCount,
+  getCouponUsageForUser,
+  getPageNumber,
+  getPaginationMeta,
+  getSessionUserId,
+} from "../../utils/controllerHelpers.js";
 
-const getCoupons = async (req, res) => {
+const getCoupons = asyncHandler(async (req, res) => {
+  const currentDate = new Date();
+  const userId = getSessionUserId(req);
+  const page = getPageNumber(req.query.page);
+  const limit = 9;
+
+  const allCoupons = await couponModel
+    .find({
+      isActive: true,
+    })
+    .lean();
+
+  const categorizedCoupons = {
+    available: [],
+    used: [],
+    expired: [],
+  };
+
+  allCoupons.forEach((coupon) => {
     try {
-        const currentDate = new Date();
-        const userId = req.session.user.id;
-        const page = parseInt(req.query.page) || 1;
-        const limit = 9;
-        const skip = (page - 1) * limit;
+      const expiryDate = new Date(coupon.expiryDate);
+      const startDate = new Date(coupon.startDate);
 
-        const allCoupons = await couponModel.find({
-            isActive: true
-        }).lean();
+      // Count usage count of this coupon
+      const userUsageCount = getCouponUsageCount(coupon, userId);
 
-        const categorizedCoupons = {
-            available: [],
-            used: [],
-            expired: []
-        };
+      // Calculate remaining uses for this user
+      const remainingUses = coupon.usageLimit - userUsageCount;
+      const userUsage = getCouponUsageForUser(coupon, userId);
 
-        allCoupons.forEach(coupon => {
-            try {
-                const expiryDate = new Date(coupon.expiryDate);
-                const startDate = new Date(coupon.startDate);
-
-                // Count usage count of this coupon 
-                const userUsageCount = coupon.usageHistory?.filter(usage =>
-                    usage.userId?.toString() === userId.toString()
-                ).length || 0;
-
-                // Calculate remaining uses for this user
-                const remainingUses = coupon.usageLimit - userUsageCount;
-
-                if (expiryDate < currentDate) {
-                    categorizedCoupons.expired.push({
-                        ...coupon,
-                        usedDate: coupon.usageHistory?.find(usage =>
-                            usage.userId?.toString() === userId.toString()
-                        )?.usedAt,
-                        remainingUses
-                    });
-                    return;
-                }
-
-                if (startDate > currentDate) {
-                    return;
-                }
-
-                // push the used coupons
-                if (remainingUses <= 0) {
-                    categorizedCoupons.used.push({
-                        ...coupon,
-                        usedDate: coupon.usageHistory?.find(usage =>
-                            usage.userId?.toString() === userId.toString()
-                        )?.usedAt,
-                        remainingUses: 0
-                    });
-                    return;
-                }
-
-                // push the available coupons 
-                categorizedCoupons.available.push({
-                    ...coupon,
-                    remainingUses,
-                    userUsedDate: coupon.usageHistory?.find(usage =>
-                        usage.userId?.toString() === userId.toString()
-                    )?.usedAt
-                });
-            } catch (err) {
-                logger.error("COUPON_PROCESSING_ERROR", err);
-            }
+      if (expiryDate < currentDate) {
+        categorizedCoupons.expired.push({
+          ...coupon,
+          usedDate: userUsage?.usedAt,
+          remainingUses,
         });
+        return;
+      }
 
-        // Combine all coupons in  order
-        const combinedCoupons = [
-            ...categorizedCoupons.available,
-            ...categorizedCoupons.used,
-            ...categorizedCoupons.expired
-        ];
+      if (startDate > currentDate) {
+        return;
+      }
 
-        const totalCoupons = combinedCoupons.length;
-        const totalPages = Math.ceil(totalCoupons / limit);
-
-        const paginatedCoupons = combinedCoupons.slice(skip, skip + limit);
-
-        res.render('user/profile/coupons', {
-            user: req.session.user,
-            title: 'My Coupons',
-            page: "coupons",
-            coupons: paginatedCoupons,
-            currentPage: page,
-            totalPages,
-            hasNextPage: page < totalPages,
-            hasPrevPage: page > 1,
-            currentDate
+      // push the used coupons
+      if (remainingUses <= 0) {
+        categorizedCoupons.used.push({
+          ...coupon,
+          usedDate: userUsage?.usedAt,
+          remainingUses: 0,
         });
+        return;
+      }
 
-    } catch (error) {
-        logger.error("GET_COUPONS_ERROR", error);
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).render('error', {
-            message: 'Failed to fetch coupons',
-            error: {
-                status: HttpStatus.INTERNAL_SERVER_ERROR,
-            }
-        });
+      // push the available coupons
+      categorizedCoupons.available.push({
+        ...coupon,
+        remainingUses,
+        userUsedDate: userUsage?.usedAt,
+      });
+    } catch (err) {
+      logger.error("COUPON_PROCESSING_ERROR", err);
     }
-};
+  });
+
+  // Combine all coupons in  order
+  const combinedCoupons = [
+    ...categorizedCoupons.available,
+    ...categorizedCoupons.used,
+    ...categorizedCoupons.expired,
+  ];
+
+  const totalCoupons = combinedCoupons.length;
+  const { totalPages, hasNextPage, hasPrevPage, skip } = getPaginationMeta(
+    page,
+    totalCoupons,
+    limit,
+  );
+
+  const paginatedCoupons = combinedCoupons.slice(skip, skip + limit);
+
+  res.render(USER_VIEW_PATHS.ProfileCoupons, {
+    user: req.session.user,
+    title: "My Coupons",
+    page: "coupons",
+    coupons: paginatedCoupons,
+    currentPage: page,
+    totalPages,
+    hasNextPage,
+    hasPrevPage,
+    currentDate,
+  });
+});
 
 export default {
-    getCoupons
+  getCoupons,
 };

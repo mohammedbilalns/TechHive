@@ -1,23 +1,34 @@
-import { orderModel } from '../../model/orderModel.js';
+import { ADMIN_VIEW_PATHS } from "../../constants/viewPaths.js";
+import { orderModel } from "../../model/orderModel.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 
-
-const getDashboardData = asyncHandler(async (req, res) => {
+export const getDashboardData = asyncHandler(async (req, res) => {
   const { filterType, startDate, endDate } = req.query;
   let dateFilter = {};
 
   //  date filter based on selected type
   switch (filterType) {
-    case 'daily':
+    case "daily":
       const today = new Date();
       dateFilter = {
         orderDate: {
-          $gte: new Date(today.getFullYear(), today.getMonth(), today.getDate()),
-          $lte: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59)
-        }
+          $gte: new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate(),
+          ),
+          $lte: new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate(),
+            23,
+            59,
+            59,
+          ),
+        },
       };
       break;
-    case 'weekly':
+    case "weekly":
       const weekNow = new Date();
       const startOfWeek = new Date(weekNow);
       startOfWeek.setDate(weekNow.getDate() - weekNow.getDay()); // Start from Sunday
@@ -30,75 +41,77 @@ const getDashboardData = asyncHandler(async (req, res) => {
       dateFilter = {
         orderDate: {
           $gte: startOfWeek,
-          $lte: endOfWeek
-        }
+          $lte: endOfWeek,
+        },
       };
       break;
-    case 'yearly':
+    case "yearly":
       const year = new Date().getFullYear();
       dateFilter = {
         orderDate: {
           $gte: new Date(year, 0, 1),
-          $lte: new Date(year, 11, 31)
-        }
+          $lte: new Date(year, 11, 31),
+        },
       };
       break;
-    case 'monthly':
+    case "monthly":
       const monthNow = new Date();
       dateFilter = {
         orderDate: {
           $gte: new Date(monthNow.getFullYear(), monthNow.getMonth(), 1),
-          $lte: new Date(monthNow.getFullYear(), monthNow.getMonth() + 1, 0)
-        }
+          $lte: new Date(monthNow.getFullYear(), monthNow.getMonth() + 1, 0),
+        },
       };
       break;
-    case 'custom':
+    case "custom":
       dateFilter = {
         orderDate: {
           $gte: new Date(startDate),
-          $lte: new Date(endDate)
-        }
+          $lte: new Date(endDate),
+        },
       };
       break;
     default:
-      // Default to Monthly 
+      // Default to Monthly
       dateFilter = {
         orderDate: {
-          $gte: new Date(new Date().setDate(new Date().getDate() - 30))
-        }
+          $gte: new Date(new Date().setDate(new Date().getDate() - 30)),
+        },
       };
   }
 
   const baseFilter = {
     ...dateFilter,
-    'items.status': 'delivered'
+    "items.status": "delivered",
   };
 
   //  sales data calculations
   const salesData = await orderModel.aggregate([
     { $match: baseFilter },
     { $unwind: "$items" },
-    { $match: { 'items.status': 'delivered' } },
+    { $match: { "items.status": "delivered" } },
     {
       $group: {
         _id: {
           date: { $dateToString: { format: "%Y-%m-%d", date: "$orderDate" } },
-          orderId: "$_id"
+          orderId: "$_id",
         },
         originalAmount: {
-          $sum: { $multiply: ["$items.price", "$items.quantity"] }
+          $sum: { $multiply: ["$items.price", "$items.quantity"] },
         },
         offerDiscount: {
           $sum: {
             $multiply: [
               { $multiply: ["$items.price", "$items.quantity"] },
-              { $divide: ["$items.discount", 100] }
-            ]
-          }
+              { $divide: ["$items.discount", 100] },
+            ],
+          },
         },
-        orderTotal: { $first: { $sum: { $multiply: ["$items.price", "$items.quantity"] } } },
-        couponDiscount: { $first: { $ifNull: ["$coupon.discount", 0] } }
-      }
+        orderTotal: {
+          $first: { $sum: { $multiply: ["$items.price", "$items.quantity"] } },
+        },
+        couponDiscount: { $first: { $ifNull: ["$coupon.discount", 0] } },
+      },
     },
     {
       $group: {
@@ -109,11 +122,11 @@ const getDashboardData = asyncHandler(async (req, res) => {
           $sum: {
             $multiply: [
               "$couponDiscount",
-              { $divide: ["$originalAmount", "$orderTotal"] }
-            ]
-          }
-        }
-      }
+              { $divide: ["$originalAmount", "$orderTotal"] },
+            ],
+          },
+        },
+      },
     },
     {
       $project: {
@@ -121,62 +134,62 @@ const getDashboardData = asyncHandler(async (req, res) => {
         totalSales: {
           $subtract: [
             "$totalSales",
-            { $add: ["$totalOfferDiscounts", "$totalCouponDiscounts"] }
-          ]
-        }
-      }
+            { $add: ["$totalOfferDiscounts", "$totalCouponDiscounts"] },
+          ],
+        },
+      },
     },
-    { $sort: { _id: 1 } }
+    { $sort: { _id: 1 } },
   ]);
 
   // Get top products with proper calculations
   const topProducts = await orderModel.aggregate([
     { $match: baseFilter },
     { $unwind: "$items" },
-    { $match: { 'items.status': 'delivered' } },
+    { $match: { "items.status": "delivered" } },
     {
       $group: {
         _id: "$items.name",
         name: { $first: "$items.name" },
         totalQuantity: { $sum: "$items.quantity" },
         originalAmount: {
-          $sum: { $multiply: ["$items.price", "$items.quantity"] }
+          $sum: { $multiply: ["$items.price", "$items.quantity"] },
         },
         offerDiscount: {
           $sum: {
             $multiply: [
               { $multiply: ["$items.price", "$items.quantity"] },
-              { $divide: ["$items.discount", 100] }
-            ]
-          }
-        }
-      }
+              { $divide: ["$items.discount", 100] },
+            ],
+          },
+        },
+      },
     },
     {
       $project: {
         name: 1,
         totalQuantity: 1,
         totalRevenue: {
-          $subtract: ["$originalAmount", "$offerDiscount"]
-        }
-      }
+          $subtract: ["$originalAmount", "$offerDiscount"],
+        },
+      },
     },
     { $sort: { totalRevenue: -1 } },
-    { $limit: 10 }
+    { $limit: 10 },
   ]);
 
-  // Get top categories 
+  // Get top categories
   const topCategories = await orderModel.aggregate([
     { $match: baseFilter },
     { $unwind: "$items" },
-    { $match: { 'items.status': 'delivered' } },
+    { $match: { "items.status": "delivered" } },
     {
       $lookup: {
         from: "products",
         localField: "items.name",
         foreignField: "name",
-        as: "product"
-      }
+        as: "product",
+      },
     },
     { $unwind: "$product" },
     {
@@ -184,8 +197,8 @@ const getDashboardData = asyncHandler(async (req, res) => {
         from: "categories",
         localField: "product.category",
         foreignField: "_id",
-        as: "category"
-      }
+        as: "category",
+      },
     },
     { $unwind: "$category" },
     {
@@ -194,63 +207,63 @@ const getDashboardData = asyncHandler(async (req, res) => {
         categoryName: { $first: "$category.name" },
         totalQuantity: { $sum: "$items.quantity" },
         originalAmount: {
-          $sum: { $multiply: ["$items.price", "$items.quantity"] }
+          $sum: { $multiply: ["$items.price", "$items.quantity"] },
         },
         offerDiscount: {
           $sum: {
             $multiply: [
               { $multiply: ["$items.price", "$items.quantity"] },
-              { $divide: ["$items.discount", 100] }
-            ]
-          }
-        }
-      }
+              { $divide: ["$items.discount", 100] },
+            ],
+          },
+        },
+      },
     },
     {
       $project: {
         categoryName: 1,
         totalQuantity: 1,
         totalRevenue: {
-          $subtract: ["$originalAmount", "$offerDiscount"]
-        }
-      }
+          $subtract: ["$originalAmount", "$offerDiscount"],
+        },
+      },
     },
     { $sort: { totalRevenue: -1 } },
-    { $limit: 10 }
+    { $limit: 10 },
   ]);
 
-  // Get top brands 
+  // Get top brands
   const topBrands = await orderModel.aggregate([
     { $match: baseFilter },
     { $unwind: "$items" },
-    { $match: { 'items.status': 'delivered' } },
+    { $match: { "items.status": "delivered" } },
     {
       $group: {
         _id: "$items.brand",
         totalQuantity: { $sum: "$items.quantity" },
         originalAmount: {
-          $sum: { $multiply: ["$items.price", "$items.quantity"] }
+          $sum: { $multiply: ["$items.price", "$items.quantity"] },
         },
         offerDiscount: {
           $sum: {
             $multiply: [
               { $multiply: ["$items.price", "$items.quantity"] },
-              { $divide: ["$items.discount", 100] }
-            ]
-          }
-        }
-      }
+              { $divide: ["$items.discount", 100] },
+            ],
+          },
+        },
+      },
     },
     {
       $project: {
         totalQuantity: 1,
         totalRevenue: {
-          $subtract: ["$originalAmount", "$offerDiscount"]
-        }
-      }
+          $subtract: ["$originalAmount", "$offerDiscount"],
+        },
+      },
     },
     { $sort: { totalRevenue: -1 } },
-    { $limit: 10 }
+    { $limit: 10 },
   ]);
 
   res.json({
@@ -262,9 +275,7 @@ const getDashboardData = asyncHandler(async (req, res) => {
   });
 });
 
-const renderDashboard = asyncHandler(async (req, res) => {
-  res.render('admin/dashboard', { page: "dashboard" });
+export const renderDashboard = asyncHandler(async (_req, res) => {
+  res.render(ADMIN_VIEW_PATHS.Dashboard, { page: "dashboard" });
 });
 
-
-export default { getDashboardData, renderDashboard };

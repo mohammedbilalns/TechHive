@@ -1,12 +1,12 @@
-export const  loadNotfound = (req,res)=>{
+import { asyncHandler } from "../../utils/asyncHandler.js";
+import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 
-  const {message , alertType} = req.query;
+export const loadNotfound = asyncHandler((req, res) => {
+  const { message, alertType } = req.query;
 
-  res.render("notFound", {
-    fullname : req.session?.user?.fullname,
+  res.render(USER_VIEW_PATHS.NotFound, {
+    fullname: req.session?.user?.fullname,
     message,
-    alertType
+    alertType,
   });
-
-};
-
+});

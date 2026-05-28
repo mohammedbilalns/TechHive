@@ -4,84 +4,99 @@ import { HttpStatus } from "../../constants/statusCodes.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AppError } from "../../utils/appError.js";
 import { validateCategory } from "../../validators/category.validator.js";
+import { AdminCategoryErrorMessages } from "../../constants/errorMessages.js";
+import { CategorySuccessMessages } from "../../constants/successMessage.js";
+import { ADMIN_VIEW_PATHS } from "../../constants/viewPaths.js";
+import {
+  getPageNumber,
+  getPaginationMeta,
+} from "../../utils/controllerHelpers.js";
 
 //---- Fetch the categories page----
-const getCategories = asyncHandler(async (req, res) => {
+export const getCategories = asyncHandler(async (req, res) => {
   const { message, alertType } = req.query;
-  const page = parseInt(req.query.page) || 1;
+  const page = getPageNumber(req.query.page);
   const limit = 10;
-  const search = req.query.search || '';
+  const search = req.query.search || "";
 
   // search query
   const searchQuery = {
-    name: { $regex: search, $options: 'i' }
+    name: { $regex: search, $options: "i" },
   };
 
   const totalCategories = await categoryModel.countDocuments(searchQuery);
-  const totalPages = Math.ceil(totalCategories / limit);
-  const skip = (page - 1) * limit;
+  const { totalPages, hasNextPage, hasPrevPage, skip } = getPaginationMeta(
+    page,
+    totalCategories,
+    limit,
+  );
 
-  const categories = await categoryModel.find(searchQuery)
+  const categories = await categoryModel
+    .find(searchQuery)
     .sort({ createdAt: 1 })
     .skip(skip)
     .limit(limit);
 
-  res.render('admin/categories', {
+  res.render(ADMIN_VIEW_PATHS.Categories, {
     categories,
     message,
-    page: 'categories',
+    page: "categories",
     alertType,
     currentPage: page,
     totalPages,
-    hasNextPage: page < totalPages,
-    hasPrevPage: page > 1,
-    search
+    hasNextPage,
+    hasPrevPage,
+    search,
   });
 });
 
 //---- Delete a category----
-const deleteCategory = asyncHandler(async (req, res) => {
+export const deleteCategory = asyncHandler(async (req, res) => {
   await categoryModel.findByIdAndDelete(req.params.categoryid);
   res.json({
     success: true,
-    message: 'Category deleted successfully'
+    message: CategorySuccessMessages.Deleted,
   });
 });
 
 //---- Hide a category----
-const hideCategory = asyncHandler(async (req, res) => {
-  await categoryModel.findByIdAndUpdate(req.params.categoryid, { status: "Inactive" });
+export const disableCategory = asyncHandler(async (req, res) => {
+  await categoryModel.findByIdAndUpdate(req.params.categoryid, {
+    status: "Inactive",
+  });
 
   // Update all products in this category to Inactive
   await productModel.updateMany(
     { category: req.params.categoryid },
-    { status: "Inactive" }
+    { status: "Inactive" },
   );
 
   res.json({
     success: true,
-    message: 'Category and associated products hidden successfully'
+    message: CategorySuccessMessages.Disabled,
   });
 });
 
 //---- Unhide a category----
-const unhideCategory = asyncHandler(async (req, res) => {
-  await categoryModel.findByIdAndUpdate(req.params.categoryid, { status: "Active" });
+export const enableCategory = asyncHandler(async (req, res) => {
+  await categoryModel.findByIdAndUpdate(req.params.categoryid, {
+    status: "Active",
+  });
 
   // Update all products in this category to Active
   await productModel.updateMany(
     { category: req.params.categoryid },
-    { status: "Active" }
+    { status: "Active" },
   );
 
   res.json({
     success: true,
-    message: 'Category and associated products unhidden successfully'
+    message: CategorySuccessMessages.Enabled,
   });
 });
 
 //---- Add a new category----
-const addCategory = asyncHandler(async (req, res) => {
+export const addCategory = asyncHandler(async (req, res) => {
   const { error, value } = validateCategory(req.body);
 
   if (error) {
@@ -92,25 +107,28 @@ const addCategory = asyncHandler(async (req, res) => {
 
   const existingCategory = await categoryModel.findOne({ name });
   if (existingCategory) {
-    throw new AppError(HttpStatus.CONFLICT, 'Category with same name already exists');
+    throw new AppError(
+      HttpStatus.CONFLICT,
+      AdminCategoryErrorMessages.Conflict,
+    );
   }
 
   let newCategory = new categoryModel({
     name,
     description,
-    status: "Active"
+    status: "Active",
   });
 
   const savedCategory = await newCategory.save();
   res.json({
     success: true,
-    message: 'Category created successfully',
-    category: savedCategory
+    message: CategorySuccessMessages.Created,
+    category: savedCategory,
   });
 });
 
 //---- Edit a category----
-const editCategory = asyncHandler(async (req, res) => {
+export const editCategory = asyncHandler(async (req, res) => {
   const { error, value } = validateCategory(req.body);
 
   if (error) {
@@ -122,35 +140,34 @@ const editCategory = asyncHandler(async (req, res) => {
   // find if another category exists with name
   const existingCategory = await categoryModel.findOne({
     name: name,
-    _id: { $ne: req.params.categoryid }
+    _id: { $ne: req.params.categoryid },
   });
 
   if (existingCategory) {
-    throw new AppError(HttpStatus.CONFLICT, 'Category name already exists');
+    throw new AppError(
+      HttpStatus.CONFLICT,
+      AdminCategoryErrorMessages.Conflict,
+    );
   }
 
   const updatedCategory = await categoryModel.findByIdAndUpdate(
     req.params.categoryid,
     { name, description },
-    { new: true }
+    { new: true },
   );
 
   if (!updatedCategory) {
-    throw new AppError(HttpStatus.NOT_FOUND, 'Category not found');
+    throw new AppError(
+      HttpStatus.NOT_FOUND,
+      AdminCategoryErrorMessages.Notfound,
+    );
   }
 
   res.json({
     success: true,
-    message: 'Category updated successfully',
-    category: updatedCategory
+    message: CategorySuccessMessages.Updated,
+    category: updatedCategory,
   });
 });
 
-export default {
-  getCategories,
-  deleteCategory,
-  hideCategory,
-  unhideCategory,
-  addCategory,
-  editCategory
-};
+

@@ -25,7 +25,7 @@ export const isValidPassword = (password) => {
   const hasLowerCase = /[a-z]/.test(password);
   const hasNumber = /\d/.test(password);
   const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};:'",.<>/?\\|]/.test(password);
-  return (hasMinLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar);
+  return (
+    hasMinLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar
+  );
 };
-
-

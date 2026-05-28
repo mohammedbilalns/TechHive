@@ -1,40 +1,46 @@
 import mongoose from "mongoose";
 
-
-const offerSchema = new mongoose.Schema({
+const offerSchema = new mongoose.Schema(
+  {
     name: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     offerPercentage: {
-        type: Number,
-        required: true,
+      type: Number,
+      required: true,
     },
     offerType: {
-        type: String,
-        enum: ["category", "product"],
-        required: true,
+      type: String,
+      enum: ["category", "product"],
+      required: true,
     },
-    applicableProducts: [{
+    applicableProducts: [
+      {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Product",
-    }],
-    applicableCategories: [{
+      },
+    ],
+    applicableCategories: [
+      {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category",
-    }],
+      },
+    ],
     startDate: {
-        type: Date,
-        required: true,
+      type: Date,
+      required: true,
     },
     endDate: {
-        type: Date,
-        required: true,
+      type: Date,
+      required: true,
     },
     isActive: {
-        type: Boolean,
-        default: true,
+      type: Boolean,
+      default: true,
     },
-}, { timestamps: true });
+  },
+  { timestamps: true },
+);
 
 export const offerModel = mongoose.model("Offer", offerSchema);

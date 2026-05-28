@@ -31,25 +31,14 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
 
 <script>
-
     document.getElementById('year').textContent = new Date().getFullYear();
-    document.addEventListener('DOMContentLoaded', () => {
-        const links = document.querySelectorAll('.nav-link');
-
-        links.forEach(link => {
-            link.addEventListener('click', (e) => {
-                // Prevent default if the link points to the current page
-                if (window.location.pathname === link.getAttribute('href')) {
-                    e.preventDefault();
-                }
-            });
-        });
-    });
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/toastify-js" defer></script>
 <script type="module">
+    import { preventCurrentPageNavigation } from '/js/pageGuards.js';
     import { showToast, customConfirm } from '/js/util.js';
+    preventCurrentPageNavigation();
     window.customConfirm = customConfirm;
     window.showToast = showToast;
 </script>

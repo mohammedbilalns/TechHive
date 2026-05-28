@@ -11,28 +11,7 @@
           <h1 class="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Sales Report</h1>
           
           <!-- Filter Controls -->
-          <div class="flex flex-col items-center gap-4 w-full md:w-auto">
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
-              <select id="filterType" class="border rounded-md px-3 py-2 w-full sm:w-auto">
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly" selected>Monthly</option>
-                <option value="yearly">Yearly</option>
-                <option value="custom">Custom Range</option>
-              </select>
-
-              <div id="customDateRange" class="hidden gap-2 items-center w-full sm:w-auto">
-                <input type="date" id="startDate" class="border rounded-md px-3 py-2 w-full sm:w-auto">
-                <span>to</span>
-                <input type="date" id="endDate" class="border rounded-md px-3 py-2 w-full sm:w-auto">
-              </div>
-
-              <button onclick="applyFilter()" 
-                class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full sm:w-auto">
-                Apply Filter
-              </button>
-            </div>
-          </div>
+          <%- include('./partials/dateRangeFilterControls') %>
         </div>
 
         <!-- Summary Cards -->
@@ -98,49 +77,20 @@
   </main>
 </div>
 
-<script>
-  // Show/hide custom date range based on filter type
-  document.getElementById('filterType').addEventListener('change', function() {
-    const customDateRange = document.getElementById('customDateRange');
-    if (this.value === 'custom') {
-      customDateRange.classList.remove('hidden');
-      customDateRange.classList.add('flex');
-    } else {
-      customDateRange.classList.remove('flex');
-      customDateRange.classList.add('hidden');
-    }
-  });
+<script type="module">
+  import { getDateRangeParams, setupDateRangeFilter } from '/js/adminDateRangeFilter.js';
+
+  setupDateRangeFilter();
 
   async function applyFilter() {
-    const filterType = document.getElementById('filterType').value;
-    let startDate, endDate;
-
-    if (filterType === 'custom') {
-      startDate = document.getElementById('startDate').value;
-      endDate = document.getElementById('endDate').value;
-
-      //  validation
-      if (!startDate || !endDate) {
-        showToast('Please select both start and end dates', 'error');
-        return;
-      }
-
-      const startDateTime = new Date(startDate);
-      const endDateTime = new Date(endDate);
-
-      if (startDateTime > endDateTime) {
-        showToast('Start date cannot be after end date', 'error');
-        return;
-      }
-    }
+    const params = getDateRangeParams({
+      onError: (message) => showToast(message, 'error')
+    });
+    if (!params) return;
 
     try {
       const response = await axios.get('/admin/sales-report/data', {
-        params: {
-          filterType,
-          startDate,
-          endDate
-        }
+        params
       });
 
       updateDashboard(response.data);
@@ -236,16 +186,15 @@
   }
 
   async function changePage(page) {
-    const filterType = document.getElementById('filterType').value;
-    let startDate = document.getElementById('startDate').value;
-    let endDate = document.getElementById('endDate').value;
+    const params = getDateRangeParams({
+      onError: (message) => showToast(message, 'error')
+    });
+    if (!params) return;
 
     try {
       const response = await axios.get('/admin/sales-report/data', {
         params: {
-          filterType,
-          startDate,
-          endDate,
+          ...params,
           page
         }
       });
@@ -258,17 +207,16 @@
   }
 
   async function downloadReport(format) {
-    const filterType = document.getElementById('filterType').value;
-    let startDate = document.getElementById('startDate').value;
-    let endDate = document.getElementById('endDate').value;
+    const params = getDateRangeParams({
+      onError: (message) => showToast(message, 'error')
+    });
+    if (!params) return;
 
     try {
       const response = await axios.get(`/admin/sales-report/download`, {
         params: {
           format,
-          filterType,
-          startDate,
-          endDate
+          ...params
         },
         responseType: 'blob'
       });
@@ -279,7 +227,7 @@
           : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       });
       
-      const fileName = `sales-report-${filterType}-${new Date().toLocaleDateString('en-GB')}.${format === 'excel' ? 'xlsx' : 'pdf'}`;
+      const fileName = `sales-report-${params.filterType}-${new Date().toLocaleDateString('en-GB')}.${format === 'excel' ? 'xlsx' : 'pdf'}`;
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -291,6 +239,10 @@
       showToast(`Failed to download ${format.toUpperCase()} report`, 'error');
     }
   }
+
+  window.applyFilter = applyFilter;
+  window.changePage = changePage;
+  window.downloadReport = downloadReport;
 
   // Load initial data 
   window.addEventListener('load', () => {

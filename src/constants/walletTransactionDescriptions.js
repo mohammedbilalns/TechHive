@@ -1,4 +1,4 @@
-
 export const WalletTransactionDescriptions = {
-  "REFERRAL": (fullname) => `Referral bonus for using referral code by ${fullname}`,
+  REFERRAL: (fullname) =>
+    `Referral bonus for using referral code by ${fullname}`,
 };

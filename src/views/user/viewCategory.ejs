@@ -142,47 +142,19 @@
                             </a>
 
                             <!-- Buttons centered at bottom -->
-                            <% if(locals.fullname){ %>
-                                <div class="flex justify-center gap-2 mt-3">
-                                    <% if (product.stock> 0) { %>
-                                        <button onclick="addToCart('<%= product._id %>')"
-                                            class="p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                                viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                                            </svg>
-                                        </button>
-                                        <% } %>
-
-                                            <% if(wishlistItems.some(id=> id.equals(product._id))) { %>
-                                                <button onclick="removeFromWishlist('<%= product._id %>')"
-                                                    class="p-2 rounded-full bg-primary-accent text-white hover:bg-gray-100 hover:text-black transition-colors duration-300">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-                                                        viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                                    </svg>
-
-                                                </button>
-                                                <% } else { %>
-                                                    <button onclick="addToWishlist('<%= product._id %>')"
-                                                        class="p-2 rounded-full  bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4"
-                                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                                        </svg>
-                                                    </button>
-                                                    <% } %>
-                                </div>
-                                <% } %>
-
-                                    <% if (product.stock <=0) { %>
-                                        <p class="text-red-500 text-sm mt-1">Out of Stock</p>
-                                        <% } %>
+                            <%- include('./partials/productActionButtons', {
+                              product,
+                              wishlistItems,
+                              showActions: Boolean(locals.fullname),
+                              containerClass: 'flex justify-center gap-2 mt-3',
+                              addToCartClass: 'p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300',
+                              addToWishlistClass: 'p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300',
+                              removeFromWishlistClass: 'p-2 rounded-full bg-primary-accent text-white hover:bg-gray-100 hover:text-black transition-colors duration-300',
+                              cartIconClass: 'h-5 w-5',
+                              wishlistIconClass: 'h-4 w-4',
+                              showOutOfStockText: true,
+                              outOfStockClass: 'text-red-500 text-sm mt-1'
+                            }) %>
                         </div>
                         <% }); %>
                             <% } %>
@@ -213,7 +185,9 @@
         </div>
     </main>
 
-    <script>
+    <script type="module">
+        import { createPriceRangeHandlers, generatePriceHTML, generateStarRating } from '/js/catalogPageUtils.js';
+
         let currentFilters = {
             sort: 'newest',
             minPrice: '',
@@ -272,7 +246,9 @@
                                 </div>
 
                                 <!-- Price section -->
-                                ${generatePriceHTML(product)}
+                                ${generatePriceHTML(product, {
+                                    wrapperClass: 'flex items-center justify-center gap-2'
+                                })}
                             </a>
 
                             <!-- Action buttons -->
@@ -291,34 +267,6 @@
                 console.error('Error:', error);
                 showToast(error.response?.data?.message || 'Error fetching products', 'error');
             }
-        }
-
-        function generateStarRating(rating) {
-            let starsHTML = '';
-            for (let i = 1; i <= 5; i++) {
-                if (i <= Math.floor(rating)) {
-                    starsHTML += `<svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                        </svg>`;
-                } else {
-                    starsHTML += `<svg class="w-4 h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                        </svg>`;
-                }
-            }
-            return starsHTML;
-        }
-
-        function generatePriceHTML(product) {
-            if (product.discount > 0) {
-                const discountedPrice = (product.price * (1 - product.discount / 100)).toFixed(2);
-                return `
-            <div class="flex items-center justify-center gap-2">
-                <p class="">₹${discountedPrice}</p>
-                <p class="text-gray-400 line-through text-sm">₹${product.price.toFixed(2)}</p>
-            </div>`;
-            }
-            return `<p class="">₹${product.price.toFixed(2)}</p>`;
         }
 
         function generateActionButtons(product) {
@@ -371,39 +319,24 @@
         });
 
         //  function for price inputs
-        let priceTimeout;
-        function handlePriceChange() {
-            clearTimeout(priceTimeout);
-            priceTimeout = setTimeout(() => {
-                const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
-                const maxPrice = parseFloat(document.getElementById('maxPrice').value) || 0;
-
-                //  fetch products
-                if (!maxPrice || minPrice <= maxPrice) {
-                    currentFilters.minPrice = minPrice || '';
-                    currentFilters.maxPrice = maxPrice || '';
-                    currentFilters.page = 1;
-                    fetchProducts();
-                }
-            }, 500);
-        }
+        const { handlePriceChange, validatePriceRange } = createPriceRangeHandlers({
+            minInput: document.getElementById('minPrice'),
+            maxInput: document.getElementById('maxPrice'),
+            onValidRange: ({ minPrice, maxPrice }) => {
+                currentFilters.minPrice = minPrice;
+                currentFilters.maxPrice = maxPrice;
+                currentFilters.page = 1;
+                fetchProducts();
+            },
+            onInvalidRange: () => {
+                currentFilters.maxPrice = '';
+                showToast('Maximum price cannot be less than minimum price', 'error');
+            }
+        });
 
         // event listeners for price validation
         document.getElementById('minPrice').addEventListener('blur', validatePriceRange);
         document.getElementById('maxPrice').addEventListener('blur', validatePriceRange);
-
-        function validatePriceRange() {
-            const minPrice = parseFloat(document.getElementById('minPrice').value) || 0;
-            const maxPrice = parseFloat(document.getElementById('maxPrice').value) || 0;
-
-            // show error if max price is set and is less than min price
-            if (maxPrice && minPrice > maxPrice) {
-                showToast('Maximum price cannot be less than minimum price', 'error');
-                // Clear the max price field
-                document.getElementById('maxPrice').value = '';
-                currentFilters.maxPrice = '';
-            }
-        }
 
         //  event listeners for continuous updates
         document.getElementById('minPrice').addEventListener('input', handlePriceChange);
@@ -435,103 +368,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             initializeFiltersFromURL();
         });
-
-        async function addToCart(productId) {
-            try {
-                const response = await axios.post('/cart', { productId });
-                const data = response.data;
-
-                if (data.success) {
-                    // Update cart count in header 
-                    const cartCountElement = document.getElementById('cartCount');
-                    if (cartCountElement) {
-                        cartCountElement.textContent = data.cartCount;
-                    }
-                    showToast('Item added to cart successfully', 'success');
-                    document.getElementById("cart-quantity").innerText = data.totalQuantity
-                    document.getElementById("cart-quantity-mobile").innerText = data.totalQuantity
-                } else {
-                    showToast(data.message, 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showToast(error.response?.data?.message || 'Error adding item to cart', 'error');
-            }
-        }
-
-        async function addToWishlist(productId) {
-            try {
-                const response = await axios.post('/wishlist', { productId });
-                const data = response.data;
-
-                if (data.success) {
-                    // Find all wishlist buttons for this product
-                    const wishlistButtons = document.querySelectorAll(`button[onclick="addToWishlist('${productId}')"]`);
-
-                    wishlistButtons.forEach(button => {
-                        // Create the new button 
-                        const newButton = document.createElement('button');
-                        newButton.setAttribute('onclick', `removeFromWishlist('${productId}')`);
-                        newButton.className = 'p-2 rounded-full bg-primary-accent text-white hover:bg-gray-100 hover:text-black transition-colors duration-300';
-
-                        // Set the SVG content
-                        newButton.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                `;
-
-                        // Replace the old button with the new one
-                        button.parentNode.replaceChild(newButton, button);
-                    });
-                    showToast('Item added to wishlist successfully', 'success');
-                    document.getElementById("wishlist-quantity").innerText = data.totalQuantity
-                    document.getElementById("wishlist-quantity-mobile").innerText = data.totalQuantity
-
-                } else {
-                    showToast(data.message || 'Failed to add item', 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showToast(error.response?.data?.message || 'Error adding item to wishlist', 'error');
-            }
-        }
-
-        async function removeFromWishlist(productId) {
-            try {
-                const response = await axios.put('/wishlist', { productId });
-                const data = response.data;
-                if (response.data.success) {
-                    // Find all wishlist buttons for this product
-                    const wishlistButtons = document.querySelectorAll(`button[onclick="removeFromWishlist('${productId}')"]`);
-
-                    wishlistButtons.forEach(button => {
-                        // Create the new button 
-                        const newButton = document.createElement('button');
-                        newButton.setAttribute('onclick', `addToWishlist('${productId}')`);
-                        newButton.className = 'p-2 rounded-full bg-gray-100 hover:bg-red-600 hover:text-white transition-colors duration-300';
-
-                        // Set the SVG content
-                        newButton.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                `;
-
-                        // Replace the old button with the new one
-                        button.parentNode.replaceChild(newButton, button);
-                    });
-                    showToast('Product removed from wishlist successfully', 'success');
-                    document.getElementById("wishlist-quantity").innerText = data.totalQuantity
-                    document.getElementById("wishlist-quantity-mobile").innerText = data.totalQuantity
-                } else {
-                    showToast(response.data.message || 'Failed to remove item', 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showToast('Error removing item from wishlist', 'error');
-            }
-        }
 
         //  function for pagination
         function changePage(page) {
