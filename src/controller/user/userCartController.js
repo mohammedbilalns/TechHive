@@ -11,7 +11,7 @@ import {
   getSessionUserId,
 } from "../../utils/controllerHelpers.js";
 
-export const getCart = asyncHandler(async (req, res) => {
+export const renderUserCartPage = asyncHandler(async (req, res) => {
   delete req.session.coupon;
 
   const userId = getSessionUserId(req);

@@ -12,7 +12,7 @@ import {
 } from "../../utils/controllerHelpers.js";
 
 // get the coupons page
-export const renderCouponsePage = asyncHandler(async (req, res) => {
+export const renderCouponManagementPage = asyncHandler(async (req, res) => {
   const page = getPageNumber(req.query.page);
   const limit = 10;
 

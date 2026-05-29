@@ -10,7 +10,7 @@ import {
   getSessionUserId,
 } from "../../utils/controllerHelpers.js";
 
-export const getCoupons = asyncHandler(async (req, res) => {
+export const renderUserCouponsPage = asyncHandler(async (req, res) => {
   const currentDate = new Date();
   const userId = getSessionUserId(req);
   const page = getPageNumber(req.query.page);

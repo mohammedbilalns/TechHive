@@ -326,7 +326,7 @@ export const verifyPayment = asyncHandler(async (req, res) => {
   }
 });
 
-export const getOrderSuccess = asyncHandler(async (req, res) => {
+export const renderOrderSuccessPage = asyncHandler(async (req, res) => {
   const orderId = req.params.orderId;
 
   // Validate if orderId is a valid  ObjectId
@@ -347,7 +347,7 @@ export const getOrderSuccess = asyncHandler(async (req, res) => {
   });
 });
 
-export const getOrders = asyncHandler(async (req, res) => {
+export const renderUserOrdersPage = asyncHandler(async (req, res) => {
   const userId = req.session.user.id;
   const page = getPageNumber(req.query.page);
   const limit = 10;

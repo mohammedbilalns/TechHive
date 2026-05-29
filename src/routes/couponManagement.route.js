@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {
-  renderCouponsePage,
+  renderCouponManagementPage,
   addCoupon,
   getCouponDetails,
   updateCoupon,
@@ -10,7 +10,7 @@ import {
 
 const router = Router();
 
-router.get("/", renderCouponsePage); // get all coupons page
+router.get("/", renderCouponManagementPage); // get all coupons page
 router.post("/", addCoupon); // add coupon
 router
   .route("/:couponId")

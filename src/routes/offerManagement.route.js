@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {
-  getOffers,
+  renderOffersPage,
   addOffer,
   getOfferDetails,
   updateOffer,
@@ -10,7 +10,7 @@ import {
 
 const router = Router();
 
-router.get("/", getOffers); // get all offers page
+router.get("/",renderOffersPage); // get all offers page
 router.post("/", addOffer); // add offer
 router
   .route("/:offerId")

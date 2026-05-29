@@ -12,7 +12,7 @@ import {
   getSessionUserId,
 } from "../../utils/controllerHelpers.js";
 
-export const renderWishlistPage = asyncHandler(async (req, res) => {
+export const renderUserWishlistPage = asyncHandler(async (req, res) => {
   const page = getPageNumber(req.query.page);
   const limit = 8;
 

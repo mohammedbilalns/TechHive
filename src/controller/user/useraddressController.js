@@ -16,7 +16,7 @@ import {
 } from "../../utils/controllerHelpers.js";
 
 // get all addresses of a user
-export const getAddresses = asyncHandler(async (req, res) => {
+export const renderUserAddressesPage = asyncHandler(async (req, res) => {
   const user = await getUserFromSession(req);
 
   let addresses = await addressModel.find({ userId: user._id });

@@ -5,14 +5,14 @@ import {
   verifyPayment,
 } from "../controller/user/userOrdersController.js";
 import {
-  renderCheckoutPage,
+  renderOrderCheckoutPage,
   removeCoupon,
   applyCoupon,
 } from "../controller/user/userCheckoutController.js";
 
 const router = Router();
 
-router.get("/checkout", renderCheckoutPage); // get checkout
+router.get("/checkout", renderOrderCheckoutPage); // get checkout
 router.post("/checkout/placeorder", placeOrder); // place order
 router.post("/checkout/verifypayment", verifyPayment); // verify payment
 router.post("/checkout/apply-coupon", applyCoupon); // apply coupon

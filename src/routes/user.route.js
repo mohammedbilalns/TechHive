@@ -4,9 +4,9 @@ import { checkUserSession, isUserLoggedIn } from "../middlewares/userauth.js";
 import cartItems from "../middlewares/cartItems.js";
 import wishlistItems from "../middlewares/wishlistItems.js";
 import averageRatings from "../middlewares/averageRatings.js";
-import userProductController from "../controller/user/userProductsController.js";
+import { renderHomePage,renderLandingPage, renderProductPage,renderCategoryPage,renderAllProductsPage } from "../controller/user/ProductsController.js";
 import userSearchController from "../controller/user/userSearchController.js";
-import { getCoupons } from "../controller/user/userCouponsController.js";
+import { renderUserCouponsPage } from "../controller/user/userCouponsController.js";
 import * as notfoundController from "../controller/user/notFoundController.js";
 import userCartRouter from "./userCart.route.js";
 import userWishlistRouter from "./userWishlist.route.js";
@@ -21,7 +21,7 @@ import userAuthRouter from "./userAuthRouter.js";
 const router = Router();
 
 router.use("/auth", userAuthRouter);
-router.get("/notfound", notfoundController.loadNotfound); // load not found page
+router.get("/notfound", notfoundController.renderNotFoundPage); // load not found page
 
 //---- products  routes ----
 router.use(cartItems.fetchCartItems); // middleware to set the cart Quantity
@@ -29,23 +29,23 @@ router.use(wishlistItems.fetchWishlistItems); // middleware to set the wishlist 
 router.get(
   "/category/:id",
   averageRatings.calculateAverageRatings,
-  userProductController.viewCategory,
+  renderCategoryPage
 ); // view category page
 router.get(
   "/allproducts",
   averageRatings.calculateAverageRatings,
-  userProductController.loadAllProducts,
+  renderAllProductsPage
 ); // load all products page
 router.get(
   "/product/:id",
   averageRatings.calculateAverageRatings,
-  userProductController.viewProduct,
+  renderProductPage
 ); // view product page
 router.get(
   "/",
   isUserLoggedIn,
   averageRatings.calculateAverageRatings,
-  userProductController.loadLanding,
+  renderLandingPage
 ); // load landing page
 router.get(
   "/search",
@@ -57,7 +57,7 @@ router.use(checkUserSession);
 router.get(
   "/home",
   averageRatings.calculateAverageRatings,
-  userProductController.loadHome,
+renderHomePage
 ); // load home page
 
 //---- user profile management ----
@@ -70,6 +70,6 @@ router.use("/addresses", userAddressRouter);
 router.use("/account", userAccountRouter);
 router.use("/checkout", userCheckoutRouter);
 //---- user coupons ----
-router.get("/coupons", getCoupons);
+router.get("/coupons", renderUserCouponsPage);
 
 export default router;

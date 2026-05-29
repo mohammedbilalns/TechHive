@@ -12,7 +12,7 @@ import {
   getUserFromSession,
 } from "../../utils/controllerHelpers.js";
 
-export const getAccountDetails = asyncHandler(async (req, res) => {
+export const renderUserAccountPage = asyncHandler(async (req, res) => {
   const user = await getUserFromSession(req);
 
   // Generate referral code

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {
-  getCart,
+  renderUserCartPage,
   addToCart,
   updateQuantity,
   removeFromCart,
@@ -10,10 +10,10 @@ const router = Router();
 
 router
   .route("/")
-  .get(getCart) // get cart
+  .get(renderUserCartPage) // get cart
   .post(addToCart) // add to cart
   .patch(updateQuantity); // update quantity
-router.delete("/:productId", removeFromCart); // remove from cart
+router.delete("/:productId", removeFromCart); // remov,e from cart
 router.post("/clear", clearCart); // clear cart
 
 export default router;

@@ -19,7 +19,7 @@ import {
   getUserFromSession,
 } from "../../utils/controllerHelpers.js";
 
-export const renderCheckoutPage = asyncHandler(async (req, res) => {
+export const renderOrderCheckoutPage = asyncHandler(async (req, res) => {
   const userId = getSessionUserId(req);
   const [user, cart, addresses, wallet] = await Promise.all([
     getUserFromSession(req),

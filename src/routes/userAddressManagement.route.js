@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {
-  getAddresses,
+  renderUserAddressesPage,
   getAddress,
   addAddress,
   updateAddress,
@@ -11,7 +11,7 @@ const router = Router();
 
 router
   .route("/")
-  .get(getAddresses) // get all addresses
+  .get(renderUserAddressesPage) // get all addresses
   .post(addAddress); // add address
 router.route("/:id").put(updateAddress).delete(deleteAddress).get(getAddress);
 export default router;

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {
-  renderWishlistPage,
+  renderUserWishlistPage,
   addToWishlist,
   removeFromWishlist,
 } from "../controller/user/userWishlistController.js";
@@ -9,7 +9,7 @@ const router = Router();
 
 router
   .route("/")
-  .get(renderWishlistPage) // get wishlist
+  .get(renderUserWishlistPage) // get wishlist
   .post(addToWishlist) // add to wishlist
   .put(removeFromWishlist); // remove from wishlist
 

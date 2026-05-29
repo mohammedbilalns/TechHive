@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {
-  getWallet,
+  renderUserWalletPage,
   addMoney,
   verifyWalletPayment,
 } from "../controller/user/userWalletController.js";
@@ -9,7 +9,7 @@ const router = Router();
 
 router
   .route("/")
-  .get(getWallet) // get wallet
+  .get(renderUserWalletPage) // get wallet
   .post(addMoney); // add money to the wallet
 router.post("/verify-payment", verifyWalletPayment); // verify wallet payment
 

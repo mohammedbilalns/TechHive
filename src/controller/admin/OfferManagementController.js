@@ -57,7 +57,7 @@ const checkExistingOffers = async (
   return existingOffer;
 };
 
-export const getOffers = asyncHandler(async (req, res) => {
+export const renderOffersPage = asyncHandler(async (req, res) => {
   const page = getPageNumber(req.query.page);
   const limit = 10;
   const totalOffers = await offerModel.countDocuments();

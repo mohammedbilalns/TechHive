@@ -16,7 +16,7 @@ import {
   getSessionUserId,
 } from "../../utils/controllerHelpers.js";
 
-export const getWallet = asyncHandler(async (req, res) => {
+export const renderUserWalletPage = asyncHandler(async (req, res) => {
   const page = getPageNumber(req.query.page);
   const limit = 10;
   const userId = getSessionUserId(req);

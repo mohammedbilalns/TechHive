@@ -14,7 +14,7 @@ import {
 } from "../../utils/controllerHelpers.js";
 
 // Get all orders
-export const getOrders = asyncHandler(async (req, res) => {
+export const renderOrderManagementPage = asyncHandler(async (req, res) => {
   const page = getPageNumber(req.query.page);
   const limit = 10;
   const search = req.query.search || "";
