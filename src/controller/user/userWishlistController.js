@@ -12,7 +12,7 @@ import {
   getSessionUserId,
 } from "../../utils/controllerHelpers.js";
 
-const getWishlist = asyncHandler(async (req, res) => {
+export const renderUserWishlistPage = asyncHandler(async (req, res) => {
   const page = getPageNumber(req.query.page);
   const limit = 8;
 
@@ -53,7 +53,7 @@ const getWishlist = asyncHandler(async (req, res) => {
   });
 });
 
-const addToWishlist = asyncHandler(async (req, res) => {
+export const addToWishlist = asyncHandler(async (req, res) => {
   const { productId } = req.body;
   const userId = getSessionUserId(req);
 
@@ -91,7 +91,7 @@ const addToWishlist = asyncHandler(async (req, res) => {
   });
 });
 
-const removeFromWishlist = asyncHandler(async (req, res) => {
+export const removeFromWishlist = asyncHandler(async (req, res) => {
   const { productId } = req.body;
   const userId = getSessionUserId(req);
 
@@ -116,5 +116,3 @@ const removeFromWishlist = asyncHandler(async (req, res) => {
     totalQuantity,
   });
 });
-
-export default { getWishlist, addToWishlist, removeFromWishlist };

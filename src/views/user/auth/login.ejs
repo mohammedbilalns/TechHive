@@ -24,7 +24,7 @@
             Continue with Google
           </button>
         </form>
-        <form id="userlogin" method="post" action="/login">
+        <form id="userlogin" method="post" action="/auth/login">
           <p
             class="text-3xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
             Log in to TechHive</p>
@@ -65,9 +65,9 @@
                 <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               </div>
             </button>
-            <a href="/forgot-password" class="text-sm text-[#DA0037] hover:text-[#ff1744] mb-4 transition-colors">Forgot
+            <a href="/auth/forgot-password" class="text-sm text-[#DA0037] hover:text-[#ff1744] mb-4 transition-colors">Forgot
               Password?</a>
-            <div class="text-sm text-gray-600">Don't have an account? <a href="/signup"
+            <div class="text-sm text-gray-600">Don't have an account? <a href="/auth/signup"
                 class="text-[#DA0037] hover:text-[#ff1744] font-semibold transition-colors">Sign Up</a></div>
           </div>
         </form>

@@ -6,7 +6,7 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 import { getPageNumber } from "../../utils/controllerHelpers.js";
 
-const searchProducts = asyncHandler(async (req, res) => {
+const renderSearchProductsPage = asyncHandler(async (req, res) => {
   const query = req.query.q || "";
   const page = getPageNumber(req.query.page);
   const limit = 8;
@@ -131,5 +131,5 @@ const searchProducts = asyncHandler(async (req, res) => {
 });
 
 export default {
-  searchProducts,
+  searchProducts: renderSearchProductsPage,
 };

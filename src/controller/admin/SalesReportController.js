@@ -8,7 +8,7 @@ import { AdminSalesReportErrorMessages } from "../../constants/errorMessages.js"
 import { ADMIN_VIEW_PATHS } from "../../constants/viewPaths.js";
 import { getPageNumber } from "../../utils/controllerHelpers.js";
 
-export const renderSalesReport = asyncHandler(async (_req, res) => {
+export const renderSalesReportPage = asyncHandler(async (_req, res) => {
   res.render(ADMIN_VIEW_PATHS.SalesReport, {
     page: "salesreport",
   });
@@ -748,4 +748,3 @@ export const downloadReport = asyncHandler(async (req, res) => {
     );
   }
 });
-

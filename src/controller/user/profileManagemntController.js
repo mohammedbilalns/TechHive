@@ -1,18 +1,20 @@
 import bcrypt from "bcryptjs";
 import referralCodeUtils from "../../utils/referralCode.js";
+import { UserModel } from "../../model/userModel.js";
 import { referralModel } from "../../model/referralModel.js";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { AppError } from "../../utils/appError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
-import { AuthErrorMessages } from "../../constants/errorMessages.js";
+import { AuthErrorMessages, UserProfileErrorMessages } from "../../constants/errorMessages.js";
 import { SuccessMessage } from "../../constants/successMessage.js";
 import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 import {
   getSessionUserId,
   getUserFromSession,
+  mapUserResponse,
 } from "../../utils/controllerHelpers.js";
 
-export const getAccountDetails = asyncHandler(async (req, res) => {
+export const renderUserAccountPage = asyncHandler(async (req, res) => {
   const user = await getUserFromSession(req);
 
   // Generate referral code
@@ -35,21 +37,31 @@ export const getAccountDetails = asyncHandler(async (req, res) => {
 });
 
 export const updateProfile = asyncHandler(async (req, res) => {
-  const { fullname } = req.body;
-  const userId = getSessionUserId(req);
-  const updatedUser = await UserModel.findByIdAndUpdate(
-    userId,
-    { fullname },
-    { new: true },
-  );
-  if (!updatedUser) {
-    throw new AppError(HttpStatus.NOT_FOUND, AuthErrorMessages.USER_NOT_FOUND);
+  let { fullname } = req.body;
+  fullname = fullname.trim()
+  if(!fullname) throw new AppError(HttpStatus.BAD_REQUEST, UserProfileErrorMessages.INVALID_PROFILE_DATA)
+  let updatedUser = null;
+  if(fullname){
+    const userId = getSessionUserId(req);
+    updatedUser = await UserModel.findByIdAndUpdate(
+
+      userId,
+      { fullname },
+      { new: true },
+    );
+    if (!updatedUser) {
+      throw new AppError(HttpStatus.NOT_FOUND, AuthErrorMessages.USER_NOT_FOUND);
+    }
+
+    // Update session
+    req.session.user.fullname = updatedUser.fullname;
   }
+
 
   res.status(HttpStatus.OK).json({
     success: true,
     message: SuccessMessage.PROFILE_UPDATED,
-    user: updatedUser,
+    user: mapUserResponse(updatedUser),
   });
 });
 

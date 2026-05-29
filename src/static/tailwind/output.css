@@ -555,11 +555,17 @@ video {
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6, .logo-text {
-  font-family: 'Poppins', sans-serif;
+h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .logo-text {
+  font-family: "Poppins", sans-serif;
 }
 
 .container {
@@ -602,12 +608,12 @@ h1, h2, h3, h4, h5, h6, .logo-text {
 }
 
 input::-moz-placeholder {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-weight: 400;
 }
 
 input::placeholder {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-weight: 400;
 }
 
@@ -794,6 +800,10 @@ input::placeholder {
 
 .pointer-events-none {
   pointer-events: none;
+}
+
+.\!visible {
+  visibility: visible !important;
 }
 
 .visible {
@@ -2480,19 +2490,19 @@ input::placeholder {
 }
 
 :root {
-  --color-primary-dark: #384B70;
+  --color-primary-dark: #384b70;
   /* Navbar background */
   --color-primary-light: #507687;
   /* Links, focus borders */
-  --color-primary-white: #EDEDED;
-  --color-primary-accent: #DA0037;
+  --color-primary-white: #ededed;
+  --color-primary-accent: #da0037;
   --color-primary-hover: #010101;
   --color-primary-black: #171717;
   --color-primary-green: #008767;
-  --color-background-green: #00B087;
-  --color-background: #F4F6FF;
+  --color-background-green: #00b087;
+  --color-background: #f4f6ff;
   /* Page background */
-  --color-button: #10375C;
+  --color-button: #10375c;
   /* Button background */
 }
 

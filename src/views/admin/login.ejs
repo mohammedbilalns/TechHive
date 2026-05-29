@@ -17,7 +17,7 @@
       </div>
       <!-- Form Section -->
       <div class="bg-gradient-to-br from-gray-50 to-white p-6 md:p-12 flex-1">
-        <form id="adminLoginForm" action="/admin/login" method="post" novalidate class="w-full">
+        <form id="adminLoginForm" action="/admin/auth/login" method="post" novalidate class="w-full">
           <p
             class="text-3xl font-bold text-gray-800 mb-2 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
             Admin Login</p>
@@ -113,7 +113,7 @@
           loginLoader.classList.remove('hidden');
           loginButton.disabled = true;
 
-          const response = await axios.post('/admin/login', {
+          const response = await axios.post('/admin/auth/login', {
             email,
             password
           });

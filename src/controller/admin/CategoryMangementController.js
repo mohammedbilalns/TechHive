@@ -13,7 +13,7 @@ import {
 } from "../../utils/controllerHelpers.js";
 
 //---- Fetch the categories page----
-export const getCategories = asyncHandler(async (req, res) => {
+export const renderCategoriesPage = asyncHandler(async (req, res) => {
   const { message, alertType } = req.query;
   const page = getPageNumber(req.query.page);
   const limit = 10;
@@ -169,5 +169,3 @@ export const editCategory = asyncHandler(async (req, res) => {
     category: updatedCategory,
   });
 });
-
-

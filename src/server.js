@@ -1,4 +1,5 @@
 import http from "http";
+import inspector from "node:inspector";
 import app from "./app.js";
 import { connectDb, closeDb } from "./db/connect.js";
 import logger from "./utils/logger.js";
@@ -46,7 +47,7 @@ const gracefulShutdown = async (signal) => {
   const forceExit = setTimeout(() => {
     logger.error("Shutdown timed out. Forcing exit...");
     process.exit(1);
-  }, 10000);
+  }, 2000);
 
   server.closeAllConnections();
   server.close(async () => {
@@ -56,6 +57,9 @@ const gracefulShutdown = async (signal) => {
     try {
       await closeDb();
       logger.info("DB_CLOSE_STATUS", "Closed");
+      if (inspector.url() !== undefined) {
+        inspector.close();
+      }
       process.exit(0);
     } catch (error) {
       logger.error("DB_CLOSE_ERROR", error);
@@ -65,5 +69,5 @@ const gracefulShutdown = async (signal) => {
 };
 
 process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
-
 process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+process.on("SIGUSR2", () => gracefulShutdown("SIGUSR2"));

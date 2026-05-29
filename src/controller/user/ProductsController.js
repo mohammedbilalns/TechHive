@@ -9,7 +9,7 @@ import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 import { getPageNumber } from "../../utils/controllerHelpers.js";
 
 // ---- load home ---- homepage
-const loadHome = asyncHandler(async (req, res) => {
+export const renderHomePage = asyncHandler(async (req, res) => {
   const allProducts = await productModel.find({ status: "Active" }).limit(6);
 
   // Fetch all categories
@@ -30,7 +30,7 @@ const loadHome = asyncHandler(async (req, res) => {
   });
 });
 
-const loadLanding = asyncHandler(async (req, res) => {
+export const renderLandingPage = asyncHandler(async (_req, res) => {
   const allProducts = await productModel.find({ status: "Active" }).limit(6);
 
   // Fetch all categories
@@ -48,7 +48,7 @@ const loadLanding = asyncHandler(async (req, res) => {
   });
 });
 
-const loadAllProducts = asyncHandler(async (req, res) => {
+export const renderAllProductsPage = asyncHandler(async (req, res) => {
   const page = getPageNumber(req.query.page);
   const limit = 4; // Number of categories per page
 
@@ -106,7 +106,7 @@ const loadAllProducts = asyncHandler(async (req, res) => {
   });
 });
 
-const viewProduct = asyncHandler(async (req, res) => {
+export const renderProductPage = asyncHandler(async (req, res) => {
   const productId = req.params.id;
   const page = getPageNumber(req.query.page);
   const reviewsPerPage = 5;
@@ -196,7 +196,7 @@ const viewProduct = asyncHandler(async (req, res) => {
   });
 });
 
-const viewCategory = asyncHandler(async (req, res) => {
+export const renderCategoryPage = asyncHandler(async (req, res) => {
   const categoryId = req.params.id;
   const page = getPageNumber(req.query.page);
   const limit = 8;
@@ -311,10 +311,3 @@ const viewCategory = asyncHandler(async (req, res) => {
   });
 });
 
-export default {
-  loadHome,
-  loadLanding,
-  loadAllProducts,
-  viewProduct,
-  viewCategory,
-};

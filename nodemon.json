@@ -1,0 +1,7 @@
+{
+  "watch": ["src"],
+  "ext": "js,json,ejs",
+  "ignore": ["src/static/**", "src/static/tailwind/output.css"],
+  "delay": 2000,
+  "exec": "node --inspect --env-file=.env ./src/server.js"
+}

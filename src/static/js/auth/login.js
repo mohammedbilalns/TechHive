@@ -38,7 +38,7 @@ form.addEventListener("submit", async function (event) {
   try {
     setLoadingState(loginButton, loginLoader, "Logging in...");
 
-    const response = await axios.post("/login", {
+    const response = await axios.post("/auth/login", {
       email,
       password,
     });

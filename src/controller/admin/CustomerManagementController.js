@@ -10,7 +10,7 @@ import {
   getPaginationMeta,
 } from "../../utils/controllerHelpers.js";
 
-export const getCustomers = asyncHandler(async (req, res) => {
+export const renderCustomersPage = asyncHandler(async (req, res) => {
   let message = req.query.message;
   let alertType = req.query.alertType;
   const page = getPageNumber(req.query.page);
@@ -94,5 +94,3 @@ export const unblockCustomer = asyncHandler(async (req, res) => {
     customer,
   });
 });
-
-;

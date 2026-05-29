@@ -19,7 +19,7 @@ import {
   getUserFromSession,
 } from "../../utils/controllerHelpers.js";
 
-const getCheckout = asyncHandler(async (req, res) => {
+export const renderOrderCheckoutPage = asyncHandler(async (req, res) => {
   const userId = getSessionUserId(req);
   const [user, cart, addresses, wallet] = await Promise.all([
     getUserFromSession(req),
@@ -45,8 +45,9 @@ const getCheckout = asyncHandler(async (req, res) => {
     }
   }
 
-  const { originalPrice, totalSavings, total } =
-    calculateCartTotals(cart.items);
+  const { originalPrice, totalSavings, total } = calculateCartTotals(
+    cart.items,
+  );
 
   // Apply coupon from session if exists
   const sessionCoupon = req.session.coupon;
@@ -64,7 +65,7 @@ const getCheckout = asyncHandler(async (req, res) => {
   });
 });
 
-const applyCoupon = asyncHandler(async (req, res) => {
+export const applyCoupon = asyncHandler(async (req, res) => {
   const { couponCode } = req.body;
   const userId = getSessionUserId(req);
 
@@ -119,7 +120,7 @@ const applyCoupon = asyncHandler(async (req, res) => {
   });
 });
 
-const removeCoupon = asyncHandler(async (req, res) => {
+export const removeCoupon = asyncHandler(async (req, res) => {
   // Remove coupon from session
   delete req.session.coupon;
 
@@ -128,9 +129,3 @@ const removeCoupon = asyncHandler(async (req, res) => {
     message: SuccessMessage.COUPON_REMOVED,
   });
 });
-
-export default {
-  getCheckout,
-  applyCoupon,
-  removeCoupon,
-};

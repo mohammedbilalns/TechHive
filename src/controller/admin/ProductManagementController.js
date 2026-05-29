@@ -42,7 +42,7 @@ export const productUpload = multer({
   },
 });
 
-export const getProducts = asyncHandler(async (req, res) => {
+export const renderProductManagementPage = asyncHandler(async (req, res) => {
   let message = req.query.message;
   let alertType = req.query.alertType;
   const page = getPageNumber(req.query.page);
@@ -155,7 +155,7 @@ export const activateProduct = asyncHandler(async (req, res) => {
   });
 });
 
-export const getAddProduct = asyncHandler(async (_req, res) => {
+export const renderAddProductPage = asyncHandler(async (_req, res) => {
   const categories = await categoryModel.find({ status: "Active" });
   res.render(ADMIN_VIEW_PATHS.AddProduct, { categories, page: "products" });
 });
@@ -230,7 +230,7 @@ export const addProduct = asyncHandler(async (req, res) => {
   });
 });
 
-export const getEditProduct = asyncHandler(async (req, res) => {
+export const renderUpdateProductPage = asyncHandler(async (req, res) => {
   const productId = req.params.productid;
 
   if (!mongoose.Types.ObjectId.isValid(productId)) {
@@ -378,4 +378,3 @@ export const editProduct = asyncHandler(async (req, res) => {
     message: AdminProductSuccessMessages.UPDATED,
   });
 });
-

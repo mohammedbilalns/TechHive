@@ -11,7 +11,7 @@ import {
   getSessionUserId,
 } from "../../utils/controllerHelpers.js";
 
-const getCart = asyncHandler(async (req, res) => {
+export const renderUserCartPage = asyncHandler(async (req, res) => {
   delete req.session.coupon;
 
   const userId = getSessionUserId(req);
@@ -27,8 +27,9 @@ const getCart = asyncHandler(async (req, res) => {
     });
   }
 
-  const { subtotal, originalPrice, totalDiscount, total } =
-    calculateCartTotals(cart.items);
+  const { subtotal, originalPrice, totalDiscount, total } = calculateCartTotals(
+    cart.items,
+  );
   const shipping = 0;
 
   res.render(USER_VIEW_PATHS.ProfileCart, {
@@ -43,7 +44,7 @@ const getCart = asyncHandler(async (req, res) => {
   });
 });
 
-const addToCart = asyncHandler(async (req, res) => {
+export const addToCart = asyncHandler(async (req, res) => {
   const { productId } = req.body;
   const userId = getSessionUserId(req);
 
@@ -109,7 +110,7 @@ const addToCart = asyncHandler(async (req, res) => {
   });
 });
 
-const removeFromCart = asyncHandler(async (req, res) => {
+export const removeFromCart = asyncHandler(async (req, res) => {
   const { productId } = req.params;
   const userId = getSessionUserId(req);
 
@@ -142,7 +143,7 @@ const removeFromCart = asyncHandler(async (req, res) => {
   });
 });
 
-const updateQuantity = asyncHandler(async (req, res) => {
+export const updateQuantity = asyncHandler(async (req, res) => {
   const { productId, action } = req.body;
   const userId = getSessionUserId(req);
 
@@ -218,7 +219,7 @@ const updateQuantity = asyncHandler(async (req, res) => {
   });
 });
 
-const clearCart = asyncHandler(async (req, res) => {
+export const clearCart = asyncHandler(async (req, res) => {
   const userId = getSessionUserId(req);
 
   // Find and remove all items from cart
@@ -235,11 +236,3 @@ const clearCart = asyncHandler(async (req, res) => {
     message: SuccessMessage.CART_CLEARED,
   });
 });
-
-export default {
-  getCart,
-  addToCart,
-  updateQuantity,
-  removeFromCart,
-  clearCart,
-};

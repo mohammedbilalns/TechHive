@@ -6,7 +6,7 @@ import { AppError } from "../../utils/appError.js";
 import { UserReviewErrorMessages } from "../../constants/errorMessages.js";
 import { UserReviewSuccessMessages } from "../../constants/successMessage.js";
 
-const addReview = asyncHandler(async (req, res) => {
+export const addReview = asyncHandler(async (req, res) => {
   const { productName, rating, comment } = req.body;
   const userId = req.session.user.id;
 
@@ -64,7 +64,7 @@ const addReview = asyncHandler(async (req, res) => {
   });
 });
 
-const getReview = asyncHandler(async (req, res) => {
+export const getReview = asyncHandler(async (req, res) => {
   const { productName } = req.query;
   const userId = req.session.user.id;
 
@@ -110,5 +110,3 @@ const getReview = asyncHandler(async (req, res) => {
     },
   });
 });
-
-export default { addReview, getReview };

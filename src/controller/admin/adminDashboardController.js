@@ -278,4 +278,3 @@ export const getDashboardData = asyncHandler(async (req, res) => {
 export const renderDashboard = asyncHandler(async (_req, res) => {
   res.render(ADMIN_VIEW_PATHS.Dashboard, { page: "dashboard" });
 });
-

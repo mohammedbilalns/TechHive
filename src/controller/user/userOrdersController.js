@@ -18,7 +18,7 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 import { getPageNumber } from "../../utils/controllerHelpers.js";
 
-const placeOrder = asyncHandler(async (req, res) => {
+export const placeOrder = asyncHandler(async (req, res) => {
   const { addressId, paymentMethod, couponCode } = req.body;
   const userId = req.session.user.id;
 
@@ -261,7 +261,7 @@ const placeOrder = asyncHandler(async (req, res) => {
   });
 });
 
-const verifyPayment = asyncHandler(async (req, res) => {
+export const verifyPayment = asyncHandler(async (req, res) => {
   const {
     razorpay_payment_id,
     razorpay_order_id,
@@ -280,12 +280,10 @@ const verifyPayment = asyncHandler(async (req, res) => {
     const order = await orderModel.findById(orderId);
 
     if (!order) {
-      return res
-        .status(HttpStatus.NOT_FOUND)
-        .json({
-          success: false,
-          message: UserOrderErrorMessages.ORDER_NOT_FOUND,
-        });
+      return res.status(HttpStatus.NOT_FOUND).json({
+        success: false,
+        message: UserOrderErrorMessages.ORDER_NOT_FOUND,
+      });
     }
 
     // Check stock availability for all items
@@ -328,7 +326,7 @@ const verifyPayment = asyncHandler(async (req, res) => {
   }
 });
 
-const getOrderSuccess = asyncHandler(async (req, res) => {
+export const renderOrderSuccessPage = asyncHandler(async (req, res) => {
   const orderId = req.params.orderId;
 
   // Validate if orderId is a valid  ObjectId
@@ -349,7 +347,7 @@ const getOrderSuccess = asyncHandler(async (req, res) => {
   });
 });
 
-const getOrders = asyncHandler(async (req, res) => {
+export const renderUserOrdersPage = asyncHandler(async (req, res) => {
   const userId = req.session.user.id;
   const page = getPageNumber(req.query.page);
   const limit = 10;
@@ -402,39 +400,33 @@ const getOrders = asyncHandler(async (req, res) => {
   });
 });
 
-const cancelOrderItem = asyncHandler(async (req, res) => {
+export const cancelOrderItem = asyncHandler(async (req, res) => {
   const { orderId, itemId } = req.params;
   const userId = req.session.user.id;
 
   const order = await orderModel.findOne({ _id: orderId, userId });
 
   if (!order) {
-    return res
-      .status(HttpStatus.NOT_FOUND)
-      .json({
-        success: false,
-        message: UserOrderErrorMessages.ORDER_NOT_FOUND,
-      });
+    return res.status(HttpStatus.NOT_FOUND).json({
+      success: false,
+      message: UserOrderErrorMessages.ORDER_NOT_FOUND,
+    });
   }
 
   const orderItem = order.items.id(itemId);
   if (!orderItem) {
-    return res
-      .status(HttpStatus.NOT_FOUND)
-      .json({
-        success: false,
-        message: UserOrderErrorMessages.ORDER_ITEM_NOT_FOUND,
-      });
+    return res.status(HttpStatus.NOT_FOUND).json({
+      success: false,
+      message: UserOrderErrorMessages.ORDER_ITEM_NOT_FOUND,
+    });
   }
 
   // Check if item can be cancelled
   if (["delivered", "cancelled", "returned"].includes(orderItem.status)) {
-    return res
-      .status(HttpStatus.BAD_REQUEST)
-      .json({
-        success: false,
-        message: UserOrderErrorMessages.ITEM_CANNOT_BE_CANCELLED,
-      });
+    return res.status(HttpStatus.BAD_REQUEST).json({
+      success: false,
+      message: UserOrderErrorMessages.ITEM_CANNOT_BE_CANCELLED,
+    });
   }
 
   // Update item status and set cancelled date
@@ -511,7 +503,7 @@ const cancelOrderItem = asyncHandler(async (req, res) => {
     .json({ success: true, message: UserOrderSuccessMessages.ITEM_CANCELLED });
 });
 
-const returnOrderItem = asyncHandler(async (req, res) => {
+export const returnOrderItem = asyncHandler(async (req, res) => {
   const { orderId, itemId } = req.params;
   const { reason } = req.body;
   const userId = req.session.user.id;
@@ -527,32 +519,26 @@ const returnOrderItem = asyncHandler(async (req, res) => {
   const order = await orderModel.findOne({ _id: orderId, userId });
 
   if (!order) {
-    return res
-      .status(HttpStatus.NOT_FOUND)
-      .json({
-        success: false,
-        message: UserOrderErrorMessages.ORDER_NOT_FOUND,
-      });
+    return res.status(HttpStatus.NOT_FOUND).json({
+      success: false,
+      message: UserOrderErrorMessages.ORDER_NOT_FOUND,
+    });
   }
 
   const orderItem = order.items.id(itemId);
   if (!orderItem) {
-    return res
-      .status(HttpStatus.NOT_FOUND)
-      .json({
-        success: false,
-        message: UserOrderErrorMessages.ORDER_ITEM_NOT_FOUND,
-      });
+    return res.status(HttpStatus.NOT_FOUND).json({
+      success: false,
+      message: UserOrderErrorMessages.ORDER_ITEM_NOT_FOUND,
+    });
   }
 
   // Check if item can be returned
   if (orderItem.status !== "delivered") {
-    return res
-      .status(HttpStatus.BAD_REQUEST)
-      .json({
-        success: false,
-        message: UserOrderErrorMessages.ITEM_CANNOT_BE_RETURNED,
-      });
+    return res.status(HttpStatus.BAD_REQUEST).json({
+      success: false,
+      message: UserOrderErrorMessages.ITEM_CANNOT_BE_RETURNED,
+    });
   }
 
   // Update item status to return_requested and add return information
@@ -564,36 +550,30 @@ const returnOrderItem = asyncHandler(async (req, res) => {
 
   await order.save();
 
-  res
-    .status(HttpStatus.OK)
-    .json({
-      success: true,
-      message: UserOrderSuccessMessages.RETURN_REQUEST_SUBMITTED,
-    });
+  res.status(HttpStatus.OK).json({
+    success: true,
+    message: UserOrderSuccessMessages.RETURN_REQUEST_SUBMITTED,
+  });
 });
 
-const retryPayment = asyncHandler(async (req, res) => {
+export const retryPayment = asyncHandler(async (req, res) => {
   const { orderId } = req.params;
   const userId = req.session.user.id;
 
   const order = await orderModel.findOne({ _id: orderId, userId });
 
   if (!order) {
-    return res
-      .status(HttpStatus.NOT_FOUND)
-      .json({
-        success: false,
-        message: UserOrderErrorMessages.ORDER_NOT_FOUND,
-      });
+    return res.status(HttpStatus.NOT_FOUND).json({
+      success: false,
+      message: UserOrderErrorMessages.ORDER_NOT_FOUND,
+    });
   }
 
   if (order.paymentStatus !== "pending") {
-    return res
-      .status(HttpStatus.BAD_REQUEST)
-      .json({
-        success: false,
-        message: UserOrderErrorMessages.PAYMENT_ALREADY_PROCESSED,
-      });
+    return res.status(HttpStatus.BAD_REQUEST).json({
+      success: false,
+      message: UserOrderErrorMessages.PAYMENT_ALREADY_PROCESSED,
+    });
   }
 
   // Check stock availability for all items before proceeding
@@ -628,7 +608,7 @@ const retryPayment = asyncHandler(async (req, res) => {
   });
 });
 
-const getPaymentFailed = asyncHandler(async (req, res) => {
+export const renderPaymentFailedPage = asyncHandler(async (req, res) => {
   const orderId = req.params.orderId;
 
   // Validate if orderId is a valid ObjectId
@@ -650,7 +630,7 @@ const getPaymentFailed = asyncHandler(async (req, res) => {
   });
 });
 
-const downloadInvoice = asyncHandler(async (req, res) => {
+export const downloadInvoice = asyncHandler(async (req, res) => {
   const { orderId, itemId } = req.params;
   const userId = req.session.user.id;
 
@@ -662,34 +642,28 @@ const downloadInvoice = asyncHandler(async (req, res) => {
     .populate("userId", "fullname email");
 
   if (!order) {
-    return res
-      .status(HttpStatus.NOT_FOUND)
-      .json({
-        success: false,
-        message: UserOrderErrorMessages.ORDER_NOT_FOUND,
-      });
+    return res.status(HttpStatus.NOT_FOUND).json({
+      success: false,
+      message: UserOrderErrorMessages.ORDER_NOT_FOUND,
+    });
   }
 
   const orderItem = order.items.id(itemId);
   if (!orderItem) {
-    return res
-      .status(HttpStatus.NOT_FOUND)
-      .json({
-        success: false,
-        message: UserOrderErrorMessages.ORDER_ITEM_NOT_FOUND,
-      });
+    return res.status(HttpStatus.NOT_FOUND).json({
+      success: false,
+      message: UserOrderErrorMessages.ORDER_ITEM_NOT_FOUND,
+    });
   }
 
   // Check if item status is valid for invoice
   if (
     !["delivered", "return requested", "returned"].includes(orderItem.status)
   ) {
-    return res
-      .status(HttpStatus.BAD_REQUEST)
-      .json({
-        success: false,
-        message: UserOrderErrorMessages.INVOICE_NOT_AVAILABLE,
-      });
+    return res.status(HttpStatus.BAD_REQUEST).json({
+      success: false,
+      message: UserOrderErrorMessages.INVOICE_NOT_AVAILABLE,
+    });
   }
 
   // Calculate item amount
@@ -949,7 +923,7 @@ const downloadInvoice = asyncHandler(async (req, res) => {
   doc.end();
 });
 
-const getOrderDetails = asyncHandler(async (req, res) => {
+export const getOrderDetails = asyncHandler(async (req, res) => {
   const orderId = req.params.orderId;
   const userId = req.session.user.id;
 
@@ -978,16 +952,3 @@ const getOrderDetails = asyncHandler(async (req, res) => {
     page: "orders",
   });
 });
-
-export default {
-  placeOrder,
-  getOrderSuccess,
-  getOrders,
-  cancelOrderItem,
-  verifyPayment,
-  returnOrderItem,
-  retryPayment,
-  getPaymentFailed,
-  downloadInvoice,
-  getOrderDetails,
-};

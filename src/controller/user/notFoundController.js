@@ -1,7 +1,7 @@
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 
-export const loadNotfound = asyncHandler((req, res) => {
+export const renderNotFoundPage = asyncHandler((req, res) => {
   const { message, alertType } = req.query;
 
   res.render(USER_VIEW_PATHS.NotFound, {

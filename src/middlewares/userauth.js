@@ -5,14 +5,14 @@ import logger from "../utils/logger.js";
 export const checkUserSession = async (req, res, next) => {
   try {
     if (!req.session.user) {
-      return res.redirect("/login");
+      return res.redirect("/auth/login");
     }
 
     const user = await UserModel.findById(req.session.user.id);
     if (!user || user.status !== "Active") {
       delete req.session.user;
       return res.redirect(
-        "/login?message=Your+account+has+been+blocked&alertType=error",
+        "/auth/login?message=Your+account+has+been+blocked&alertType=error",
       );
     }
 
@@ -20,7 +20,7 @@ export const checkUserSession = async (req, res, next) => {
   } catch (error) {
     logger.error("Session Check Error:", error);
     delete req.session.user;
-    return res.redirect("/login?message=Session+error&alertType=error");
+    return res.redirect("/auth/login?message=Session+error&alertType=error");
   }
 };
 
