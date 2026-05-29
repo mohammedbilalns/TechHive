@@ -31,7 +31,6 @@ function createForgotPasswordPage() {
   const otpFlow = createOtpFlow({
     modalId: "otpModal",
     emailTargetId: "otpEmail",
-    hiddenEmailId: "hiddenEmail",
     timerId: "timer",
     warningId: "warningMessage",
     resendButtonId: "resendButton",
@@ -57,7 +56,7 @@ function createForgotPasswordPage() {
       setButtonLoading("submitButton", "submitLoader", "Sending...", true);
       const response = await axios.post("/auth/forgot-password", { email });
       if (response.data.success) {
-        otpFlow.show(response.data.email);
+        otpFlow.show(email);
       }
     } catch (error) {
       showToast(error.response?.data?.message || "Failed to send OTP", "error");
@@ -72,15 +71,12 @@ function createForgotPasswordPage() {
     try {
       setButtonLoading("verifyOtpButton", "verifyLoader", "Verifying...", true);
       const otp = otpFlow.getOtp();
-      const email = otpFlow.getEmail();
 
       const response = await axios.post("/auth/verify-forgot-password-otp", {
         otp1: otp[0],
         otp2: otp[1],
         otp3: otp[2],
         otp4: otp[3],
-        email,
-        timeRem: otpFlow.getTimeLeft(),
       });
 
       if (response.data.success) {
@@ -88,7 +84,6 @@ function createForgotPasswordPage() {
         document
           .getElementById("resetPasswordModal")
           .classList.replace("hidden", "flex");
-        document.getElementById("resetEmail").value = email;
       }
     } catch (error) {
       otpFlow.clearFields();
@@ -117,9 +112,7 @@ function createForgotPasswordPage() {
     try {
       document.getElementById("resendButton").disabled = true;
       setInlineButtonState("resendButton", "resendLoader", "Sending...", true);
-      const response = await axios.post("/auth/forgot-password", {
-        email: otpFlow.getEmail(),
-      });
+      const response = await axios.post("/auth/resend-forgot-password-otp");
 
       if (response.data.success) {
         otpFlow.clearFields();
@@ -140,7 +133,6 @@ function createForgotPasswordPage() {
     event.preventDefault();
     resetErrors(["newPassword", "confirmPassword"]);
 
-    const email = document.getElementById("resetEmail").value.trim();
     const newPassword = document.getElementById("newPassword").value.trim();
     const confirmPassword = document
       .getElementById("confirmPassword")
@@ -176,7 +168,6 @@ function createForgotPasswordPage() {
         true,
       );
       const response = await axios.patch("/auth/reset-password", {
-        email,
         password: newPassword,
         confirmPassword,
       });

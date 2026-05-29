@@ -265,3 +265,7 @@ export const UserAuthErrorMessages = Object.freeze({
   SESSION_ERROR: "Session error",
   SESSION_SAVE_ERROR: "Session save error",
 });
+
+export const UserProfileErrorMessages = Object.freeze({
+  INVALID_PROFILE_DATA:"Invalid profile data"
+})

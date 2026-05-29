@@ -44,16 +44,13 @@ export const validateRegisterBody = ({
   return null;
 };
 
-export const validateResetPassword = ({ email, password, confirmPassword }) => {
-  email = email.trim();
-  password = password.trim();
-  confirmPassword = confirmPassword.trim();
+export const validateResetPassword = ({ password, confirmPassword }) => {
+  password = (password || "").trim();
+  confirmPassword = (confirmPassword || "").trim();
 
-  if (!email || !password || !confirmPassword) {
+  if (!password || !confirmPassword) {
     return "All fields are required";
   }
-
-  if (!isValidEmail(email)) return "Please enter a valid email address";
   if (!isValidPassword(password))
     return "Password must contain 8+ characters with uppercase, lowercase, number, and special character";
   if (password !== confirmPassword) return "Passwords do not match";

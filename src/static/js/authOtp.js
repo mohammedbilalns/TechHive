@@ -35,7 +35,6 @@ function setupOtpInputs(selector = ".otp-input") {
 function createOtpFlow({
   modalId,
   emailTargetId,
-  hiddenEmailId,
   timerId,
   warningId,
   resendButtonId,
@@ -46,9 +45,6 @@ function createOtpFlow({
 }) {
   const modal = document.getElementById(modalId);
   const emailTarget = document.getElementById(emailTargetId);
-  const hiddenEmail = hiddenEmailId
-    ? document.getElementById(hiddenEmailId)
-    : null;
   const timer = document.getElementById(timerId);
   const warning = document.getElementById(warningId);
   const resendButton = document.getElementById(resendButtonId);
@@ -128,9 +124,6 @@ function createOtpFlow({
   function show(email) {
     modal.classList.replace("hidden", "flex");
     emailTarget.textContent = email;
-    if (hiddenEmail) {
-      hiddenEmail.value = email;
-    }
 
     hideAlertMessage(alertId);
     clearFields();
@@ -156,10 +149,6 @@ function createOtpFlow({
     return otpInputs.map((input) => input.value).join("");
   }
 
-  function getEmail() {
-    return hiddenEmail ? hiddenEmail.value : emailTarget.textContent;
-  }
-
   function getTimeLeft() {
     return timeLeft;
   }
@@ -167,7 +156,6 @@ function createOtpFlow({
   return {
     clearFields,
     close,
-    getEmail,
     getOtp,
     getTimeLeft,
     otpInputs,

@@ -77,3 +77,9 @@ export const calculateCouponDiscount = (coupon, subtotal) => {
 
   return coupon.discountValue;
 };
+
+export const mapUserResponse = (user) => {
+  const userObj = user.toObject ? user.toObject() : { ...user };
+  const { password, otp, __v, ...sanitizedUser } = userObj;
+  return sanitizedUser;
+};

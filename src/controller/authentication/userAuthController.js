@@ -361,6 +361,7 @@ export const processForgotPassword = asyncHandler(async (req, res) => {
     otpAttempts: 0,
   };
   await user.save();
+  req.session.forgotPasswordEmail = email;
 
   await sendOTPEmail(email, otp);
 
@@ -371,8 +372,13 @@ export const processForgotPassword = asyncHandler(async (req, res) => {
 });
 
 export const verifyForgotPasswordOTP = asyncHandler(async (req, res) => {
-  const { otp1, otp2, otp3, otp4, email } = req.body;
+  const { otp1, otp2, otp3, otp4 } = req.body;
   const userOTP = otp1 + otp2 + otp3 + otp4;
+  const email = req.session.forgotPasswordEmail;
+
+  if (!email) {
+    throw new AppError(HttpStatus.CONFLICT, ErrorMessages.INVALID_INPUT);
+  }
 
   const user = await UserModel.findOne({ email });
   const currentTime = Date.now();
@@ -397,6 +403,7 @@ export const verifyForgotPasswordOTP = asyncHandler(async (req, res) => {
     if (user.otp.otpAttempts >= 3) {
       user.otp = undefined;
       await user.save();
+      delete req.session.forgotPasswordEmail;
       return res.status(HttpStatus.CONFLICT).json({
         success: false,
         message: ErrorMessages.TOO_MANY_ATTEMPTS,
@@ -415,17 +422,26 @@ export const verifyForgotPasswordOTP = asyncHandler(async (req, res) => {
 });
 
 export const resendForgotPasswordOTP = asyncHandler(async (req, res) => {
-  let { email } = req.body;
-  email = email.trim();
+  const email = req.session.forgotPasswordEmail;
+
+  if (!email) {
+    throw new AppError(HttpStatus.CONFLICT, ErrorMessages.INVALID_INPUT);
+  }
 
   const user = await UserModel.findOne({ email });
+
+  if (!user) {
+    throw new AppError(HttpStatus.CONFLICT, ErrorMessages.INVALID_INPUT);
+  }
 
   if (user.otp?.otpAttempts >= 3) {
     user.otp = undefined;
     await user.save();
-    return res.render(USER_VIEW_PATHS.AuthForgotPassword, {
+    delete req.session.forgotPasswordEmail;
+    return res.status(HttpStatus.CONFLICT).json({
+      success: false,
       message: ErrorMessages.TOO_MANY_ATTEMPTS,
-      alertType: "error",
+      maxAttemptsExceeded: true,
     });
   }
 
@@ -439,15 +455,19 @@ export const resendForgotPasswordOTP = asyncHandler(async (req, res) => {
 
   await sendOTPEmail(email, otp);
 
-  res.render(USER_VIEW_PATHS.AuthForgotPasswordOtp, {
-    email,
+  return res.status(HttpStatus.OK).json({
+    success: true,
     message: SuccessMessage.OTP_SENT_SUCCESS,
-    alertType: "success",
   });
 });
 
 export const resetPassword = asyncHandler(async (req, res) => {
-  let { email, password } = req.body;
+  let { password } = req.body;
+  const email = req.session.forgotPasswordEmail;
+
+  if (!email) {
+    throw new AppError(HttpStatus.CONFLICT, ErrorMessages.INVALID_INPUT);
+  }
 
   const error = validateResetPassword(req.body);
   if (error) {
@@ -464,6 +484,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10);
   user.password = hashedPassword;
   await user.save();
+  delete req.session.forgotPasswordEmail;
 
   return res.status(HttpStatus.OK).json({
     success: true,
