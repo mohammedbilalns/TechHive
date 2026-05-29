@@ -32,6 +32,6 @@ export const loginAdmin = asyncHandler(async (req, res) => {
 export const logoutAdmin = asyncHandler(async (req, res) => {
   delete req.session.admin;
   res.redirect(
-    `/admin/login?message=${encodeURIComponent(AdminAuthSuccessMessages.LOGOUT_SUCCESS)}&alertType=success`,
+    `/admin/auth/login?message=${encodeURIComponent(AdminAuthSuccessMessages.LOGOUT_SUCCESS)}&alertType=success`,
   );
 });

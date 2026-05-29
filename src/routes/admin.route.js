@@ -24,21 +24,21 @@ router.use(express.static("static"));
 
 //---- login routes ----
 router
-  .route("/login")
+  .route("/auth/login")
   .all(isAdminLoggedIn)
   .get(renderAdminLoginPage) // load login page
   .post(loginAdmin); // verify login
 
 router.use(checkAdminSession);
-router.get("/logout", logoutAdmin);
-router.use("/products", productManagementRouter)
-router.use("/categories", categoryManagementRouter)
-router.use("/coupons", couponManagementRouter)
-router.use("/offers", offerManagementRouter)
-router.use("/customers", customerManagementRouter)
-router.use("/dashboard", adminDashboardRouter)
-router.use("/orders", orderManagementRouter)
-router.use("/sales-report",salesReportRouter)
-router.post("/referral-settings",updateReferralSettings); // update referral settings
+router.get("/auth/logout", logoutAdmin);
+router.use("/products", productManagementRouter);
+router.use("/categories", categoryManagementRouter);
+router.use("/coupons", couponManagementRouter);
+router.use("/offers", offerManagementRouter);
+router.use("/customers", customerManagementRouter);
+router.use("/dashboard", adminDashboardRouter);
+router.use("/orders", orderManagementRouter);
+router.use("/sales-report", salesReportRouter);
+router.post("/referral-settings", updateReferralSettings);
 
 export default router;

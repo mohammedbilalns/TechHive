@@ -378,4 +378,3 @@ export const editProduct = asyncHandler(async (req, res) => {
     message: AdminProductSuccessMessages.UPDATED,
   });
 });
-

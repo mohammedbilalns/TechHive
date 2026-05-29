@@ -11,7 +11,8 @@
     "lint:fix": "eslint --fix --ext .js . --fix",
     "dev": "concurrently 'npm run tailwind' 'npm run dev:server'",
     "start": "node --env-file=.env ./src/server.js",
-    "start:prod": "npm run build:css && npm run start"
+    "start:prod": "npm run build:css && npm run start",
+    "format": "prettier --write ."
   },
   "type": "module",
   "keywords": [],

@@ -12,7 +12,7 @@ import {
 } from "../../utils/controllerHelpers.js";
 
 // get the coupons page
-export const getCoupons = asyncHandler(async (req, res) => {
+export const renderCouponsePage = asyncHandler(async (req, res) => {
   const page = getPageNumber(req.query.page);
   const limit = 10;
 
@@ -176,4 +176,3 @@ export const deleteCoupon = asyncHandler(async (req, res) => {
   }
   res.json({ success: true, message: CouponSuccessMessages.Deleted });
 });
-

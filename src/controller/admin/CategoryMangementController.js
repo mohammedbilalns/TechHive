@@ -169,5 +169,3 @@ export const editCategory = asyncHandler(async (req, res) => {
     category: updatedCategory,
   });
 });
-
-

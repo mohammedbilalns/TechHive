@@ -120,7 +120,7 @@
 
     async function editAddress(addressId) {
       try {
-        const response = await axios.get(`/address/${addressId}`);
+        const response = await axios.get(`/addresses/${addressId}`);
         populateAddressForm('editAddressForm', {
           addressId,
           ...response.data.address
@@ -162,7 +162,7 @@
         const data = validateAddressData(rawData, 'edit');
         if (!data) return;
 
-        const response = await axios.put(`/address/${rawData.addressId}`, data);
+        const response = await axios.put(`/addresses/${rawData.addressId}`, data);
         if (!response.data.success) {
           showToast(response.data.message || 'Failed to update address', 'error');
           return;
@@ -186,7 +186,7 @@
       if (!confirmed) return;
 
       try {
-        const response = await axios.delete(`/address/${addressId}`);
+        const response = await axios.delete(`/addresses/${addressId}`);
         if (!response.data.success) {
           showToast(response.data.message || 'Failed to delete address', 'error');
           return;

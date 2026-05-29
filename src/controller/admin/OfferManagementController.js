@@ -376,4 +376,3 @@ export const updateReferralSettings = asyncHandler(async (req, res) => {
     message: AdminOfferSuccessMessages.REFERRAL_SETTINGS_UPDATED,
   });
 });
-

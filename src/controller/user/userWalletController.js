@@ -16,7 +16,7 @@ import {
   getSessionUserId,
 } from "../../utils/controllerHelpers.js";
 
-const getWallet = asyncHandler(async (req, res) => {
+export const getWallet = asyncHandler(async (req, res) => {
   const page = getPageNumber(req.query.page);
   const limit = 10;
   const userId = getSessionUserId(req);
@@ -43,7 +43,11 @@ const getWallet = asyncHandler(async (req, res) => {
 
   // Get total count for pagination
   const totalTransactions = wallet.transactions.length;
-  const { totalPages, skip } = getPaginationMeta(page, totalTransactions, limit);
+  const { totalPages, skip } = getPaginationMeta(
+    page,
+    totalTransactions,
+    limit,
+  );
 
   // Get paginated transactions
   const transactions = wallet.transactions
@@ -62,7 +66,7 @@ const getWallet = asyncHandler(async (req, res) => {
   });
 });
 
-const addMoney = asyncHandler(async (req, res) => {
+export const addMoney = asyncHandler(async (req, res) => {
   const { amount } = req.body;
   const numAmount = parseFloat(amount);
 
@@ -97,7 +101,7 @@ const addMoney = asyncHandler(async (req, res) => {
   }
 });
 
-const verifyWalletPayment = asyncHandler(async (req, res) => {
+export const verifyWalletPayment = asyncHandler(async (req, res) => {
   const { razorpay_payment_id, razorpay_order_id, razorpay_signature, amount } =
     req.body;
 
@@ -140,9 +144,3 @@ const verifyWalletPayment = asyncHandler(async (req, res) => {
     );
   }
 });
-
-export default {
-  getWallet,
-  addMoney,
-  verifyWalletPayment,
-};

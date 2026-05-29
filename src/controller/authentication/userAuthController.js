@@ -273,12 +273,12 @@ export const authGoogle = (req, res) => {
 export const authGoogleCallback = (req, res) => {
   passport.authenticate(
     "google",
-    { failureRedirect: "/login" },
+    { failureRedirect: "/auth/login" },
     (err, user, info) => {
       if (err) {
         logger.error("Google Auth Callback Error:", err);
         return res.redirect(
-          `/login?message=${encodeURIComponent(UserAuthErrorMessages.SOMETHING_WENT_WRONG)}&alertType=error`,
+          `/auth/login?message=${encodeURIComponent(UserAuthErrorMessages.SOMETHING_WENT_WRONG)}&alertType=error`,
         );
       }
 
@@ -294,7 +294,7 @@ export const authGoogleCallback = (req, res) => {
         if (err) {
           logger.error("Session Error:", err);
           return res.redirect(
-            `/login?message=${encodeURIComponent(UserAuthErrorMessages.SESSION_ERROR)}&alertType=error`,
+            `/auth/login?message=${encodeURIComponent(UserAuthErrorMessages.SESSION_ERROR)}&alertType=error`,
           );
         }
 
@@ -308,7 +308,7 @@ export const authGoogleCallback = (req, res) => {
           if (err) {
             logger.error("Session Save Error:", err);
             return res.redirect(
-              `/login?message=${encodeURIComponent(UserAuthErrorMessages.SESSION_SAVE_ERROR)}&alertType=error`,
+              `/auth/login?message=${encodeURIComponent(UserAuthErrorMessages.SESSION_SAVE_ERROR)}&alertType=error`,
             );
           }
           res.redirect("/home");
@@ -329,7 +329,7 @@ export const logoutUser = asyncHandler(async (req, res) => {
 });
 
 // ---- forgot password ----
-export const loadForgotpassword = (req, res) => {
+export const renderForgotPasswordPage = (req, res) => {
   const { message, alertType, email } = req.query;
   res.render(USER_VIEW_PATHS.AuthForgotPassword, { message, alertType, email });
 };

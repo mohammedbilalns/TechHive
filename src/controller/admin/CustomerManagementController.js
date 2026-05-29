@@ -94,5 +94,3 @@ export const unblockCustomer = asyncHandler(async (req, res) => {
     customer,
   });
 });
-
-;
