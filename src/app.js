@@ -40,6 +40,9 @@ app.use(passport.session());
 app.use(requestLogger);
 // Routes
 
+app.get("/test", (_req, res) => {
+  res.json({ success: true, message: "Running" });
+})
 app.use("/admin", adminRoutes);
 app.use("/", userRoutes);
 
