@@ -34,7 +34,7 @@
                             <p class="text-white text-sm font-medium px-4 py-2 rounded-full bg-red-600 z-10">Out of Stock</p>
                           </div>
                         <% } %>
-                        <button onclick="removeFromWishlist('<%= item._id %>')"
+                        <button onclick="handleRemoveFromWishlist('<%= item._id %>')"
                           class="absolute top-2 right-2 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-red-600 hover:text-red-800">
                           <i class="fas fa-heart"></i>
                         </button>
@@ -111,7 +111,7 @@
   </div>
 
   <script>
-    async function removeFromWishlist(productId) {
+    async function handleRemoveFromWishlist(productId) {
       const confirmed = await customConfirm('Are you sure you want to remove this item from your wishlist?');
       if (!confirmed) return;
 

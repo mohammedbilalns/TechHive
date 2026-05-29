@@ -21,7 +21,7 @@ import userAuthRouter from "./userAuthRouter.js";
 const router = Router();
 
 router.use("/auth", userAuthRouter);
-router.get("/notfound", notfoundController.renderNotFoundPage); // load not found page
+router.get("/notfound", notfoundController.renderNotFoundPage); 
 
 //---- products  routes ----
 router.use(cartItems.fetchCartItems); // middleware to set the cart Quantity
@@ -69,7 +69,6 @@ router.use("/orders", userOrderRouter);
 router.use("/addresses", userAddressRouter);
 router.use("/account", userAccountRouter);
 router.use("/checkout", userCheckoutRouter);
-//---- user coupons ----
 router.get("/coupons", renderUserCouponsPage);
 
 export default router;
