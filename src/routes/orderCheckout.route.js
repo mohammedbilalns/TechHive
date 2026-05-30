@@ -12,11 +12,11 @@ import {
 
 const router = Router();
 
-router.get("/checkout", renderOrderCheckoutPage); // get checkout
-router.post("/checkout/placeorder", placeOrder); // place order
-router.post("/checkout/verifypayment", verifyPayment); // verify payment
-router.post("/checkout/apply-coupon", applyCoupon); // apply coupon
-router.post("/checkout/remove-coupon", removeCoupon); // remove coupon
-router.get("/checkout/failed/:orderId", renderPaymentFailedPage); // get payment failed
+router.get("/", renderOrderCheckoutPage); // get checkout
+router.post("/placeorder", placeOrder); // place order
+router.post("/verifypayment", verifyPayment); // verify payment
+router.post("/apply-coupon", applyCoupon); // apply coupon
+router.post("/remove-coupon", removeCoupon); // remove coupon
+router.get("/failed/:orderId", renderPaymentFailedPage); // get payment failed
 
 export default router;
