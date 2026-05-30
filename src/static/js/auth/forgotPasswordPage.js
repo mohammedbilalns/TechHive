@@ -103,8 +103,6 @@ function createForgotPasswordPage() {
         "Verify Code",
         false,
       );
-      document.getElementById("verifyOtpButton").disabled =
-        otpFlow.getTimeLeft() <= 0;
     }
   }
 

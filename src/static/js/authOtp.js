@@ -90,6 +90,7 @@ function createOtpFlow({
     timeLeft = durationSeconds;
     resendButton.disabled = true;
     resendButton.style.cursor = "not-allowed";
+    setInputsDisabled(false);
 
     if (verifyButton) {
       verifyButton.disabled = false;
@@ -109,14 +110,8 @@ function createOtpFlow({
       stopTimer();
       resendButton.disabled = false;
       resendButton.style.cursor = "pointer";
-      setInputsDisabled(true);
 
-      if (verifyButton) {
-        verifyButton.disabled = true;
-        verifyButton.classList.add("opacity-50", "cursor-not-allowed");
-      }
-
-      warning.style.display = "block";
+      warning.style.display = "none";
       timer.style.display = "none";
     }, 1000);
   }

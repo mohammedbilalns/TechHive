@@ -171,8 +171,6 @@ function createSignupPage() {
         "Verify Code",
         false,
       );
-      document.getElementById("verifyOtpButton").disabled =
-        otpFlow.getTimeLeft() <= 0;
     }
   }
 

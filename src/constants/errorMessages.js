@@ -9,7 +9,7 @@ export const AuthErrorMessages = Object.freeze({
   EMAIL_ALREADY_REGISTERED: "Email already registered",
   INVALID_EMAIL: "Invalid email",
   PHONE_NUMBER_ALREADY_REGISTERED: "Phone number already registered",
-  OTP_EXPIRED: "OTP has expired.Try again",
+  OTP_EXPIRED: "OTP has expired. Resend OTP",
   OTP_ATTEMPTS_EXCEEDED:
     "You have exceeded the maximum OTP attempts. Please sign up again.",
   OTP_INVALID: "Invalid OTP, please try again",
