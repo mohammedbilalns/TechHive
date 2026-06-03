@@ -230,8 +230,8 @@ function createCheckoutPage({
             );
 
             window.location.href = verificationResponse.data.success
-              ? `/order/success/${response.data.orderId}`
-              : `/payment/failed/${response.data.orderId}`;
+              ? `/orders/success/${response.data.orderId}`
+              : `/checkout/failed/${response.data.orderId}`;
           } catch (error) {
             console.error("Payment verification error:", error);
             window.location.href = `/checkout/failed/${response.data.orderId}`;

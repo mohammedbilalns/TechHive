@@ -907,6 +907,14 @@ input::placeholder {
   z-index: 50;
 }
 
+.z-\[60\] {
+  z-index: 60;
+}
+
+.z-\[70\] {
+  z-index: 70;
+}
+
 .col-span-1 {
   grid-column: span 1 / span 1;
 }
