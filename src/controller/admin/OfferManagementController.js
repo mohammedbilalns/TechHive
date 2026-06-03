@@ -15,7 +15,7 @@ import {
   getPaginationMeta,
 } from "../../utils/controllerHelpers.js";
 
-export const updateProductDiscounts = async (offer, remove = false) => {
+const updateProductDiscounts = async (offer, remove = false) => {
   if (!offer.isActive && !remove) return;
 
   const discountValue = remove ? 0 : offer.offerPercentage;

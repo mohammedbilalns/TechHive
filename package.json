@@ -30,7 +30,6 @@
     "express": "^4.22.1",
     "express-session": "^1.18.1",
     "helmet": "^8.0.0",
-    "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.8.2",
     "multer": "^2.0.1",
     "nanoid": "^5.0.9",

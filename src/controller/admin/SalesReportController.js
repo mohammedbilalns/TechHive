@@ -191,7 +191,7 @@ export const getSalesReportData = asyncHandler(async (req, res) => {
   });
 });
 
-export const getFormattedDateRange = (filterType, startDate, endDate) => {
+const getFormattedDateRange = (filterType, startDate, endDate) => {
   const today = new Date();
 
   switch (filterType) {
@@ -212,7 +212,7 @@ export const getFormattedDateRange = (filterType, startDate, endDate) => {
   }
 };
 
-export const generateExcelReport = async (
+const generateExcelReport = async (
   res,
   orders,
   totals,

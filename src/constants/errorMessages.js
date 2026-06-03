@@ -198,9 +198,6 @@ export const AdminSalesReportErrorMessages = Object.freeze({
   INVALID_DATE_RANGE: ErrorMessages.INVALID_DATE_RANGE,
 });
 
-export const UserCartErrorMessages = Object.freeze({
-  ERROR_LOADING_CART: "Error loading cart",
-});
 
 export const UserCheckoutErrorMessages = Object.freeze({
   PRODUCT_OUT_OF_STOCK: (productName) => `${productName} is out of stock`,
@@ -225,10 +222,6 @@ export const UserReviewErrorMessages = Object.freeze({
   REVIEW_NOT_FOUND: ErrorMessages.REVIEW_NOT_FOUND,
   ERROR_ADDING_REVIEW: ErrorMessages.ERROR_ADDING_REVIEW,
   ERROR_FETCHING_REVIEW: ErrorMessages.ERROR_FETCHING_REVIEW,
-});
-
-export const UserCouponErrorMessages = Object.freeze({
-  FAILED_TO_FETCH_COUPONS: ErrorMessages.FAILED_TO_FETCH_COUPONS,
 });
 
 export const UserOrderErrorMessages = Object.freeze({
