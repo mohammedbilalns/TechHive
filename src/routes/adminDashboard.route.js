@@ -6,7 +6,7 @@ import {
 
 const router = Router();
 
-router.get("/dashboard", renderDashboard); // render dashboard page
-router.get("/dashboard/data", getDashboardData); // get dashboard data
+router.get("/", renderDashboard); // render dashboard page
+router.get("/data", getDashboardData); // get dashboard data
 
 export default router;
