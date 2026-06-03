@@ -51,7 +51,7 @@ const couponSchema = new Schema(
       {
         userId: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "users",
+          ref: "User",
           required: true,
         },
         orderId: {
