@@ -11,7 +11,7 @@ passport.use(
       clientSecret: env.GOOGLE_CLIENT_SECRET,
       callbackURL: env.GOOGLE_CALLBACK_URL,
     },
-    async (token, tokenSecret, profile, done) => {
+    async (_token, _tokenSecret, profile, done) => {
       try {
         // Check if user exists with the same email
         const existingUser = await UserModel.findOne({
@@ -73,4 +73,3 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-export default passport;

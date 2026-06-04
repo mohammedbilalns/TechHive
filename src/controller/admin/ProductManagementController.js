@@ -16,10 +16,49 @@ import {
   getPaginationMeta,
 } from "../../utils/controllerHelpers.js";
 
+const PUBLIC_PRODUCT_IMAGE_PATH = "/uploads/products";
+const PRODUCT_IMAGE_DIRS = [
+  path.join(process.cwd(), "src", "static", "uploads", "products"),
+  path.join(process.cwd(), "static", "uploads", "products"),
+];
+
+function resolveProductImageFile(imagePath) {
+  if (!imagePath) {
+    return null;
+  }
+
+  const normalizedPath = imagePath.startsWith("/")
+    ? imagePath
+    : `/${imagePath}`;
+  const relativePath = normalizedPath.replace(/^\/+/, "");
+
+  for (const baseDir of PRODUCT_IMAGE_DIRS) {
+    const candidate = path.join(baseDir, path.basename(relativePath));
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+  }
+
+  return null;
+}
+
+function createProductImageRecord(file) {
+  return {
+    path: `${PUBLIC_PRODUCT_IMAGE_PATH}/${file.filename}`,
+    filename: file.filename,
+  };
+}
+
 //  multer configuration for local storage
 const productStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const dir = "static/uploads/products";
+    const dir = path.join(
+      process.cwd(),
+      "src",
+      "static",
+      "uploads",
+      "products",
+    );
 
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
@@ -97,8 +136,8 @@ export const deleteProduct = asyncHandler(async (req, res) => {
 
   if (product.images && product.images.length > 1) {
     product.images.slice(1).forEach((image) => {
-      const imagePath = path.join("static", image.path);
-      if (fs.existsSync(imagePath)) {
+      const imagePath = resolveProductImageFile(image.path);
+      if (imagePath) {
         fs.unlinkSync(imagePath);
       }
     });
@@ -206,10 +245,7 @@ export const addProduct = asyncHandler(async (req, res) => {
   }
 
   // Process images
-  const images = req.files.map((file) => ({
-    path: file.path.replace("static/", "/"),
-    filename: file.filename,
-  }));
+  const images = req.files.map(createProductImageRecord);
 
   const newProduct = new productModel({
     name,
@@ -332,15 +368,12 @@ export const editProduct = asyncHandler(async (req, res) => {
   let images = [...product.images];
 
   if (req.files && req.files.length > 0) {
-    const newImages = req.files.map((file) => ({
-      path: file.path.replace("static/", "/"),
-      filename: file.filename,
-    }));
+    const newImages = req.files.map(createProductImageRecord);
 
     req.files.forEach((file, index) => {
       if (images[index]) {
-        const oldImagePath = path.join("static", images[index].path);
-        if (fs.existsSync(oldImagePath)) {
+        const oldImagePath = resolveProductImageFile(images[index].path);
+        if (oldImagePath) {
           fs.unlinkSync(oldImagePath);
         }
         images[index] = newImages[index];

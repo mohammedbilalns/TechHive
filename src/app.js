@@ -24,6 +24,7 @@ app.set("view engine", "ejs");
 
 app.use(nocache());
 app.use(express.static(path.join(__dirname, "static")));
+app.use(express.static(path.join(process.cwd(), "static")));
 app.use(compression());
 app.use(
   session({
