@@ -1,8 +1,6 @@
 import { categoryModel } from "../../model/categoryModel.js";
 import { productModel } from "../../model/productModel.js";
 import multer from "multer";
-import fs from "node:fs";
-import path from "node:path";
 import mongoose from "mongoose";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
@@ -12,55 +10,16 @@ import { AdminProductErrorMessages } from "../../constants/errorMessages.js";
 import { AdminProductSuccessMessages } from "../../constants/successMessage.js";
 import { ADMIN_VIEW_PATHS } from "../../constants/viewPaths.js";
 import {
+  createCloudinaryImageRecord,
+  deleteCloudinaryImage,
+  uploadBufferToCloudinary,
+} from "../../utils/cloudinary.js";
+import {
   getPageNumber,
   getPaginationMeta,
 } from "../../utils/controllerHelpers.js";
 
-const PUBLIC_PRODUCT_IMAGE_PATH = "/uploads/products";
-const PRODUCT_IMAGE_DIR = path.join(
-  process.cwd(),
-  "static",
-  "uploads",
-  "products",
-);
-
-function resolveProductImageFile(imagePath) {
-  if (!imagePath) {
-    return null;
-  }
-
-  const normalizedPath = imagePath.startsWith("/")
-    ? imagePath
-    : `/${imagePath}`;
-  const relativePath = normalizedPath.replace(/^\/+/, "");
-
-  const candidate = path.join(PRODUCT_IMAGE_DIR, path.basename(relativePath));
-  if (fs.existsSync(candidate)) {
-    return candidate;
-  }
-
-  return null;
-}
-
-function createProductImageRecord(file) {
-  return {
-    path: `${PUBLIC_PRODUCT_IMAGE_PATH}/${file.filename}`,
-    filename: file.filename,
-  };
-}
-
-//  multer configuration for local storage
-const productStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    if (!fs.existsSync(PRODUCT_IMAGE_DIR)) {
-      fs.mkdirSync(PRODUCT_IMAGE_DIR, { recursive: true });
-    }
-    cb(null, PRODUCT_IMAGE_DIR);
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + "-" + file.originalname);
-  },
-});
+const productStorage = multer.memoryStorage();
 
 export const productUpload = multer({
   storage: productStorage,
@@ -126,13 +85,10 @@ export const deleteProduct = asyncHandler(async (req, res) => {
     );
   }
 
-  if (product.images && product.images.length > 1) {
-    product.images.slice(1).forEach((image) => {
-      const imagePath = resolveProductImageFile(image.path);
-      if (imagePath) {
-        fs.unlinkSync(imagePath);
-      }
-    });
+  if (product.images && product.images.length > 0) {
+    await Promise.allSettled(
+      product.images.map((image) => deleteCloudinaryImage(image.filename)),
+    );
   }
 
   // Delete the product from database
@@ -237,7 +193,12 @@ export const addProduct = asyncHandler(async (req, res) => {
   }
 
   // Process images
-  const images = req.files.map(createProductImageRecord);
+  const uploadedImages = await Promise.all(
+    req.files.map(async (file) => {
+      const uploadResult = await uploadBufferToCloudinary(file.buffer);
+      return createCloudinaryImageRecord(uploadResult);
+    }),
+  );
 
   const newProduct = new productModel({
     name,
@@ -247,7 +208,7 @@ export const addProduct = asyncHandler(async (req, res) => {
     specifications: cleanedSpecs,
     price: parseFloat(price),
     stock: parseInt(stock),
-    images,
+    images: uploadedImages,
     status: "Active",
   });
 
@@ -358,19 +319,22 @@ export const editProduct = asyncHandler(async (req, res) => {
 
   // Handle image updates
   let images = [...product.images];
+  const oldImagesToDelete = [];
 
   if (req.files && req.files.length > 0) {
-    const newImages = req.files.map(createProductImageRecord);
+    const newImages = await Promise.all(
+      req.files.map(async (file) => {
+        const uploadResult = await uploadBufferToCloudinary(file.buffer);
+        return createCloudinaryImageRecord(uploadResult);
+      }),
+    );
 
-    req.files.forEach((file, index) => {
+    newImages.forEach((newImage, index) => {
       if (images[index]) {
-        const oldImagePath = resolveProductImageFile(images[index].path);
-        if (oldImagePath) {
-          fs.unlinkSync(oldImagePath);
-        }
-        images[index] = newImages[index];
+        oldImagesToDelete.push(images[index]);
+        images[index] = newImage;
       } else {
-        images.push(newImages[index]);
+        images.push(newImage);
       }
     });
   }
@@ -395,6 +359,12 @@ export const editProduct = asyncHandler(async (req, res) => {
     throw new AppError(
       HttpStatus.NOT_FOUND,
       AdminProductErrorMessages.FAILED_TO_UPDATE_PRODUCT,
+    );
+  }
+
+  if (oldImagesToDelete.length > 0) {
+    await Promise.allSettled(
+      oldImagesToDelete.map((image) => deleteCloudinaryImage(image.filename)),
     );
   }
 

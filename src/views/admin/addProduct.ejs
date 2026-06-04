@@ -106,9 +106,10 @@
 
         <%- include('./partials/productCropperModal') %>
 
-        <script type="module">
-          import { initProductImageCropper } from '/js/productImageCropper.js';
-          import { validateProductData } from '/js/productFormValidation.js';
+          <script type="module">
+            import { initProductImageCropper } from '/js/productImageCropper.js';
+            import { validateProductData } from '/js/productFormValidation.js';
+            import { setProductFormLoadingState } from '/js/admin/productFormSubmission.js';
 
           document.addEventListener("DOMContentLoaded", () => {
             const addProductForm = document.getElementById("addProductForm");
@@ -224,6 +225,8 @@
                 return;
               }
 
+              setProductFormLoadingState(addProductForm, true, "Adding...");
+
               try {
                 const formData = new FormData(addProductForm);
                 const response = await axios.post('/admin/products/add', formData, {
@@ -239,10 +242,12 @@
                   }, 1000);
                 } else {
                   showToast(response.data.message || 'Failed to add product', 'error');
+                  setProductFormLoadingState(addProductForm, false);
                 }
               } catch (error) {
                 console.error('Error:', error);
                 showToast(error.response?.data?.message || 'Failed to add product', 'error');
+                setProductFormLoadingState(addProductForm, false);
               }
             });
             window.handleImageUpload = (input, previewId, uploadLabelId) => {
