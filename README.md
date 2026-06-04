@@ -10,7 +10,7 @@ TechHive is a full-featured e-commerce web application built with Node.js, Expre
 - Payment integration with Razorpay.
 - Email-related workflows with Brevo.
 - Google OAuth support for sign-in.
-- Server-side rendering with EJS and static asset delivery from the `src/static` directory.
+- Server-side rendering with EJS and static asset delivery from the `static` directory.
 
 ## Tech Stack
 
@@ -64,18 +64,18 @@ TechHive/
 │   │   ├── admin/
 │   │   ├── user/
 │   │   └── partials/
-│   └── static/
-│       ├── images/
-│       ├── fonts/
-│       ├── js/
-│       ├── styles/
-│       ├── tailwind/
-│       └── uploads/
 ├── Dockerfile
 ├── docker-compose.yml
 ├── package.json
 ├── tailwind.config.js
 ├── eslint.config.js
+├── static/
+│   ├── images/
+│   ├── fonts/
+│   ├── js/
+│   ├── styles/
+│   ├── tailwind/
+│   └── uploads/
 └── README.md
 ```
 
@@ -87,7 +87,7 @@ TechHive/
 - `src/controller/`: Request handlers grouped by domain.
 - `src/model/`: Mongoose models for users, products, orders, carts, wallets, coupons, and more.
 - `src/views/`: EJS templates for storefront and admin interfaces.
-- `src/static/`: Public assets, compiled Tailwind output, client-side scripts, fonts, and uploads.
+- `static/`: Public assets, compiled Tailwind output, client-side scripts, fonts, and uploads.
 - `src/middlewares/`: Auth guards, request helpers, logging, and shared middleware.
 - `src/utils/`: Environment, logging, validation, referral, Razorpay, and helper utilities.
 
@@ -161,4 +161,3 @@ For development:
 ```bash
 npm run dev
 ```
-

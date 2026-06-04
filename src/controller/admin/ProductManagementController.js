@@ -17,10 +17,12 @@ import {
 } from "../../utils/controllerHelpers.js";
 
 const PUBLIC_PRODUCT_IMAGE_PATH = "/uploads/products";
-const PRODUCT_IMAGE_DIRS = [
-  path.join(process.cwd(), "src", "static", "uploads", "products"),
-  path.join(process.cwd(), "static", "uploads", "products"),
-];
+const PRODUCT_IMAGE_DIR = path.join(
+  process.cwd(),
+  "static",
+  "uploads",
+  "products",
+);
 
 function resolveProductImageFile(imagePath) {
   if (!imagePath) {
@@ -32,11 +34,9 @@ function resolveProductImageFile(imagePath) {
     : `/${imagePath}`;
   const relativePath = normalizedPath.replace(/^\/+/, "");
 
-  for (const baseDir of PRODUCT_IMAGE_DIRS) {
-    const candidate = path.join(baseDir, path.basename(relativePath));
-    if (fs.existsSync(candidate)) {
-      return candidate;
-    }
+  const candidate = path.join(PRODUCT_IMAGE_DIR, path.basename(relativePath));
+  if (fs.existsSync(candidate)) {
+    return candidate;
   }
 
   return null;
@@ -52,18 +52,10 @@ function createProductImageRecord(file) {
 //  multer configuration for local storage
 const productStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const dir = path.join(
-      process.cwd(),
-      "src",
-      "static",
-      "uploads",
-      "products",
-    );
-
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(PRODUCT_IMAGE_DIR)) {
+      fs.mkdirSync(PRODUCT_IMAGE_DIR, { recursive: true });
     }
-    cb(null, dir);
+    cb(null, PRODUCT_IMAGE_DIR);
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + "-" + file.originalname);

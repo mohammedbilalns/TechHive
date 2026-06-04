@@ -2,7 +2,6 @@ import { orderModel } from "../../model/orderModel.js";
 import ExcelJS from "exceljs";
 import PDFDocument from "pdfkit";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { HttpStatus } from "../../constants/statusCodes.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { AppError } from "../../utils/appError.js";
@@ -10,9 +9,7 @@ import { AdminSalesReportErrorMessages } from "../../constants/errorMessages.js"
 import { ADMIN_VIEW_PATHS } from "../../constants/viewPaths.js";
 import { getPageNumber } from "../../utils/controllerHelpers.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const fontsDir = path.join(__dirname, "../../static/fonts");
+const fontsDir = path.join(process.cwd(), "static", "fonts");
 
 export const renderSalesReportPage = asyncHandler(async (_req, res) => {
   res.render(ADMIN_VIEW_PATHS.SalesReport, {

@@ -17,6 +17,7 @@ import { UserOrderSuccessMessages } from "../../constants/successMessage.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 import { getPageNumber } from "../../utils/controllerHelpers.js";
+import path from "node:path";
 
 export const placeOrder = asyncHandler(async (req, res) => {
   const { addressId, paymentMethod, couponCode } = req.body;
@@ -705,9 +706,13 @@ export const downloadInvoice = asyncHandler(async (req, res) => {
   doc.pipe(res);
 
   // Register fonts
-  doc.registerFont("NotoSans", "src/static/fonts/NotoSans-Regular.ttf");
-  doc.registerFont("NotoSans-Bold", "src/static/fonts/NotoSans-Bold.ttf");
-  doc.registerFont("NotoSans-Italic", "src/static/fonts/NotoSans-Italic.ttf");
+  const fontsDir = path.join(process.cwd(), "static", "fonts");
+  doc.registerFont("NotoSans", path.join(fontsDir, "NotoSans-Regular.ttf"));
+  doc.registerFont("NotoSans-Bold", path.join(fontsDir, "NotoSans-Bold.ttf"));
+  doc.registerFont(
+    "NotoSans-Italic",
+    path.join(fontsDir, "NotoSans-Italic.ttf"),
+  );
 
   // Header
   doc

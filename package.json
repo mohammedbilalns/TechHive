@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "src/server.js",
   "scripts": {
-    "tailwind": "tailwindcss -i ./src/static/styles/styles.css -o ./src/static/tailwind/output.css --watch",
-    "build:css": "tailwindcss -i ./src/static/styles/styles.css -o ./src/static/tailwind/output.css --minify",
+    "tailwind": "tailwindcss -i ./static/styles/styles.css -o ./static/tailwind/output.css --watch",
+    "build:css": "tailwindcss -i ./static/styles/styles.css -o ./static/tailwind/output.css --minify",
     "dev:server": "nodemon",
     "lint": "eslint --fix --ext .js .",
     "lint:fix": "eslint --fix --ext .js . --fix",
