@@ -45,7 +45,7 @@
                       <div id="preview<%= i+1 %>"
                         class="mt-2 <%= product.images && product.images[i] ? '' : 'hidden' %>">
                         <% if (product.images && product.images[i]) { %>
-                          <img src="/uploads/products/<%= product.images[i].filename %>" alt="Preview <%= i+1 %>"
+                          <img src="<%= product.images[i].path %>" alt="Preview <%= i+1 %>"
                             class="h-20 w-20 object-cover rounded cursor-pointer hover:opacity-75 transition-opacity"
                             onclick="document.getElementById('imageInput<%= i+1 %>').click()">
                           <input type="hidden" name="existingImages" value="<%= product.images[i].filename %>">
@@ -76,6 +76,7 @@
           <script type="module">
             import { initProductImageCropper } from '/js/productImageCropper.js';
             import { validateProductData } from '/js/productFormValidation.js';
+            import { setProductFormLoadingState } from '/js/admin/productFormSubmission.js';
 
             document.addEventListener("DOMContentLoaded", () => {
               const addProductForm = document.getElementById("addProductForm");
@@ -195,6 +196,8 @@
                   return;
                 }
 
+                setProductFormLoadingState(addProductForm, true, "Updating...");
+
                 try {
                   const formData = new FormData(addProductForm);
                   const productId = window.location.pathname.split('/').pop();
@@ -211,10 +214,12 @@
                     }, 1000);
                   } else {
                     showToast(response.data.message || 'Failed to update product', 'error');
+                    setProductFormLoadingState(addProductForm, false);
                   }
                 } catch (error) {
                   console.error('Error:', error);
                   showToast(error.response?.data?.message || 'Failed to update product', 'error');
+                  setProductFormLoadingState(addProductForm, false);
                 }
               });
 
