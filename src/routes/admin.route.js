@@ -1,6 +1,4 @@
-import express from "express";
 import { Router } from "express";
-import path from "node:path";
 import { updateReferralSettings } from "../controller/admin/OfferManagementController.js";
 import categoryManagementRouter from "./categoryManagement.route.js";
 import couponManagementRouter from "./couponManagement.route.js";
@@ -21,7 +19,6 @@ import {
 } from "../middlewares/adminAuth.js";
 
 const router = Router();
-router.use(express.static(path.join(process.cwd(), "static")));
 
 //---- login routes ----
 router
