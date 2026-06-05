@@ -77,18 +77,21 @@
   </main>
 </div>
 
-<script type="module">
+  <script type="module">
   import { getDateRangeParams, setupDateRangeFilter } from '/js/adminDateRangeFilter.js';
+  import { getButtonByOnclick, setButtonLoading } from '/js/loadingState.js';
 
   setupDateRangeFilter();
 
   async function applyFilter() {
+    const button = getButtonByOnclick('applyFilter()');
     const params = getDateRangeParams({
       onError: (message) => showToast(message, 'error')
     });
     if (!params) return;
 
     try {
+      setButtonLoading(button, true, 'Loading...');
       const response = await axios.get('/admin/sales-report/data', {
         params
       });
@@ -97,6 +100,8 @@
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Failed to fetch sales report';
       showToast(errorMessage, 'error');
+    } finally {
+      setButtonLoading(button, false);
     }
   }
 
@@ -186,12 +191,14 @@
   }
 
   async function changePage(page) {
+    const button = getButtonByOnclick(`changePage(${page})`);
     const params = getDateRangeParams({
       onError: (message) => showToast(message, 'error')
     });
     if (!params) return;
 
     try {
+      setButtonLoading(button, true, 'Loading...');
       const response = await axios.get('/admin/sales-report/data', {
         params: {
           ...params,
@@ -203,16 +210,20 @@
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Failed to fetch sales report';
       showToast(errorMessage, 'error');
+    } finally {
+      setButtonLoading(button, false);
     }
   }
 
   async function downloadReport(format) {
+    const button = getButtonByOnclick(`downloadReport('${format}')`);
     const params = getDateRangeParams({
       onError: (message) => showToast(message, 'error')
     });
     if (!params) return;
 
     try {
+      setButtonLoading(button, true, 'Downloading...');
       const response = await axios.get(`/admin/sales-report/download`, {
         params: {
           format,
@@ -237,6 +248,8 @@
       window.URL.revokeObjectURL(url);
     } catch (error) {
       showToast(`Failed to download ${format.toUpperCase()} report`, 'error');
+    } finally {
+      setButtonLoading(button, false);
     }
   }
 

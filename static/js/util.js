@@ -1,3 +1,8 @@
+import {
+  getButtonsByOnclick,
+  setLoadingState,
+} from "/js/loadingState.js";
+
 // Custom Confirm Dialog
 function customConfirm(message, confirmButtonText = "Confirm") {
   return new Promise((resolve) => {
@@ -103,6 +108,9 @@ function showToast(message, type = "success") {
 }
 
 async function addToCart(productId) {
+  const loadingButtons = getButtonsByOnclick(`addToCart('${productId}')`);
+  setLoadingState(loadingButtons, true, "Adding...");
+
   try {
     const { data } = await axios.post("/cart", { productId });
     const toastType = data.success ? "success" : "error";
@@ -134,6 +142,8 @@ async function addToCart(productId) {
       "error",
     );
     throw error;
+  } finally {
+    setLoadingState(loadingButtons, false);
   }
 }
 
@@ -236,6 +246,9 @@ function createWishlistRemoveButton(productId, config) {
 }
 
 async function addToWishlist(productId) {
+  const loadingButtons = getButtonsByOnclick(`addToWishlist('${productId}')`);
+  setLoadingState(loadingButtons, true, "Adding...");
+
   try {
     const { data } = await axios.post("/wishlist", { productId });
 
@@ -287,10 +300,15 @@ async function addToWishlist(productId) {
       "error",
     );
     throw error;
+  } finally {
+    setLoadingState(loadingButtons, false);
   }
 }
 
 async function removeFromWishlist(productId) {
+  const loadingButtons = getButtonsByOnclick(`removeFromWishlist('${productId}')`);
+  setLoadingState(loadingButtons, true, "Removing...");
+
   try {
     const response = await axios.put("/wishlist", { productId });
     const data = response.data;
@@ -338,6 +356,8 @@ async function removeFromWishlist(productId) {
     console.error("Error:", error);
     showToast("Error removing item from wishlist", "error");
     throw error;
+  } finally {
+    setLoadingState(loadingButtons, false);
   }
 }
 

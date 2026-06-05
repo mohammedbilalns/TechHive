@@ -9,6 +9,7 @@ import {
   validateAddressData,
 } from "/js/addressUtils.js";
 import { createCheckoutAddressCard } from "/js/addressTemplates.js";
+import { getButtonByOnclick, setButtonLoading } from "/js/loadingState.js";
 import { openRazorpayCheckout } from "/js/razorpay.js";
 import { showToast } from "/js/util.js";
 
@@ -68,6 +69,7 @@ function createCheckoutPage({
   }
 
   async function submitAddAddress() {
+    const submitButton = getButtonByOnclick("submitAddAddress()");
     try {
       resetErrors("add");
       const data = validateAddressData(
@@ -76,6 +78,7 @@ function createCheckoutPage({
       );
       if (!data) return;
 
+      setButtonLoading(submitButton, true, "Saving...");
       const response = await axios.post("/addresses", data);
       if (!response.data.success) {
         showToast(response.data.message || "Failed to add address", "error");
@@ -98,10 +101,13 @@ function createCheckoutPage({
         error.response?.data?.message || "Failed to add address",
         "error",
       );
+    } finally {
+      setButtonLoading(submitButton, false);
     }
   }
 
   async function submitEditAddress() {
+    const submitButton = getButtonByOnclick("submitEditAddress()");
     try {
       resetErrors("edit");
       const rawData = readAddressForm("editAddressForm");
@@ -112,6 +118,7 @@ function createCheckoutPage({
         `input[name="selectedAddress"][value="${rawData.addressId}"]`,
       );
       const wasChecked = selectedInput?.checked || false;
+      setButtonLoading(submitButton, true, "Updating...");
       const response = await axios.put(`/addresses/${rawData.addressId}`, data);
 
       if (!response.data.success) {
@@ -135,6 +142,8 @@ function createCheckoutPage({
         error.response?.data?.message || "Failed to update address",
         "error",
       );
+    } finally {
+      setButtonLoading(submitButton, false);
     }
   }
 
@@ -168,7 +177,9 @@ function createCheckoutPage({
   }
 
   async function placeOrder() {
+    const button = getButtonByOnclick("placeOrder()");
     try {
+      setButtonLoading(button, true, "Placing Order...");
       const selectedAddress = document.querySelector(
         'input[name="selectedAddress"]:checked',
       );
@@ -244,6 +255,8 @@ function createCheckoutPage({
         error.response?.data?.message || "Failed to place order",
         "error",
       );
+    } finally {
+      setButtonLoading(button, false);
     }
   }
 
@@ -252,6 +265,7 @@ function createCheckoutPage({
   }
 
   async function applyCoupon() {
+    const button = getButtonByOnclick("applyCoupon()");
     const couponCode = document.getElementById("couponCode").value.trim();
     if (!couponCode) {
       showToast("Please enter a coupon code", "error");
@@ -259,6 +273,7 @@ function createCheckoutPage({
     }
 
     try {
+      setButtonLoading(button, true, "Applying...");
       const response = await axios.post("/checkout/apply-coupon", {
         couponCode,
       });
@@ -287,11 +302,15 @@ function createCheckoutPage({
         error.response?.data?.message || "Error applying coupon",
         "error",
       );
+    } finally {
+      setButtonLoading(button, false);
     }
   }
 
   async function removeCoupon() {
+    const button = getButtonByOnclick("removeCoupon()");
     try {
+      setButtonLoading(button, true, "Removing...");
       const response = await axios.post("/checkout/remove-coupon");
       if (!response.data.success) {
         showToast(response.data.message || "Error removing coupon", "error");
@@ -313,6 +332,8 @@ function createCheckoutPage({
         error.response?.data?.message || "Error removing coupon",
         "error",
       );
+    } finally {
+      setButtonLoading(button, false);
     }
   }
 

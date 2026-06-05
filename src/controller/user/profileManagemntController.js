@@ -38,8 +38,8 @@ export const renderUserAccountPage = asyncHandler(async (req, res) => {
 
 export const updateProfile = asyncHandler(async (req, res) => {
   let { fullname } = req.body;
-  fullname = fullname.trim()
-  if(!fullname) throw new AppError(HttpStatus.BAD_REQUEST, UserProfileErrorMessages.INVALID_PROFILE_DATA)
+  fullname = fullname.trim();
+  if(!fullname) throw new AppError(HttpStatus.BAD_REQUEST, UserProfileErrorMessages.INVALID_PROFILE_DATA);
   let updatedUser = null;
   if(fullname){
     const userId = getSessionUserId(req);

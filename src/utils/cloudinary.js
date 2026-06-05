@@ -3,6 +3,7 @@ import { Readable } from "node:stream";
 import { env } from "./env.js";
 
 const CLOUDINARY_FOLDER = "techhive/products";
+const OPTIMIZED_IMAGE_WIDTH = 1600;
 let isConfigured = false;
 
 function ensureCloudinaryConfigured() {
@@ -34,8 +35,21 @@ export function isCloudinaryPublicId(identifier) {
 }
 
 export function createCloudinaryImageRecord(uploadResult) {
+  const optimizedUrl = cloudinary.url(uploadResult.public_id, {
+    secure: true,
+    version: uploadResult.version,
+    transformation: [
+      {
+        width: OPTIMIZED_IMAGE_WIDTH,
+        crop: "limit",
+        fetch_format: "auto",
+        quality: "auto",
+      },
+    ],
+  });
+
   return {
-    path: uploadResult.secure_url,
+    path: optimizedUrl,
     filename: uploadResult.public_id,
   };
 }

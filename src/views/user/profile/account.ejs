@@ -145,6 +145,7 @@
 
   <script type="module">
     import { copyTextToClipboard } from '/js/clipboard.js';
+    import { setButtonLoading } from '/js/loadingState.js';
 
     async function toggleEdit() {
       const viewMode = document.getElementById('viewMode');
@@ -154,6 +155,7 @@
     }
     async function handleSubmit(event) {
       event.preventDefault();
+      const submitButton = event.currentTarget.querySelector('button[type="submit"]');
 
       //  confirmation before saving changes
       const confirmed = await customConfirm('Are you sure you want to save these changes?');
@@ -162,6 +164,7 @@
       const fullname = document.querySelector('input[name="fullname"]').value;
 
       try {
+        setButtonLoading(submitButton, true, 'Saving...');
         const response = await axios.post('/account/update-profile', {
           fullname: fullname
         });
@@ -179,6 +182,8 @@
 
         const errorMessage = error.response?.data?.message || 'Error updating profile';
         showToast(errorMessage, 'error');
+      } finally {
+        setButtonLoading(submitButton, false);
       }
     }
 
@@ -200,6 +205,7 @@
 
     async function handlePasswordChange(event) {
       event.preventDefault();
+      const submitButton = event.currentTarget.querySelector('button[type="submit"]');
 
       const currentPassword = event.target.currentPassword.value;
       const newPassword = event.target.newPassword.value;
@@ -222,6 +228,7 @@
       if (!confirmed) return;
 
       try {
+        setButtonLoading(submitButton, true, 'Updating...');
         const response = await axios.post('/account/change-password', {
           currentPassword,
           newPassword
@@ -236,6 +243,8 @@
         console.error('Error changing password:', error);
         const errorMessage = error.response?.data?.message || 'Error changing password';
         showToast(errorMessage, 'error');
+      } finally {
+        setButtonLoading(submitButton, false);
       }
     }
 

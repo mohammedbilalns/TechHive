@@ -77,21 +77,24 @@
 
   <%- include('../partials/adminfooter') %>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <script type="module">
       import { getDateRangeParams, setupDateRangeFilter } from '/js/adminDateRangeFilter.js';
+      import { getButtonByOnclick, setButtonLoading } from '/js/loadingState.js';
 
       let salesChart;
 
       setupDateRangeFilter();
 
       async function applyFilter() {
+        const button = getButtonByOnclick('applyFilter()');
         const params = getDateRangeParams({
           onError: (message) => showToast(message, 'error')
         });
         if (!params) return;
 
         try {
+          setButtonLoading(button, true, 'Loading...');
           const response = await axios.get('/admin/dashboard/data', {
             params
           });
@@ -101,6 +104,8 @@
           }
         } catch (error) {
           showToast('Error fetching dashboard data', 'error');
+        } finally {
+          setButtonLoading(button, false);
         }
       }
 

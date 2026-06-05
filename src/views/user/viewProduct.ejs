@@ -1,6 +1,6 @@
 <%- include(locals.fullname ? '../partials/header' : '../partials/authheader' ) %>
 
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
 
   <main class="mx-auto my-5 md:my-10 container px-4 md:px-0">
     <!-- Breadcrumbs -->
@@ -296,15 +296,14 @@
     }
   </script>
 
-  <script>
+  <script type="module">
+    import { setButtonLoading } from '/js/loadingState.js';
     document.getElementById('load-more-reviews')?.addEventListener('click', async function () {
       const button = this;
       const nextPage = parseInt(button.dataset.page) + 1;
       const productId = button.dataset.product;
 
-      // Disable button and show loading state
-      button.disabled = true;
-      button.innerHTML = 'Loading...';
+      setButtonLoading(button, true, 'Loading...');
 
       try {
         const response = await axios.get(`/product/${productId}`, {
@@ -347,9 +346,11 @@
         }
       } catch (error) {
         console.error('Error loading more reviews:', error);
-        button.disabled = false;
-        button.innerHTML = 'Load More Reviews';
         showToast(error.response?.data?.message || error.response?.data?.error || 'Error loading more reviews', 'error');
+      } finally {
+        if (document.body.contains(button)) {
+          setButtonLoading(button, false);
+        }
       }
     });
 

@@ -274,7 +274,8 @@
     </div>
   </div>
 
-  <script>
+  <script type="module">
+    import { getButtonByOnclick, setLoadingState } from '/js/loadingState.js';
 
     function addCoupon() {
       document.getElementById('modalTitle').textContent = 'Add New Coupon';
@@ -293,7 +294,9 @@
     }
 
     async function editCoupon(couponId) {
+      const editButton = getButtonByOnclick(`editCoupon('${couponId}')`);
       try {
+        setLoadingState(editButton, true, 'Loading...');
         const response = await axios.get(`/admin/coupons/${couponId}`);
         const coupon = response.data.coupon;
 
@@ -323,6 +326,8 @@
         openModal();
       } catch (error) {
         showToast(error.response?.data?.message || 'Failed to fetch coupon details', 'error');
+      } finally {
+        setLoadingState(editButton, false);
       }
     }
 
@@ -454,6 +459,7 @@
 
       // Get the coupon ID if it exists
       const couponId = document.getElementById('couponId').value;
+      const submitButton = document.querySelector('#couponForm button[type="submit"]');
 
       // Continue with form submission
       const formData = {
@@ -469,6 +475,7 @@
       };
 
       try {
+        setLoadingState(submitButton, true, couponId ? 'Updating...' : 'Saving...');
         let response;
 
         if (couponId) {
@@ -549,10 +556,13 @@
         }
       } catch (error) {
         showToast(error.response?.data?.message || `Failed to ${couponId ? 'update' : 'add'} coupon`, 'error');
+      } finally {
+        setLoadingState(submitButton, false);
       }
     });
 
     async function toggleCouponStatus(couponId, currentStatus) {
+      const toggleButton = getButtonByOnclick(`toggleCouponStatus('${couponId}', '${currentStatus}')`);
       const action = currentStatus === 'true' ? 'deactivate' : 'activate';
       const confirmed = await customConfirm(
         `Are you sure you want to ${action} this coupon?`,
@@ -560,6 +570,7 @@
       );
 
       if (confirmed) {
+        setLoadingState(toggleButton, true, 'Updating...');
         try {
           const response = await axios.patch(`/admin/coupons/${couponId}/toggle-status`);
           if (response.data.success) {
@@ -585,17 +596,21 @@
           }
         } catch (error) {
           showToast(error.response?.data?.message || `Failed to ${action} coupon`, 'error');
+        } finally {
+          setLoadingState(toggleButton, false);
         }
       }
     }
 
     async function deleteCoupon(couponId) {
+      const deleteButton = getButtonByOnclick(`deleteCoupon('${couponId}')`);
       const confirmed = await customConfirm(
         'Are you sure you want to delete this coupon?',
         'Delete Coupon'
       );
 
       if (confirmed) {
+        setLoadingState(deleteButton, true, 'Deleting...');
         try {
           const response = await axios.delete(`/admin/coupons/${couponId}`);
           if (response.data.success) {
@@ -618,6 +633,8 @@
           }
         } catch (error) {
           showToast(error.response?.data?.message || 'Failed to delete coupon', 'error');
+        } finally {
+          setLoadingState(deleteButton, false);
         }
       }
     }
@@ -737,6 +754,14 @@
         }
       });
     });
+
+    window.addCoupon = addCoupon;
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.editCoupon = editCoupon;
+    window.toggleCouponStatus = toggleCouponStatus;
+    window.deleteCoupon = deleteCoupon;
+    window.updateDiscountValidation = updateDiscountValidation;
   </script>
 
   <%- include('../partials/adminfooter') %>
