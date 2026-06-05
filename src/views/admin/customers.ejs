@@ -135,15 +135,18 @@
       </main>
   </div>
 
-  <script>
+  <script type="module">
+    import { setButtonLoading } from '/js/loadingState.js';
 
     window.toggleCustomerStatus = async function (customerId, action) {
+      const toggleButton = document.getElementById(`toggle-${customerId}`);
       try {
         const confirmMessage = `Are you sure you want to ${action} this customer?`;
         const confirmed = await customConfirm(confirmMessage);
 
         if (!confirmed) return;
 
+        setButtonLoading(toggleButton, true, action === 'block' ? 'Blocking...' : 'Unblocking...');
         const response = await axios.post(`/admin/customers/${action}/${customerId}`);
 
         if (response.data.success) {
@@ -177,6 +180,8 @@
       } catch (error) {
         console.error('Error:', error);
         showToast('Something went wrong. Please try again.', 'error');
+      } finally {
+        setButtonLoading(toggleButton, false);
       }
     };
 

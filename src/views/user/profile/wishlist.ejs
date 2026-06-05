@@ -110,12 +110,16 @@
       </main>
   </div>
 
-  <script>
+  <script type="module">
+    import { getButtonByOnclick, setButtonLoading } from '/js/loadingState.js';
+
     async function handleRemoveFromWishlist(productId) {
+      const button = getButtonByOnclick(`handleRemoveFromWishlist('${productId}')`);
       const confirmed = await customConfirm('Are you sure you want to remove this item from your wishlist?');
       if (!confirmed) return;
 
       try {
+        setButtonLoading(button, true, 'Removing...');
         const response = await axios.put('/wishlist', { productId });
         if (response.data.success) {
           const productElement = document.querySelector(`[data-product-id="${productId}"]`);
@@ -145,6 +149,8 @@
       } catch (error) {
         console.error('Error:', error);
         showToast('Error removing item from wishlist', 'error');
+      } finally {
+        setButtonLoading(button, false);
       }
     }
 

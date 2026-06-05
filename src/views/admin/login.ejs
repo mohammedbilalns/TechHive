@@ -53,10 +53,7 @@
 
           <button type="submit" id="loginButton"
             class="w-full py-3 mb-3 text-white font-semibold bg-gradient-to-r from-[#DA0037] to-[#ff1744] hover:shadow-lg hover:scale-[1.02] rounded-lg flex items-center justify-center transition-all duration-300">
-            <span>Log In</span>
-            <div id="loginLoader" class="hidden ml-2">
-              <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            </div>
+            Log In
           </button>
         </form>
       </div>
@@ -70,7 +67,9 @@
     <script src="https://cdn.jsdelivr.net/npm/toastify-js" defer></script>
     <script type="module">
       import { showToast } from '/js/util.js';
+      import { setButtonLoading } from '/js/loadingState.js';
       window.showToast = showToast;
+      window.setButtonLoading = setButtonLoading;
     </script>
 
     <script type="module">
@@ -105,13 +104,9 @@
         if (hasError) return;
 
         const loginButton = document.getElementById('loginButton');
-        const loginLoader = document.getElementById('loginLoader');
-        const buttonText = loginButton.querySelector('span');
 
         try {
-          buttonText.textContent = 'Logging in...';
-          loginLoader.classList.remove('hidden');
-          loginButton.disabled = true;
+          window.setButtonLoading(loginButton, true, 'Logging in...');
 
           const response = await axios.post('/admin/auth/login', {
             email,
@@ -126,10 +121,7 @@
           const message = error.response?.data?.message || 'Something went wrong';
           showToast(message, 'error');
         } finally {
-          // Reset button state
-          buttonText.textContent = 'Log In';
-          loginLoader.classList.add('hidden');
-          loginButton.disabled = false;
+          window.setButtonLoading(loginButton, false);
         }
       });
 

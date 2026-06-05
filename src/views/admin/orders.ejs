@@ -227,11 +227,15 @@
   <%- include('../partials/adminfooter') %>
 
 
-    <script>
+  <script type="module">
+    import { setButtonLoading } from '/js/loadingState.js';
+
       // Update order status
       async function updateOrderStatus(orderId) {
+        const button = document.querySelector(`button[onclick="updateOrderStatus('${orderId}')"]`);
         try {
           const status = document.getElementById(`status-${orderId}`).value;
+          setButtonLoading(button, true, 'Updating...');
           const response = await axios.post(`/admin/orders/update-status/${orderId}`, { status });
 
           if (response.data.success) {
@@ -258,6 +262,8 @@
           }
         } catch (error) {
           showToast(error.response?.data?.message || 'Error updating order status', 'error');
+        } finally {
+          setButtonLoading(button, false);
         }
       }
 
@@ -297,8 +303,10 @@
       });
 
       async function updateItemStatus(orderId, itemId) {
+        const button = document.querySelector(`button[onclick="updateItemStatus('${orderId}', '${itemId}')"]`);
         try {
           const status = document.getElementById(`status-${orderId}-${itemId}`).value;
+          setButtonLoading(button, true, 'Updating...');
           const response = await axios.post(`/admin/orders/${orderId}/items/${itemId}/update-status`, { status });
 
           if (response.data.success) {
@@ -364,15 +372,22 @@
               paymentStatusCell.className = 'px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800';
             }
 
-            showToast('Item status updated successfully');
-          } else {
+          showToast('Item status updated successfully');
+        } else {
 
             showToast(response.data.message || 'Failed to update status');
           }
         } catch (error) {
           console.error('Error:', error);
           showToast('Failed to update status', 'error');
+        } finally {
+          setButtonLoading(button, false);
         }
       }
+
+      window.updateOrderStatus = updateOrderStatus;
+      window.filterOrders = filterOrders;
+      window.toggleOrderDetails = toggleOrderDetails;
+      window.updateItemStatus = updateItemStatus;
 
     </script>

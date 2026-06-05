@@ -198,6 +198,7 @@
 
     <script type="module">
         import { createPriceRangeHandlers, generatePriceHTML, generateStarRating } from '/js/catalogPageUtils.js';
+        import { getButtonByOnclick, setButtonLoading } from '/js/loadingState.js';
 
         window.fullname = '<%= locals.fullname %>' || null;
 
@@ -384,8 +385,12 @@
         document.getElementById('maxPrice').addEventListener('input', handlePriceChange);
 
         function changePage(page) {
+            const button = getButtonByOnclick(`changePage('${page}')`) || getButtonByOnclick(`changePage(${page})`);
+            setButtonLoading(button, true, 'Loading...');
             currentFilters.page = parseInt(page);
-            fetchProducts();
+            fetchProducts().finally(() => {
+                setButtonLoading(button, false);
+            });
         }
 
         // Initialize filters from URL parameters on page load
@@ -411,6 +416,8 @@
             initializeFiltersFromURL();
             fetchProducts();
         });
+
+        window.changePage = changePage;
     </script>
 
     <%- include(locals.fullname ? '../partials/footer' : '../partials/authfooter' ) %>

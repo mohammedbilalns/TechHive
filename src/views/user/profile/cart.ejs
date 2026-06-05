@@ -148,10 +148,12 @@
   </div>
 
 
-  <script>
+  <script type="module">
+    import { getButtonByOnclick, setButtonLoading } from '/js/loadingState.js';
 
 
     function updateQuantity(productId, action) {
+      const button = getButtonByOnclick(`updateQuantity('${productId}', '${action}')`);
       // Get current quantity
       const quantitySpan = document.querySelector(`[data-product="${productId}"] .quantity-value`);
       const currentQuantity = parseInt(quantitySpan.textContent);
@@ -161,6 +163,7 @@
         return;
       }
 
+      setButtonLoading(button, true, 'Updating...');
       axios.patch('/cart', { productId, action })
         .then(response => {
           if (response.data.success) {
@@ -219,13 +222,18 @@
           console.error('Error:', error);
           const errorMessage = error.response?.data?.message || 'Error updating cart quantity';
           showToast(errorMessage, 'error');
+        })
+        .finally(() => {
+          setButtonLoading(button, false);
         });
     }
 
     async function removeFromCart(productId) {
+      const button = getButtonByOnclick(`removeFromCart('${productId}')`);
       const confirmed = await customConfirm('Are you sure you want to remove this item?');
       if (!confirmed) return;
 
+      setButtonLoading(button, true, 'Removing...');
       axios.delete(`/cart/${productId}`)
         .then(response => {
           if (response.data.success) {
@@ -249,6 +257,9 @@
         .catch(error => {
           console.error('Error:', error);
           showToast('Error removing item', 'error');
+        })
+        .finally(() => {
+          setButtonLoading(button, false);
         });
     }
 
@@ -283,6 +294,8 @@
     }
 
     function proceedToCheckout() {
+      const button = getButtonByOnclick('proceedToCheckout()');
+      setButtonLoading(button, true, 'Loading...');
       axios.get('/checkout')
         .then(response => {
           if (response.data.success === false) {
@@ -294,13 +307,18 @@
         .catch(error => {
           const errorMessage = error.response?.data?.message || 'Error proceeding to checkout';
           showToast(errorMessage, 'error');
+        })
+        .finally(() => {
+          setButtonLoading(button, false);
         });
     }
 
     async function clearCart() {
+      const button = getButtonByOnclick('clearCart()');
       const confirmed = await customConfirm('Are you sure you want to clear your cart?');
       if (!confirmed) return;
 
+      setButtonLoading(button, true, 'Clearing...');
       axios.post('/cart/clear')
         .then(response => {
           if (response.data.success) {
@@ -316,8 +334,18 @@
         .catch(error => {
           console.error('Error:', error);
           showToast('Error clearing cart', 'error');
+        })
+        .finally(() => {
+          setButtonLoading(button, false);
         });
     }
+
+    // Inline onclick handlers need globals, but module-scoped functions are private by default.
+    window.updateQuantity = updateQuantity;
+    window.removeFromCart = removeFromCart;
+    window.toggleCouponForm = toggleCouponForm;
+    window.proceedToCheckout = proceedToCheckout;
+    window.clearCart = clearCart;
   </script>
 
   <%- include('../../partials/footer') %>

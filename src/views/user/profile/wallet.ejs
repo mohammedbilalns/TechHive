@@ -136,7 +136,8 @@
     </div>
 
     <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
-    <script>
+    <script type="module">
+        import { setButtonLoading } from '/js/loadingState.js';
         async function initializeRazorpay(orderData) {
             const options = {
                 key: '<%= process.env.RAZORPAY_KEY_ID %>',
@@ -169,6 +170,7 @@
 
         async function addMoney(event) {
             event.preventDefault();
+            const submitButton = event.currentTarget.querySelector('button[type="submit"]');
             const amount = parseFloat(document.getElementById('amount').value);
 
             if (!amount || amount <= 0) {
@@ -176,6 +178,7 @@
                 return;
             }
             try {
+                setButtonLoading(submitButton, true, 'Creating Order...');
                 const response = await axios.post('/wallet', { amount });
                 if (response.data.success) {
                     await initializeRazorpay(response.data);
@@ -186,6 +189,8 @@
             } catch (error) {
                 console.error('Error:', error);
                 showToast('Error adding money to wallet', 'error');
+            } finally {
+                setButtonLoading(submitButton, false);
             }
         }
 
@@ -266,6 +271,11 @@
                 hideAddMoneyModal();
             }
         });
+
+        window.showAddMoneyModal = showAddMoneyModal;
+        window.hideAddMoneyModal = hideAddMoneyModal;
+        window.setAmount = setAmount;
+        window.addMoney = addMoney;
     </script>
 
     <%- include('../../partials/footer') %>

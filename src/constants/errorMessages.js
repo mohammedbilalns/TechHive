@@ -261,4 +261,4 @@ export const UserAuthErrorMessages = Object.freeze({
 
 export const UserProfileErrorMessages = Object.freeze({
   INVALID_PROFILE_DATA:"Invalid profile data"
-})
+});

@@ -3,6 +3,7 @@ import {
   resetFormErrors,
   showFieldError,
 } from "/js/formFeedback.js";
+import { getButtonByOnclick, setButtonLoading } from "/js/loadingState.js";
 import { customConfirm, showToast } from "/js/util.js";
 
 const OFFER_FIELDS = [
@@ -236,7 +237,9 @@ function createOffersPage({ currentPage = 1 } = {}) {
   }
 
   async function editOffer(offerId) {
+    const button = getButtonByOnclick(`editOffer('${offerId}')`);
     try {
+      setButtonLoading(button, true, "Loading...");
       const response = await axios.get(`/admin/offers/${offerId}`);
       if (!response.data.success || !response.data.offer) {
         throw new Error(
@@ -255,12 +258,17 @@ function createOffersPage({ currentPage = 1 } = {}) {
           "Failed to fetch offer details",
         "error",
       );
+    } finally {
+      setButtonLoading(button, false);
     }
   }
 
   async function submitOfferForm(event) {
     event.preventDefault();
     resetFormErrors("offerForm");
+    const submitButton = event.currentTarget.querySelector(
+      'button[type="submit"]',
+    );
 
     const offerData = buildOfferPayload();
     if (!offerData) return;
@@ -270,6 +278,11 @@ function createOffersPage({ currentPage = 1 } = {}) {
     const url = offerId ? `/admin/offers/${offerId}` : "/admin/offers";
 
     try {
+      setButtonLoading(
+        submitButton,
+        true,
+        method === "put" ? "Updating..." : "Saving...",
+      );
       const response = await axios[method](url, payload);
       if (!response.data.success) {
         showToast(
@@ -319,10 +332,15 @@ function createOffersPage({ currentPage = 1 } = {}) {
           `Failed to ${method === "put" ? "update" : "add"} offer`,
         "error",
       );
+    } finally {
+      setButtonLoading(submitButton, false);
     }
   }
 
   async function toggleOfferStatus(offerId, currentStatus) {
+    const button = getButtonByOnclick(
+      `toggleOfferStatus('${offerId}', '${currentStatus}')`,
+    );
     const action = currentStatus === "true" ? "deactivate" : "activate";
     const confirmed = await customConfirm(
       `Are you sure you want to ${action} this offer?`,
@@ -331,6 +349,7 @@ function createOffersPage({ currentPage = 1 } = {}) {
     if (!confirmed) return;
 
     try {
+      setButtonLoading(button, true, "Updating...");
       const response = await axios.patch(
         `/admin/offers/${offerId}/toggle-status`,
       );
@@ -366,10 +385,13 @@ function createOffersPage({ currentPage = 1 } = {}) {
         error.response?.data?.message || `Failed to ${action} offer`,
         "error",
       );
+    } finally {
+      setButtonLoading(button, false);
     }
   }
 
   async function deleteOffer(offerId) {
+    const button = getButtonByOnclick(`deleteOffer('${offerId}')`);
     const confirmed = await customConfirm(
       "Are you sure you want to delete this offer?",
       "Delete Offer",
@@ -377,6 +399,7 @@ function createOffersPage({ currentPage = 1 } = {}) {
     if (!confirmed) return;
 
     try {
+      setButtonLoading(button, true, "Deleting...");
       const response = await axios.delete(`/admin/offers/${offerId}`);
       if (!response.data.success) return;
 
@@ -405,11 +428,14 @@ function createOffersPage({ currentPage = 1 } = {}) {
         error.response?.data?.message || "Failed to delete offer",
         "error",
       );
+    } finally {
+      setButtonLoading(button, false);
     }
   }
 
   async function submitReferralForm(event) {
     event.preventDefault();
+    const submitButton = event.currentTarget.querySelector('button[type="submit"]');
 
     const formData = {
       referrerValue: parseInt(
@@ -420,6 +446,7 @@ function createOffersPage({ currentPage = 1 } = {}) {
     };
 
     try {
+      setButtonLoading(submitButton, true, "Updating...");
       const response = await axios.post("/admin/referral-settings", formData);
       if (response.data.success) {
         showToast("Referral settings updated successfully");
@@ -429,6 +456,8 @@ function createOffersPage({ currentPage = 1 } = {}) {
         error.response?.data?.message || "Failed to update referral settings",
         "error",
       );
+    } finally {
+      setButtonLoading(submitButton, false);
     }
   }
 

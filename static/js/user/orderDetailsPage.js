@@ -3,6 +3,7 @@ import {
   resetFormErrors,
   showFieldError,
 } from "/js/formFeedback.js";
+import { getButtonByOnclick, setButtonLoading } from "/js/loadingState.js";
 import { openRazorpayCheckout } from "/js/razorpay.js";
 import { customConfirm, showToast } from "/js/util.js";
 
@@ -20,12 +21,14 @@ function createOrderDetailsPage({ razorpayKey, user }) {
   }
 
   async function cancelOrderItem(orderId, itemId) {
+    const button = getButtonByOnclick(`cancelOrderItem('${orderId}', '${itemId}')`);
     try {
       const confirmed = await customConfirm(
         "Are you sure you want to cancel this item?",
       );
       if (!confirmed) return;
 
+      setButtonLoading(button, true, "Cancelling...");
       const response = await axios.post(
         `/orders/${orderId}/items/${itemId}/cancel`,
       );
@@ -39,6 +42,8 @@ function createOrderDetailsPage({ razorpayKey, user }) {
     } catch (error) {
       console.error("Error:", error);
       showToast("Failed to cancel item", "error");
+    } finally {
+      setButtonLoading(button, false);
     }
   }
 
@@ -57,6 +62,7 @@ function createOrderDetailsPage({ razorpayKey, user }) {
 
   async function submitReturnForm(event) {
     event.preventDefault();
+    const submitButton = event.currentTarget.querySelector('button[type="submit"]');
     resetFormErrors("returnForm");
 
     const reason = document.getElementById("returnReason").value.trim();
@@ -76,6 +82,7 @@ function createOrderDetailsPage({ razorpayKey, user }) {
     try {
       const orderId = document.getElementById("returnOrderId").value;
       const itemId = document.getElementById("returnItemId").value;
+      setButtonLoading(submitButton, true, "Submitting...");
       const response = await axios.post(
         `/orders/${orderId}/items/${itemId}/return`,
         { reason },
@@ -95,11 +102,15 @@ function createOrderDetailsPage({ razorpayKey, user }) {
     } catch (error) {
       console.error("Error:", error);
       showToast("Failed to submit return request", "error");
+    } finally {
+      setButtonLoading(submitButton, false);
     }
   }
 
   async function downloadInvoice(orderId, itemId) {
+    const button = getButtonByOnclick(`downloadInvoice('${orderId}', '${itemId}')`);
     try {
+      setButtonLoading(button, true, "Downloading...");
       const response = await axios.get(
         `/orders/${orderId}/items/${itemId}/invoice`,
         { responseType: "blob" },
@@ -112,8 +123,10 @@ function createOrderDetailsPage({ razorpayKey, user }) {
       document.body.appendChild(anchor);
       anchor.click();
       window.URL.revokeObjectURL(url);
-    } catch (error) {
+    } catch {
       showToast("Failed to download invoice", "error");
+    } finally {
+      setButtonLoading(button, false);
     }
   }
 
@@ -134,7 +147,9 @@ function createOrderDetailsPage({ razorpayKey, user }) {
   }
 
   async function retryPayment(orderId) {
+    const button = getButtonByOnclick(`retryPayment('${orderId}')`);
     try {
+      setButtonLoading(button, true, "Loading...");
       const response = await axios.post(`/orders/${orderId}/retry-payment`);
       if (!response.data.success) {
         showToast(
@@ -166,6 +181,8 @@ function createOrderDetailsPage({ razorpayKey, user }) {
     } catch (error) {
       console.error("Error:", error);
       showToast("Failed to initialize payment", "error");
+    } finally {
+      setButtonLoading(button, false);
     }
   }
 
@@ -226,6 +243,7 @@ function createOrderDetailsPage({ razorpayKey, user }) {
 
   async function submitReviewForm(event) {
     event.preventDefault();
+    const submitButton = event.currentTarget.querySelector('button[type="submit"]');
     resetFormErrors("reviewForm");
 
     const productName = document.getElementById("reviewProductName").value;
@@ -250,6 +268,7 @@ function createOrderDetailsPage({ razorpayKey, user }) {
     }
 
     try {
+      setButtonLoading(submitButton, true, "Submitting...");
       const response = await axios.post("/review/add", {
         productName,
         rating: currentRating,
@@ -269,6 +288,8 @@ function createOrderDetailsPage({ razorpayKey, user }) {
         error.response?.data?.message || "Failed to submit review",
         "error",
       );
+    } finally {
+      setButtonLoading(submitButton, false);
     }
   }
 
