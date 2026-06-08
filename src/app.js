@@ -25,11 +25,7 @@ app.set("view engine", "ejs");
 
 app.use(compression());
 app.use(
-  express.static(staticDir, {
-    maxAge: "7d",
-    etag: true,
-    lastModified: true,
-  }),
+  express.static(staticDir),
 );
 app.use(nocache());
 app.use(

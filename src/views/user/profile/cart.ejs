@@ -60,7 +60,7 @@
                                   </p>
                                 </div>
                                 <button onclick="removeFromCart('<%= item.productId._id %>')"
-                                  class="text-red-600 hover:text-red-800 flex-shrink-0">
+                                  class="text-red-600 hover:text-red-800 flex-shrink-0" data-loading-variant="icon">
                                   <i class="fas fa-trash"></i>
                                 </button>
                               </div>
@@ -70,6 +70,7 @@
                             <div class="flex items-center border rounded">
                               <button onclick="updateQuantity('<%= item.productId._id %>', 'decrease')"
                                 class="decrease-btn px-3 py-1 hover:bg-gray-100 <%= item.quantity <= 1 ? 'text-gray-400' : '' %>"
+                                data-loading-variant="icon"
                                 <%=item.quantity <=1 ? 'disabled' : '' %>>
                                 -
                               </button>
@@ -77,7 +78,8 @@
                                 <%= item.quantity %>
                               </span>
                               <button onclick="updateQuantity('<%= item.productId._id %>', 'increase')"
-                                class="increase-btn px-3 py-1 hover:bg-gray-100 <%= item.quantity >= 4 ? 'text-gray-400' : '' %>">
+                                class="increase-btn px-3 py-1 hover:bg-gray-100 <%= item.quantity >= 4 ? 'text-gray-400' : '' %>"
+                                data-loading-variant="icon">
                                 +
                               </button>
                             </div>

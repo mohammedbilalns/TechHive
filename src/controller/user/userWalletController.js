@@ -22,7 +22,7 @@ export const renderUserWalletPage = asyncHandler(async (req, res) => {
   const userId = getSessionUserId(req);
 
   const [wallet, user] = await Promise.all([
-    walletModel.findOne({ userId }).lean(),
+  walletModel.findOne({ userId }),
     UserModel.findOne({ _id: userId }).lean(),
   ]);
 
@@ -58,7 +58,7 @@ export const renderUserWalletPage = asyncHandler(async (req, res) => {
 
   res.render(USER_VIEW_PATHS.ProfileWallet, {
     wallet: {
-      ...wallet.toObject(),
+      ...(wallet.toObject ? wallet.toObject() : wallet),
       transactions,
     },
     user,

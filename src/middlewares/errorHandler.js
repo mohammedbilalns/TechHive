@@ -8,7 +8,7 @@ export const errorMiddleware = (err, req, res, _next) => {
   logger.error("Stack:", err.stack);
 
   const statusCode = err.statusCode || 500;
-  const message = err.message || "Internal Server Error";
+  const message = err.isOperational || statusCode !== 500 ? err.message : "Internal Server Error";
   const prefersJson =
     req.xhr ||
     req.originalUrl?.startsWith("/api/") ||
