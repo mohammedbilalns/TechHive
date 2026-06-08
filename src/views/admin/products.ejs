@@ -47,14 +47,13 @@
                         <th class="px-6 py-3">Price</th>
                         <th class="px-6 py-3">Stock</th>
                         <th class="px-6 py-3">Status</th>
-                        <th class="px-6 py-3">Variant</th>
                         <th class="px-6 py-3 text-center">Actions</th>
                       </tr>
                     </thead>
                     <tbody id="productsTable" class="text-gray-700">
                       <% if (products.length===0) { %>
                         <tr>
-                          <td colspan="9" class="text-center py-10">
+                          <td colspan="8" class="text-center py-10">
                             <h2 class="text-xl font-semibold text-gray-600">
                               <%= search ? `No products found for "${search}" ` : 'No products found' %>
                             </h2>
@@ -92,9 +91,6 @@
                       <%= product.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' %>">
                                   <%= product.status %>
                                 </span>
-                              </td>
-                              <td class="px-6 py-3">
-                                <%= product.variant %>
                               </td>
                               <td class="px-6 py-3 text-center">
                                 <div class="flex justify-center gap-2">

@@ -67,7 +67,12 @@
                       <div class="flex-grow min-w-0">
                         <h3 class="font-semibold text-sm sm:text-base"><%= item.productId.name %></h3>
                         <p class="text-gray-600 text-sm item-price mt-1">
-                          ₹<%= (item.productId.price * (1 - item.productId.discount/100)).toFixed(2) %>
+                          <% if (item.productId.discount > 0) { %>
+                            ₹<%= (item.productId.price * (1 - item.productId.discount/100)).toFixed(2) %>
+                            <span class="line-through text-gray-400">₹<%= item.productId.price.toFixed(2) %></span>
+                          <% } else { %>
+                            ₹<%= item.productId.price.toFixed(2) %>
+                          <% } %>
                         </p>
                       </div>
                     </div>

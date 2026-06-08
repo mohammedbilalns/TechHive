@@ -105,12 +105,7 @@
                             <span class="text-gray-600">Shipping</span>
                             <span id="shipping">Free</span>
                           </div>
-                          <% if (cart.discount) { %>
-                            <div class="flex justify-between text-green-600">
-                              <span>Coupon Discount</span>
-                              <span id="couponDiscount">-₹<%= cart.discount %></span>
-                            </div>
-                            <% } %>
+                   
                               <div class="border-t pt-2 mt-2">
                                 <div class="flex justify-between font-semibold">
                                   <span>Total</span>
@@ -285,16 +280,6 @@
       `;
     }
 
-    function toggleCouponForm() {
-      const form = document.getElementById('couponForm');
-      if (form.classList.contains('hidden')) {
-        form.classList.remove('hidden');
-        document.getElementById('couponCode').focus();
-      } else {
-        form.classList.add('hidden');
-      }
-    }
-
     function proceedToCheckout() {
       const button = getButtonByOnclick('proceedToCheckout()');
       setButtonLoading(button, true, 'Loading...');
@@ -333,7 +318,7 @@
             showToast(response.data.message || 'Failed to clear cart', 'error');
           }
         })
-        .catch(error => {
+      .catch(error => {
           console.error('Error:', error);
           showToast('Error clearing cart', 'error');
         })
@@ -345,7 +330,6 @@
     // Inline onclick handlers need globals, but module-scoped functions are private by default.
     window.updateQuantity = updateQuantity;
     window.removeFromCart = removeFromCart;
-    window.toggleCouponForm = toggleCouponForm;
     window.proceedToCheckout = proceedToCheckout;
     window.clearCart = clearCart;
   </script>
