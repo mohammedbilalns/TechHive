@@ -1166,6 +1166,10 @@ input::placeholder {
   max-height: 90vh;
 }
 
+.max-h-\[60vh\] {
+  max-height: 60vh;
+}
+
 .min-h-\[1\.25rem\] {
   min-height: 1.25rem;
 }
@@ -1327,6 +1331,10 @@ input::placeholder {
 }
 
 .flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+.shrink-0 {
   flex-shrink: 0;
 }
 
@@ -2916,6 +2924,10 @@ input::placeholder {
 
   .sm\:p-8 {
     padding: 2rem;
+  }
+
+  .sm\:p-6 {
+    padding: 1.5rem;
   }
 
   .sm\:px-3 {
