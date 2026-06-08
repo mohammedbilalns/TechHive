@@ -19,7 +19,7 @@ export const renderUserWishlistPage = asyncHandler(async (req, res) => {
   const userId = getSessionUserId(req);
 
   // Find or create wishlist
-  let wishlist = await wishlistModel.findOne({ userId });
+  let wishlist = await wishlistModel.findOne({ userId }).lean();
   if (!wishlist) {
     wishlist = await wishlistModel.create({ userId, products: [] });
   }
@@ -40,7 +40,7 @@ export const renderUserWishlistPage = asyncHandler(async (req, res) => {
       skip: skip,
       limit: limit,
     },
-  });
+  }).lean();
 
   res.render(USER_VIEW_PATHS.ProfileWishlist, {
     wishlist: paginatedWishlist ? paginatedWishlist : [],
@@ -61,7 +61,7 @@ export const addToWishlist = asyncHandler(async (req, res) => {
   const product = await productModel.findOne({
     _id: productId,
     status: "Active",
-  });
+  }).lean();
 
   if (!product) {
     throw new AppError(

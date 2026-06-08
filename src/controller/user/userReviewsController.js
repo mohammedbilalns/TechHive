@@ -22,7 +22,7 @@ export const addReview = asyncHandler(async (req, res) => {
   const product = await productModel.findOne({
     name: formattedProductName,
     status: "Active",
-  });
+  }).lean();
 
   if (!product) {
     throw new AppError(
@@ -35,7 +35,7 @@ export const addReview = asyncHandler(async (req, res) => {
   const existingReview = await reviewModel.findOne({
     user: userId,
     product: product._id,
-  });
+  }).lean();
 
   if (existingReview) {
     existingReview.rating = rating;
@@ -80,7 +80,7 @@ export const getReview = asyncHandler(async (req, res) => {
   const product = await productModel.findOne({
     name: formattedProductName,
     status: "Active",
-  });
+  }).lean();
 
   if (!product) {
     throw new AppError(

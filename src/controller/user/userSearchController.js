@@ -18,14 +18,17 @@ const renderSearchProductsPage = asyncHandler(async (req, res) => {
     : Number.MAX_VALUE;
   const minRating = req.query.minRating ? parseFloat(req.query.minRating) : 0;
 
-  // Get product ratings
-  const productRatings = await reviewModel.aggregate([
-    {
-      $group: {
-        _id: "$product",
-        avgRating: { $avg: "$rating" },
+  // Get product ratings and categories in parallel
+  const [productRatings, allCategories] = await Promise.all([
+    reviewModel.aggregate([
+      {
+        $group: {
+          _id: "$product",
+          avgRating: { $avg: "$rating" },
+        },
       },
-    },
+    ]),
+    categoryModel.find({ status: "Active" }).lean(),
   ]);
 
   const ratingMap = new Map(
@@ -40,10 +43,12 @@ const renderSearchProductsPage = asyncHandler(async (req, res) => {
 
   // Add search query
   if (query) {
-    const matchingCategories = await categoryModel.find({
-      name: { $regex: query, $options: "i" },
-      status: "Active",
-    });
+    const matchingCategories = await categoryModel
+      .find({
+        name: { $regex: query, $options: "i" },
+        status: "Active",
+      })
+      .lean();
 
     const categoryIds = matchingCategories.map((cat) => cat._id);
 
@@ -61,9 +66,10 @@ const renderSearchProductsPage = asyncHandler(async (req, res) => {
   }
 
   // Get all products
-  let allProducts = await productModel
+  const allProducts = await productModel
     .find(baseQuery)
-    .populate("category", "name");
+    .populate("category", "name")
+    .lean();
 
   // Apply rating filter
   if (minRating > 0) {
@@ -103,8 +109,6 @@ const renderSearchProductsPage = asyncHandler(async (req, res) => {
   // Slice  products array for pagination
   const products = allProducts.slice(startIndex, endIndex);
 
-  // Get all categories for filter dropdown
-  const allCategories = await categoryModel.find({ status: "Active" });
 
   if (req.xhr || req.path === "/api/search") {
     return res.status(HttpStatus.OK).json({

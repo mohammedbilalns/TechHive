@@ -103,7 +103,8 @@ export const getSalesReportData = asyncHandler(async (req, res) => {
       "items.status": "delivered",
       orderDate: dateFilter.orderDate,
     })
-    .populate("userId", "fullname");
+    .populate("userId", "fullname")
+    .lean();
 
   // Calculate overall totals
   let overallTotalSales = 0;

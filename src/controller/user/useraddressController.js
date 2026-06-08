@@ -19,7 +19,7 @@ import {
 export const renderUserAddressesPage = asyncHandler(async (req, res) => {
   const user = await getUserFromSession(req);
 
-  let addresses = await addressModel.find({ userId: user._id });
+  let addresses = await addressModel.find({ userId: user._id }).lean();
   res.render(USER_VIEW_PATHS.ProfileAddresses, {
     addresses,
     user,
@@ -124,7 +124,7 @@ export const updateAddress = asyncHandler(async (req, res) => {
       alternatePhone,
     },
     { new: true },
-  );
+  ).lean();
 
   if (!address) {
     throw new AppError(HttpStatus.NOT_FOUND, ErrorMessages.ADDRESS_NOT_FOUND);
@@ -142,7 +142,7 @@ export const deleteAddress = asyncHandler(async (req, res) => {
   const address = await addressModel.findOneAndDelete({
     _id: req.params.id,
     userId: getSessionUserId(req),
-  });
+  }).lean();
 
   if (!address) {
     throw new AppError(HttpStatus.NOT_FOUND, ErrorMessages.ADDRESS_NOT_FOUND);
@@ -169,7 +169,7 @@ export const getAddress = asyncHandler(async (req, res) => {
   const address = await addressModel.findOne({
     _id: addressId,
     userId: userId,
-  });
+  }).lean();
 
   if (!address) {
     throw new AppError(HttpStatus.NOT_FOUND, ErrorMessages.ADDRESS_NOT_FOUND);

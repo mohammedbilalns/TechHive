@@ -24,18 +24,21 @@ export const renderCategoriesPage = asyncHandler(async (req, res) => {
     name: { $regex: search, $options: "i" },
   };
 
-  const totalCategories = await categoryModel.countDocuments(searchQuery);
-  const { totalPages, hasNextPage, hasPrevPage, skip } = getPaginationMeta(
+  const skip = (page - 1) * limit;
+  const [totalCategories, categories] = await Promise.all([
+    categoryModel.countDocuments(searchQuery),
+    categoryModel
+      .find(searchQuery)
+      .sort({ createdAt: 1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+  ]);
+  const { totalPages, hasNextPage, hasPrevPage } = getPaginationMeta(
     page,
     totalCategories,
     limit,
   );
-
-  const categories = await categoryModel
-    .find(searchQuery)
-    .sort({ createdAt: 1 })
-    .skip(skip)
-    .limit(limit);
 
   res.render(ADMIN_VIEW_PATHS.Categories, {
     categories,
@@ -52,7 +55,7 @@ export const renderCategoriesPage = asyncHandler(async (req, res) => {
 
 //---- Delete a category----
 export const deleteCategory = asyncHandler(async (req, res) => {
-  await categoryModel.findByIdAndDelete(req.params.categoryid);
+  await categoryModel.findByIdAndDelete(req.params.categoryid).lean();
   res.json({
     success: true,
     message: CategorySuccessMessages.Deleted,
@@ -63,7 +66,7 @@ export const deleteCategory = asyncHandler(async (req, res) => {
 export const disableCategory = asyncHandler(async (req, res) => {
   await categoryModel.findByIdAndUpdate(req.params.categoryid, {
     status: "Inactive",
-  });
+  }).lean();
 
   // Update all products in this category to Inactive
   await productModel.updateMany(
@@ -105,7 +108,7 @@ export const addCategory = asyncHandler(async (req, res) => {
 
   const { name, description } = value;
 
-  const existingCategory = await categoryModel.findOne({ name });
+  const existingCategory = await categoryModel.findOne({ name }).lean();
   if (existingCategory) {
     throw new AppError(
       HttpStatus.CONFLICT,
@@ -141,7 +144,7 @@ export const editCategory = asyncHandler(async (req, res) => {
   const existingCategory = await categoryModel.findOne({
     name: name,
     _id: { $ne: req.params.categoryid },
-  });
+  }).lean();
 
   if (existingCategory) {
     throw new AppError(
@@ -154,7 +157,7 @@ export const editCategory = asyncHandler(async (req, res) => {
     req.params.categoryid,
     { name, description },
     { new: true },
-  );
+  ).lean();
 
   if (!updatedCategory) {
     throw new AppError(

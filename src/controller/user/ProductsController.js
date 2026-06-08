@@ -10,16 +10,15 @@ import { getPageNumber } from "../../utils/controllerHelpers.js";
 
 // ---- load home ---- homepage
 export const renderHomePage = asyncHandler(async (req, res) => {
-  const allProducts = await productModel.find({ status: "Active" }).limit(6);
-
-  // Fetch all categories
-  const categories = await categoryModel.find({ status: "Active" }).limit(10);
-
-  const newArrivals = await productModel
-    .find({ status: "Active" })
-    .sort({ createdAt: -1 })
-    .limit(4);
-
+  const [allProducts, categories, newArrivals] = await Promise.all([
+    productModel.find({ status: "Active" }).limit(6).lean(),
+    categoryModel.find({ status: "Active" }).limit(10).lean(),
+    productModel
+      .find({ status: "Active" })
+      .sort({ createdAt: -1 })
+      .limit(4)
+      .lean(),
+  ]);
   let fullname = req.session.user?.fullname;
 
   res.render(USER_VIEW_PATHS.Home, {
@@ -31,15 +30,15 @@ export const renderHomePage = asyncHandler(async (req, res) => {
 });
 
 export const renderLandingPage = asyncHandler(async (_req, res) => {
-  const allProducts = await productModel.find({ status: "Active" }).limit(6);
-
-  // Fetch all categories
-  const categories = await categoryModel.find({ status: "Active" }).limit(10);
-
-  const newArrivals = await productModel
-    .find({ status: "Active" })
-    .sort({ createdAt: -1 })
-    .limit(4);
+  const [allProducts, categories, newArrivals] = await Promise.all([
+    productModel.find({ status: "Active" }).limit(6).lean(),
+    categoryModel.find({ status: "Active" }).limit(10).lean(),
+    productModel
+      .find({ status: "Active" })
+      .sort({ createdAt: -1 })
+      .limit(4)
+      .lean(),
+  ]);
 
   res.render(USER_VIEW_PATHS.Landing, {
     allProducts,
@@ -53,18 +52,26 @@ export const renderAllProductsPage = asyncHandler(async (req, res) => {
   const limit = 4; // Number of categories per page
 
   // Get total number of active categories
-  const totalCategories = await categoryModel.countDocuments({
-    status: "Active",
-  });
+  const [totalCategories, categories, productRatings] = await Promise.all([
+    categoryModel.countDocuments({
+      status: "Active",
+    }),
+    categoryModel
+      .find({ status: "Active" })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean(),
+    reviewModel.aggregate([
+      {
+        $group: {
+          _id: "$product",
+          avgRating: { $avg: "$rating" },
+        },
+      },
+    ]),
+  ]);
   const totalPages = Math.ceil(totalCategories / limit);
 
-  // Get categories
-  const categories = await categoryModel
-    .find({ status: "Active" })
-    .skip((page - 1) * limit)
-    .limit(limit);
-
-  // Get products for each category
   const categoriesWithProducts = await Promise.all(
     categories.map(async (category) => {
       const products = await productModel
@@ -72,24 +79,15 @@ export const renderAllProductsPage = asyncHandler(async (req, res) => {
           category: category._id,
           status: "Active",
         })
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: -1 })
+        .lean();
 
       return {
-        ...category.toObject(),
+        ...category,
         products,
       };
     }),
   );
-
-  // Get product ratings
-  const productRatings = await reviewModel.aggregate([
-    {
-      $group: {
-        _id: "$product",
-        avgRating: { $avg: "$rating" },
-      },
-    },
-  ]);
 
   const ratingMap = new Map(
     productRatings.map((item) => [item._id.toString(), item.avgRating]),
@@ -123,14 +121,25 @@ export const renderProductPage = asyncHandler(async (req, res) => {
   }
 
   // Fetch reviews first
-  const reviews = await reviewModel
-    .find({ product: productId })
-    .populate("user", "fullname")
-    .sort({ createdAt: -1 })
-    .skip((page - 1) * reviewsPerPage)
-    .limit(reviewsPerPage);
-
-  const totalReviews = await reviewModel.countDocuments({ product: productId });
+  const [reviews, totalReviews, product, productRatings] = await Promise.all([
+    reviewModel
+      .find({ product: productId })
+      .populate("user", "fullname")
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * reviewsPerPage)
+      .limit(reviewsPerPage)
+      .lean(),
+    reviewModel.countDocuments({ product: productId }),
+    productModel.findById(productId).lean(),
+    reviewModel.aggregate([
+      {
+        $group: {
+          _id: "$product",
+          avgRating: { $avg: "$rating" },
+        },
+      },
+    ]),
+  ]);
 
   // If it's an AJAX request, return only the reviews data
   if (req.xhr) {
@@ -141,8 +150,6 @@ export const renderProductPage = asyncHandler(async (req, res) => {
   }
 
   // For regular page load, fetch the rest of the data
-  const product = await productModel.findById(productId);
-
   if (!product || product.status !== "Active") {
     return res.redirect(
       `/notfound?message=${encodeURIComponent(UserProductErrorMessages.PRODUCT_NOT_FOUND_REDIRECT)}&alertType=error`,
@@ -155,25 +162,16 @@ export const renderProductPage = asyncHandler(async (req, res) => {
       _id: { $ne: product._id },
       status: "Active",
     })
-    .limit(4);
+    .limit(4)
+    .lean();
 
   // Calculate average rating
   let averageRating = 0;
   if (totalReviews > 0) {
-    const allRatings = await reviewModel.find({ product: productId });
+    const allRatings = await reviewModel.find({ product: productId }).lean();
     averageRating =
       allRatings.reduce((sum, review) => sum + review.rating, 0) / totalReviews;
   }
-
-  // Get product ratings for related products
-  const productRatings = await reviewModel.aggregate([
-    {
-      $group: {
-        _id: "$product",
-        avgRating: { $avg: "$rating" },
-      },
-    },
-  ]);
 
   const ratingMap = new Map(
     productRatings.map((item) => [item._id.toString(), item.avgRating]),
@@ -214,27 +212,28 @@ export const renderCategoryPage = asyncHandler(async (req, res) => {
     );
   }
 
-  // Fetch the category
-  const category = await categoryModel.findOne({
-    _id: categoryId,
-    status: "Active",
-  });
+  const [category, productRatings] = await Promise.all([
+    categoryModel
+      .findOne({
+        _id: categoryId,
+        status: "Active",
+      })
+      .lean(),
+    reviewModel.aggregate([
+      {
+        $group: {
+          _id: "$product",
+          avgRating: { $avg: "$rating" },
+        },
+      },
+    ]),
+  ]);
 
   if (!category) {
     return res.redirect(
       `/notfound?message=${encodeURIComponent(UserProductErrorMessages.CATEGORY_NOT_FOUND)}&alertType=error`,
     );
   }
-
-  // Get product ratings
-  const productRatings = await reviewModel.aggregate([
-    {
-      $group: {
-        _id: "$product",
-        avgRating: { $avg: "$rating" },
-      },
-    },
-  ]);
 
   const ratingMap = new Map(
     productRatings.map((item) => [item._id.toString(), item.avgRating]),
@@ -248,7 +247,7 @@ export const renderCategoryPage = asyncHandler(async (req, res) => {
   };
 
   // Get all products matching the base query
-  let allProducts = await productModel.find(baseQuery);
+  let allProducts = await productModel.find(baseQuery).lean();
 
   // Apply rating filter if needed
   if (minRating > 0) {
@@ -310,4 +309,3 @@ export const renderCategoryPage = asyncHandler(async (req, res) => {
     fullname: req.session.user?.fullname,
   });
 });
-

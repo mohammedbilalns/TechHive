@@ -53,7 +53,7 @@ const checkExistingOffers = async (
     query.applicableCategories = { $in: items };
   }
 
-  const existingOffer = await offerModel.findOne(query);
+  const existingOffer = await offerModel.findOne(query).lean();
   return existingOffer;
 };
 
@@ -67,38 +67,37 @@ export const renderOffersPage = asyncHandler(async (req, res) => {
     limit,
   );
 
-  // Fetch offers
-  const offers = await offerModel
-    .find()
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit)
-    .lean();
+  let [offers, categories, products, referralSettings] = await Promise.all([
+    offerModel
+      .find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+    categoryModel
+      .find({ status: "Active" })
+      .select("_id name")
+      .sort({ name: 1 })
+      .lean(),
+    productModel
+      .find({ status: "Active" })
+      .select("_id name price category")
+      .populate("category", "name")
+      .sort({ name: 1 })
+      .lean(),
+    referralModel.findOne().lean(),
+  ]);
 
   const currentDate = new Date();
   offers.forEach((offer) => {
     offer.isExpired = new Date(offer.endDate) < currentDate;
   });
 
-  // Fetch active categories and products
-  const categories = await categoryModel
-    .find({ status: "Active" })
-    .select("_id name")
-    .sort({ name: 1 });
-
-  const products = await productModel
-    .find({ status: "Active" })
-    .select("_id name price")
-    .populate("category", "name")
-    .sort({ name: 1 });
-
   const formattedProducts = products.map((product) => ({
     _id: product._id,
-    name: `${product.name} (${product.category.name}) - ₹${product.price}`,
+    name: `${product.name} (${product.category?.name}) - ₹${product.price}`,
   }));
 
-  // Fetch referral settings
-  let referralSettings = await referralModel.findOne();
   if (!referralSettings) {
     referralSettings = await new referralModel().save();
   }
@@ -128,7 +127,8 @@ export const getOfferDetails = asyncHandler(async (req, res) => {
   const offer = await offerModel
     .findById(req.params.offerId)
     .populate("applicableCategories", "_id name")
-    .populate("applicableProducts", "_id name");
+    .populate("applicableProducts", "_id name")
+    .lean();
 
   if (!offer) {
     throw new AppError(
@@ -216,7 +216,7 @@ export const addOffer = asyncHandler(async (req, res) => {
 
 // Update offer
 export const updateOffer = asyncHandler(async (req, res) => {
-  const oldOffer = await offerModel.findById(req.params.offerId);
+  const oldOffer = await offerModel.findById(req.params.offerId).lean();
   if (!oldOffer) {
     throw new AppError(
       HttpStatus.NOT_FOUND,
@@ -333,7 +333,7 @@ export const toggleOfferStatus = asyncHandler(async (req, res) => {
 
 // Delete offer
 export const deleteOffer = asyncHandler(async (req, res) => {
-  const offer = await offerModel.findById(req.params.offerId);
+  const offer = await offerModel.findById(req.params.offerId).lean();
   if (!offer) {
     throw new AppError(
       HttpStatus.NOT_FOUND,

@@ -47,19 +47,22 @@ export const renderProductManagementPage = asyncHandler(async (req, res) => {
     ],
   };
 
-  const totalProducts = await productModel.countDocuments(searchQuery);
-  const { totalPages, hasNextPage, hasPrevPage, skip } = getPaginationMeta(
+  const skip = (page - 1) * limit;
+  const [totalProducts, products] = await Promise.all([
+    productModel.countDocuments(searchQuery),
+    productModel
+      .find(searchQuery)
+      .populate("category")
+      .sort({ createdAt: 1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+  ]);
+  const { totalPages, hasNextPage, hasPrevPage } = getPaginationMeta(
     page,
     totalProducts,
     limit,
   );
-
-  const products = await productModel
-    .find(searchQuery)
-    .populate("category")
-    .sort({ createdAt: 1 })
-    .skip(skip)
-    .limit(limit);
 
   res.render(ADMIN_VIEW_PATHS.Products, {
     products,
@@ -76,7 +79,7 @@ export const renderProductManagementPage = asyncHandler(async (req, res) => {
 
 export const deleteProduct = asyncHandler(async (req, res) => {
   // Get the product details
-  const product = await productModel.findById(req.params.productid);
+  const product = await productModel.findById(req.params.productid).lean();
 
   if (!product) {
     throw new AppError(
@@ -105,7 +108,7 @@ export const deactivateProduct = asyncHandler(async (req, res) => {
     req.params.productid,
     { status: "Inactive" },
     { new: true },
-  );
+  ).lean();
 
   if (!product) {
     throw new AppError(
@@ -126,7 +129,7 @@ export const activateProduct = asyncHandler(async (req, res) => {
     req.params.productid,
     { status: "Active" },
     { new: true },
-  );
+  ).lean();
 
   if (!product) {
     throw new AppError(
@@ -143,7 +146,7 @@ export const activateProduct = asyncHandler(async (req, res) => {
 });
 
 export const renderAddProductPage = asyncHandler(async (_req, res) => {
-  const categories = await categoryModel.find({ status: "Active" });
+  const categories = await categoryModel.find({ status: "Active" }).lean();
   res.render(ADMIN_VIEW_PATHS.AddProduct, { categories, page: "products" });
 });
 
@@ -168,8 +171,8 @@ export const addProduct = asyncHandler(async (req, res) => {
     ? specifications
     : [specifications];
   const cleanedSpecs = specArray
-    .filter((spec) => spec && spec.trim())
-    .map((spec) => spec.trim());
+  .filter((spec) => spec && spec.trim())
+  .map((spec) => spec.trim());
 
   // Validation
   const validationError = validateProduct({
@@ -229,7 +232,11 @@ export const renderUpdateProductPage = asyncHandler(async (req, res) => {
     return;
   }
 
-  const product = await productModel.findById(productId);
+  const [product, categories] = await Promise.all([
+    productModel.findById(productId).lean(),
+    categoryModel.find({ status: "Active" }).lean(),
+  ]);
+
 
   // Check if product exists
   if (!product) {
@@ -239,7 +246,6 @@ export const renderUpdateProductPage = asyncHandler(async (req, res) => {
     return;
   }
 
-  const categories = await categoryModel.find({ status: "Active" });
   res.render(ADMIN_VIEW_PATHS.EditProduct, {
     product,
     categories,
@@ -282,8 +288,8 @@ export const editProduct = asyncHandler(async (req, res) => {
     ? specifications
     : [specifications];
   const cleanedSpecs = specArray
-    .filter((spec) => spec && spec.trim())
-    .map((spec) => spec.trim());
+  .filter((spec) => spec && spec.trim())
+  .map((spec) => spec.trim());
 
   // Validation
   const validationError = validateProduct({
@@ -298,10 +304,13 @@ export const editProduct = asyncHandler(async (req, res) => {
     throw new AppError(HttpStatus.BAD_REQUEST, validationError);
   }
 
-  let existingproduct = await productModel.findOne({
-    name,
-    _id: { $ne: productId },
-  });
+  const [existingproduct, product] = await Promise.all([
+    productModel.findOne({
+      name,
+      _id: { $ne: productId },
+    }).lean(),
+    productModel.findById(productId).lean(),
+  ]);
   if (existingproduct) {
     throw new AppError(
       HttpStatus.CONFLICT,
@@ -309,7 +318,6 @@ export const editProduct = asyncHandler(async (req, res) => {
     );
   }
 
-  const product = await productModel.findById(productId);
   if (!product) {
     throw new AppError(
       HttpStatus.NOT_FOUND,

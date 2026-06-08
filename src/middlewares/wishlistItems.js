@@ -9,7 +9,7 @@ const fetchWishlistItems = async (req, res, next) => {
       let wishlist = await wishlistModel.findOne({ userId }).populate({
         path: "products",
         match: { status: "Active" },
-      });
+      }).lean();
 
       // Create new wishlist if none exists
       if (!wishlist) {
