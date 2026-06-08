@@ -35,7 +35,7 @@ export const verifyLogin = asyncHandler(async (req, res) => {
 
   if (error) throw new AppError(HttpStatus.BAD_REQUEST, error);
 
-  const user = await UserModel.findOne({ email }).lean();
+  const user = await UserModel.findOne({ email });
 
   if (!user) {
     throw new AppError(
@@ -380,7 +380,7 @@ export const verifyForgotPasswordOTP = asyncHandler(async (req, res) => {
     throw new AppError(HttpStatus.CONFLICT, ErrorMessages.INVALID_INPUT);
   }
 
-  const user = await UserModel.findOne({ email }).lean();
+  const user = await UserModel.findOne({ email });
   const currentTime = Date.now();
 
   if (!user) {
@@ -428,7 +428,7 @@ export const resendForgotPasswordOTP = asyncHandler(async (req, res) => {
     throw new AppError(HttpStatus.CONFLICT, ErrorMessages.INVALID_INPUT);
   }
 
-  const user = await UserModel.findOne({ email }).lean();
+  const user = await UserModel.findOne({ email });
 
   if (!user) {
     throw new AppError(HttpStatus.CONFLICT, ErrorMessages.INVALID_INPUT);
@@ -474,7 +474,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
     throw new AppError(HttpStatus.BAD_REQUEST, error);
   }
 
-  const user = await UserModel.findOne({ email }).lean();
+  const user = await UserModel.findOne({ email });
 
   if (!user) {
     throw new AppError(HttpStatus.CONFLICT, AuthErrorMessages.INVALID_INPUT);
@@ -494,9 +494,9 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
 export const applyReferral = asyncHandler(async (req, res) => {
   const { referralCode } = req.body;
-  const currentUser = await UserModel.findById(req.session.user.id).lean();
+  const currentUser = await UserModel.findById(req.session.user.id);
   // Find referrer
-  const referrer = await UserModel.findOne({ referralCode }).lean();
+  const referrer = await UserModel.findOne({ referralCode });
 
   if (!referrer) {
     throw new AppError(
@@ -513,12 +513,12 @@ export const applyReferral = asyncHandler(async (req, res) => {
   }
 
   // Get referral values
-  const referralValues = await referralModel.findOne({}).lean();
+  const referralValues = await referralModel.findOne({});
   const referrerAmount = referralValues.referrerValue;
   const refereeAmount = referralValues.refereeValue;
 
   // Handle referrer's wallet
-  let referrerWallet = await walletModel.findOne({ userId: referrer._id }).lean();
+  let referrerWallet = await walletModel.findOne({ userId: referrer._id });
   if (!referrerWallet) {
     referrerWallet = new walletModel({
       userId: referrer._id,
@@ -536,7 +536,7 @@ export const applyReferral = asyncHandler(async (req, res) => {
   await referrerWallet.save();
 
   // Handle current user's wallet
-  let userWallet = await walletModel.findOne({ userId: currentUser._id }).lean();
+  let userWallet = await walletModel.findOne({ userId: currentUser._id });
   if (!userWallet) {
     userWallet = new walletModel({
       userId: currentUser._id,

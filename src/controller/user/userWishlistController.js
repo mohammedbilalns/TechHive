@@ -19,7 +19,7 @@ export const renderUserWishlistPage = asyncHandler(async (req, res) => {
   const userId = getSessionUserId(req);
 
   // Find or create wishlist
-  let wishlist = await wishlistModel.findOne({ userId }).lean();
+  let wishlist = await wishlistModel.findOne({ userId });
   if (!wishlist) {
     wishlist = await wishlistModel.create({ userId, products: [] });
   }
