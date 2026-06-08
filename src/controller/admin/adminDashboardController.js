@@ -86,184 +86,184 @@ export const getDashboardData = asyncHandler(async (req, res) => {
   };
 
   //  sales data calculations
-  const salesData = await orderModel.aggregate([
-    { $match: baseFilter },
-    { $unwind: "$items" },
-    { $match: { "items.status": "delivered" } },
-    {
-      $group: {
-        _id: {
-          date: { $dateToString: { format: "%Y-%m-%d", date: "$orderDate" } },
-          orderId: "$_id",
+  const [salesData, topProducts, topCategories, topBrands] = await Promise.all([
+    orderModel.aggregate([
+      { $match: baseFilter },
+      { $unwind: "$items" },
+      { $match: { "items.status": "delivered" } },
+      {
+        $group: {
+          _id: {
+            date: {
+              $dateToString: { format: "%Y-%m-%d", date: "$orderDate" },
+            },
+            orderId: "$_id",
+          },
+          originalAmount: {
+            $sum: { $multiply: ["$items.price", "$items.quantity"] },
+          },
+          offerDiscount: {
+            $sum: {
+              $multiply: [
+                { $multiply: ["$items.price", "$items.quantity"] },
+                { $divide: ["$items.discount", 100] },
+              ],
+            },
+          },
+          orderTotal: {
+            $first: {
+              $sum: { $multiply: ["$items.price", "$items.quantity"] },
+            },
+          },
+          couponDiscount: { $first: { $ifNull: ["$coupon.discount", 0] } },
         },
-        originalAmount: {
-          $sum: { $multiply: ["$items.price", "$items.quantity"] },
-        },
-        offerDiscount: {
-          $sum: {
-            $multiply: [
-              { $multiply: ["$items.price", "$items.quantity"] },
-              { $divide: ["$items.discount", 100] },
-            ],
+      },
+      {
+        $group: {
+          _id: "$_id.date",
+          totalSales: { $sum: "$originalAmount" },
+          totalOfferDiscounts: { $sum: "$offerDiscount" },
+          totalCouponDiscounts: {
+            $sum: {
+              $multiply: [
+                "$couponDiscount",
+                { $divide: ["$originalAmount", "$orderTotal"] },
+              ],
+            },
           },
         },
-        orderTotal: {
-          $first: { $sum: { $multiply: ["$items.price", "$items.quantity"] } },
-        },
-        couponDiscount: { $first: { $ifNull: ["$coupon.discount", 0] } },
       },
-    },
-    {
-      $group: {
-        _id: "$_id.date",
-        totalSales: { $sum: "$originalAmount" },
-        totalOfferDiscounts: { $sum: "$offerDiscount" },
-        totalCouponDiscounts: {
-          $sum: {
-            $multiply: [
-              "$couponDiscount",
-              { $divide: ["$originalAmount", "$orderTotal"] },
-            ],
-          },
-        },
-      },
-    },
-    {
-      $project: {
-        _id: 1,
-        totalSales: {
-          $subtract: [
-            "$totalSales",
-            { $add: ["$totalOfferDiscounts", "$totalCouponDiscounts"] },
-          ],
-        },
-      },
-    },
-    { $sort: { _id: 1 } },
-  ]);
-
-  // Get top products with proper calculations
-  const topProducts = await orderModel.aggregate([
-    { $match: baseFilter },
-    { $unwind: "$items" },
-    { $match: { "items.status": "delivered" } },
-    {
-      $group: {
-        _id: "$items.name",
-        name: { $first: "$items.name" },
-        totalQuantity: { $sum: "$items.quantity" },
-        originalAmount: {
-          $sum: { $multiply: ["$items.price", "$items.quantity"] },
-        },
-        offerDiscount: {
-          $sum: {
-            $multiply: [
-              { $multiply: ["$items.price", "$items.quantity"] },
-              { $divide: ["$items.discount", 100] },
+      {
+        $project: {
+          _id: 1,
+          totalSales: {
+            $subtract: [
+              "$totalSales",
+              { $add: ["$totalOfferDiscounts", "$totalCouponDiscounts"] },
             ],
           },
         },
       },
-    },
-    {
-      $project: {
-        name: 1,
-        totalQuantity: 1,
-        totalRevenue: {
-          $subtract: ["$originalAmount", "$offerDiscount"],
-        },
-      },
-    },
-    { $sort: { totalRevenue: -1 } },
-    { $limit: 10 },
-  ]);
-
-  // Get top categories
-  const topCategories = await orderModel.aggregate([
-    { $match: baseFilter },
-    { $unwind: "$items" },
-    { $match: { "items.status": "delivered" } },
-    {
-      $lookup: {
-        from: "products",
-        localField: "items.name",
-        foreignField: "name",
-        as: "product",
-      },
-    },
-    { $unwind: "$product" },
-    {
-      $lookup: {
-        from: "categories",
-        localField: "product.category",
-        foreignField: "_id",
-        as: "category",
-      },
-    },
-    { $unwind: "$category" },
-    {
-      $group: {
-        _id: "$category._id",
-        categoryName: { $first: "$category.name" },
-        totalQuantity: { $sum: "$items.quantity" },
-        originalAmount: {
-          $sum: { $multiply: ["$items.price", "$items.quantity"] },
-        },
-        offerDiscount: {
-          $sum: {
-            $multiply: [
-              { $multiply: ["$items.price", "$items.quantity"] },
-              { $divide: ["$items.discount", 100] },
-            ],
+      { $sort: { _id: 1 } },
+    ]),
+    orderModel.aggregate([
+      { $match: baseFilter },
+      { $unwind: "$items" },
+      { $match: { "items.status": "delivered" } },
+      {
+        $group: {
+          _id: "$items.name",
+          name: { $first: "$items.name" },
+          totalQuantity: { $sum: "$items.quantity" },
+          originalAmount: {
+            $sum: { $multiply: ["$items.price", "$items.quantity"] },
+          },
+          offerDiscount: {
+            $sum: {
+              $multiply: [
+                { $multiply: ["$items.price", "$items.quantity"] },
+                { $divide: ["$items.discount", 100] },
+              ],
+            },
           },
         },
       },
-    },
-    {
-      $project: {
-        categoryName: 1,
-        totalQuantity: 1,
-        totalRevenue: {
-          $subtract: ["$originalAmount", "$offerDiscount"],
-        },
-      },
-    },
-    { $sort: { totalRevenue: -1 } },
-    { $limit: 10 },
-  ]);
-
-  // Get top brands
-  const topBrands = await orderModel.aggregate([
-    { $match: baseFilter },
-    { $unwind: "$items" },
-    { $match: { "items.status": "delivered" } },
-    {
-      $group: {
-        _id: "$items.brand",
-        totalQuantity: { $sum: "$items.quantity" },
-        originalAmount: {
-          $sum: { $multiply: ["$items.price", "$items.quantity"] },
-        },
-        offerDiscount: {
-          $sum: {
-            $multiply: [
-              { $multiply: ["$items.price", "$items.quantity"] },
-              { $divide: ["$items.discount", 100] },
-            ],
+      {
+        $project: {
+          name: 1,
+          totalQuantity: 1,
+          totalRevenue: {
+            $subtract: ["$originalAmount", "$offerDiscount"],
           },
         },
       },
-    },
-    {
-      $project: {
-        totalQuantity: 1,
-        totalRevenue: {
-          $subtract: ["$originalAmount", "$offerDiscount"],
+      { $sort: { totalRevenue: -1 } },
+      { $limit: 10 },
+    ]),
+    orderModel.aggregate([
+      { $match: baseFilter },
+      { $unwind: "$items" },
+      { $match: { "items.status": "delivered" } },
+      {
+        $lookup: {
+          from: "products",
+          localField: "items.name",
+          foreignField: "name",
+          as: "product",
         },
       },
-    },
-    { $sort: { totalRevenue: -1 } },
-    { $limit: 10 },
+      { $unwind: "$product" },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "product.category",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      { $unwind: "$category" },
+      {
+        $group: {
+          _id: "$category._id",
+          categoryName: { $first: "$category.name" },
+          totalQuantity: { $sum: "$items.quantity" },
+          originalAmount: {
+            $sum: { $multiply: ["$items.price", "$items.quantity"] },
+          },
+          offerDiscount: {
+            $sum: {
+              $multiply: [
+                { $multiply: ["$items.price", "$items.quantity"] },
+                { $divide: ["$items.discount", 100] },
+              ],
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          categoryName: 1,
+          totalQuantity: 1,
+          totalRevenue: {
+            $subtract: ["$originalAmount", "$offerDiscount"],
+          },
+        },
+      },
+      { $sort: { totalRevenue: -1 } },
+      { $limit: 10 },
+    ]),
+    orderModel.aggregate([
+      { $match: baseFilter },
+      { $unwind: "$items" },
+      { $match: { "items.status": "delivered" } },
+      {
+        $group: {
+          _id: "$items.brand",
+          totalQuantity: { $sum: "$items.quantity" },
+          originalAmount: {
+            $sum: { $multiply: ["$items.price", "$items.quantity"] },
+          },
+          offerDiscount: {
+            $sum: {
+              $multiply: [
+                { $multiply: ["$items.price", "$items.quantity"] },
+                { $divide: ["$items.discount", 100] },
+              ],
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          totalQuantity: 1,
+          totalRevenue: {
+            $subtract: ["$originalAmount", "$offerDiscount"],
+          },
+        },
+      },
+      { $sort: { totalRevenue: -1 } },
+      { $limit: 10 },
+    ]),
   ]);
 
   res.json({

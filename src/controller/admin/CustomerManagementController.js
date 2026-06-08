@@ -24,17 +24,20 @@ export const renderCustomersPage = asyncHandler(async (req, res) => {
     ],
   };
 
-  const totalCustomers = await UserModel.countDocuments(searchQuery);
-  const { totalPages, hasNextPage, hasPrevPage, skip } = getPaginationMeta(
+  const skip = (page - 1) * limit;
+  const [totalCustomers, customers] = await Promise.all([
+    UserModel.countDocuments(searchQuery),
+    UserModel.find(searchQuery)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .lean(),
+  ]);
+  const { totalPages, hasNextPage, hasPrevPage } = getPaginationMeta(
     page,
     totalCustomers,
     limit,
   );
-
-  const customers = await UserModel.find(searchQuery)
-    .skip(skip)
-    .limit(limit)
-    .sort({ createdAt: -1 });
 
   res.render(ADMIN_VIEW_PATHS.Customers, {
     customers,

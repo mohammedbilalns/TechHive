@@ -47,21 +47,22 @@ export const renderProductManagementPage = asyncHandler(async (req, res) => {
     ],
   };
 
+  const skip = (page - 1) * limit;
   const [totalProducts, products] = await Promise.all([
     productModel.countDocuments(searchQuery),
     productModel
-    .find(searchQuery)
-    .populate("category")
-    .sort({ createdAt: 1 })
-    .skip(skip)
-    .limit(limit).lean()
-  ])
-  const { totalPages, hasNextPage, hasPrevPage, skip } = getPaginationMeta(
+      .find(searchQuery)
+      .populate("category")
+      .sort({ createdAt: 1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+  ]);
+  const { totalPages, hasNextPage, hasPrevPage } = getPaginationMeta(
     page,
     totalProducts,
     limit,
   );
-
 
   res.render(ADMIN_VIEW_PATHS.Products, {
     products,
@@ -232,10 +233,9 @@ export const renderUpdateProductPage = asyncHandler(async (req, res) => {
   }
 
   const [product, categories] = await Promise.all([
-    await productModel.findById(productId).lean(),
-
-    categoryModel.find({ status: "Active" }).lean()
-  ])
+    productModel.findById(productId).lean(),
+    categoryModel.find({ status: "Active" }).lean(),
+  ]);
 
 
   // Check if product exists
@@ -304,13 +304,13 @@ export const editProduct = asyncHandler(async (req, res) => {
     throw new AppError(HttpStatus.BAD_REQUEST, validationError);
   }
 
-  let [existingproduct, product] = await Promise.all([
+  const [existingproduct, product] = await Promise.all([
     productModel.findOne({
       name,
       _id: { $ne: productId },
     }).lean(),
-    await productModel.findById(productId).lean()
-  ])
+    productModel.findById(productId).lean(),
+  ]);
   if (existingproduct) {
     throw new AppError(
       HttpStatus.CONFLICT,

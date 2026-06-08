@@ -114,7 +114,7 @@ export const registerUser = asyncHandler(async (req, res) => {
 
   // If the user already exists, return an error message
   if (existingUser && existingUser.status == "Pending") {
-    await UserModel.findOneAndDelete({ email }).lean();
+    await UserModel.findOneAndDelete({ email });
   } else if (existingUser) {
     let message;
     if (!existingUser.password) {
@@ -188,7 +188,7 @@ export const registerUser = asyncHandler(async (req, res) => {
 export const verifyOTP = asyncHandler(async (req, res) => {
   const { otp1, otp2, otp3, otp4, email } = req.body;
   const userOTP = otp1 + otp2 + otp3 + otp4;
-  const user = await UserModel.findOne({ email }).lean();
+  const user = await UserModel.findOne({ email });
   const currentTime = Date.now();
 
   if (currentTime > user.otp.otpExpiresAt) {
@@ -212,7 +212,7 @@ export const verifyOTP = asyncHandler(async (req, res) => {
     });
   } else {
     if (user.otp.otpAttempts >= 4) {
-      await UserModel.findOneAndDelete({ email }).lean();
+      await UserModel.findOneAndDelete({ email });
       return res.status(HttpStatus.BAD_REQUEST).json({
         success: false,
         message: AuthErrorMessages.OTP_ATTEMPTS_EXCEEDED,
@@ -235,10 +235,10 @@ export const resendOTP = asyncHandler(async (req, res) => {
   let { email } = req.body;
   email = email.trim();
 
-  const user = await UserModel.findOne({ email }).lean();
+  const user = await UserModel.findOne({ email });
 
   if (user.otp.otpAttempts >= 3) {
-    await UserModel.findOneAndDelete({ email }).lean();
+    await UserModel.findOneAndDelete({ email });
     return res.status(HttpStatus.TOO_MANY_REQUESTS).json({
       success: false,
       message: ErrorMessages.TOO_MANY_ATTEMPTS,
@@ -337,7 +337,7 @@ export const renderForgotPasswordPage = (req, res) => {
 export const processForgotPassword = asyncHandler(async (req, res) => {
   let { email } = req.body;
   email = email.trim();
-  const user = await UserModel.findOne({ email }).lean();
+  const user = await UserModel.findOne({ email });
 
   if (!user) {
     throw new AppError(

@@ -16,19 +16,21 @@ export const renderCouponManagementPage = asyncHandler(async (req, res) => {
   const page = getPageNumber(req.query.page);
   const limit = 10;
 
-  const totalCoupons = await couponModel.countDocuments();
-  const { totalPages, hasNextPage, hasPrevPage, skip } = getPaginationMeta(
+  const skip = (page - 1) * limit;
+  const [totalCoupons, coupons] = await Promise.all([
+    couponModel.countDocuments(),
+    couponModel
+      .find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+  ]);
+  const { totalPages, hasNextPage, hasPrevPage } = getPaginationMeta(
     page,
     totalCoupons,
     limit,
   );
-
-  const coupons = await couponModel
-    .find()
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit)
-    .lean();
 
   const now = new Date();
   coupons.forEach((coupon) => {
@@ -47,7 +49,7 @@ export const renderCouponManagementPage = asyncHandler(async (req, res) => {
 
 // get the coupon details for edit modal
 export const getCouponDetails = asyncHandler(async (req, res) => {
-  const coupon = await couponModel.findById(req.params.couponId);
+  const coupon = await couponModel.findById(req.params.couponId).lean();
   if (!coupon) {
     throw new AppError(HttpStatus.NOT_FOUND, AdminCouponErrorMessages.Notfound);
   }
@@ -121,7 +123,7 @@ export const updateCoupon = asyncHandler(async (req, res) => {
   const existingCoupon = await couponModel.findOne({
     code: code,
     _id: { $ne: req.params.couponId },
-  });
+  }).lean();
 
   if (existingCoupon) {
     throw new AppError(HttpStatus.CONFLICT, AdminCouponErrorMessages.Conflict);
@@ -154,7 +156,7 @@ export const updateCoupon = asyncHandler(async (req, res) => {
 });
 
 export const toggleCouponStatus = asyncHandler(async (req, res) => {
-  const coupon = await couponModel.findById(req.params.couponId).lean();
+  const coupon = await couponModel.findById(req.params.couponId);
   if (!coupon) {
     throw new AppError(HttpStatus.NOT_FOUND, AdminCouponErrorMessages.Notfound);
   }

@@ -22,9 +22,9 @@ export const renderUserWalletPage = asyncHandler(async (req, res) => {
   const userId = getSessionUserId(req);
 
   const [wallet, user] = await Promise.all([
-    walletModel.findOne({ userId }),
-    UserModel.findOne({ _id: userId })
-  ])
+    walletModel.findOne({ userId }).lean(),
+    UserModel.findOne({ _id: userId }).lean(),
+  ]);
 
   if (!wallet) {
     // Create wallet if it doesn't exist

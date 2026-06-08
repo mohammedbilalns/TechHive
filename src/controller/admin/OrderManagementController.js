@@ -28,20 +28,22 @@ export const renderOrderManagementPage = asyncHandler(async (req, res) => {
     ],
   };
 
-  const totalOrders = await orderModel.countDocuments(searchQuery);
-  const { totalPages, hasNextPage, hasPrevPage, skip } = getPaginationMeta(
+  const skip = (page - 1) * limit;
+  const [totalOrders, orders] = await Promise.all([
+    orderModel.countDocuments(searchQuery),
+    orderModel
+      .find(searchQuery)
+      .populate("userId", "fullname email")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+  ]);
+  const { totalPages, hasNextPage, hasPrevPage } = getPaginationMeta(
     page,
     totalOrders,
     limit,
   );
-
-  // Get paginated orders
-  const orders = await orderModel
-    .find(searchQuery)
-    .populate("userId", "fullname email")
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit);
 
   res.render(ADMIN_VIEW_PATHS.Orders, {
     orders,

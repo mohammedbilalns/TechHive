@@ -24,10 +24,14 @@ export const placeOrder = asyncHandler(async (req, res) => {
   const userId = req.session.user.id;
 
   // Get cart, address, and wallet
-  const [cart, shippingAddress, wallet] = await Promise.all([
-    cartModel.findOne({ user: userId }).populate("items.productId"),
-    addressModel.findById(addressId),
-    walletModel.findOne({ userId }),
+  const couponPromise = couponCode
+    ? couponModel.findOne({ code: couponCode }).lean()
+    : Promise.resolve(null);
+  const [cart, shippingAddress, wallet, coupon] = await Promise.all([
+    cartModel.findOne({ user: userId }).populate("items.productId").lean(),
+    addressModel.findById(addressId).lean(),
+    walletModel.findOne({ userId }).lean(),
+    couponPromise,
   ]);
 
   if (!cart || cart.items.length === 0) {
@@ -60,19 +64,16 @@ export const placeOrder = asyncHandler(async (req, res) => {
   let couponDiscount = 0;
   let finalAmount = totalAmount;
 
-  if (couponCode) {
-    const coupon = await couponModel.findOne({ code: couponCode });
-    if (coupon) {
-      if (coupon.discountType === "PERCENTAGE") {
-        couponDiscount = Math.min(
-          (totalAmount * coupon.discountValue) / 100,
-          coupon.maxDiscount || Infinity,
-        );
-      } else {
-        couponDiscount = coupon.discountValue;
-      }
-      finalAmount = totalAmount - couponDiscount;
+  if (coupon) {
+    if (coupon.discountType === "PERCENTAGE") {
+      couponDiscount = Math.min(
+        (totalAmount * coupon.discountValue) / 100,
+        coupon.maxDiscount || Infinity,
+      );
+    } else {
+      couponDiscount = coupon.discountValue;
     }
+    finalAmount = totalAmount - couponDiscount;
   }
 
   // Check if COD is allowed for this order amount
@@ -180,12 +181,6 @@ export const placeOrder = asyncHandler(async (req, res) => {
     ]);
   }
 
-  // Clear cart after creating order
-  await cartModel.findOneAndUpdate(
-    { user: userId },
-    { $set: { items: [], discount: 0, couponCode: null } },
-  );
-
   // If payment method is online, create Razorpay order
   if (paymentMethod === "online") {
     try {
@@ -288,8 +283,12 @@ export const verifyPayment = asyncHandler(async (req, res) => {
     }
 
     // Check stock availability for all items
-    for (const item of order.items) {
-      const product = await productModel.findOne({ name: item.name });
+    const products = await Promise.all(
+      order.items.map((item) => productModel.findOne({ name: item.name }).lean()),
+    );
+
+    for (const [index, item] of order.items.entries()) {
+      const product = products[index];
       if (!product || product.stock < item.quantity) {
         return res.status(HttpStatus.BAD_REQUEST).json({
           success: false,
@@ -337,7 +336,7 @@ export const renderOrderSuccessPage = asyncHandler(async (req, res) => {
     );
   }
 
-  const order = await orderModel.findById(orderId);
+  const order = await orderModel.findById(orderId).lean();
 
   if (!order) {
     return res.redirect("/home");
@@ -366,15 +365,16 @@ export const renderUserOrdersPage = asyncHandler(async (req, res) => {
   };
 
   // Get total count for pagination
-  const totalOrders = await orderModel.countDocuments(searchQuery);
+  const [totalOrders, orders] = await Promise.all([
+    orderModel.countDocuments(searchQuery),
+    orderModel
+      .find(searchQuery)
+      .sort({ orderDate: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+  ]);
   const totalPages = Math.ceil(totalOrders / limit);
-
-  // Get paginated orders
-  const orders = await orderModel
-    .find(searchQuery)
-    .sort({ orderDate: -1 })
-    .skip(skip)
-    .limit(limit);
 
   if (req.xhr) {
     return res.status(HttpStatus.OK).json({
@@ -405,7 +405,7 @@ export const cancelOrderItem = asyncHandler(async (req, res) => {
   const { orderId, itemId } = req.params;
   const userId = req.session.user.id;
 
-  const order = await orderModel.findOne({ _id: orderId, userId });
+  const order = await orderModel.findOne({ _id: orderId, userId }).lean();
 
   if (!order) {
     return res.status(HttpStatus.NOT_FOUND).json({
@@ -578,8 +578,12 @@ export const retryPayment = asyncHandler(async (req, res) => {
   }
 
   // Check stock availability for all items before proceeding
-  for (const item of order.items) {
-    const product = await productModel.findOne({ name: item.name });
+  const products = await Promise.all(
+    order.items.map((item) => productModel.findOne({ name: item.name }).lean()),
+  );
+
+  for (const [index, item] of order.items.entries()) {
+    const product = products[index];
     if (!product || product.stock < item.quantity) {
       return res.status(HttpStatus.BAD_REQUEST).json({
         success: false,
@@ -619,7 +623,7 @@ export const renderPaymentFailedPage = asyncHandler(async (req, res) => {
     );
   }
 
-  const order = await orderModel.findById(orderId);
+  const order = await orderModel.findById(orderId).lean();
 
   if (!order) {
     return res.redirect("/home");
@@ -640,7 +644,8 @@ export const downloadInvoice = asyncHandler(async (req, res) => {
       _id: orderId,
       userId,
     })
-    .populate("userId", "fullname email");
+    .populate("userId", "fullname email")
+    .lean();
 
   if (!order) {
     return res.status(HttpStatus.NOT_FOUND).json({
@@ -649,7 +654,7 @@ export const downloadInvoice = asyncHandler(async (req, res) => {
     });
   }
 
-  const orderItem = order.items.id(itemId);
+  const orderItem = order.items.find((item) => item._id.toString() === itemId);
   if (!orderItem) {
     return res.status(HttpStatus.NOT_FOUND).json({
       success: false,

@@ -24,7 +24,7 @@ export const renderUserAccountPage = asyncHandler(async (req, res) => {
   }
 
   // Fetch referral values
-  const referralValues = (await referralModel.findOne({})) || {
+  const referralValues = (await referralModel.findOne({}).lean()) || {
     referrerValue: 100,
     refereeValue: 50,
   };

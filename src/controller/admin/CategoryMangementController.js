@@ -24,18 +24,21 @@ export const renderCategoriesPage = asyncHandler(async (req, res) => {
     name: { $regex: search, $options: "i" },
   };
 
-  const totalCategories = await categoryModel.countDocuments(searchQuery);
-  const { totalPages, hasNextPage, hasPrevPage, skip } = getPaginationMeta(
+  const skip = (page - 1) * limit;
+  const [totalCategories, categories] = await Promise.all([
+    categoryModel.countDocuments(searchQuery),
+    categoryModel
+      .find(searchQuery)
+      .sort({ createdAt: 1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+  ]);
+  const { totalPages, hasNextPage, hasPrevPage } = getPaginationMeta(
     page,
     totalCategories,
     limit,
   );
-
-  const categories = await categoryModel
-    .find(searchQuery)
-    .sort({ createdAt: 1 })
-    .skip(skip)
-    .limit(limit);
 
   res.render(ADMIN_VIEW_PATHS.Categories, {
     categories,

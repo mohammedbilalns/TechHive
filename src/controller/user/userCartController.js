@@ -17,7 +17,8 @@ export const renderUserCartPage = asyncHandler(async (req, res) => {
   const userId = getSessionUserId(req);
   let cart = await cartModel
     .findOne({ user: userId })
-    .populate("items.productId");
+    .populate("items.productId")
+    .lean();
 
   // Create cart if not found
   if (!cart) {
@@ -228,8 +229,10 @@ export const clearCart = asyncHandler(async (req, res) => {
     throw new AppError(HttpStatus.NOT_FOUND, ErrorMessages.CART_NOT_FOUND);
   }
 
-  cart.items = [];
-  await cart.save();
+  await cartModel.findOneAndUpdate(
+    { user: userId },
+    { $set: { items: [], discount: 0, couponCode: null } },
+  );
 
   return res.status(HttpStatus.OK).json({
     success: true,
