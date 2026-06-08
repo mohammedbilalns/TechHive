@@ -405,7 +405,7 @@ export const cancelOrderItem = asyncHandler(async (req, res) => {
   const { orderId, itemId } = req.params;
   const userId = req.session.user.id;
 
-  const order = await orderModel.findOne({ _id: orderId, userId }).lean();
+  const order = await orderModel.findOne({ _id: orderId, userId });
 
   if (!order) {
     return res.status(HttpStatus.NOT_FOUND).json({

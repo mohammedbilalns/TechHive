@@ -63,7 +63,7 @@ export const addToCart = asyncHandler(async (req, res) => {
   }
 
   // Find and create cart
-  let cart = await cartModel.findOne({ user: userId }).lean();
+  let cart = await cartModel.findOne({ user: userId });
   if (!cart) {
     cart = await cartModel.create({
       user: userId,
@@ -224,7 +224,7 @@ export const clearCart = asyncHandler(async (req, res) => {
   const userId = getSessionUserId(req);
 
   // Find and remove all items from cart
-  const cart = await cartModel.findOne({ user: userId }).lean();
+  const cart = await cartModel.findOne({ user: userId });
   if (!cart) {
     throw new AppError(HttpStatus.NOT_FOUND, ErrorMessages.CART_NOT_FOUND);
   }
