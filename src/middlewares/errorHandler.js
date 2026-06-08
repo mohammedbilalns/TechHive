@@ -1,6 +1,7 @@
 import logger from "../utils/logger.js";
 
-export const errorMiddleware = (err, req, res) => {
+export const errorMiddleware = (err, req, res, _next) => {
+  void _next;
   logger.error("GLOBAL_ERROR");
   logger.error("Name:", err.name);
   logger.error("Message:", err.message);
