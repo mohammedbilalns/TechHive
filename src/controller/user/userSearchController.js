@@ -43,7 +43,7 @@ const renderSearchProductsPage = asyncHandler(async (req, res) => {
     const matchingCategories = await categoryModel.find({
       name: { $regex: query, $options: "i" },
       status: "Active",
-    });
+    }).lean();
 
     const categoryIds = matchingCategories.map((cat) => cat._id);
 
@@ -61,9 +61,12 @@ const renderSearchProductsPage = asyncHandler(async (req, res) => {
   }
 
   // Get all products
-  let allProducts = await productModel
+  const [allProducts, allCategories] = await Promise.all([
+productModel
     .find(baseQuery)
-    .populate("category", "name");
+    .populate("category", "name").lean(),
+categoryModel.find({ status: "Active" }).lean()
+  ])
 
   // Apply rating filter
   if (minRating > 0) {
@@ -103,8 +106,6 @@ const renderSearchProductsPage = asyncHandler(async (req, res) => {
   // Slice  products array for pagination
   const products = allProducts.slice(startIndex, endIndex);
 
-  // Get all categories for filter dropdown
-  const allCategories = await categoryModel.find({ status: "Active" });
 
   if (req.xhr || req.path === "/api/search") {
     return res.status(HttpStatus.OK).json({

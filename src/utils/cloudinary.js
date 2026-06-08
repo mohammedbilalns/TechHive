@@ -30,7 +30,7 @@ function ensureCloudinaryConfigured() {
   isConfigured = true;
 }
 
-export function isCloudinaryPublicId(identifier) {
+function isCloudinaryPublicId(identifier) {
   return typeof identifier === "string" && identifier.includes("/");
 }
 
@@ -81,21 +81,6 @@ export function uploadBufferToCloudinary(buffer) {
 
     Readable.from(buffer).pipe(uploadStream);
   });
-}
-
-export async function uploadFileToCloudinary(filePath) {
-  ensureCloudinaryConfigured();
-
-  const uploadOptions = {
-    folder: CLOUDINARY_FOLDER,
-    resource_type: "image",
-  };
-
-  if (env.CLOUDINARY_UPLOAD_PRESET) {
-    uploadOptions.upload_preset = env.CLOUDINARY_UPLOAD_PRESET;
-  }
-
-  return cloudinary.uploader.upload(filePath, uploadOptions);
 }
 
 export async function deleteCloudinaryImage(publicId) {

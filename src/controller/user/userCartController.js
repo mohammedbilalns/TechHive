@@ -49,7 +49,7 @@ export const addToCart = asyncHandler(async (req, res) => {
   const userId = getSessionUserId(req);
 
   // Check if product exists, has stock, and is active
-  const product = await productModel.findById(productId);
+  const product = await productModel.findById(productId).lean();
   if (!product || product.stock <= 0 || product.status !== "Active") {
     throw new AppError(
       HttpStatus.BAD_REQUEST,
@@ -62,7 +62,7 @@ export const addToCart = asyncHandler(async (req, res) => {
   }
 
   // Find and create cart
-  let cart = await cartModel.findOne({ user: userId });
+  let cart = await cartModel.findOne({ user: userId }).lean();
   if (!cart) {
     cart = await cartModel.create({
       user: userId,
@@ -157,7 +157,7 @@ export const updateQuantity = asyncHandler(async (req, res) => {
   }
 
   // Find product
-  const product = await productModel.findById(productId);
+  const product = await productModel.findById(productId).lean();
   if (!product) {
     throw new AppError(HttpStatus.NOT_FOUND, ErrorMessages.PRODUCT_NOT_FOUND);
   }
@@ -223,7 +223,7 @@ export const clearCart = asyncHandler(async (req, res) => {
   const userId = getSessionUserId(req);
 
   // Find and remove all items from cart
-  const cart = await cartModel.findOne({ user: userId });
+  const cart = await cartModel.findOne({ user: userId }).lean();
   if (!cart) {
     throw new AppError(HttpStatus.NOT_FOUND, ErrorMessages.CART_NOT_FOUND);
   }

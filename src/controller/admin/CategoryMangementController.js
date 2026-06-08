@@ -52,7 +52,7 @@ export const renderCategoriesPage = asyncHandler(async (req, res) => {
 
 //---- Delete a category----
 export const deleteCategory = asyncHandler(async (req, res) => {
-  await categoryModel.findByIdAndDelete(req.params.categoryid);
+  await categoryModel.findByIdAndDelete(req.params.categoryid).lean();
   res.json({
     success: true,
     message: CategorySuccessMessages.Deleted,
@@ -63,7 +63,7 @@ export const deleteCategory = asyncHandler(async (req, res) => {
 export const disableCategory = asyncHandler(async (req, res) => {
   await categoryModel.findByIdAndUpdate(req.params.categoryid, {
     status: "Inactive",
-  });
+  }).lean();
 
   // Update all products in this category to Inactive
   await productModel.updateMany(
@@ -105,7 +105,7 @@ export const addCategory = asyncHandler(async (req, res) => {
 
   const { name, description } = value;
 
-  const existingCategory = await categoryModel.findOne({ name });
+  const existingCategory = await categoryModel.findOne({ name }).lean();
   if (existingCategory) {
     throw new AppError(
       HttpStatus.CONFLICT,
@@ -141,7 +141,7 @@ export const editCategory = asyncHandler(async (req, res) => {
   const existingCategory = await categoryModel.findOne({
     name: name,
     _id: { $ne: req.params.categoryid },
-  });
+  }).lean();
 
   if (existingCategory) {
     throw new AppError(
@@ -154,7 +154,7 @@ export const editCategory = asyncHandler(async (req, res) => {
     req.params.categoryid,
     { name, description },
     { new: true },
-  );
+  ).lean();
 
   if (!updatedCategory) {
     throw new AppError(

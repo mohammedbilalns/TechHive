@@ -58,7 +58,7 @@ export const updateOrderItemStatus = asyncHandler(async (req, res) => {
   const { orderId, itemId } = req.params;
   const { status } = req.body;
 
-  const order = await orderModel.findById(orderId);
+  const order = await orderModel.findById(orderId).lean();
   if (!order) {
     throw new AppError(
       HttpStatus.NOT_FOUND,
@@ -136,13 +136,13 @@ export const updateOrderItemStatus = asyncHandler(async (req, res) => {
         },
       },
       { upsert: true },
-    );
+    ).lean();
 
     // Update product stock
     await productModel.findOneAndUpdate(
       { name: orderItem.name },
       { $inc: { stock: orderItem.quantity } },
-    );
+    ).lean();
 
     orderItem.paymentStatus = "refunded";
   }

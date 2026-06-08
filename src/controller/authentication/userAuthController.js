@@ -35,7 +35,7 @@ export const verifyLogin = asyncHandler(async (req, res) => {
 
   if (error) throw new AppError(HttpStatus.BAD_REQUEST, error);
 
-  const user = await UserModel.findOne({ email });
+  const user = await UserModel.findOne({ email }).lean();
 
   if (!user) {
     throw new AppError(
@@ -110,11 +110,11 @@ export const registerUser = asyncHandler(async (req, res) => {
   // Check if a user already exists with the given email or phone number
   const existingUser = await UserModel.findOne({
     $or: [{ email }, { phonenumber }],
-  });
+  }).lean();
 
   // If the user already exists, return an error message
   if (existingUser && existingUser.status == "Pending") {
-    await UserModel.findOneAndDelete({ email });
+    await UserModel.findOneAndDelete({ email }).lean();
   } else if (existingUser) {
     let message;
     if (!existingUser.password) {
@@ -136,7 +136,7 @@ export const registerUser = asyncHandler(async (req, res) => {
   let isUnique = false;
   while (!isUnique) {
     referralCode = referralUtils.generateReferralCode();
-    const existingUserWithCode = await UserModel.findOne({ referralCode });
+    const existingUserWithCode = await UserModel.findOne({ referralCode }).lean();
     if (!existingUserWithCode) {
       isUnique = true;
     }
@@ -188,7 +188,7 @@ export const registerUser = asyncHandler(async (req, res) => {
 export const verifyOTP = asyncHandler(async (req, res) => {
   const { otp1, otp2, otp3, otp4, email } = req.body;
   const userOTP = otp1 + otp2 + otp3 + otp4;
-  const user = await UserModel.findOne({ email });
+  const user = await UserModel.findOne({ email }).lean();
   const currentTime = Date.now();
 
   if (currentTime > user.otp.otpExpiresAt) {
@@ -212,7 +212,7 @@ export const verifyOTP = asyncHandler(async (req, res) => {
     });
   } else {
     if (user.otp.otpAttempts >= 4) {
-      await UserModel.findOneAndDelete({ email });
+      await UserModel.findOneAndDelete({ email }).lean();
       return res.status(HttpStatus.BAD_REQUEST).json({
         success: false,
         message: AuthErrorMessages.OTP_ATTEMPTS_EXCEEDED,
@@ -235,10 +235,10 @@ export const resendOTP = asyncHandler(async (req, res) => {
   let { email } = req.body;
   email = email.trim();
 
-  const user = await UserModel.findOne({ email });
+  const user = await UserModel.findOne({ email }).lean();
 
   if (user.otp.otpAttempts >= 3) {
-    await UserModel.findOneAndDelete({ email });
+    await UserModel.findOneAndDelete({ email }).lean();
     return res.status(HttpStatus.TOO_MANY_REQUESTS).json({
       success: false,
       message: ErrorMessages.TOO_MANY_ATTEMPTS,
@@ -337,7 +337,7 @@ export const renderForgotPasswordPage = (req, res) => {
 export const processForgotPassword = asyncHandler(async (req, res) => {
   let { email } = req.body;
   email = email.trim();
-  const user = await UserModel.findOne({ email });
+  const user = await UserModel.findOne({ email }).lean();
 
   if (!user) {
     throw new AppError(
@@ -380,7 +380,7 @@ export const verifyForgotPasswordOTP = asyncHandler(async (req, res) => {
     throw new AppError(HttpStatus.CONFLICT, ErrorMessages.INVALID_INPUT);
   }
 
-  const user = await UserModel.findOne({ email });
+  const user = await UserModel.findOne({ email }).lean();
   const currentTime = Date.now();
 
   if (!user) {
@@ -428,7 +428,7 @@ export const resendForgotPasswordOTP = asyncHandler(async (req, res) => {
     throw new AppError(HttpStatus.CONFLICT, ErrorMessages.INVALID_INPUT);
   }
 
-  const user = await UserModel.findOne({ email });
+  const user = await UserModel.findOne({ email }).lean();
 
   if (!user) {
     throw new AppError(HttpStatus.CONFLICT, ErrorMessages.INVALID_INPUT);
@@ -474,7 +474,7 @@ export const resetPassword = asyncHandler(async (req, res) => {
     throw new AppError(HttpStatus.BAD_REQUEST, error);
   }
 
-  const user = await UserModel.findOne({ email });
+  const user = await UserModel.findOne({ email }).lean();
 
   if (!user) {
     throw new AppError(HttpStatus.CONFLICT, AuthErrorMessages.INVALID_INPUT);
@@ -494,9 +494,9 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
 export const applyReferral = asyncHandler(async (req, res) => {
   const { referralCode } = req.body;
-  const currentUser = await UserModel.findById(req.session.user.id);
+  const currentUser = await UserModel.findById(req.session.user.id).lean();
   // Find referrer
-  const referrer = await UserModel.findOne({ referralCode });
+  const referrer = await UserModel.findOne({ referralCode }).lean();
 
   if (!referrer) {
     throw new AppError(
@@ -513,12 +513,12 @@ export const applyReferral = asyncHandler(async (req, res) => {
   }
 
   // Get referral values
-  const referralValues = await referralModel.findOne({});
+  const referralValues = await referralModel.findOne({}).lean();
   const referrerAmount = referralValues.referrerValue;
   const refereeAmount = referralValues.refereeValue;
 
   // Handle referrer's wallet
-  let referrerWallet = await walletModel.findOne({ userId: referrer._id });
+  let referrerWallet = await walletModel.findOne({ userId: referrer._id }).lean();
   if (!referrerWallet) {
     referrerWallet = new walletModel({
       userId: referrer._id,
@@ -536,7 +536,7 @@ export const applyReferral = asyncHandler(async (req, res) => {
   await referrerWallet.save();
 
   // Handle current user's wallet
-  let userWallet = await walletModel.findOne({ userId: currentUser._id });
+  let userWallet = await walletModel.findOne({ userId: currentUser._id }).lean();
   if (!userWallet) {
     userWallet = new walletModel({
       userId: currentUser._id,

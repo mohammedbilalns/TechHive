@@ -141,7 +141,7 @@ export const updateCoupon = asyncHandler(async (req, res) => {
       expiryDate,
     },
     { new: true },
-  );
+  ).lean();
 
   if (!updatedCoupon) {
     throw new AppError(HttpStatus.NOT_FOUND, AdminCouponErrorMessages.Notfound);
@@ -154,7 +154,7 @@ export const updateCoupon = asyncHandler(async (req, res) => {
 });
 
 export const toggleCouponStatus = asyncHandler(async (req, res) => {
-  const coupon = await couponModel.findById(req.params.couponId);
+  const coupon = await couponModel.findById(req.params.couponId).lean();
   if (!coupon) {
     throw new AppError(HttpStatus.NOT_FOUND, AdminCouponErrorMessages.Notfound);
   }
@@ -170,7 +170,7 @@ export const toggleCouponStatus = asyncHandler(async (req, res) => {
 });
 
 export const deleteCoupon = asyncHandler(async (req, res) => {
-  const result = await couponModel.findByIdAndDelete(req.params.couponId);
+  const result = await couponModel.findByIdAndDelete(req.params.couponId).lean();
   if (!result) {
     throw new AppError(HttpStatus.NOT_FOUND, AdminCouponErrorMessages.Notfound);
   }
