@@ -229,11 +229,7 @@
 
               try {
                 const formData = new FormData(addProductForm);
-                const response = await axios.post('/admin/products/add', formData, {
-                  headers: {
-                    'Content-Type': 'multipart/form-data'
-                  }
-                });
+                const response = await axios.post('/admin/products/add', formData);
 
                 if (response.data.success) {
                   showToast('Product added successfully');
