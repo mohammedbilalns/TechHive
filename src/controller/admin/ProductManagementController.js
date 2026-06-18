@@ -18,8 +18,25 @@ import {
   getPageNumber,
   getPaginationMeta,
 } from "../../utils/controllerHelpers.js";
+import logger from "../../utils/logger.js";
 
 const productStorage = multer.memoryStorage();
+
+const buildFileDebugInfo = (files = []) =>
+  files.map((file, index) => ({
+    index,
+    fieldname: file.fieldname,
+    originalname: file.originalname,
+    mimetype: file.mimetype,
+    size: file.size,
+  }));
+
+const getRequestDebugInfo = (req) => ({
+  requestId: req.requestId || req.res?.locals?.requestId || null,
+  method: req.method,
+  url: req.originalUrl,
+  userId: req.session?.user?._id?.toString?.() || null,
+});
 
 export const productUpload = multer({
   storage: productStorage,
@@ -151,75 +168,196 @@ export const renderAddProductPage = asyncHandler(async (_req, res) => {
 });
 
 export const addProduct = asyncHandler(async (req, res) => {
-  let { name, description, price, stock, brand, category, specifications } =
-    req.body;
+  const requestInfo = getRequestDebugInfo(req);
+  const fileDebugInfo = buildFileDebugInfo(req.files || []);
 
-  // Sanitization
-  name = name
-    .trim()
-    .split(" ")
-    .map((word) => word[0].toUpperCase() + word.slice(1).toLowerCase())
-    .join(" ");
-  description = description.trim();
-  brand = brand
-    .trim()
-    .split(" ")
-    .map((word) => word[0].toUpperCase() + word.slice(1).toLowerCase())
-    .join(" ");
-
-  const specArray = Array.isArray(specifications)
-    ? specifications
-    : [specifications];
-  const cleanedSpecs = specArray
-  .filter((spec) => spec && spec.trim())
-  .map((spec) => spec.trim());
-
-  // Validation
-  const validationError = validateProduct({
-    name,
-    description,
-    price,
-    stock,
-    brand,
-    category,
+  logger.info("ADMIN_PRODUCT_ADD_REQUEST", {
+    ...requestInfo,
+    bodyKeys: Object.keys(req.body || {}),
+    fileCount: fileDebugInfo.length,
+    files: fileDebugInfo,
   });
-  if (validationError) {
-    throw new AppError(HttpStatus.BAD_REQUEST, validationError);
-  }
 
-  let product = await productModel.findOne({ name });
-  if (product) {
-    throw new AppError(
-      HttpStatus.CONFLICT,
-      AdminProductErrorMessages.PRODUCT_EXISTS,
+  try {
+    let { name, description, price, stock, brand, category, specifications } =
+      req.body;
+
+    logger.debug("ADMIN_PRODUCT_ADD_RAW_PAYLOAD", {
+      ...requestInfo,
+      hasName: Boolean(name),
+      hasDescription: Boolean(description),
+      hasPrice: Boolean(price),
+      hasStock: Boolean(stock),
+      hasBrand: Boolean(brand),
+      hasCategory: Boolean(category),
+      specificationCount: Array.isArray(specifications)
+        ? specifications.length
+        : specifications
+          ? 1
+          : 0,
+    });
+
+    if (!req.files || req.files.length === 0) {
+      logger.warn("ADMIN_PRODUCT_ADD_MISSING_IMAGES", {
+        ...requestInfo,
+        fileCount: 0,
+      });
+      throw new AppError(
+        HttpStatus.BAD_REQUEST,
+        "At least one product image is required",
+      );
+    }
+
+    // Sanitization
+    name = name
+      .trim()
+      .split(" ")
+      .map((word) => word[0].toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+    description = description.trim();
+    brand = brand
+      .trim()
+      .split(" ")
+      .map((word) => word[0].toUpperCase() + word.slice(1).toLowerCase())
+      .join(" ");
+
+    const specArray = Array.isArray(specifications)
+      ? specifications
+      : [specifications];
+    const cleanedSpecs = specArray
+      .filter((spec) => spec && spec.trim())
+      .map((spec) => spec.trim());
+
+    logger.debug("ADMIN_PRODUCT_ADD_SANITIZED_PAYLOAD", {
+      ...requestInfo,
+      name,
+      brand,
+      category,
+      price,
+      stock,
+      cleanedSpecCount: cleanedSpecs.length,
+    });
+
+    // Validation
+    const validationError = validateProduct({
+      name,
+      description,
+      price,
+      stock,
+      brand,
+      category,
+    });
+    if (validationError) {
+      logger.warn("ADMIN_PRODUCT_ADD_VALIDATION_FAILED", {
+        ...requestInfo,
+        validationError,
+      });
+      throw new AppError(HttpStatus.BAD_REQUEST, validationError);
+    }
+
+    logger.debug("ADMIN_PRODUCT_ADD_DUPLICATE_CHECK", {
+      ...requestInfo,
+      name,
+    });
+
+    const product = await productModel.findOne({ name });
+    if (product) {
+      logger.warn("ADMIN_PRODUCT_ADD_DUPLICATE_PRODUCT", {
+        ...requestInfo,
+        productId: product._id.toString(),
+        name,
+      });
+      throw new AppError(
+        HttpStatus.CONFLICT,
+        AdminProductErrorMessages.PRODUCT_EXISTS,
+      );
+    }
+
+    logger.info("ADMIN_PRODUCT_ADD_IMAGE_UPLOAD_START", {
+      ...requestInfo,
+      fileCount: req.files.length,
+    });
+
+    const uploadedImages = await Promise.all(
+      req.files.map(async (file, index) => {
+        logger.debug("ADMIN_PRODUCT_ADD_IMAGE_UPLOAD_BEGIN", {
+          ...requestInfo,
+          index,
+          originalname: file.originalname,
+          mimetype: file.mimetype,
+          size: file.size,
+        });
+
+        try {
+          const uploadResult = await uploadBufferToCloudinary(file.buffer);
+
+          logger.debug("ADMIN_PRODUCT_ADD_IMAGE_UPLOAD_SUCCESS", {
+            ...requestInfo,
+            index,
+            publicId: uploadResult.public_id,
+            bytes: uploadResult.bytes,
+            format: uploadResult.format,
+          });
+
+          return createCloudinaryImageRecord(uploadResult);
+        } catch (error) {
+          logger.error("ADMIN_PRODUCT_ADD_IMAGE_UPLOAD_FAILED", {
+            ...requestInfo,
+            index,
+            originalname: file.originalname,
+            message: error.message,
+            stack: error.stack,
+          });
+          throw error;
+        }
+      }),
     );
+
+    logger.info("ADMIN_PRODUCT_ADD_IMAGE_UPLOAD_COMPLETE", {
+      ...requestInfo,
+      uploadedCount: uploadedImages.length,
+    });
+
+    const newProduct = new productModel({
+      name,
+      description,
+      brand,
+      category,
+      specifications: cleanedSpecs,
+      price: parseFloat(price),
+      stock: parseInt(stock),
+      images: uploadedImages,
+      status: "Active",
+    });
+
+    logger.debug("ADMIN_PRODUCT_ADD_DB_SAVE_START", {
+      ...requestInfo,
+      name: newProduct.name,
+      imageCount: newProduct.images.length,
+    });
+
+    await newProduct.save();
+
+    logger.info("ADMIN_PRODUCT_ADD_SUCCESS", {
+      ...requestInfo,
+      productId: newProduct._id.toString(),
+      name: newProduct.name,
+      imageCount: newProduct.images.length,
+    });
+
+    res.json({
+      success: true,
+      message: AdminProductSuccessMessages.ADDED,
+    });
+  } catch (error) {
+    logger.error("ADMIN_PRODUCT_ADD_FAILED", {
+      ...requestInfo,
+      message: error.message,
+      name: error.name,
+      stack: error.stack,
+    });
+    throw error;
   }
-
-  // Process images
-  const uploadedImages = await Promise.all(
-    req.files.map(async (file) => {
-      const uploadResult = await uploadBufferToCloudinary(file.buffer);
-      return createCloudinaryImageRecord(uploadResult);
-    }),
-  );
-
-  const newProduct = new productModel({
-    name,
-    description,
-    brand,
-    category,
-    specifications: cleanedSpecs,
-    price: parseFloat(price),
-    stock: parseInt(stock),
-    images: uploadedImages,
-    status: "Active",
-  });
-
-  await newProduct.save();
-  res.json({
-    success: true,
-    message: AdminProductSuccessMessages.ADDED,
-  });
 });
 
 export const renderUpdateProductPage = asyncHandler(async (req, res) => {
