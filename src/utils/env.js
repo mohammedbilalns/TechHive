@@ -1,3 +1,5 @@
+import logger from "./logger.js";
+
 export const env = {
   PORT: process.env.PORT,
   MONGODB_URI: process.env.MONGODB_URI,
@@ -15,8 +17,12 @@ export const env = {
   CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
-  CLOUDINARY_UPLOAD_PRESET:process.env.CLOUDINARY_UPLOAD_PRESET,
   CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME
-
-  
 };
+
+for(let [key, val ] of Object.entries(env)){
+  if(!val){
+    logger.error(`Missing environment variable ${key}`)
+    process.exit(1)
+  }
+}

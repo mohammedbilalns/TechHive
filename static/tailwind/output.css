@@ -1162,12 +1162,12 @@ input::placeholder {
   max-height: 20rem;
 }
 
-.max-h-\[90vh\] {
-  max-height: 90vh;
-}
-
 .max-h-\[60vh\] {
   max-height: 60vh;
+}
+
+.max-h-\[90vh\] {
+  max-height: 90vh;
 }
 
 .min-h-\[1\.25rem\] {
@@ -2922,12 +2922,12 @@ input::placeholder {
     word-break: normal;
   }
 
-  .sm\:p-8 {
-    padding: 2rem;
-  }
-
   .sm\:p-6 {
     padding: 1.5rem;
+  }
+
+  .sm\:p-8 {
+    padding: 2rem;
   }
 
   .sm\:px-3 {
