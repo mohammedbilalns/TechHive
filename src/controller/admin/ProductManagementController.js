@@ -22,21 +22,6 @@ import logger from "../../utils/logger.js";
 
 const productStorage = multer.memoryStorage();
 
-const buildFileDebugInfo = (files = []) =>
-  files.map((file, index) => ({
-    index,
-    fieldname: file.fieldname,
-    originalname: file.originalname,
-    mimetype: file.mimetype,
-    size: file.size,
-  }));
-
-const getRequestDebugInfo = (req) => ({
-  requestId: req.requestId || req.res?.locals?.requestId || null,
-  method: req.method,
-  url: req.originalUrl,
-  userId: req.session?.user?._id?.toString?.() || null,
-});
 
 export const productUpload = multer({
   storage: productStorage,
@@ -168,34 +153,14 @@ export const renderAddProductPage = asyncHandler(async (_req, res) => {
 });
 
 export const addProduct = asyncHandler(async (req, res) => {
-  const requestInfo = getRequestDebugInfo(req);
-  const fileDebugInfo = buildFileDebugInfo(req.files || []);
 
-  logger.info("ADMIN_PRODUCT_ADD_REQUEST", {
-    ...requestInfo,
-    bodyKeys: Object.keys(req.body || {}),
-    fileCount: fileDebugInfo.length,
-    files: fileDebugInfo,
-  });
+
 
   try {
     let { name, description, price, stock, brand, category, specifications } =
       req.body;
 
-    logger.debug("ADMIN_PRODUCT_ADD_RAW_PAYLOAD", {
-      ...requestInfo,
-      hasName: Boolean(name),
-      hasDescription: Boolean(description),
-      hasPrice: Boolean(price),
-      hasStock: Boolean(stock),
-      hasBrand: Boolean(brand),
-      hasCategory: Boolean(category),
-      specificationCount: Array.isArray(specifications)
-        ? specifications.length
-        : specifications
-          ? 1
-          : 0,
-    });
+
 
     if (!req.files || req.files.length === 0) {
       logger.warn("ADMIN_PRODUCT_ADD_MISSING_IMAGES", {
@@ -228,15 +193,7 @@ export const addProduct = asyncHandler(async (req, res) => {
       .filter((spec) => spec && spec.trim())
       .map((spec) => spec.trim());
 
-    logger.debug("ADMIN_PRODUCT_ADD_SANITIZED_PAYLOAD", {
-      ...requestInfo,
-      name,
-      brand,
-      category,
-      price,
-      stock,
-      cleanedSpecCount: cleanedSpecs.length,
-    });
+
 
     // Validation
     const validationError = validateProduct({
@@ -255,10 +212,7 @@ export const addProduct = asyncHandler(async (req, res) => {
       throw new AppError(HttpStatus.BAD_REQUEST, validationError);
     }
 
-    logger.debug("ADMIN_PRODUCT_ADD_DUPLICATE_CHECK", {
-      ...requestInfo,
-      name,
-    });
+
 
     const product = await productModel.findOne({ name });
     if (product) {
@@ -273,31 +227,14 @@ export const addProduct = asyncHandler(async (req, res) => {
       );
     }
 
-    logger.info("ADMIN_PRODUCT_ADD_IMAGE_UPLOAD_START", {
-      ...requestInfo,
-      fileCount: req.files.length,
-    });
+
 
     const uploadedImages = await Promise.all(
       req.files.map(async (file, index) => {
-        logger.debug("ADMIN_PRODUCT_ADD_IMAGE_UPLOAD_BEGIN", {
-          ...requestInfo,
-          index,
-          originalname: file.originalname,
-          mimetype: file.mimetype,
-          size: file.size,
-        });
+ 
 
         try {
           const uploadResult = await uploadBufferToCloudinary(file.buffer);
-
-          logger.debug("ADMIN_PRODUCT_ADD_IMAGE_UPLOAD_SUCCESS", {
-            ...requestInfo,
-            index,
-            publicId: uploadResult.public_id,
-            bytes: uploadResult.bytes,
-            format: uploadResult.format,
-          });
 
           return createCloudinaryImageRecord(uploadResult);
         } catch (error) {
@@ -313,10 +250,6 @@ export const addProduct = asyncHandler(async (req, res) => {
       }),
     );
 
-    logger.info("ADMIN_PRODUCT_ADD_IMAGE_UPLOAD_COMPLETE", {
-      ...requestInfo,
-      uploadedCount: uploadedImages.length,
-    });
 
     const newProduct = new productModel({
       name,
@@ -330,11 +263,7 @@ export const addProduct = asyncHandler(async (req, res) => {
       status: "Active",
     });
 
-    logger.debug("ADMIN_PRODUCT_ADD_DB_SAVE_START", {
-      ...requestInfo,
-      name: newProduct.name,
-      imageCount: newProduct.images.length,
-    });
+
 
     await newProduct.save();
 
