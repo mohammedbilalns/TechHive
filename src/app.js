@@ -12,7 +12,6 @@ import { HttpStatus } from "./constants/statusCodes.js";
 import { errorMiddleware } from "./middlewares/errorHandler.js";
 import { env } from "./utils/env.js";
 import { requestLogger } from "./middlewares/requestLogger.js";
-import logger from "./utils/logger.js";
 
 const app = express();
 const staticDir = path.join(process.cwd(), "static");
@@ -24,18 +23,6 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
-app.use((req, _res, next) => {
-  logger.debug("APP_INBOUND", {
-    method: req.method,
-    url: req.originalUrl,
-    host: req.headers.host || null,
-    contentType: req.headers["content-type"] || null,
-    contentLength: req.headers["content-length"] || null,
-    userAgent: req.headers["user-agent"] || null,
-    cookiePresent: Boolean(req.headers.cookie),
-  });
-  next();
-});
 
 app.use(compression());
 app.use(
