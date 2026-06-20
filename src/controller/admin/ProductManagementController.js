@@ -163,10 +163,7 @@ export const addProduct = asyncHandler(async (req, res) => {
 
 
     if (!req.files || req.files.length === 0) {
-      logger.warn("ADMIN_PRODUCT_ADD_MISSING_IMAGES", {
-        ...requestInfo,
-        fileCount: 0,
-      });
+    
       throw new AppError(
         HttpStatus.BAD_REQUEST,
         "At least one product image is required",
@@ -205,10 +202,7 @@ export const addProduct = asyncHandler(async (req, res) => {
       category,
     });
     if (validationError) {
-      logger.warn("ADMIN_PRODUCT_ADD_VALIDATION_FAILED", {
-        ...requestInfo,
-        validationError,
-      });
+
       throw new AppError(HttpStatus.BAD_REQUEST, validationError);
     }
 
@@ -216,11 +210,7 @@ export const addProduct = asyncHandler(async (req, res) => {
 
     const product = await productModel.findOne({ name });
     if (product) {
-      logger.warn("ADMIN_PRODUCT_ADD_DUPLICATE_PRODUCT", {
-        ...requestInfo,
-        productId: product._id.toString(),
-        name,
-      });
+  
       throw new AppError(
         HttpStatus.CONFLICT,
         AdminProductErrorMessages.PRODUCT_EXISTS,
@@ -238,13 +228,6 @@ export const addProduct = asyncHandler(async (req, res) => {
 
           return createCloudinaryImageRecord(uploadResult);
         } catch (error) {
-          logger.error("ADMIN_PRODUCT_ADD_IMAGE_UPLOAD_FAILED", {
-            ...requestInfo,
-            index,
-            originalname: file.originalname,
-            message: error.message,
-            stack: error.stack,
-          });
           throw error;
         }
       }),
@@ -267,24 +250,12 @@ export const addProduct = asyncHandler(async (req, res) => {
 
     await newProduct.save();
 
-    logger.info("ADMIN_PRODUCT_ADD_SUCCESS", {
-      ...requestInfo,
-      productId: newProduct._id.toString(),
-      name: newProduct.name,
-      imageCount: newProduct.images.length,
-    });
-
     res.json({
       success: true,
       message: AdminProductSuccessMessages.ADDED,
     });
   } catch (error) {
-    logger.error("ADMIN_PRODUCT_ADD_FAILED", {
-      ...requestInfo,
-      message: error.message,
-      name: error.name,
-      stack: error.stack,
-    });
+
     throw error;
   }
 });
