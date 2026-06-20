@@ -1,6 +1,6 @@
 # TechHive
 
-TechHive is a full-featured e-commerce web application built with Node.js, Express, EJS, MongoDB, and Tailwind CSS. It includes separate customer and admin experiences with authentication, product browsing, cart and wishlist management, checkout, wallet and coupon flows, order management, offers, sales reports, and Razorpay payments.
+TechHive is a full-featured e-commerce web application built with Node.js, Express, EJS, MongoDB, and Tailwind CSS. It includes separate customer and admin experiences with authentication, product browsing, cart and wishlist management, checkout, wallet and coupon flows, order management, offer and  sales reports .
 
 ## Project Overview
 
@@ -79,18 +79,6 @@ TechHive/
 └── README.md
 ```
 
-## Key Directories
-
-- `src/app.js`: Express app setup, middleware registration, and route mounting.
-- `src/server.js`: HTTP server bootstrap, MongoDB connection, and graceful shutdown.
-- `src/routes/`: Route definitions for user and admin flows.
-- `src/controller/`: Request handlers grouped by domain.
-- `src/model/`: Mongoose models for users, products, orders, carts, wallets, coupons, and more.
-- `src/views/`: EJS templates for storefront and admin interfaces.
-- `static/`: Public assets, compiled Tailwind output, client-side scripts, fonts, and uploads.
-- `src/middlewares/`: Auth guards, request helpers, logging, and shared middleware.
-- `src/utils/`: Environment, logging, validation, referral, Razorpay, and helper utilities.
-
 ## Prerequisites
 
 - Node.js 20 or newer
@@ -98,31 +86,6 @@ TechHive/
 - Razorpay credentials
 - Google OAuth credentials
 - Brevo API credentials
-- Session secret
-
-## Environment Variables
-
-Create a `.env` file in the project root with the required values:
-
-```env
-PORT=3000
-MONGODB_URI=your_mongodb_connection_string
-RAZORPAY_KEY_ID=your_razorpay_key_id
-RAZORPAY_KEY_SECRET=your_razorpay_key_secret
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-GOOGLE_CALLBACK_URL=your_google_callback_url
-BREVO_API_KEY=your_brevo_api_key
-BREVO_SENDER_EMAIL=your_sender_email
-BREVO_SENDER_NAME=your_sender_name
-CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-CLOUDINARY_API_KEY=your_cloudinary_api_key
-CLOUDINARY_API_SECRET=your_cloudinary_api_secret
-CLOUDINARY_UPLOAD_PRESET=your_cloudinary_upload_preset
-SESSIONSECRET=your_session_secret
-ADMIN_EMAIL=admin_email
-ADMIN_PASSWORD=admin_password
-```
 
 ## Installation
 
@@ -132,29 +95,7 @@ npm install
 
 ```
 
-## Available Scripts
-
-- `npm run dev`: Runs Tailwind in watch mode and starts the server with Nodemon.
-- `npm run dev:server`: Starts only the server with Nodemon.
-- `npm run tailwind`: Watches Tailwind input and rebuilds the CSS bundle.
-- `npm run build:css`: Generates a minified Tailwind CSS bundle.
-- `npm run start`: Starts the app using the `.env` file.
-- `npm run start:prod`: Builds CSS and starts the production server.
-- `npm run lint`: Lints and auto-fixes JavaScript files.
-- `npm run format`: Formats the codebase with Prettier.
-
-## Run Locally
-
-1. Install dependencies.
-2. Add the environment variables.
-3. Make sure MongoDB is running and reachable.
-4. Build the CSS if needed:
-
-```bash
-npm run build:css
-```
-
-5. Start the app:
+Start :
 
 ```bash
 npm run start
