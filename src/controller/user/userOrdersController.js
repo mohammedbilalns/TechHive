@@ -317,6 +317,14 @@ export const verifyPayment = asyncHandler(async (req, res) => {
       ),
     );
 
+    // Clear the cart after the online payment completes successfully
+    await cartModel.findOneAndUpdate(
+      { user: order.userId },
+      { $set: { items: [], discount: 0, couponCode: null } },
+    );
+
+    delete req.session.coupon;
+
     res.status(HttpStatus.OK).json({ success: true });
   } else {
     return res.status(HttpStatus.BAD_REQUEST).json({
