@@ -12,6 +12,8 @@ const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
 const loginButton = document.getElementById("loginButton");
 const loginLoader = document.getElementById("loginLoader");
+const guestLoginButton = document.getElementById("guestLoginButton");
+const guestLoader = document.getElementById("guestLoader");
 
 // Initialize validation listeners and password toggle
 attachInputListeners(["email", "password"]);
@@ -51,6 +53,23 @@ form.addEventListener("submit", async function (event) {
     showToast(errorMessage, "error");
   } finally {
     removeLoadingState(loginButton, loginLoader, "Log In");
+  }
+});
+
+guestLoginButton?.addEventListener("click", async () => {
+  try {
+    setLoadingState(guestLoginButton, guestLoader, "Entering demo...");
+
+    const response = await axios.post("/auth/guest-login");
+
+    if (response.data.success) {
+      window.location.href = "/home";
+    }
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || "Guest login failed";
+    showToast(errorMessage, "error");
+  } finally {
+    removeLoadingState(guestLoginButton, guestLoader, "Try as Guest");
   }
 });
 
