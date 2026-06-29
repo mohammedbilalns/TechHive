@@ -1638,6 +1638,19 @@ input::placeholder {
   border-top-width: 1px;
 }
 
+.border-dashed {
+  border-style: dashed;
+}
+
+.border-\[\#DA0037\] {
+  --tw-border-opacity: 1;
+  border-color: rgb(218 0 55 / var(--tw-border-opacity, 1));
+}
+
+.border-\[\#DA0037\]\/40 {
+  border-color: rgb(218 0 55 / 0.4);
+}
+
 .border-blue-300 {
   --tw-border-opacity: 1;
   border-color: rgb(147 197 253 / var(--tw-border-opacity, 1));
@@ -2583,9 +2596,18 @@ input::placeholder {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
+.hover\:border-\[\#DA0037\]:hover {
+  --tw-border-opacity: 1;
+  border-color: rgb(218 0 55 / var(--tw-border-opacity, 1));
+}
+
 .hover\:border-gray-300:hover {
   --tw-border-opacity: 1;
   border-color: rgb(209 213 219 / var(--tw-border-opacity, 1));
+}
+
+.hover\:bg-\[\#DA0037\]\/5:hover {
+  background-color: rgb(218 0 55 / 0.05);
 }
 
 .hover\:bg-blue-600:hover {
