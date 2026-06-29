@@ -6,6 +6,7 @@ import {
 } from "../controller/authentication/authViewsController.js";
 import {
   verifyLogin,
+  loginAsGuest,
   registerUser,
   verifyOTP,
   authGoogle,
@@ -33,6 +34,7 @@ router.get("/logout", checkUserSession, logoutUser);
 
 router.use(isUserLoggedIn);
 router.route("/login").get(renderLoginPage).post(verifyLogin);
+router.post("/guest-login", loginAsGuest);
 router.route("/signup").get(renderSignupPage).post(registerUser);
 
 router.post("/verify-otp", verifyOTP);

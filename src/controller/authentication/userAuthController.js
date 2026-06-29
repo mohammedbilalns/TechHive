@@ -23,6 +23,25 @@ import { WalletTransactionDescriptions } from "../../constants/walletTransaction
 import { USER_VIEW_PATHS } from "../../constants/viewPaths.js";
 import { sendOTPEmail } from "../../services/mail.js";
 import logger from "../../utils/logger.js";
+import { DEMO_USER } from "../../utils/demoUser.js";
+
+const saveAuthenticatedSession = (req, user) =>
+  new Promise((resolve, reject) => {
+    req.session.user = {
+      id: user._id || user.id,
+      fullname: user.fullname,
+      email: user.email,
+    };
+
+    req.session.save((error) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      resolve();
+    });
+  });
 
 // Verify user login
 export const verifyLogin = asyncHandler(async (req, res) => {
@@ -76,11 +95,7 @@ export const verifyLogin = asyncHandler(async (req, res) => {
     );
   }
 
-  req.session.user = {
-    id: user._id,
-    fullname: user.fullname,
-    email: user.email,
-  };
+  await saveAuthenticatedSession(req, user);
 
   res.status(HttpStatus.OK).json({
     success: true,
@@ -200,11 +215,7 @@ export const verifyOTP = asyncHandler(async (req, res) => {
     user.otp = undefined;
     await user.save();
 
-    req.session.user = {
-      id: user._id,
-      fullname: user.fullname,
-      email: user.email,
-    };
+    await saveAuthenticatedSession(req, user);
 
     return res.status(HttpStatus.OK).json({
       success: true,
@@ -298,25 +309,38 @@ export const authGoogleCallback = (req, res) => {
           );
         }
 
-        req.session.user = {
-          id: user.id,
-          fullname: user.fullname,
-          email: user.email,
-        };
-
-        req.session.save((err) => {
-          if (err) {
-            logger.error("Session Save Error:", err);
-            return res.redirect(
+        saveAuthenticatedSession(req, user)
+          .then(() => {
+            res.redirect("/home");
+          })
+          .catch((error) => {
+            logger.error("Session Save Error:", error);
+            res.redirect(
               `/auth/login?message=${encodeURIComponent(UserAuthErrorMessages.SESSION_SAVE_ERROR)}&alertType=error`,
             );
-          }
-          res.redirect("/home");
-        });
+          });
       });
     },
   )(req, res);
 };
+
+export const loginAsGuest = asyncHandler(async (req, res) => {
+  const guestUser = await UserModel.findOne({ email: DEMO_USER.email });
+
+  if (!guestUser) {
+    throw new AppError(
+      HttpStatus.NOT_FOUND,
+      AuthErrorMessages.DEMO_ACCOUNT_UNAVAILABLE,
+    );
+  }
+
+  await saveAuthenticatedSession(req, guestUser);
+
+  res.status(HttpStatus.OK).json({
+    success: true,
+    message: SuccessMessage.LOGIN_SUCCESS,
+  });
+});
 
 // ---- user logout ---
 
