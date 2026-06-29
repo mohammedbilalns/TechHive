@@ -22,6 +22,7 @@ export const AuthErrorMessages = Object.freeze({
   CURRENT_PASSWORD_INCORRECT: "Current password is incorrect",
   NEW_PASSWORD_SAME_AS_CURRENT:
     "New password cannot be the same as current password",
+  DEMO_ACCOUNT_UNAVAILABLE: "Demo account is unavailable. Please try again later.",
   EMAIL_REQUIRED: "Email is required",
   PASSWORD_REQUIRED: "Password is required",
   INVALID_CREDENTIALS: "Invalid credentials",
